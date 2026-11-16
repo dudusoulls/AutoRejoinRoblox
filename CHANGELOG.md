@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.0
+- Animações suaves: janelas aparecem/somem com fade, botões mudam de cor devagar
+- Barrinha da barra lateral desliza até a aba escolhida
+- Interruptores ON/OFF com transição
+- Bolinha de status pulsando quando está online
+
 ## v1.4.0
 - Logo nova na janela, na tela de key, no ícone da barra de tarefas e da bandeja
 - Avisos do Discord com a logo como foto do webhook

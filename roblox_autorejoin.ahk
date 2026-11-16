@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.0"
+VERSION     := "1.5.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,9 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+animSet := Map()
+slideFrom := 0, slideTo := 0, slideT0 := 0
+curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
 tourIdx := 0
 tourWins := []
@@ -2106,6 +2109,7 @@ AddNav("Webhook", Chr(0xE71B), 222)
 AddNav("Moedas",  Chr(0xE8C7), 264)
 AddNav("Logs",    Chr(0xE81C), 306)
 AddNav("Sobre",   Chr(0xE946), 348)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 106, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
@@ -2117,8 +2121,8 @@ FontUI(g, "s7 w700")
 sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE), "")
 
 ; ---- botões da janela (topo direito) ----
-MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_BG)
-MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => g.Minimize(), "ghost", true, "s9", 0, C_BG)
+MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => (FadeHide(g), ExitApp()), "close", true, "s9", 0, C_BG)
+MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => FadeMin(g), "ghost", true, "s9", 0, C_BG)
 hbCompact := MakeBtn(g, W - 138, 0, 46, 34, Chr(0xE73F), (*) => SetCompact(true), "ghost", true, "s9", 0, C_BG)
 hbLang := MakeBtn(g, W - 184, 0, 46, 34, Chr(0xE774), (*) => LangMenu(), "ghost", true, "s9", 0, C_BG)
 
@@ -2341,9 +2345,9 @@ else if (Trim(edKey.Value) != "") {
 ; abre o programa de verdade (depois da licença ok)
 StartApp() {
     global g, gk, W, H, savedCompact, iniFile, running, appStarted
-    gk.Hide()
+    FadeHide(gk)
     if appStarted {
-        g.Show()
+        FadeShow(g)
         return
     }
     appStarted := true
@@ -2351,7 +2355,8 @@ StartApp() {
     if (savedCompact = "1")
         SetCompact(true)
     else
-        g.Show(Format("w{} h{}", W, H))
+        FadeShow(g, Format("w{} h{}", W, H))
+    SetTimer(PulseTick, 70)
     SetTimer(Cleanup, 2000)
     SetTimer(WatchError, 3000)
     SetTimer(UpdateStats, 1000)
@@ -2460,19 +2465,17 @@ SetBtnStyle(b, style) {
     c := BtnColors(style, "")
     o := hoverMap[b.Hwnd]
     o.bg := c[1], o.hov := c[2]
-    b.Opt("Background" (hoverCur = o ? c[2] : c[1]))
     b.SetFont("c" c[3])
-    b.Redraw()
+    AnimColor(o, hoverCur = o ? c[2] : c[1], 160)
 }
 
 AddNav(name, icon, y) {
     global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK
-    bar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", y + 10, C_ACC))
     FontIcon(g, "s11")
     ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
     lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
-    o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, bar: bar}
+    o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, y: y}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
         c.OnEvent("Click", (*) => ShowPage(name))
@@ -2481,7 +2484,7 @@ AddNav(name, icon, y) {
 }
 
 ShowPage(name) {
-    global pages, pageInfo, navs, pageTitle, pageSub, C_NAVA, C_SIDE, C_NAVH, C_TEXT, C_MUTED
+    global pages, pageInfo, navs, pageTitle, pageSub, C_NAVA, C_SIDE, C_NAVH, C_TEXT, C_MUTED, hoverCur
     for n, list in pages
         if (n != name)
             for c in list
@@ -2492,12 +2495,11 @@ ShowPage(name) {
         act := (n = name)
         o.bg  := act ? C_NAVA : C_SIDE
         o.hov := act ? C_NAVA : C_NAVH
-        for c in o.ctrls {
-            c.Opt("Background" o.bg)
+        for c in o.ctrls
             c.SetFont("c" (act ? C_TEXT : C_MUTED))
-            c.Redraw()
-        }
-        o.bar.Visible := act
+        AnimColor(o, hoverCur = o ? o.hov : o.bg, 180)
+        if act
+            SlideNav(o.y + 10)
     }
     pageTitle.Value := pageInfo[name][1]
     pageSub.Value := pageInfo[name][2]
@@ -2696,8 +2698,8 @@ ShowTourStep() {
     } else {
         bx := gx + (gw - bwp) // 2, by := gy + (gh - bhp) // 2
     }
-    bu.Show(Format("x{} y{}", bx, by))
     tourWins.Push(bu)
+    FadeShow(bu, Format("x{} y{}", bx, by))
 }
 
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
@@ -2754,12 +2756,127 @@ HoverCheck() {
 }
 
 PaintHover(o, on) {
-    for c in o.ctrls {
-        try {
-            c.Opt("Background" (on ? o.hov : o.bg))
-            c.Redraw()
+    AnimColor(o, on ? o.hov : o.bg, 110)
+}
+
+; ==========================================================
+;  Animações (cores suaves, fade de janela, barrinha deslizando, bolinha pulsando)
+; ==========================================================
+EaseOut(p) {
+    return 1 - (1 - p) ** 3
+}
+
+LerpHex(a, b, t) {
+    x := Integer("0x" a), y := Integer("0x" b)
+    r := Round(((x >> 16) & 255) + ((((y >> 16) & 255) - ((x >> 16) & 255)) * t))
+    gr := Round(((x >> 8) & 255) + ((((y >> 8) & 255) - ((x >> 8) & 255)) * t))
+    bl := Round((x & 255) + (((y & 255) - (x & 255)) * t))
+    return Format("{:02X}{:02X}{:02X}", r, gr, bl)
+}
+
+; muda a cor de fundo de um grupo de controles aos poucos
+AnimColor(o, to, dur := 140) {
+    global animSet
+    from := o.HasOwnProp("cur") ? o.cur : o.bg
+    if (from = to && !animSet.Has(ObjPtr(o)))
+        return
+    o.from := from, o.to := to, o.t0 := A_TickCount, o.dur := dur
+    animSet[ObjPtr(o)] := o
+    SetTimer(AnimTick, 15)
+}
+
+AnimTick() {
+    global animSet
+    done := []
+    for k, o in animSet {
+        pr := Min(1, (A_TickCount - o.t0) / o.dur)
+        c := LerpHex(o.from, o.to, EaseOut(pr))
+        o.cur := c
+        for ctl in o.ctrls
+            try ctl.Opt("Background" c), ctl.Redraw()
+        if (pr >= 1)
+            done.Push(k)
+    }
+    for k in done
+        animSet.Delete(k)
+    if !animSet.Count
+        SetTimer(AnimTick, 0)
+}
+
+; troca a cor na hora (sem animação)
+SetColorNow(o, c) {
+    global animSet
+    if animSet.Has(ObjPtr(o))
+        animSet.Delete(ObjPtr(o))
+    o.cur := c
+    for ctl in o.ctrls
+        try ctl.Opt("Background" c), ctl.Redraw()
+}
+
+; janela aparecendo/sumindo suave
+FadeShow(gui, opts := "") {
+    try WinSetTransparent(0, gui.Hwnd)
+    gui.Show(opts)
+    Loop 8 {
+        try WinSetTransparent(Round(255 * EaseOut(A_Index / 8)), gui.Hwnd)
+        Sleep(14)
+    }
+    try WinSetTransparent("Off", gui.Hwnd)
+}
+
+FadeHide(gui) {
+    if DllCall("IsWindowVisible", "Ptr", gui.Hwnd) {
+        Loop 6 {
+            try WinSetTransparent(Round(255 * (1 - A_Index / 6)), gui.Hwnd)
+            Sleep(12)
         }
     }
+    gui.Hide()
+    try WinSetTransparent("Off", gui.Hwnd)
+}
+
+FadeMin(gui) {
+    Loop 6 {
+        try WinSetTransparent(Round(255 * (1 - A_Index / 6)), gui.Hwnd)
+        Sleep(12)
+    }
+    gui.Minimize()
+    try WinSetTransparent("Off", gui.Hwnd)
+}
+
+; barrinha branca da barra lateral deslizando até a aba escolhida
+SlideNav(ty) {
+    global navBar, slideFrom, slideTo, slideT0
+    navBar.GetPos(, &cy)
+    slideFrom := cy, slideTo := ty, slideT0 := A_TickCount
+    SetTimer(SlideTick, 15)
+}
+
+SlideTick() {
+    global navBar, slideFrom, slideTo, slideT0
+    pr := Min(1, (A_TickCount - slideT0) / 220)
+    e := EaseOut(pr)
+    ; estica um pouco no meio do caminho e volta ao tamanho normal no fim
+    hh := 18 + Round(10 * Sin(pr * 3.14159))
+    navBar.Move(, Round(slideFrom + (slideTo - slideFrom) * e) - (hh - 18) // 2, , hh)
+    navBar.Redraw()
+    if (pr >= 1)
+        SetTimer(SlideTick, 0)
+}
+
+; bolinha de status "respirando" quando está online/carregando
+PulseTick() {
+    global curState, curStateCol, dashDot, sideDot, mDot, C_CARD, pulseLast
+    if (curState = "on" || curState = "wait") {
+        f := (Sin(Mod(A_TickCount, 1800) / 1800 * 6.28318) + 1) / 2
+        c := LerpHex(curStateCol, C_CARD, f * 0.6)
+    } else
+        c := curStateCol
+    if (c = pulseLast)
+        return
+    pulseLast := c
+    for d in [dashDot, sideDot, mDot]
+        try d.SetFont("c" c)
 }
 
 ; Interruptor ON/OFF
@@ -2797,10 +2914,17 @@ class ToggleSwitch {
     }
     Paint() {
         global C_ACC, C_BG, C_SWOFF, C_MUTED
-        this.pill.Opt("Background" (this.val ? C_ACC : C_SWOFF))
+        col := this.val ? C_ACC : C_SWOFF
+        if !this.HasOwnProp("anim")
+            this.anim := {ctrls: [this.pill], bg: col}
         this.pill.SetFont("c" (this.val ? C_BG : C_MUTED))
         this.pill.Text := this.val ? "ON" : "OFF"
-        this.pill.Redraw()
+        if this.HasOwnProp("shown")
+            AnimColor(this.anim, col, 170)
+        else {
+            SetColorNow(this.anim, col)
+            this.shown := true
+        }
     }
 }
 
@@ -2813,9 +2937,10 @@ SetIf(ctrl, v) {
 SetState(state, title, sub) {
     global dashDot, dashTitle, dashSub, sideDot, sideStat, mDot, mStat
     global C_ON, C_OFF, C_WARN, C_DIM, C_ACC
+    global curState, curStateCol
     col := Map("on", C_ON, "off", C_OFF, "wait", C_ACC, "warn", C_WARN, "idle", C_DIM)[state]
-    for d in [dashDot, sideDot, mDot]
-        d.SetFont("c" col)
+    curState := state, curStateCol := col
+    PulseTick()
     SetIf(dashTitle, title)
     SetIf(dashSub, sub)
     SetIf(sideStat, title)
@@ -2835,16 +2960,16 @@ SetCompact(on) {
     global g, gm, miniShown, iniFile, winW, W, H
     IniWrite(on ? 1 : 0, iniFile, "cfg", "compact")
     if on {
-        g.Hide()
+        FadeHide(g)
         if !miniShown {
             miniShown := true
             x := A_ScreenWidth - winW - 300
-            gm.Show("NoActivate w284 h52 x" (x > 0 ? x : 0) " y8")
+            FadeShow(gm, "NoActivate w284 h52 x" (x > 0 ? x : 0) " y8")
         } else
-            gm.Show("NoActivate")
+            FadeShow(gm, "NoActivate")
     } else {
-        gm.Hide()
-        g.Show(Format("w{} h{}", W, H))
+        FadeHide(gm)
+        FadeShow(g, Format("w{} h{}", W, H))
     }
 }
 
@@ -3116,10 +3241,13 @@ TranslateKa(m) {
 
 ShowKeyScreen(msg := "") {
     global g, gm, gk, kStatus, KW, KH, C_MUTED, C_OFF
-    g.Hide(), gm.Hide()
+    FadeHide(g), FadeHide(gm)
     kStatus.SetFont("c" C_MUTED)
     kStatus.Value := msg
-    gk.Show(Format("w{} h{} Center", KW, KH))
+    if DllCall("IsWindowVisible", "Ptr", gk.Hwnd)
+        gk.Show()
+    else
+        FadeShow(gk, Format("w{} h{} Center", KW, KH))
 }
 
 KeyMsg(msg, isErr := false) {
