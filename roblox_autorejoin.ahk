@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.2.0"
+VERSION     := "1.3.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,9 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+tourOn := false
+tourIdx := 0
+tourWins := []
 appStarted := false
 licensed := false
 kaSession := ""
@@ -333,7 +336,35 @@ I18N["pt"] := Map(
     "d_test", "Os avisos vão chegar aqui.",
     "d_method", "Jeito",
     "d_interval", "Checagem a cada",
-    "d_user", "Usuário"
+    "d_user", "Usuário",
+    "tour_welcome_t", "Bem-vindo, {1}!",
+    "tour_welcome", "Vou te mostrar o básico em menos de 1 minuto. Dá pra pular quando quiser.",
+    "tour_link_t", "1. Link do jogo",
+    "tour_link", "Cole aqui o link do jogo, do servidor privado ou só o Place ID. É pra lá que o script te leva de volta.",
+    "tour_hook_t", "2. Avisos no Discord",
+    "tour_hook", "Opcional: cole o webhook de um canal do Discord pra receber avisos quando cair, voltar ou der erro.",
+    "tour_test_t", "Testar webhook",
+    "tour_test", "Clique aqui pra conferir se os avisos estão chegando no Discord.",
+    "tour_win_t", "3. Posição da janela",
+    "tour_win", "Com isso ligado, a janela do Roblox fica fixa no canto superior direito da tela.",
+    "tour_coins_t", "4. Moedas (opcional)",
+    "tour_coins", "Coloque os nomes das moedas que aparecem na tela pra elas irem junto no status do Discord.",
+    "tour_start_t", "5. Começar!",
+    "tour_start", "Quando estiver tudo certo, clique em Iniciar. O script vigia o Roblox e reabre sozinho se cair.",
+    "tour_compact_t", "Modo compacto",
+    "tour_compact", "Deixa só uma barrinha pequena na tela, ocupando menos espaço.",
+    "tour_lang_t", "Idioma",
+    "tour_lang", "Troque o idioma aqui. Por padrão ele segue o idioma do Windows.",
+    "tour_upd_t", "Atualizações",
+    "tour_upd", "Quando sair versão nova, aparece um aviso no topo e você atualiza por aqui com 1 clique.",
+    "tour_done_t", "Tudo pronto!",
+    "tour_done", "Dá pra rever este tutorial quando quiser em Sobre → Ver tutorial.",
+    "btn_next", "Próximo",
+    "btn_back", "Voltar",
+    "btn_skip", "Pular",
+    "btn_finish", "Concluir",
+    "btn_tour", "Ver tutorial",
+    "tour_step", "{1} de {2}"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -539,7 +570,35 @@ I18N["en"] := Map(
     "d_test", "Alerts will show up here.",
     "d_method", "Method",
     "d_interval", "Checking every",
-    "d_user", "User"
+    "d_user", "User",
+    "tour_welcome_t", "Welcome, {1}!",
+    "tour_welcome", "I'll show you the basics in under a minute. You can skip anytime.",
+    "tour_link_t", "1. Game link",
+    "tour_link", "Paste the game link, private server link or just the Place ID here. That's where the script takes you back to.",
+    "tour_hook_t", "2. Discord alerts",
+    "tour_hook", "Optional: paste a Discord channel webhook to get alerts when you drop, come back or hit an error.",
+    "tour_test_t", "Test webhook",
+    "tour_test", "Click here to check that alerts are reaching Discord.",
+    "tour_win_t", "3. Window position",
+    "tour_win", "With this on, the Roblox window stays fixed in the top-right corner of the screen.",
+    "tour_coins_t", "4. Currency (optional)",
+    "tour_coins", "Enter the names of the currencies shown on screen so they're included in the Discord status.",
+    "tour_start_t", "5. Start!",
+    "tour_start", "When everything is set, click Start. The script watches Roblox and reopens it if you drop.",
+    "tour_compact_t", "Compact mode",
+    "tour_compact", "Shrinks everything into a small bar so it takes less space.",
+    "tour_lang_t", "Language",
+    "tour_lang", "Change the language here. By default it follows your Windows language.",
+    "tour_upd_t", "Updates",
+    "tour_upd", "When a new version is out, a notice shows at the top and you update here with one click.",
+    "tour_done_t", "All set!",
+    "tour_done", "You can replay this tutorial anytime in About → Show tutorial.",
+    "btn_next", "Next",
+    "btn_back", "Back",
+    "btn_skip", "Skip",
+    "btn_finish", "Finish",
+    "btn_tour", "Show tutorial",
+    "tour_step", "{1} of {2}"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -745,7 +804,35 @@ I18N["es"] := Map(
     "d_test", "Los avisos llegarán aquí.",
     "d_method", "Método",
     "d_interval", "Revisión cada",
-    "d_user", "Usuario"
+    "d_user", "Usuario",
+    "tour_welcome_t", "¡Bienvenido, {1}!",
+    "tour_welcome", "Te muestro lo básico en menos de un minuto. Puedes saltarlo cuando quieras.",
+    "tour_link_t", "1. Enlace del juego",
+    "tour_link", "Pega aquí el enlace del juego, del servidor privado o solo el Place ID. Ahí es donde el script te devuelve.",
+    "tour_hook_t", "2. Avisos en Discord",
+    "tour_hook", "Opcional: pega el webhook de un canal de Discord para recibir avisos cuando caigas, vuelvas o haya un error.",
+    "tour_test_t", "Probar webhook",
+    "tour_test", "Haz clic aquí para comprobar que los avisos llegan a Discord.",
+    "tour_win_t", "3. Posición de la ventana",
+    "tour_win", "Con esto activado, la ventana de Roblox queda fija en la esquina superior derecha.",
+    "tour_coins_t", "4. Monedas (opcional)",
+    "tour_coins", "Escribe los nombres de las monedas que aparecen en pantalla para incluirlas en el estado de Discord.",
+    "tour_start_t", "5. ¡Empezar!",
+    "tour_start", "Cuando todo esté listo, haz clic en Iniciar. El script vigila Roblox y lo reabre si caes.",
+    "tour_compact_t", "Modo compacto",
+    "tour_compact", "Deja solo una barra pequeña en pantalla para ocupar menos espacio.",
+    "tour_lang_t", "Idioma",
+    "tour_lang", "Cambia el idioma aquí. Por defecto sigue el idioma de Windows.",
+    "tour_upd_t", "Actualizaciones",
+    "tour_upd", "Cuando salga una versión nueva, aparece un aviso arriba y actualizas aquí con un clic.",
+    "tour_done_t", "¡Todo listo!",
+    "tour_done", "Puedes volver a ver este tutorial en Acerca de → Ver tutorial.",
+    "btn_next", "Siguiente",
+    "btn_back", "Atrás",
+    "btn_skip", "Saltar",
+    "btn_finish", "Terminar",
+    "btn_tour", "Ver tutorial",
+    "tour_step", "{1} de {2}"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -951,7 +1038,35 @@ I18N["fr"] := Map(
     "d_test", "Les alertes arriveront ici.",
     "d_method", "Méthode",
     "d_interval", "Vérification toutes les",
-    "d_user", "Utilisateur"
+    "d_user", "Utilisateur",
+    "tour_welcome_t", "Bienvenue, {1} !",
+    "tour_welcome", "Je vous montre l'essentiel en moins d'une minute. Vous pouvez passer à tout moment.",
+    "tour_link_t", "1. Lien du jeu",
+    "tour_link", "Collez ici le lien du jeu, du serveur privé ou juste le Place ID. C'est là que le script vous ramène.",
+    "tour_hook_t", "2. Alertes Discord",
+    "tour_hook", "Facultatif : collez le webhook d'un salon Discord pour être alerté en cas de coupure, de retour ou d'erreur.",
+    "tour_test_t", "Tester le webhook",
+    "tour_test", "Cliquez ici pour vérifier que les alertes arrivent sur Discord.",
+    "tour_win_t", "3. Position de la fenêtre",
+    "tour_win", "Activé, la fenêtre Roblox reste fixée dans le coin supérieur droit de l'écran.",
+    "tour_coins_t", "4. Monnaies (facultatif)",
+    "tour_coins", "Saisissez les noms des monnaies affichées pour les inclure dans le statut Discord.",
+    "tour_start_t", "5. C'est parti !",
+    "tour_start", "Quand tout est prêt, cliquez sur Démarrer. Le script surveille Roblox et le rouvre en cas de coupure.",
+    "tour_compact_t", "Mode compact",
+    "tour_compact", "Réduit tout en une petite barre pour prendre moins de place.",
+    "tour_lang_t", "Langue",
+    "tour_lang", "Changez de langue ici. Par défaut, celle de Windows est utilisée.",
+    "tour_upd_t", "Mises à jour",
+    "tour_upd", "Quand une nouvelle version sort, un avis apparaît en haut et vous mettez à jour ici en un clic.",
+    "tour_done_t", "C'est prêt !",
+    "tour_done", "Revoyez ce tutoriel quand vous voulez dans À propos → Voir le tutoriel.",
+    "btn_next", "Suivant",
+    "btn_back", "Retour",
+    "btn_skip", "Passer",
+    "btn_finish", "Terminer",
+    "btn_tour", "Voir le tutoriel",
+    "tour_step", "{1} sur {2}"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -1157,7 +1272,35 @@ I18N["de"] := Map(
     "d_test", "Benachrichtigungen kommen hier an.",
     "d_method", "Methode",
     "d_interval", "Prüfung alle",
-    "d_user", "Benutzer"
+    "d_user", "Benutzer",
+    "tour_welcome_t", "Willkommen, {1}!",
+    "tour_welcome", "Ich zeige dir die Grundlagen in unter einer Minute. Du kannst jederzeit überspringen.",
+    "tour_link_t", "1. Spiel-Link",
+    "tour_link", "Füge hier den Spiel-Link, den Link zum privaten Server oder nur die Place-ID ein. Dorthin bringt dich das Skript zurück.",
+    "tour_hook_t", "2. Discord-Benachrichtigungen",
+    "tour_hook", "Optional: Füge den Webhook eines Discord-Kanals ein, um bei Abbruch, Rückkehr oder Fehlern benachrichtigt zu werden.",
+    "tour_test_t", "Webhook testen",
+    "tour_test", "Klicke hier, um zu prüfen, ob die Meldungen in Discord ankommen.",
+    "tour_win_t", "3. Fensterposition",
+    "tour_win", "Wenn aktiv, bleibt das Roblox-Fenster oben rechts auf dem Bildschirm.",
+    "tour_coins_t", "4. Währungen (optional)",
+    "tour_coins", "Gib die Namen der angezeigten Währungen ein, damit sie im Discord-Status erscheinen.",
+    "tour_start_t", "5. Los geht's!",
+    "tour_start", "Wenn alles passt, klicke auf Starten. Das Skript überwacht Roblox und startet es bei Abbruch neu.",
+    "tour_compact_t", "Kompaktmodus",
+    "tour_compact", "Verkleinert alles auf eine kleine Leiste, die weniger Platz braucht.",
+    "tour_lang_t", "Sprache",
+    "tour_lang", "Ändere hier die Sprache. Standardmäßig wird die Windows-Sprache verwendet.",
+    "tour_upd_t", "Updates",
+    "tour_upd", "Bei einer neuen Version erscheint oben ein Hinweis und du aktualisierst hier mit einem Klick.",
+    "tour_done_t", "Alles bereit!",
+    "tour_done", "Du kannst das Tutorial jederzeit unter Info → Tutorial ansehen erneut starten.",
+    "btn_next", "Weiter",
+    "btn_back", "Zurück",
+    "btn_skip", "Überspringen",
+    "btn_finish", "Fertig",
+    "btn_tour", "Tutorial ansehen",
+    "tour_step", "{1} von {2}"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -1363,7 +1506,35 @@ I18N["ru"] := Map(
     "d_test", "Уведомления будут приходить сюда.",
     "d_method", "Способ",
     "d_interval", "Проверка каждые",
-    "d_user", "Пользователь"
+    "d_user", "Пользователь",
+    "tour_welcome_t", "Добро пожаловать, {1}!",
+    "tour_welcome", "Покажу основное меньше чем за минуту. Можно пропустить в любой момент.",
+    "tour_link_t", "1. Ссылка на игру",
+    "tour_link", "Вставьте сюда ссылку на игру, на приватный сервер или просто Place ID. Туда скрипт будет возвращать вас.",
+    "tour_hook_t", "2. Уведомления в Discord",
+    "tour_hook", "Необязательно: вставьте вебхук канала Discord, чтобы получать уведомления о вылетах, возвращении и ошибках.",
+    "tour_test_t", "Проверка вебхука",
+    "tour_test", "Нажмите здесь, чтобы проверить, что уведомления приходят в Discord.",
+    "tour_win_t", "3. Положение окна",
+    "tour_win", "Если включено, окно Roblox закреплено в правом верхнем углу экрана.",
+    "tour_coins_t", "4. Валюта (необязательно)",
+    "tour_coins", "Введите названия валют с экрана, чтобы они попадали в статус в Discord.",
+    "tour_start_t", "5. Старт!",
+    "tour_start", "Когда всё готово, нажмите «Старт». Скрипт следит за Roblox и перезапускает его при вылете.",
+    "tour_compact_t", "Компактный режим",
+    "tour_compact", "Сворачивает всё в маленькую панель, чтобы занимать меньше места.",
+    "tour_lang_t", "Язык",
+    "tour_lang", "Смените язык здесь. По умолчанию используется язык Windows.",
+    "tour_upd_t", "Обновления",
+    "tour_upd", "Когда выходит новая версия, сверху появляется уведомление, а обновиться можно здесь в один клик.",
+    "tour_done_t", "Всё готово!",
+    "tour_done", "Пройти обучение снова можно в разделе «О программе» → «Обучение».",
+    "btn_next", "Далее",
+    "btn_back", "Назад",
+    "btn_skip", "Пропустить",
+    "btn_finish", "Готово",
+    "btn_tour", "Обучение",
+    "tour_step", "{1} из {2}"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -1569,7 +1740,35 @@ I18N["tr"] := Map(
     "d_test", "Uyarılar buraya gelecek.",
     "d_method", "Yöntem",
     "d_interval", "Kontrol aralığı",
-    "d_user", "Kullanıcı"
+    "d_user", "Kullanıcı",
+    "tour_welcome_t", "Hoş geldin, {1}!",
+    "tour_welcome", "Temel şeyleri bir dakikadan kısa sürede göstereceğim. İstediğin zaman geçebilirsin.",
+    "tour_link_t", "1. Oyun linki",
+    "tour_link", "Oyun linkini, özel sunucu linkini ya da sadece Place ID'yi buraya yapıştır. Betik seni oraya geri götürür.",
+    "tour_hook_t", "2. Discord uyarıları",
+    "tour_hook", "İsteğe bağlı: düştüğünde, geri döndüğünde veya hata olduğunda uyarı almak için bir Discord kanal webhook'u yapıştır.",
+    "tour_test_t", "Webhook'u test et",
+    "tour_test", "Uyarıların Discord'a ulaştığını kontrol etmek için buraya tıkla.",
+    "tour_win_t", "3. Pencere konumu",
+    "tour_win", "Bu açıkken Roblox penceresi ekranın sağ üst köşesinde sabit kalır.",
+    "tour_coins_t", "4. Paralar (isteğe bağlı)",
+    "tour_coins", "Ekranda görünen para adlarını yaz, Discord durumunda da görünsünler.",
+    "tour_start_t", "5. Başla!",
+    "tour_start", "Her şey hazır olunca Başlat'a tıkla. Betik Roblox'u izler ve düşersen yeniden açar.",
+    "tour_compact_t", "Kompakt mod",
+    "tour_compact", "Her şeyi küçük bir çubuğa indirir, daha az yer kaplar.",
+    "tour_lang_t", "Dil",
+    "tour_lang", "Dili buradan değiştir. Varsayılan olarak Windows dilini kullanır.",
+    "tour_upd_t", "Güncellemeler",
+    "tour_upd", "Yeni sürüm çıkınca üstte bir uyarı çıkar ve buradan tek tıkla güncellersin.",
+    "tour_done_t", "Her şey hazır!",
+    "tour_done", "Bu öğreticiyi istediğin zaman Hakkında → Öğreticiyi göster'den tekrar izleyebilirsin.",
+    "btn_next", "İleri",
+    "btn_back", "Geri",
+    "btn_skip", "Geç",
+    "btn_finish", "Bitir",
+    "btn_tour", "Öğreticiyi göster",
+    "tour_step", "{1} / {2}"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -1775,7 +1974,35 @@ I18N["id"] := Map(
     "d_test", "Notifikasi akan muncul di sini.",
     "d_method", "Cara",
     "d_interval", "Cek setiap",
-    "d_user", "Pengguna"
+    "d_user", "Pengguna",
+    "tour_welcome_t", "Selamat datang, {1}!",
+    "tour_welcome", "Aku tunjukkan dasar-dasarnya dalam kurang dari semenit. Bisa dilewati kapan saja.",
+    "tour_link_t", "1. Link game",
+    "tour_link", "Tempel link game, link server privat, atau cukup Place ID di sini. Ke sanalah skrip membawamu kembali.",
+    "tour_hook_t", "2. Notifikasi Discord",
+    "tour_hook", "Opsional: tempel webhook channel Discord untuk dapat notifikasi saat putus, kembali, atau error.",
+    "tour_test_t", "Tes webhook",
+    "tour_test", "Klik di sini untuk cek apakah notifikasi sampai ke Discord.",
+    "tour_win_t", "3. Posisi jendela",
+    "tour_win", "Jika aktif, jendela Roblox tetap di pojok kanan atas layar.",
+    "tour_coins_t", "4. Mata uang (opsional)",
+    "tour_coins", "Masukkan nama mata uang di layar agar ikut tampil di status Discord.",
+    "tour_start_t", "5. Mulai!",
+    "tour_start", "Kalau semua sudah siap, klik Mulai. Skrip mengawasi Roblox dan membukanya lagi jika putus.",
+    "tour_compact_t", "Mode ringkas",
+    "tour_compact", "Mengecilkan semuanya jadi bar kecil agar hemat tempat.",
+    "tour_lang_t", "Bahasa",
+    "tour_lang", "Ganti bahasa di sini. Secara bawaan mengikuti bahasa Windows.",
+    "tour_upd_t", "Pembaruan",
+    "tour_upd", "Saat ada versi baru, muncul pemberitahuan di atas dan kamu bisa memperbarui di sini dengan sekali klik.",
+    "tour_done_t", "Semua siap!",
+    "tour_done", "Kamu bisa mengulang tutorial ini kapan saja di Tentang → Lihat tutorial.",
+    "btn_next", "Lanjut",
+    "btn_back", "Kembali",
+    "btn_skip", "Lewati",
+    "btn_finish", "Selesai",
+    "btn_tour", "Lihat tutorial",
+    "tour_step", "{1} dari {2}"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -1837,8 +2064,8 @@ sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE),
 ; ---- botões da janela (topo direito) ----
 MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_BG)
 MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => g.Minimize(), "ghost", true, "s9", 0, C_BG)
-MakeBtn(g, W - 138, 0, 46, 34, Chr(0xE73F), (*) => SetCompact(true), "ghost", true, "s9", 0, C_BG)
-MakeBtn(g, W - 184, 0, 46, 34, Chr(0xE774), (*) => LangMenu(), "ghost", true, "s9", 0, C_BG)
+hbCompact := MakeBtn(g, W - 138, 0, 46, 34, Chr(0xE73F), (*) => SetCompact(true), "ghost", true, "s9", 0, C_BG)
+hbLang := MakeBtn(g, W - 184, 0, 46, 34, Chr(0xE774), (*) => LangMenu(), "ghost", true, "s9", 0, C_BG)
 
 ; ---- selo "nova versão" (fica escondido até achar atualização) ----
 updBadge := MakeBtn(g, W - 184 - 196, 6, 188, 24, "", (*) => ShowPage("Sobre"), "primary", false, "s8 w700", 24)
@@ -1923,7 +2150,7 @@ y := 92
 Card(CX, y, CW, 112)
 Lbl(CX + 20, y + 16, 300, "DISCORD", "s7 w700", C_DIM)
 edHook := Input(CX + 20, y + 38, CW - 40 - 132, savedHook)
-Btn(CX + CW - 140, y + 38, 120, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
+btnHookTest := Btn(CX + CW - 140, y + 38, 120, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
 Lbl(CX + 20, y + 80, CW - 40, TT("hint_hook"), "s8", C_MUTED)
 
 y := 216
@@ -1957,7 +2184,8 @@ BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
 y := 92
 Card(CX, y, CW, 104)
 Lbl(CX + 20, y + 16, 300, TT("sec_version"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 36, 200, "v" VERSION, "s20 w700")
+Lbl(CX + 20, y + 36, 140, "v" VERSION, "s20 w700")
+Btn(CX + CW - 340, y + 34, 150, 38, TT("btn_tour"), (*) => StartTour())
 updStatus := Lbl(CX + 20, y + 76, CW - 210, TT("upd_never"), "s9", C_MUTED)
 btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, TT("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
 
@@ -2058,6 +2286,7 @@ StartApp() {
         return
     }
     appStarted := true
+    firstRun := IniRead(iniFile, "cfg", "tourDone", "0") != "1" && IniRead(iniFile, "cfg", "resume", "0") != "1"
     if (savedCompact = "1")
         SetCompact(true)
     else
@@ -2074,6 +2303,8 @@ StartApp() {
         IniDelete(iniFile, "cfg", "resume")
         SetTimer(() => (running ? 0 : Toggle()), -1500)
     }
+    if firstRun
+        SetTimer(StartTour, -800)    ; primeira vez abrindo: mostra o passo a passo
 }
 
 ; ==========================================================
@@ -2211,18 +2442,180 @@ ShowPage(name) {
     pageSub.Value := pageInfo[name][2]
 }
 
+RoundCtrl(ctrl, radius) {
+    rc := Buffer(16, 0)
+    DllCall("GetClientRect", "Ptr", ctrl.Hwnd, "Ptr", rc)
+    r := Round(radius * A_ScreenDPI / 96)
+    rgn := DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", NumGet(rc, 8, "Int") + 1
+        , "Int", NumGet(rc, 12, "Int") + 1, "Int", r, "Int", r, "Ptr")
+    DllCall("SetWindowRgn", "Ptr", ctrl.Hwnd, "Ptr", rgn, "Int", 1)
+}
+
+; ==========================================================
+;  Tutorial passo a passo (escurece a tela, marca o item, seta + balão)
+; ==========================================================
+TourSteps() {
+    global edLink, edHook, btnHookTest, chkShrink, edCur, btnStart, hbCompact, hbLang, btnUpd
+    return [
+        {page: "Início",  t: "tour_welcome_t", d: "tour_welcome", targets: [],                          pad: 0},
+        {page: "Jogo",    t: "tour_link_t",    d: "tour_link",    targets: [edLink],                    pad: 10},
+        {page: "Webhook", t: "tour_hook_t",    d: "tour_hook",    targets: [edHook],                    pad: 10},
+        {page: "Webhook", t: "tour_test_t",    d: "tour_test",    targets: [btnHookTest],               pad: 4},
+        {page: "Janela",  t: "tour_win_t",     d: "tour_win",     targets: [chkShrink.lbl, chkShrink.pill], pad: 8},
+        {page: "Moedas",  t: "tour_coins_t",   d: "tour_coins",   targets: [edCur],                     pad: 10},
+        {page: "Início",  t: "tour_start_t",   d: "tour_start",   targets: [btnStart],                  pad: 4},
+        {page: "",        t: "tour_compact_t", d: "tour_compact", targets: [hbCompact],                 pad: 2},
+        {page: "",        t: "tour_lang_t",    d: "tour_lang",    targets: [hbLang],                    pad: 2},
+        {page: "Sobre",   t: "tour_upd_t",     d: "tour_upd",     targets: [btnUpd],                    pad: 4},
+        {page: "Início",  t: "tour_done_t",    d: "tour_done",    targets: [],                          pad: 0}
+    ]
+}
+
+StartTour(*) {
+    global tourOn, tourIdx, gm
+    if DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
+        SetCompact(false)
+    tourOn := true, tourIdx := 1
+    ShowTourStep()
+}
+
+EndTour(*) {
+    global tourOn, iniFile
+    TourClear()
+    tourOn := false
+    IniWrite(1, iniFile, "cfg", "tourDone")
+    ShowPage("Início")
+}
+
+TourGo(delta, *) {
+    global tourIdx
+    n := TourSteps().Length
+    if (tourIdx + delta > n)
+        return EndTour()
+    tourIdx := Max(1, tourIdx + delta)
+    ShowTourStep()
+}
+
+TourClear() {
+    global tourWins, hoverCur
+    hoverCur := 0
+    for w in tourWins
+        try w.Destroy()
+    tourWins := []
+}
+
+Clamp(v, lo, hi) {
+    return Max(lo, Min(v, hi))
+}
+
+ShowTourStep() {
+    global g, tourIdx, tourWins, USER_FIRST, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC
+    TourClear()
+    steps := TourSteps(), st := steps[tourIdx], last := (tourIdx = steps.Length)
+    if (st.page != "")
+        ShowPage(st.page)
+    Sleep(60)
+    k := A_ScreenDPI / 96
+    WinGetPos(&gx, &gy, &gw, &gh, g.Hwnd)
+
+    ; área do item marcado (coordenadas de tela)
+    has := st.targets.Length > 0
+    if has {
+        L := 99999, Tp := 99999, R := -99999, B := -99999
+        for c in st.targets {
+            WinGetPos(&cx, &cy, &cw, &ch, c.Hwnd)
+            L := Min(L, cx), Tp := Min(Tp, cy), R := Max(R, cx + cw), B := Max(B, cy + ch)
+        }
+        pad := Round(st.pad * k)
+        L -= pad, Tp -= pad, R += pad, B += pad
+    }
+    rr := Round(14 * k)
+
+    ; 1) fundo escuro com um "buraco" no item
+    ov := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+    ov.BackColor := "000000"
+    ov.Show(Format("NA x{} y{} w{} h{}", gx, gy, gw, gh))
+    WinSetTransparent(170, ov)
+    rgn := DllCall("CreateRectRgn", "Int", 0, "Int", 0, "Int", gw, "Int", gh, "Ptr")
+    if has {
+        hole := DllCall("CreateRoundRectRgn", "Int", L - gx, "Int", Tp - gy, "Int", R - gx + 1, "Int", B - gy + 1, "Int", rr, "Int", rr, "Ptr")
+        DllCall("CombineRgn", "Ptr", rgn, "Ptr", rgn, "Ptr", hole, "Int", 4)   ; RGN_DIFF
+        DllCall("DeleteObject", "Ptr", hole)
+    }
+    DllCall("SetWindowRgn", "Ptr", ov.Hwnd, "Ptr", rgn, "Int", 1)
+    tourWins.Push(ov)
+
+    ; 2) moldura branca em volta do item
+    if has {
+        bd := Max(2, Round(2 * k)), fw := R - L + 2 * bd, fh := B - Tp + 2 * bd
+        fr := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+        fr.BackColor := C_ACC
+        fr.Show(Format("NA x{} y{} w{} h{}", L - bd, Tp - bd, fw, fh))
+        outer := DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", fw + 1, "Int", fh + 1, "Int", rr + 2 * bd, "Int", rr + 2 * bd, "Ptr")
+        inner := DllCall("CreateRoundRectRgn", "Int", bd, "Int", bd, "Int", fw - bd + 1, "Int", fh - bd + 1, "Int", rr, "Int", rr, "Ptr")
+        DllCall("CombineRgn", "Ptr", outer, "Ptr", outer, "Ptr", inner, "Int", 4)
+        DllCall("DeleteObject", "Ptr", inner)
+        DllCall("SetWindowRgn", "Ptr", fr.Hwnd, "Ptr", outer, "Int", 1)
+        tourWins.Push(fr)
+    }
+
+    ; 3) balão com o texto e os botões
+    BW := 330
+    bu := Gui("-Caption +ToolWindow +Owner" g.Hwnd)
+    bu.BackColor := C_CARD
+    bu.MarginX := 0, bu.MarginY := 0
+    FontUI(bu, "s8 w700")
+    bu.Add("Text", Format("x20 y16 w290 c{} Background{}", C_DIM, C_CARD), TT("tour_step", tourIdx, steps.Length))
+    FontUI(bu, "s12 w700")
+    bu.Add("Text", Format("x20 y+6 w290 c{} Background{}", C_TEXT, C_CARD), TT(st.t, USER_FIRST))
+    FontUI(bu, "s9")
+    txt := bu.Add("Text", Format("x20 y+6 w290 c{} Background{}", C_MUTED, C_CARD), TT(st.d))
+    txt.GetPos(, &ty, , &th)
+    by0 := ty + th + 16
+    nb := MakeBtn(bu, BW - 20 - 104, by0, 104, 32, TT(last ? "btn_finish" : "btn_next"), TourGo.Bind(1), "primary", false, "s9 w700", 10)
+    RoundCtrl(nb, 10)
+    if (tourIdx > 1) {
+        bb := MakeBtn(bu, BW - 20 - 104 - 8 - 84, by0, 84, 32, TT("btn_back"), TourGo.Bind(-1), "sec", false, "s9 w600", 10)
+        RoundCtrl(bb, 10)
+    }
+    if !last
+        MakeBtn(bu, 12, by0, 84, 32, TT("btn_skip"), EndTour, "ghost", false, "s9 w600", 0, C_CARD)
+    bu.Show(Format("Hide w{} h{}", BW, by0 + 32 + 18))
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", bu.Hwnd, "UInt", 33, "Int*", 2, "UInt", 4)
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", bu.Hwnd, "UInt", 34, "UInt*", 0x00444040, "UInt", 4)
+    WinGetPos(, , &bwp, &bhp, bu.Hwnd)
+
+    gap := Round(14 * k)
+    if has {
+        ; embaixo do item se couber, senão em cima; seta apontando pro item
+        cxm := (L + R) // 2
+        bx := Clamp(cxm - bwp // 2, 8, A_ScreenWidth - bwp - 8)
+        down := (B + gap + bhp < A_ScreenHeight - 8)
+        by := down ? B + gap : Tp - gap - bhp
+        aw := Round(20 * k), ah := Round(10 * k)
+        ax := Clamp(cxm - aw // 2, bx + 14, bx + bwp - aw - 14)
+        ay := down ? by - ah + 1 : by + bhp - 1
+        ar := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+        ar.BackColor := C_CARD
+        ar.Show(Format("NA x{} y{} w{} h{}", ax, ay, aw, ah))
+        pts := Buffer(24, 0)
+        for i, xy in (down ? [[0, ah], [aw // 2, 0], [aw, ah]] : [[0, 0], [aw // 2, ah], [aw, 0]])
+            NumPut("Int", xy[1], "Int", xy[2], pts, (i - 1) * 8)
+        DllCall("SetWindowRgn", "Ptr", ar.Hwnd, "Ptr", DllCall("CreatePolygonRgn", "Ptr", pts, "Int", 3, "Int", 1, "Ptr"), "Int", 1)
+        tourWins.Push(ar)
+    } else {
+        bx := gx + (gw - bwp) // 2, by := gy + (gh - bhp) // 2
+    }
+    bu.Show(Format("x{} y{}", bx, by))
+    tourWins.Push(bu)
+}
+
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
     k := A_ScreenDPI / 96
-    for item in roundQ {
-        rc := Buffer(16, 0)
-        DllCall("GetClientRect", "Ptr", item[1].Hwnd, "Ptr", rc)
-        r := Round(item[2] * k)
-        rgn := DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", NumGet(rc, 8, "Int") + 1
-            , "Int", NumGet(rc, 12, "Int") + 1, "Int", r, "Int", r, "Ptr")
-        DllCall("SetWindowRgn", "Ptr", item[1].Hwnd, "Ptr", rgn, "Int", 1)
-    }
+    for item in roundQ
+        RoundCtrl(item[1], item[2])
     Loop bgCtrls.Length {
         c := bgCtrls[bgCtrls.Length - A_Index + 1]
         DllCall("SetWindowPos", "Ptr", c.Hwnd, "Ptr", 1, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)
@@ -2235,7 +2628,9 @@ FinishGui() {
 
 ; arrastar a janela clicando em qualquer área vazia
 OnLButtonDown(wParam, lParam, msg, hwnd) {
-    global g, gm, gk
+    global g, gm, gk, tourOn
+    if tourOn
+        return
     if (hwnd = g.Hwnd || hwnd = gm.Hwnd || hwnd = gk.Hwnd)
         PostMessage(0xA1, 2, 0, , "ahk_id " hwnd)
 }
@@ -2267,8 +2662,10 @@ HoverCheck() {
 
 PaintHover(o, on) {
     for c in o.ctrls {
-        c.Opt("Background" (on ? o.hov : o.bg))
-        c.Redraw()
+        try {
+            c.Opt("Background" (on ? o.hov : o.bg))
+            c.Redraw()
+        }
     }
 }
 

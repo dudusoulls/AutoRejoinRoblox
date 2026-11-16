@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.0
+- Tutorial passo a passo na primeira vez que abre (marca cada item com seta e explicação)
+- Botão "Ver tutorial" na aba Sobre pra rever quando quiser
+- Correção: erro ao detectar a janela do Roblox na v1.2.0
+
 ## v1.2.0
 - Novo nome: Auto Reconnect Roblox
 - 8 idiomas (Português, English, Español, Français, Deutsch, Русский, Türkçe, Bahasa Indonesia), seguindo o idioma do Windows
