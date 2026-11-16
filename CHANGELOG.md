@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.0
+- Logo nova na janela, na tela de key, no ícone da barra de tarefas e da bandeja
+- Avisos do Discord com a logo como foto do webhook
+
 ## v1.3.1
 - Tutorial não trava mais ao clicar fora: acompanha a janela, some se ela for minimizada e volta junto
 - Tecla Esc fecha o tutorial
