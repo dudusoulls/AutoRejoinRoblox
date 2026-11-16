@@ -1,5 +1,15 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.6.0
+- Várias contas ao mesmo tempo (aba Contas, experimental)
+- Marcar você no Discord quando cair ou der erro (só o seu ID, nunca @everyone)
+- Iniciar junto com o Windows e começar a monitorar sozinho
+- Resumo diário no Discord (tempo online, quedas, reaberturas e moedas ganhas)
+- Notificação do Windows quando cair, voltar ou der erro
+- Menu no ícone da bandeja e opção de minimizar pra bandeja
+- Correção: o X da tela de key fechava o programa
+- Correção: depois de atualizar sozinho o script não abria de novo
+
 ## v1.5.0
 - Animações suaves: janelas aparecem/somem com fade, botões mudam de cor devagar
 - Barrinha da barra lateral desliza até a aba escolhida

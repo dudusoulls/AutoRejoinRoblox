@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.0"
+VERSION     := "1.6.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,13 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+multiActive := false
+ACCS := []
+multiHandles := []
+pendingAcc := 0
+multiN := 0
+shareCache := Map()
+dayOnline := 0
 animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
@@ -133,6 +140,15 @@ savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
+savedStartWin := IniRead(iniFile, "cfg", "startWin", "0")
+savedAutoMon  := IniRead(iniFile, "cfg", "autoMon", "0")
+savedToast    := IniRead(iniFile, "cfg", "toast", "1")
+savedTray     := IniRead(iniFile, "cfg", "tray", "0")
+savedDaily    := IniRead(iniFile, "cfg", "daily", "1")
+savedDailyAt  := IniRead(iniFile, "cfg", "dailyAt", "23:55")
+savedMention  := IniRead(iniFile, "cfg", "mention", "0")
+savedDiscId   := IniRead(iniFile, "cfg", "discordId", "")
+savedMulti    := IniRead(iniFile, "cfg", "multi", "0")
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
 LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
@@ -369,7 +385,64 @@ I18N["pt"] := Map(
     "btn_skip", "Pular",
     "btn_finish", "Concluir",
     "btn_tour", "Ver tutorial",
-    "tour_step", "{1} de {2}"
+    "tour_step", "{1} de {2}",
+    "nav_opts", "Opções",
+    "nav_accounts", "Contas",
+    "pg_opts_sub", "Inicialização, notificações e resumo diário",
+    "pg_acc_sub", "Várias contas ao mesmo tempo (experimental)",
+    "sec_startup", "INICIALIZAÇÃO",
+    "sw_startwin", "Iniciar junto com o Windows",
+    "sw_startwin_sub", "Abre o script quando o PC liga",
+    "sw_automon", "Começar a monitorar sozinho ao abrir",
+    "sw_automon_sub", "Já clica em Iniciar quando o script abre",
+    "sec_notify", "NOTIFICAÇÕES",
+    "sw_toast", "Notificação do Windows",
+    "sw_toast_sub", "Aviso no canto da tela quando cair, voltar ou der erro",
+    "sw_tray", "Minimizar pra bandeja",
+    "sw_tray_sub", "Ao minimizar, fica só no ícone perto do relógio",
+    "sec_daily", "RESUMO DIÁRIO",
+    "sw_daily", "Mandar resumo do dia no Discord",
+    "lbl_daily_time", "Horário (HH:MM)",
+    "sec_mention", "MARCAR VOCÊ",
+    "sw_mention", "Me marcar quando cair ou der erro",
+    "sw_mention_sub", "Marca só você, nunca @everyone",
+    "lbl_discord_id", "Seu ID do Discord",
+    "btn_how", "Como achar?",
+    "hint_discord_id", "Discord > Configurações > Avançado > ative o Modo desenvolvedor. Depois clique com o botão direito no seu nome > Copiar ID do usuário.",
+    "sw_multi", "Usar várias contas",
+    "sw_multi_sub", "Feche o Roblox antes de iniciar. Todas usam o link da aba Jogo.",
+    "col_account", "Conta",
+    "col_status", "Status",
+    "btn_add_acc", "Adicionar conta",
+    "btn_rem_acc", "Remover",
+    "btn_tile", "Organizar janelas",
+    "acc_cookie", "Cookie .ROBLOSECURITY da conta",
+    "acc_cookie_hint", "No navegador logado na conta: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Fica salvo criptografado neste PC. Nunca mande pra ninguém.",
+    "btn_save", "Salvar",
+    "btn_cancel", "Cancelar",
+    "acc_checking", "Verificando a conta...",
+    "acc_invalid", "Cookie inválido ou expirado.",
+    "acc_added", "Conta {1} adicionada.",
+    "acc_st_off", "Fechada",
+    "acc_st_opening", "Abrindo...",
+    "acc_st_on", "No jogo",
+    "acc_st_down", "Caiu, reabrindo",
+    "acc_st_err", "Erro: {1}",
+    "multi_close", "Feche todos os Roblox antes de iniciar o modo de várias contas.",
+    "acc_need", "Adicione pelo menos uma conta na aba Contas.",
+    "log_acc_launch", "[{1}] abrindo...",
+    "log_acc_down", "[{1}] caiu.",
+    "log_acc_dlg", "[{1}] tela de Disconnected, reiniciando.",
+    "log_acc_fail", "[{1}] não consegui abrir: {2}",
+    "d_account", "Conta",
+    "tray_open", "Abrir",
+    "tray_toggle", "Iniciar / Parar",
+    "tray_exit", "Sair",
+    "ev_daily", "Resumo do dia",
+    "f_online_today", "Online hoje",
+    "f_drops_today", "Quedas hoje",
+    "f_reopens_today", "Reaberturas hoje",
+    "d_earned", "Ganhos de hoje"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -603,7 +676,64 @@ I18N["en"] := Map(
     "btn_skip", "Skip",
     "btn_finish", "Finish",
     "btn_tour", "Show tutorial",
-    "tour_step", "{1} of {2}"
+    "tour_step", "{1} of {2}",
+    "nav_opts", "Options",
+    "nav_accounts", "Accounts",
+    "pg_opts_sub", "Startup, notifications and daily summary",
+    "pg_acc_sub", "Several accounts at once (experimental)",
+    "sec_startup", "STARTUP",
+    "sw_startwin", "Start with Windows",
+    "sw_startwin_sub", "Opens the script when the PC turns on",
+    "sw_automon", "Start monitoring automatically on open",
+    "sw_automon_sub", "Clicks Start for you when the script opens",
+    "sec_notify", "NOTIFICATIONS",
+    "sw_toast", "Windows notification",
+    "sw_toast_sub", "Pop-up in the corner when you drop, come back or hit an error",
+    "sw_tray", "Minimize to tray",
+    "sw_tray_sub", "When minimized, it stays only as an icon near the clock",
+    "sec_daily", "DAILY SUMMARY",
+    "sw_daily", "Send a daily summary to Discord",
+    "lbl_daily_time", "Time (HH:MM)",
+    "sec_mention", "MENTION YOU",
+    "sw_mention", "Mention me when I drop or hit an error",
+    "sw_mention_sub", "Only mentions you, never @everyone",
+    "lbl_discord_id", "Your Discord ID",
+    "btn_how", "How to find?",
+    "hint_discord_id", "Discord > Settings > Advanced > turn on Developer Mode. Then right-click your name > Copy User ID.",
+    "sw_multi", "Use multiple accounts",
+    "sw_multi_sub", "Close Roblox before starting. All use the link from the Game tab.",
+    "col_account", "Account",
+    "col_status", "Status",
+    "btn_add_acc", "Add account",
+    "btn_rem_acc", "Remove",
+    "btn_tile", "Arrange windows",
+    "acc_cookie", "The account's .ROBLOSECURITY cookie",
+    "acc_cookie_hint", "In a browser logged into the account: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Saved encrypted on this PC. Never share it.",
+    "btn_save", "Save",
+    "btn_cancel", "Cancel",
+    "acc_checking", "Checking the account...",
+    "acc_invalid", "Invalid or expired cookie.",
+    "acc_added", "Account {1} added.",
+    "acc_st_off", "Closed",
+    "acc_st_opening", "Opening...",
+    "acc_st_on", "In game",
+    "acc_st_down", "Dropped, reopening",
+    "acc_st_err", "Error: {1}",
+    "multi_close", "Close every Roblox before starting multi-account mode.",
+    "acc_need", "Add at least one account in the Accounts tab.",
+    "log_acc_launch", "[{1}] opening...",
+    "log_acc_down", "[{1}] dropped.",
+    "log_acc_dlg", "[{1}] Disconnected screen, restarting.",
+    "log_acc_fail", "[{1}] couldn't open: {2}",
+    "d_account", "Account",
+    "tray_open", "Open",
+    "tray_toggle", "Start / Stop",
+    "tray_exit", "Exit",
+    "ev_daily", "Daily summary",
+    "f_online_today", "Online today",
+    "f_drops_today", "Drops today",
+    "f_reopens_today", "Reopens today",
+    "d_earned", "Earned today"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -837,7 +967,64 @@ I18N["es"] := Map(
     "btn_skip", "Saltar",
     "btn_finish", "Terminar",
     "btn_tour", "Ver tutorial",
-    "tour_step", "{1} de {2}"
+    "tour_step", "{1} de {2}",
+    "nav_opts", "Opciones",
+    "nav_accounts", "Cuentas",
+    "pg_opts_sub", "Inicio, notificaciones y resumen diario",
+    "pg_acc_sub", "Varias cuentas a la vez (experimental)",
+    "sec_startup", "INICIO",
+    "sw_startwin", "Iniciar con Windows",
+    "sw_startwin_sub", "Abre el script al encender la PC",
+    "sw_automon", "Empezar a monitorear al abrir",
+    "sw_automon_sub", "Pulsa Iniciar por ti al abrir el script",
+    "sec_notify", "NOTIFICACIONES",
+    "sw_toast", "Notificación de Windows",
+    "sw_toast_sub", "Aviso en la esquina al caer, volver o haber error",
+    "sw_tray", "Minimizar a la bandeja",
+    "sw_tray_sub", "Al minimizar, queda solo el icono junto al reloj",
+    "sec_daily", "RESUMEN DIARIO",
+    "sw_daily", "Enviar resumen del día a Discord",
+    "lbl_daily_time", "Hora (HH:MM)",
+    "sec_mention", "MENCIONARTE",
+    "sw_mention", "Mencionarme si caigo o hay error",
+    "sw_mention_sub", "Solo te menciona a ti, nunca @everyone",
+    "lbl_discord_id", "Tu ID de Discord",
+    "btn_how", "¿Cómo encontrarlo?",
+    "hint_discord_id", "Discord > Ajustes > Avanzado > activa el Modo desarrollador. Luego clic derecho en tu nombre > Copiar ID de usuario.",
+    "sw_multi", "Usar varias cuentas",
+    "sw_multi_sub", "Cierra Roblox antes de iniciar. Todas usan el enlace de la pestaña Juego.",
+    "col_account", "Cuenta",
+    "col_status", "Estado",
+    "btn_add_acc", "Añadir cuenta",
+    "btn_rem_acc", "Quitar",
+    "btn_tile", "Ordenar ventanas",
+    "acc_cookie", "Cookie .ROBLOSECURITY de la cuenta",
+    "acc_cookie_hint", "En el navegador con la cuenta: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Se guarda cifrado en este PC. Nunca lo compartas.",
+    "btn_save", "Guardar",
+    "btn_cancel", "Cancelar",
+    "acc_checking", "Verificando la cuenta...",
+    "acc_invalid", "Cookie inválido o vencido.",
+    "acc_added", "Cuenta {1} añadida.",
+    "acc_st_off", "Cerrada",
+    "acc_st_opening", "Abriendo...",
+    "acc_st_on", "En el juego",
+    "acc_st_down", "Cayó, reabriendo",
+    "acc_st_err", "Error: {1}",
+    "multi_close", "Cierra todos los Roblox antes de iniciar el modo de varias cuentas.",
+    "acc_need", "Añade al menos una cuenta en la pestaña Cuentas.",
+    "log_acc_launch", "[{1}] abriendo...",
+    "log_acc_down", "[{1}] se cayó.",
+    "log_acc_dlg", "[{1}] pantalla de Disconnected, reiniciando.",
+    "log_acc_fail", "[{1}] no se pudo abrir: {2}",
+    "d_account", "Cuenta",
+    "tray_open", "Abrir",
+    "tray_toggle", "Iniciar / Detener",
+    "tray_exit", "Salir",
+    "ev_daily", "Resumen del día",
+    "f_online_today", "En línea hoy",
+    "f_drops_today", "Caídas hoy",
+    "f_reopens_today", "Reaperturas hoy",
+    "d_earned", "Ganado hoy"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1071,7 +1258,64 @@ I18N["fr"] := Map(
     "btn_skip", "Passer",
     "btn_finish", "Terminer",
     "btn_tour", "Voir le tutoriel",
-    "tour_step", "{1} sur {2}"
+    "tour_step", "{1} sur {2}",
+    "nav_opts", "Options",
+    "nav_accounts", "Comptes",
+    "pg_opts_sub", "Démarrage, notifications et résumé quotidien",
+    "pg_acc_sub", "Plusieurs comptes en même temps (expérimental)",
+    "sec_startup", "DÉMARRAGE",
+    "sw_startwin", "Lancer avec Windows",
+    "sw_startwin_sub", "Ouvre le script au démarrage du PC",
+    "sw_automon", "Démarrer la surveillance à l'ouverture",
+    "sw_automon_sub", "Clique sur Démarrer pour vous à l'ouverture",
+    "sec_notify", "NOTIFICATIONS",
+    "sw_toast", "Notification Windows",
+    "sw_toast_sub", "Alerte dans le coin en cas de coupure, retour ou erreur",
+    "sw_tray", "Réduire dans la barre d'état",
+    "sw_tray_sub", "Une fois réduit, seule l'icône près de l'horloge reste",
+    "sec_daily", "RÉSUMÉ QUOTIDIEN",
+    "sw_daily", "Envoyer un résumé quotidien sur Discord",
+    "lbl_daily_time", "Heure (HH:MM)",
+    "sec_mention", "VOUS MENTIONNER",
+    "sw_mention", "Me mentionner en cas de coupure ou d'erreur",
+    "sw_mention_sub", "Ne mentionne que vous, jamais @everyone",
+    "lbl_discord_id", "Votre ID Discord",
+    "btn_how", "Comment le trouver ?",
+    "hint_discord_id", "Discord > Paramètres > Avancés > activez le Mode développeur. Puis clic droit sur votre nom > Copier l'identifiant.",
+    "sw_multi", "Utiliser plusieurs comptes",
+    "sw_multi_sub", "Fermez Roblox avant de démarrer. Tous utilisent le lien de l'onglet Jeu.",
+    "col_account", "Compte",
+    "col_status", "Statut",
+    "btn_add_acc", "Ajouter un compte",
+    "btn_rem_acc", "Supprimer",
+    "btn_tile", "Organiser les fenêtres",
+    "acc_cookie", "Cookie .ROBLOSECURITY du compte",
+    "acc_cookie_hint", "Dans un navigateur connecté au compte : F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Enregistré chiffré sur ce PC. Ne le partagez jamais.",
+    "btn_save", "Enregistrer",
+    "btn_cancel", "Annuler",
+    "acc_checking", "Vérification du compte...",
+    "acc_invalid", "Cookie invalide ou expiré.",
+    "acc_added", "Compte {1} ajouté.",
+    "acc_st_off", "Fermé",
+    "acc_st_opening", "Ouverture...",
+    "acc_st_on", "En jeu",
+    "acc_st_down", "Coupé, réouverture",
+    "acc_st_err", "Erreur : {1}",
+    "multi_close", "Fermez tous les Roblox avant de lancer le mode multi-comptes.",
+    "acc_need", "Ajoutez au moins un compte dans l'onglet Comptes.",
+    "log_acc_launch", "[{1}] ouverture...",
+    "log_acc_down", "[{1}] coupé.",
+    "log_acc_dlg", "[{1}] écran Disconnected, redémarrage.",
+    "log_acc_fail", "[{1}] ouverture impossible : {2}",
+    "d_account", "Compte",
+    "tray_open", "Ouvrir",
+    "tray_toggle", "Démarrer / Arrêter",
+    "tray_exit", "Quitter",
+    "ev_daily", "Résumé du jour",
+    "f_online_today", "En ligne aujourd'hui",
+    "f_drops_today", "Coupures aujourd'hui",
+    "f_reopens_today", "Réouvertures aujourd'hui",
+    "d_earned", "Gagné aujourd'hui"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -1305,7 +1549,64 @@ I18N["de"] := Map(
     "btn_skip", "Überspringen",
     "btn_finish", "Fertig",
     "btn_tour", "Tutorial ansehen",
-    "tour_step", "{1} von {2}"
+    "tour_step", "{1} von {2}",
+    "nav_opts", "Optionen",
+    "nav_accounts", "Konten",
+    "pg_opts_sub", "Autostart, Benachrichtigungen und Tageszusammenfassung",
+    "pg_acc_sub", "Mehrere Konten gleichzeitig (experimentell)",
+    "sec_startup", "AUTOSTART",
+    "sw_startwin", "Mit Windows starten",
+    "sw_startwin_sub", "Öffnet das Skript beim Hochfahren",
+    "sw_automon", "Überwachung beim Öffnen automatisch starten",
+    "sw_automon_sub", "Klickt beim Öffnen für dich auf Starten",
+    "sec_notify", "BENACHRICHTIGUNGEN",
+    "sw_toast", "Windows-Benachrichtigung",
+    "sw_toast_sub", "Hinweis in der Ecke bei Abbruch, Rückkehr oder Fehler",
+    "sw_tray", "In den Infobereich minimieren",
+    "sw_tray_sub", "Beim Minimieren bleibt nur das Symbol neben der Uhr",
+    "sec_daily", "TAGESZUSAMMENFASSUNG",
+    "sw_daily", "Tageszusammenfassung an Discord senden",
+    "lbl_daily_time", "Uhrzeit (HH:MM)",
+    "sec_mention", "DICH ERWÄHNEN",
+    "sw_mention", "Mich bei Abbruch oder Fehler erwähnen",
+    "sw_mention_sub", "Erwähnt nur dich, nie @everyone",
+    "lbl_discord_id", "Deine Discord-ID",
+    "btn_how", "Wo finde ich sie?",
+    "hint_discord_id", "Discord > Einstellungen > Erweitert > Entwicklermodus aktivieren. Dann Rechtsklick auf deinen Namen > Benutzer-ID kopieren.",
+    "sw_multi", "Mehrere Konten verwenden",
+    "sw_multi_sub", "Schließe Roblox vor dem Start. Alle nutzen den Link aus dem Tab Spiel.",
+    "col_account", "Konto",
+    "col_status", "Status",
+    "btn_add_acc", "Konto hinzufügen",
+    "btn_rem_acc", "Entfernen",
+    "btn_tile", "Fenster anordnen",
+    "acc_cookie", ".ROBLOSECURITY-Cookie des Kontos",
+    "acc_cookie_hint", "Im eingeloggten Browser: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Wird verschlüsselt auf diesem PC gespeichert. Niemals teilen.",
+    "btn_save", "Speichern",
+    "btn_cancel", "Abbrechen",
+    "acc_checking", "Konto wird geprüft...",
+    "acc_invalid", "Ungültiges oder abgelaufenes Cookie.",
+    "acc_added", "Konto {1} hinzugefügt.",
+    "acc_st_off", "Geschlossen",
+    "acc_st_opening", "Öffnet...",
+    "acc_st_on", "Im Spiel",
+    "acc_st_down", "Abgebrochen, starte neu",
+    "acc_st_err", "Fehler: {1}",
+    "multi_close", "Schließe alle Roblox-Fenster, bevor du den Mehrkontenmodus startest.",
+    "acc_need", "Füge im Tab Konten mindestens ein Konto hinzu.",
+    "log_acc_launch", "[{1}] öffnet...",
+    "log_acc_down", "[{1}] abgebrochen.",
+    "log_acc_dlg", "[{1}] Disconnected-Bildschirm, Neustart.",
+    "log_acc_fail", "[{1}] konnte nicht öffnen: {2}",
+    "d_account", "Konto",
+    "tray_open", "Öffnen",
+    "tray_toggle", "Starten / Stoppen",
+    "tray_exit", "Beenden",
+    "ev_daily", "Tageszusammenfassung",
+    "f_online_today", "Heute online",
+    "f_drops_today", "Abbrüche heute",
+    "f_reopens_today", "Neustarts heute",
+    "d_earned", "Heute verdient"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -1539,7 +1840,64 @@ I18N["ru"] := Map(
     "btn_skip", "Пропустить",
     "btn_finish", "Готово",
     "btn_tour", "Обучение",
-    "tour_step", "{1} из {2}"
+    "tour_step", "{1} из {2}",
+    "nav_opts", "Настройки",
+    "nav_accounts", "Аккаунты",
+    "pg_opts_sub", "Автозапуск, уведомления и сводка за день",
+    "pg_acc_sub", "Несколько аккаунтов одновременно (экспериментально)",
+    "sec_startup", "АВТОЗАПУСК",
+    "sw_startwin", "Запускать вместе с Windows",
+    "sw_startwin_sub", "Открывает скрипт при включении ПК",
+    "sw_automon", "Сразу начинать мониторинг при запуске",
+    "sw_automon_sub", "Нажимает «Старт» за вас при запуске",
+    "sec_notify", "УВЕДОМЛЕНИЯ",
+    "sw_toast", "Уведомление Windows",
+    "sw_toast_sub", "Всплывающее окно при вылете, возвращении или ошибке",
+    "sw_tray", "Сворачивать в трей",
+    "sw_tray_sub", "При сворачивании остаётся только значок у часов",
+    "sec_daily", "СВОДКА ЗА ДЕНЬ",
+    "sw_daily", "Отправлять сводку за день в Discord",
+    "lbl_daily_time", "Время (ЧЧ:ММ)",
+    "sec_mention", "УПОМИНАНИЕ",
+    "sw_mention", "Упоминать меня при вылете или ошибке",
+    "sw_mention_sub", "Упоминает только вас, никогда @everyone",
+    "lbl_discord_id", "Ваш ID в Discord",
+    "btn_how", "Где найти?",
+    "hint_discord_id", "Discord > Настройки > Расширенные > включите Режим разработчика. Затем ПКМ по своему имени > Копировать ID.",
+    "sw_multi", "Использовать несколько аккаунтов",
+    "sw_multi_sub", "Закройте Roblox перед стартом. Все используют ссылку из вкладки «Игра».",
+    "col_account", "Аккаунт",
+    "col_status", "Статус",
+    "btn_add_acc", "Добавить аккаунт",
+    "btn_rem_acc", "Удалить",
+    "btn_tile", "Упорядочить окна",
+    "acc_cookie", "Cookie .ROBLOSECURITY аккаунта",
+    "acc_cookie_hint", "В браузере с входом в аккаунт: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Хранится зашифрованным на этом ПК. Никому не передавайте.",
+    "btn_save", "Сохранить",
+    "btn_cancel", "Отмена",
+    "acc_checking", "Проверка аккаунта...",
+    "acc_invalid", "Неверный или устаревший cookie.",
+    "acc_added", "Аккаунт {1} добавлен.",
+    "acc_st_off", "Закрыт",
+    "acc_st_opening", "Запуск...",
+    "acc_st_on", "В игре",
+    "acc_st_down", "Вылетел, перезапуск",
+    "acc_st_err", "Ошибка: {1}",
+    "multi_close", "Закройте все Roblox перед запуском режима нескольких аккаунтов.",
+    "acc_need", "Добавьте хотя бы один аккаунт во вкладке «Аккаунты».",
+    "log_acc_launch", "[{1}] запуск...",
+    "log_acc_down", "[{1}] вылетел.",
+    "log_acc_dlg", "[{1}] экран Disconnected, перезапуск.",
+    "log_acc_fail", "[{1}] не удалось открыть: {2}",
+    "d_account", "Аккаунт",
+    "tray_open", "Открыть",
+    "tray_toggle", "Старт / Стоп",
+    "tray_exit", "Выход",
+    "ev_daily", "Сводка за день",
+    "f_online_today", "В сети сегодня",
+    "f_drops_today", "Вылетов сегодня",
+    "f_reopens_today", "Перезапусков сегодня",
+    "d_earned", "Заработано сегодня"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -1773,7 +2131,64 @@ I18N["tr"] := Map(
     "btn_skip", "Geç",
     "btn_finish", "Bitir",
     "btn_tour", "Öğreticiyi göster",
-    "tour_step", "{1} / {2}"
+    "tour_step", "{1} / {2}",
+    "nav_opts", "Seçenekler",
+    "nav_accounts", "Hesaplar",
+    "pg_opts_sub", "Başlangıç, bildirimler ve günlük özet",
+    "pg_acc_sub", "Aynı anda birden fazla hesap (deneysel)",
+    "sec_startup", "BAŞLANGIÇ",
+    "sw_startwin", "Windows ile başlat",
+    "sw_startwin_sub", "PC açılınca betiği açar",
+    "sw_automon", "Açılınca izlemeye otomatik başla",
+    "sw_automon_sub", "Betik açılınca senin yerine Başlat'a basar",
+    "sec_notify", "BİLDİRİMLER",
+    "sw_toast", "Windows bildirimi",
+    "sw_toast_sub", "Düşünce, geri dönünce veya hata olunca köşede uyarı",
+    "sw_tray", "Tepsiye küçült",
+    "sw_tray_sub", "Küçültünce saatin yanında sadece simge kalır",
+    "sec_daily", "GÜNLÜK ÖZET",
+    "sw_daily", "Discord'a günlük özet gönder",
+    "lbl_daily_time", "Saat (SS:DD)",
+    "sec_mention", "SENİ ETİKETLE",
+    "sw_mention", "Düşünce veya hata olunca beni etiketle",
+    "sw_mention_sub", "Sadece seni etiketler, asla @everyone",
+    "lbl_discord_id", "Discord ID'n",
+    "btn_how", "Nasıl bulunur?",
+    "hint_discord_id", "Discord > Ayarlar > Gelişmiş > Geliştirici Modu'nu aç. Sonra adına sağ tıkla > Kullanıcı ID'sini kopyala.",
+    "sw_multi", "Birden fazla hesap kullan",
+    "sw_multi_sub", "Başlamadan önce Roblox'u kapat. Hepsi Oyun sekmesindeki linki kullanır.",
+    "col_account", "Hesap",
+    "col_status", "Durum",
+    "btn_add_acc", "Hesap ekle",
+    "btn_rem_acc", "Kaldır",
+    "btn_tile", "Pencereleri düzenle",
+    "acc_cookie", "Hesabın .ROBLOSECURITY çerezi",
+    "acc_cookie_hint", "Hesaba girili tarayıcıda: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Bu PC'de şifreli saklanır. Asla kimseyle paylaşma.",
+    "btn_save", "Kaydet",
+    "btn_cancel", "İptal",
+    "acc_checking", "Hesap kontrol ediliyor...",
+    "acc_invalid", "Geçersiz veya süresi dolmuş çerez.",
+    "acc_added", "{1} hesabı eklendi.",
+    "acc_st_off", "Kapalı",
+    "acc_st_opening", "Açılıyor...",
+    "acc_st_on", "Oyunda",
+    "acc_st_down", "Düştü, yeniden açılıyor",
+    "acc_st_err", "Hata: {1}",
+    "multi_close", "Çoklu hesap modunu başlatmadan önce tüm Roblox'ları kapat.",
+    "acc_need", "Hesaplar sekmesinde en az bir hesap ekle.",
+    "log_acc_launch", "[{1}] açılıyor...",
+    "log_acc_down", "[{1}] düştü.",
+    "log_acc_dlg", "[{1}] Disconnected ekranı, yeniden başlatılıyor.",
+    "log_acc_fail", "[{1}] açılamadı: {2}",
+    "d_account", "Hesap",
+    "tray_open", "Aç",
+    "tray_toggle", "Başlat / Durdur",
+    "tray_exit", "Çıkış",
+    "ev_daily", "Günün özeti",
+    "f_online_today", "Bugün çevrimiçi",
+    "f_drops_today", "Bugünkü düşmeler",
+    "f_reopens_today", "Bugünkü yeniden açmalar",
+    "d_earned", "Bugün kazanılan"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -2007,7 +2422,64 @@ I18N["id"] := Map(
     "btn_skip", "Lewati",
     "btn_finish", "Selesai",
     "btn_tour", "Lihat tutorial",
-    "tour_step", "{1} dari {2}"
+    "tour_step", "{1} dari {2}",
+    "nav_opts", "Opsi",
+    "nav_accounts", "Akun",
+    "pg_opts_sub", "Startup, notifikasi dan ringkasan harian",
+    "pg_acc_sub", "Beberapa akun sekaligus (eksperimental)",
+    "sec_startup", "STARTUP",
+    "sw_startwin", "Mulai bersama Windows",
+    "sw_startwin_sub", "Membuka skrip saat PC menyala",
+    "sw_automon", "Mulai memantau otomatis saat dibuka",
+    "sw_automon_sub", "Menekan Mulai untukmu saat skrip dibuka",
+    "sec_notify", "NOTIFIKASI",
+    "sw_toast", "Notifikasi Windows",
+    "sw_toast_sub", "Pemberitahuan di pojok saat putus, kembali, atau error",
+    "sw_tray", "Minimalkan ke tray",
+    "sw_tray_sub", "Saat diminimalkan, hanya ikon di dekat jam",
+    "sec_daily", "RINGKASAN HARIAN",
+    "sw_daily", "Kirim ringkasan harian ke Discord",
+    "lbl_daily_time", "Jam (HH:MM)",
+    "sec_mention", "TANDAI KAMU",
+    "sw_mention", "Tandai aku saat putus atau error",
+    "sw_mention_sub", "Hanya menandai kamu, tidak pernah @everyone",
+    "lbl_discord_id", "ID Discord kamu",
+    "btn_how", "Cara mencari?",
+    "hint_discord_id", "Discord > Pengaturan > Lanjutan > aktifkan Mode Pengembang. Lalu klik kanan namamu > Salin ID Pengguna.",
+    "sw_multi", "Pakai beberapa akun",
+    "sw_multi_sub", "Tutup Roblox sebelum mulai. Semua memakai link dari tab Game.",
+    "col_account", "Akun",
+    "col_status", "Status",
+    "btn_add_acc", "Tambah akun",
+    "btn_rem_acc", "Hapus",
+    "btn_tile", "Atur jendela",
+    "acc_cookie", "Cookie .ROBLOSECURITY akun",
+    "acc_cookie_hint", "Di browser yang login ke akun: F12 > Application > Cookies > roblox.com > .ROBLOSECURITY. Disimpan terenkripsi di PC ini. Jangan pernah dibagikan.",
+    "btn_save", "Simpan",
+    "btn_cancel", "Batal",
+    "acc_checking", "Memeriksa akun...",
+    "acc_invalid", "Cookie tidak valid atau kedaluwarsa.",
+    "acc_added", "Akun {1} ditambahkan.",
+    "acc_st_off", "Tertutup",
+    "acc_st_opening", "Membuka...",
+    "acc_st_on", "Di game",
+    "acc_st_down", "Putus, membuka ulang",
+    "acc_st_err", "Error: {1}",
+    "multi_close", "Tutup semua Roblox sebelum memulai mode multi-akun.",
+    "acc_need", "Tambahkan minimal satu akun di tab Akun.",
+    "log_acc_launch", "[{1}] membuka...",
+    "log_acc_down", "[{1}] putus.",
+    "log_acc_dlg", "[{1}] layar Disconnected, memulai ulang.",
+    "log_acc_fail", "[{1}] gagal dibuka: {2}",
+    "d_account", "Akun",
+    "tray_open", "Buka",
+    "tray_toggle", "Mulai / Berhenti",
+    "tray_exit", "Keluar",
+    "ev_daily", "Ringkasan hari ini",
+    "f_online_today", "Online hari ini",
+    "f_drops_today", "Putus hari ini",
+    "f_reopens_today", "Buka ulang hari ini",
+    "d_earned", "Didapat hari ini"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -2016,7 +2488,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -2032,7 +2504,7 @@ winH := Integer(IniRead(iniFile, "cfg", "winH", "630"))
 ; ==========================================================
 ;  GUI principal
 ; ==========================================================
-W := 760, H := 490, SIDE := 184
+W := 760, H := 540, SIDE := 184
 CX := SIDE + 28          ; x do conteúdo
 CW := W - CX - 28        ; largura do conteúdo
 
@@ -2102,14 +2574,16 @@ g.Add("Text", Format("x68 y24 w116 c{} Background{}", C_TEXT, C_SIDE), "Auto Rec
 FontUI(g, "s7 w700")
 g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
-AddNav("Início",  Chr(0xE80F), 96)
-AddNav("Jogo",    Chr(0xE7FC), 138)
-AddNav("Janela",  Chr(0xE7F4), 180)
-AddNav("Webhook", Chr(0xE71B), 222)
-AddNav("Moedas",  Chr(0xE8C7), 264)
-AddNav("Logs",    Chr(0xE81C), 306)
-AddNav("Sobre",   Chr(0xE946), 348)
-navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 106, C_ACC))
+AddNav("Início",  Chr(0xE80F), 92)
+AddNav("Jogo",    Chr(0xE7FC), 132)
+AddNav("Janela",  Chr(0xE7F4), 172)
+AddNav("Webhook", Chr(0xE71B), 212)
+AddNav("Moedas",  Chr(0xE8C7), 252)
+AddNav("Contas",  Chr(0xE716), 292)
+AddNav("Opções",  Chr(0xE713), 332)
+AddNav("Logs",    Chr(0xE81C), 372)
+AddNav("Sobre",   Chr(0xE946), 412)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
@@ -2122,7 +2596,7 @@ sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE),
 
 ; ---- botões da janela (topo direito) ----
 MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => (FadeHide(g), ExitApp()), "close", true, "s9", 0, C_BG)
-MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => FadeMin(g), "ghost", true, "s9", 0, C_BG)
+MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => (chkTray.Value ? FadeHide(g) : FadeMin(g)), "ghost", true, "s9", 0, C_BG)
 hbCompact := MakeBtn(g, W - 138, 0, 46, 34, Chr(0xE73F), (*) => SetCompact(true), "ghost", true, "s9", 0, C_BG)
 hbLang := MakeBtn(g, W - 184, 0, 46, 34, Chr(0xE774), (*) => LangMenu(), "ghost", true, "s9", 0, C_BG)
 
@@ -2206,13 +2680,21 @@ chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_
 ; ---------------- Página: Webhook ----------------
 BeginPage("Webhook", TT("nav_hook"), TT("pg_hook_sub"))
 y := 92
-Card(CX, y, CW, 112)
+Card(CX, y, CW, 100)
 Lbl(CX + 20, y + 16, 300, "DISCORD", "s7 w700", C_DIM)
 edHook := Input(CX + 20, y + 38, CW - 40 - 132, savedHook)
 btnHookTest := Btn(CX + CW - 140, y + 38, 120, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
-Lbl(CX + 20, y + 80, CW - 40, TT("hint_hook"), "s8", C_MUTED)
+Lbl(CX + 20, y + 76, CW - 40, TT("hint_hook"), "s8", C_MUTED)
 
-y := 216
+y := 204
+Card(CX, y, CW, 126)
+Lbl(CX + 20, y + 16, 300, TT("sec_mention"), "s7 w700", C_DIM)
+chkMention := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_mention"), savedMention, TT("sw_mention_sub"))
+Lbl(CX + 20, y + 94, 150, TT("lbl_discord_id"), "s9", C_MUTED)
+edDiscId := Input(CX + 170, y + 87, 210, savedDiscId, "Number")
+Btn(CX + CW - 130, y + 87, 110, 32, TT("btn_how"), (*) => (ToolTip(TT("hint_discord_id")), SetTimer(() => ToolTip(), -9000)))
+
+y := 342
 Card(CX, y, CW, 140)
 Lbl(CX + 20, y + 16, 300, TT("sec_status"), "s7 w700", C_DIM)
 chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_rep"), savedRep, TT("sw_rep_sub"))
@@ -2238,6 +2720,47 @@ FontMono(g, "s9")
 curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 52, CW - 40, 84, C_TEXT, C_CARD)
     , TT("no_read")))
 
+; ---------------- Página: Contas (várias contas) ----------------
+BeginPage("Contas", TT("nav_accounts"), TT("pg_acc_sub"))
+y := 92
+Card(CX, y, CW, 86)
+chkMulti := ToggleSwitch(CX + 20, y + 22, CW - 40, TT("sw_multi"), savedMulti, TT("sw_multi_sub"))
+
+y := 190
+Card(CX, y, CW, 290)
+FontUI(g, "s9")
+lvAcc := P(g.Add("ListView", Format("x{} y{} w{} h{} -E0x200 -Multi +LV0x10000 Background{} c{}"
+    , CX + 16, y + 14, CW - 32, 210, C_CARD, C_TEXT), [TT("col_account"), TT("col_status"), TT("f_reopens")]))
+lvAcc.ModifyCol(1, 190), lvAcc.ModifyCol(2, 170), lvAcc.ModifyCol(3, 100)
+DllCall("uxtheme\SetWindowTheme", "Ptr", lvAcc.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
+try DllCall("uxtheme\SetWindowTheme", "Ptr", SendMessage(0x101F, 0, 0, lvAcc), "Str", "DarkMode_ItemsView", "Ptr", 0)
+Btn(CX + 16, y + 240, 160, 36, TT("btn_add_acc"), (*) => ShowAddAccount(), "primary")
+Btn(CX + 186, y + 240, 110, 36, TT("btn_rem_acc"), (*) => RemoveAccount())
+Btn(CX + CW - 186, y + 240, 170, 36, TT("btn_tile"), (*) => TileWindows())
+
+; ---------------- Página: Opções ----------------
+BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
+y := 92
+Card(CX, y, CW, 132)
+Lbl(CX + 20, y + 16, 300, TT("sec_startup"), "s7 w700", C_DIM)
+chkStartWin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_startwin"), savedStartWin, TT("sw_startwin_sub"))
+chkStartWin.onChange := (*) => SetStartup(chkStartWin.Value)
+chkAutoMon := ToggleSwitch(CX + 20, y + 86, CW - 40, TT("sw_automon"), savedAutoMon, TT("sw_automon_sub"))
+
+y := 236
+Card(CX, y, CW, 132)
+Lbl(CX + 20, y + 16, 300, TT("sec_notify"), "s7 w700", C_DIM)
+chkToast := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_toast"), savedToast, TT("sw_toast_sub"))
+chkTray := ToggleSwitch(CX + 20, y + 86, CW - 40, TT("sw_tray"), savedTray, TT("sw_tray_sub"))
+
+y := 380
+Card(CX, y, CW, 120)
+Lbl(CX + 20, y + 16, 300, TT("sec_daily"), "s7 w700", C_DIM)
+chkDaily := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_daily"), savedDaily)
+Lbl(CX + 20, y + 84, 140, TT("lbl_daily_time"), "s9", C_MUTED)
+edDailyAt := Input(CX + 170, y + 77, 90, savedDailyAt)
+Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(true))
+
 ; ---------------- Página: Sobre ----------------
 BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
 y := 92
@@ -2253,7 +2776,8 @@ Card(CX, y, CW, 80)
 Lbl(CX + 20, y + 16, 300, TT("sec_license"), "s7 w700", C_DIM)
 licInfo := Lbl(CX + 20, y + 38, CW - 200, "—", "s10 w600")
 licSub  := Lbl(CX + 20, y + 58, CW - 200, "", "s8", C_MUTED)
-Btn(CX + CW - 150, y + 24, 130, 32, TT("btn_changekey"), (*) => ShowKeyScreen(TT("paste_new_key")))
+if KaEnabled()
+    Btn(CX + CW - 150, y + 24, 130, 32, TT("btn_changekey"), (*) => ShowKeyScreen(TT("paste_new_key")))
 
 y := 300
 Card(CX, y, CW, 172)
@@ -2298,7 +2822,7 @@ gk := Gui("-Caption +MinimizeBox", APP_NAME)
 gk.BackColor := C_CARD
 gk.MarginX := 0, gk.MarginY := 0
 KW := 420, KH := 330
-MakeBtn(gk, KW - 46, 0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_CARD)
+MakeBtn(gk, KW - 46, 0, 46, 34, Chr(0xE8BB), (*) => KeyClose(), "close", true, "s9", 0, C_CARD)
 try gk.Add("Picture", "x32 y30 w48 h48", ASSET_DIR "\card.png")
 FontUI(gk, "s16 w700")
 gk.Add("Text", Format("x92 y30 w290 c{} Background{}", C_TEXT, C_CARD), TT("key_title"))
@@ -2318,12 +2842,15 @@ kHwid := gk.Add("Text", Format("x32 y+3 w250 c{} Background{}", C_MUTED, C_CARD)
 MakeBtn(gk, 296, 258, 92, 28, TT("btn_copy"), (*) => (A_Clipboard := GetHWID(), kStatus.Value := TT("hwid_copied")), "sec", false, "s9 w600", 8)
 if (BUY_URL != "")
     MakeBtn(gk, 32, 296, 120, 22, TT("btn_buy"), (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
-gk.OnEvent("Close", (*) => ExitApp())
+gk.OnEvent("Close", (*) => KeyClose())
 
 ; ---- acabamento ----
 FinishGui()
 for gg in [g, gm, gk]
     SetWinIcon(gg)
+SetupTray()
+LoadAccounts()
+DayRoll()
 HotIf((*) => tourOn)
 Hotkey("Esc", (*) => EndTour())
 HotIf()
@@ -2344,7 +2871,7 @@ else if (Trim(edKey.Value) != "") {
 
 ; abre o programa de verdade (depois da licença ok)
 StartApp() {
-    global g, gk, W, H, savedCompact, iniFile, running, appStarted
+    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME
     FadeHide(gk)
     if appStarted {
         FadeShow(g)
@@ -2371,6 +2898,14 @@ StartApp() {
     }
     if firstRun
         SetTimer(StartTour, -800)    ; primeira vez abrindo: mostra o passo a passo
+    else if (chkAutoMon.Value && !running)
+        SetTimer(() => (running ? 0 : Toggle()), -2500)
+    SetTimer(DailyTick, 30000)
+    upd := IniRead(iniFile, "cfg", "justUpdated", "")
+    if (upd != "") {
+        IniDelete(iniFile, "cfg", "justUpdated")
+        Notify(TT("ev_updated", upd), APP_NAME)
+    }
 }
 
 ; ==========================================================
@@ -2702,6 +3237,467 @@ ShowTourStep() {
     FadeShow(bu, Format("x{} y{}", bx, by))
 }
 
+; ==========================================================
+;  Bandeja, inicialização, notificações e resumo diário
+; ==========================================================
+SetupTray() {
+    global APP_NAME
+    tm := A_TrayMenu
+    tm.Delete()
+    tm.Add(TT("tray_open"), (*) => ShowMain())
+    tm.Add(TT("tray_toggle"), (*) => Toggle())
+    tm.Add(TT("btn_compact"), (*) => SetCompact(true))
+    tm.Add()
+    tm.Add(TT("tray_exit"), (*) => ExitApp())
+    tm.Default := TT("tray_open")
+    tm.ClickCount := 1
+    A_IconTip := APP_NAME
+}
+
+ShowMain() {
+    global g, gm, gk
+    if DllCall("IsWindowVisible", "Ptr", gk.Hwnd)
+        return WinActivate(gk.Hwnd)
+    if DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
+        return SetCompact(false)
+    if DllCall("IsIconic", "Ptr", g.Hwnd)
+        WinRestore(g.Hwnd)
+    if !DllCall("IsWindowVisible", "Ptr", g.Hwnd)
+        FadeShow(g)
+    WinActivate(g.Hwnd)
+}
+
+; atalho na pasta Inicializar do Windows
+SetStartup(on) {
+    global APP_NAME, ASSET_DIR
+    lnk := A_Startup "\" APP_NAME ".lnk"
+    if on {
+        try FileCreateShortcut(A_AhkPath, lnk, A_ScriptDir, '"' A_ScriptFullPath '"', APP_NAME, ASSET_DIR "\app.ico")
+    } else
+        try FileDelete(lnk)
+}
+
+; balão de notificação do Windows
+Notify(title, text, icon := "Iconi") {
+    global chkToast
+    if !chkToast.Value
+        return
+    try TrayTip(text, title, icon)
+}
+
+; fecha o processo atual e abre o script de novo (usado depois de atualizar)
+Relaunch() {
+    Run(A_ComSpec ' /c ping 127.0.0.1 -n 3 >nul & start "" "' A_AhkPath '" "' A_ScriptFullPath '"', , "Hide")
+    ExitApp()
+}
+
+; tela de key: o X volta pro programa se ele já estiver liberado; senão fecha
+KeyClose() {
+    global appStarted, licensed, gk, g
+    if (appStarted && (!KaEnabled() || licensed)) {
+        FadeHide(gk)
+        FadeShow(g)
+    } else
+        ExitApp()
+}
+
+; ---- contadores do dia (ficam no config.ini, seção [day]) ----
+DayRoll() {
+    global iniFile, dayOnline
+    today := FormatTime(, "yyyyMMdd")
+    if (IniRead(iniFile, "day", "date", "") != today) {
+        IniDelete(iniFile, "day")
+        IniWrite(today, iniFile, "day", "date")
+        dayOnline := 0
+    } else if !dayOnline
+        dayOnline := Integer(IniRead(iniFile, "day", "online", "0"))
+}
+
+DayAdd(key) {
+    global iniFile
+    DayRoll()
+    IniWrite(Integer(IniRead(iniFile, "day", key, "0")) + 1, iniFile, "day", key)
+}
+
+; guarda o valor da primeira leitura do dia de cada moeda
+DayCoin(name, n) {
+    global iniFile
+    DayRoll()
+    k := "start_" RegExReplace(name, "\W", "_")
+    if (IniRead(iniFile, "day", k, "") = "")
+        IniWrite(n, iniFile, "day", k)
+}
+
+DailyTick() {
+    global chkDaily, edDailyAt, iniFile
+    if !chkDaily.Value
+        return
+    if !RegExMatch(Trim(edDailyAt.Value), "^(\d{1,2}):(\d{2})$", &m)
+        return
+    if (A_Hour * 60 + A_Min < m[1] * 60 + m[2])
+        return
+    today := FormatTime(, "yyyyMMdd")
+    if (IniRead(iniFile, "cfg", "dailySent", "") = today)
+        return
+    IniWrite(today, iniFile, "cfg", "dailySent")
+    SendDailySummary()
+}
+
+SendDailySummary(manual := false) {
+    global iniFile, dayOnline, chkOcr
+    DayRoll()
+    IniWrite(dayOnline, iniFile, "day", "online")
+    lines := ["**" TT("f_online_today") ":** ``" DurStr(dayOnline * 1000) "``"
+        , "**" TT("f_drops_today") ":** ``" IniRead(iniFile, "day", "drops", "0") "``"
+        , "**" TT("f_reopens_today") ":** ``" IniRead(iniFile, "day", "reopens", "0") "``"]
+    ; moedas: valor agora - primeira leitura do dia
+    hw := FindGameWindow()
+    if (chkOcr.Value && hw && WinGetMinMax(hw) != -1) {
+        try {
+            cur := ReadCurrencies(hw)
+            earned := ""
+            for c in CurrencySpec() {
+                if !cur[2].Has(c.name)
+                    continue
+                n := ParseNum(cur[2][c.name])
+                st := IniRead(iniFile, "day", "start_" RegExReplace(c.name, "\W", "_"), "")
+                if (n = "")
+                    continue
+                if (st = "") {
+                    DayCoin(c.name, n)
+                    st := n
+                }
+                d := n - Integer(st)
+                earned .= c.emoji "  **" (d >= 0 ? "+" : "") FmtNum(d) "**  ·  " c.name "  (" FmtNum(n) ")`n"
+            }
+            if (earned != "")
+                lines.Push("", "### " TT("d_earned"), RTrim(earned, "`n"))
+        }
+    }
+    SendEvent("daily", lines, manual)
+}
+
+; ==========================================================
+;  Várias contas (multi-launcher) - experimental
+; ==========================================================
+; cookie salvo criptografado com a proteção do Windows (só esse usuário desse PC consegue ler)
+DpapiProtect(str) {
+    buf := Buffer(StrPut(str, "UTF-8")), StrPut(str, buf, "UTF-8")
+    inB := Buffer(A_PtrSize * 2, 0), NumPut("UInt", buf.Size - 1, inB, 0), NumPut("Ptr", buf.Ptr, inB, A_PtrSize)
+    outB := Buffer(A_PtrSize * 2, 0)
+    if !DllCall("crypt32\CryptProtectData", "Ptr", inB, "Ptr", 0, "Ptr", 0, "Ptr", 0, "Ptr", 0, "UInt", 0, "Ptr", outB)
+        return ""
+    n := NumGet(outB, 0, "UInt"), pd := NumGet(outB, A_PtrSize, "Ptr")
+    DllCall("crypt32\CryptBinaryToStringW", "Ptr", pd, "UInt", n, "UInt", 0x40000001, "Ptr", 0, "UInt*", &len := 0)
+    sb := Buffer(len * 2)
+    DllCall("crypt32\CryptBinaryToStringW", "Ptr", pd, "UInt", n, "UInt", 0x40000001, "Ptr", sb, "UInt*", &len)
+    DllCall("LocalFree", "Ptr", pd)
+    return StrGet(sb, len, "UTF-16")
+}
+
+DpapiUnprotect(b64) {
+    if (b64 = "")
+        return ""
+    DllCall("crypt32\CryptStringToBinaryW", "Str", b64, "UInt", 0, "UInt", 1, "Ptr", 0, "UInt*", &n := 0, "Ptr", 0, "Ptr", 0)
+    buf := Buffer(n)
+    DllCall("crypt32\CryptStringToBinaryW", "Str", b64, "UInt", 0, "UInt", 1, "Ptr", buf, "UInt*", &n, "Ptr", 0, "Ptr", 0)
+    inB := Buffer(A_PtrSize * 2, 0), NumPut("UInt", n, inB, 0), NumPut("Ptr", buf.Ptr, inB, A_PtrSize)
+    outB := Buffer(A_PtrSize * 2, 0)
+    if !DllCall("crypt32\CryptUnprotectData", "Ptr", inB, "Ptr", 0, "Ptr", 0, "Ptr", 0, "Ptr", 0, "UInt", 0, "Ptr", outB)
+        return ""
+    pd := NumGet(outB, A_PtrSize, "Ptr")
+    s := StrGet(pd, NumGet(outB, 0, "UInt"), "UTF-8")
+    DllCall("LocalFree", "Ptr", pd)
+    return s
+}
+
+; pedido pra API do Roblox com o cookie da conta (pega o token CSRF sozinho)
+RbxCall(method, url, ck, body := "") {
+    static csrf := ""
+    Loop 2 {
+        http := ComObject("WinHttp.WinHttpRequest.5.1")
+        http.SetTimeouts(5000, 5000, 15000, 15000)
+        http.Open(method, url, false)
+        http.SetRequestHeader("Cookie", ".ROBLOSECURITY=" ck)
+        http.SetRequestHeader("Referer", "https://www.roblox.com/")
+        http.SetRequestHeader("Origin", "https://www.roblox.com")
+        http.SetRequestHeader("Content-Type", "application/json")
+        if (csrf != "")
+            http.SetRequestHeader("X-CSRF-TOKEN", csrf)
+        http.Send(body)
+        if (http.Status = 403) {
+            t := ""
+            try t := http.GetResponseHeader("x-csrf-token")
+            if (t != "" && t != csrf) {
+                csrf := t
+                continue
+            }
+        }
+        return http
+    }
+    return http
+}
+
+; confere o cookie e devolve {id, name} da conta (ou 0)
+RbxWhoAmI(ck) {
+    try {
+        r := RbxCall("GET", "https://users.roblox.com/v1/users/authenticated", ck).ResponseText
+        if RegExMatch(r, '"id"\s*:\s*(\d+)', &m)
+            return {id: m[1], name: JStr(r, "name")}
+    }
+    return 0
+}
+
+; link da aba Jogo -> endereço do PlaceLauncher (resolve link de compartilhamento com o cookie)
+PlaceLauncherUrl(ck, bt) {
+    global edLink, shareCache
+    link := Trim(edLink.Value), place := "", code := ""
+    if RegExMatch(link, "^\d+$")
+        place := link
+    else if RegExMatch(link, "i)(?:placeId=|games/)(\d+)", &m) {
+        place := m[1]
+        if RegExMatch(link, "i)(?:privateServerLinkCode|linkCode)=([\w\-]+)", &c)
+            code := c[1]
+    } else if RegExMatch(link, "i)share(?:_links|-links)?\?.*?code=([\w\-]+)", &c) {
+        if !shareCache.Has(c[1]) {
+            r := RbxCall("POST", "https://apis.roblox.com/sharelinks/v1/resolve-link", ck
+                , '{"linkId":"' c[1] '","linkType":"Server"}').ResponseText
+            if !(RegExMatch(r, '"placeId"\s*:\s*(\d+)', &pm) && (lc := JStr(r, "linkCode")) != "")
+                throw Error("share link")
+            shareCache[c[1]] := [pm[1], lc]
+        }
+        place := shareCache[c[1]][1], code := shareCache[c[1]][2]
+    }
+    if (place = "")
+        throw Error("link")
+    base := "https://assetgame.roblox.com/game/PlaceLauncher.ashx?browserTrackerId=" bt "&placeId=" place "&isPlayTogetherGame=false"
+    return code != "" ? base "&request=RequestPrivateGame&linkCode=" code : base "&request=RequestGame"
+}
+
+LaunchAccount(acc) {
+    ck := DpapiUnprotect(acc.ck)
+    bt := Random(100000000000, 999999999999)
+    try {
+        url := PlaceLauncherUrl(ck, bt)
+        ticket := RbxCall("POST", "https://auth.roblox.com/v1/authentication-ticket", ck).GetResponseHeader("rbx-authentication-ticket")
+        if (ticket = "")
+            throw Error("ticket")
+        ms := DateDiff(A_NowUTC, "19700101000000", "Seconds") * 1000
+        uri := "roblox-player:1+launchmode:play+gameinfo:" ticket "+launchtime:" ms "+placelauncherurl:" UrlEnc(url)
+            . "+browsertrackerid:" bt "+robloxLocale:en_us+gameLocale:en_us+channel:+LaunchExp:InApp"
+        if (PlayerCommand() != "")
+            RunMethod({kind: "exe", target: uri})
+        else
+            Run(uri)
+    } catch as e {
+        acc.status := TT("acc_st_err", e.Message)
+        Log(TT("log_acc_fail", acc.name, e.Message))
+        return false
+    }
+    acc.lastLaunch := A_TickCount, acc.status := TT("acc_st_opening"), acc.launches++
+    Log(TT("log_acc_launch", acc.name))
+    return true
+}
+
+; segura o "trava" do Roblox pra deixar abrir várias janelas
+MultiLock() {
+    global multiHandles
+    MultiUnlock()
+    multiHandles.Push(DllCall("CreateMutexW", "Ptr", 0, "Int", 1, "Str", "ROBLOX_singletonMutex", "Ptr"))
+    multiHandles.Push(DllCall("CreateEventW", "Ptr", 0, "Int", 1, "Int", 0, "Str", "ROBLOX_singletonEvent", "Ptr"))
+}
+
+MultiUnlock() {
+    global multiHandles
+    for h in multiHandles
+        if h
+            DllCall("CloseHandle", "Ptr", h)
+    multiHandles := []
+}
+
+RobloxPids() {
+    m := Map()
+    try {
+        for pr in ComObjGet("winmgmts:").ExecQuery("Select ProcessId from Win32_Process where Name='RobloxPlayerBeta.exe'")
+            m[pr.ProcessId] := true
+    }
+    return m
+}
+
+MultiCheck() {
+    global ACCS, pendingAcc, multiN, running
+    if !running
+        return
+    multiN++
+    ; 1) conta que acabou de abrir: descobre qual processo novo é dela
+    if pendingAcc {
+        owned := Map()
+        for a in ACCS
+            if a.pid
+                owned[a.pid] := true
+        for pid in RobloxPids()
+            if !owned.Has(pid) {
+                pendingAcc.pid := pid
+                pendingAcc := 0
+                SetTimer(TileWindows, -8000)
+                break
+            }
+        if (pendingAcc && A_TickCount - pendingAcc.lastLaunch > 45000) {
+            pendingAcc.status := TT("acc_st_err", "timeout")
+            pendingAcc := 0
+        }
+    }
+    ; 2) contas que caíram / tela de Disconnected
+    for a in ACCS {
+        if (a.pid && !ProcessExist(a.pid)) {
+            a.pid := 0, a.status := TT("acc_st_down")
+            Log(TT("log_acc_down", a.name))
+            MarkDisconnect()
+            SendEvent("down", ["**" TT("d_account") ":** " a.name])
+            continue
+        }
+        if a.pid {
+            hw := WinExist("ahk_pid " a.pid " ahk_exe RobloxPlayerBeta.exe")
+            if hw
+                a.status := TT("acc_st_on")
+            if (hw && Mod(multiN, 3) = 0 && WinGetMinMax(hw) != -1) {
+                if (FindDisconnectDialog(hw) != "") {
+                    if (++a.dlg >= 2) {
+                        a.dlg := 0
+                        Log(TT("log_acc_dlg", a.name))
+                        SendEvent("error", ["**" TT("d_account") ":** " a.name, "**" TT("d_reason") ":** " TT("r_disc_screen")])
+                        try ProcessClose(a.pid)
+                    }
+                } else
+                    a.dlg := 0
+            }
+        }
+    }
+    ; 3) abre uma conta por vez (pra saber qual janela é de quem)
+    if !pendingAcc {
+        for a in ACCS
+            if (!a.pid && A_TickCount - a.lastLaunch > 20000) {
+                if LaunchAccount(a)
+                    pendingAcc := a
+                break
+            }
+    }
+    LvRefresh()
+}
+
+; organiza as janelas do Roblox lado a lado
+TileWindows(*) {
+    hws := []
+    for h in WinGetList("ahk_exe RobloxPlayerBeta.exe")
+        if (WinGetTitle(h) != "")
+            hws.Push(h)
+    n := hws.Length
+    if !n
+        return
+    MonitorGetWorkArea(MonitorGetPrimary(), &l, &t, &r, &b)
+    cols := Ceil(Sqrt(n)), rows := Ceil(n / cols)
+    w := (r - l) // cols, h := (b - t) // rows
+    for i, hw in hws {
+        try {
+            if (WinGetMinMax(hw) != 0)
+                WinRestore(hw)
+            WinMove(l + Mod(i - 1, cols) * w, t + ((i - 1) // cols) * h, w, h, hw)
+        }
+    }
+}
+
+LoadAccounts() {
+    global ACCS, iniFile
+    ACCS := []
+    Loop Integer(IniRead(iniFile, "accounts", "n", "0"))
+        ACCS.Push({name: IniRead(iniFile, "accounts", "name" A_Index, "?"), uid: IniRead(iniFile, "accounts", "uid" A_Index, "")
+            , ck: IniRead(iniFile, "accounts", "ck" A_Index, ""), pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
+    LvRefresh()
+}
+
+SaveAccounts() {
+    global ACCS, iniFile
+    try IniDelete(iniFile, "accounts")
+    IniWrite(ACCS.Length, iniFile, "accounts", "n")
+    for i, a in ACCS {
+        IniWrite(a.name, iniFile, "accounts", "name" i)
+        IniWrite(a.uid, iniFile, "accounts", "uid" i)
+        IniWrite(a.ck, iniFile, "accounts", "ck" i)
+    }
+}
+
+LvRefresh() {
+    global lvAcc, ACCS
+    lvAcc.Opt("-Redraw")
+    lvAcc.Delete()
+    for a in ACCS
+        lvAcc.Add(, a.name, a.status, a.launches)
+    lvAcc.Opt("+Redraw")
+}
+
+RemoveAccount() {
+    global lvAcc, ACCS
+    r := lvAcc.GetNext()
+    if !r
+        return
+    ACCS.RemoveAt(r)
+    SaveAccounts()
+    LvRefresh()
+}
+
+ShowAddAccount() {
+    global g, ga, gaCk, gaMsg, C_CARD, C_TEXT, C_MUTED, C_INPUT, C_DIM
+    try ga.Destroy()
+    ga := Gui("-Caption +ToolWindow +Owner" g.Hwnd)
+    ga.BackColor := C_CARD
+    ga.MarginX := 0, ga.MarginY := 0
+    FontUI(ga, "s14 w700")
+    ga.Add("Text", Format("x24 y20 w360 c{} Background{}", C_TEXT, C_CARD), TT("btn_add_acc"))
+    FontUI(ga, "s7 w700")
+    ga.Add("Text", Format("x24 y62 w360 c{} Background{}", C_DIM, C_CARD), TT("acc_cookie"))
+    box := ga.Add("Text", Format("x24 y80 w372 h34 Background{}", C_INPUT))
+    RoundCtrl(box, 10)
+    FontMono(ga, "s9")
+    gaCk := ga.Add("Edit", Format("x34 y88 w352 h20 -E0x200 Password c{} Background{}", C_TEXT, C_INPUT))
+    FontUI(ga, "s8")
+    ga.Add("Text", Format("x24 y124 w372 c{} Background{}", C_MUTED, C_CARD), TT("acc_cookie_hint"))
+    FontUI(ga, "s9")
+    gaMsg := ga.Add("Text", Format("x24 y184 w372 h18 c{} Background{}", C_MUTED, C_CARD), "")
+    RoundCtrl(MakeBtn(ga, 256, 210, 140, 34, TT("btn_save"), (*) => SaveNewAccount(), "primary", false, "s9 w700", 10), 10)
+    RoundCtrl(MakeBtn(ga, 140, 210, 106, 34, TT("btn_cancel"), (*) => ga.Destroy(), "sec", false, "s9 w600", 10), 10)
+    ga.Show("Hide w420 h262")
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", ga.Hwnd, "UInt", 33, "Int*", 2, "UInt", 4)
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", ga.Hwnd, "UInt", 34, "UInt*", 0x00444040, "UInt", 4)
+    WinGetPos(&gx, &gy, &gw, &gh, g.Hwnd)
+    WinGetPos(, , &aw, &ah, ga.Hwnd)
+    FadeShow(ga, Format("x{} y{}", gx + (gw - aw) // 2, gy + (gh - ah) // 2))
+}
+
+SaveNewAccount() {
+    global ga, gaCk, gaMsg, ACCS, C_OFF
+    ck := Trim(gaCk.Value)
+    ck := RegExReplace(ck, "^\.ROBLOSECURITY=")
+    gaMsg.Value := TT("acc_checking")
+    who := RbxWhoAmI(ck)
+    if !who {
+        gaMsg.SetFont("c" C_OFF)
+        gaMsg.Value := TT("acc_invalid")
+        return
+    }
+    for a in ACCS
+        if (a.uid = who.id) {
+            a.ck := DpapiProtect(ck)
+            SaveAccounts()
+            ga.Destroy()
+            return
+        }
+    ACCS.Push({name: who.name, uid: who.id, ck: DpapiProtect(ck), pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
+    SaveAccounts()
+    LvRefresh()
+    Log(TT("acc_added", who.name))
+    ga.Destroy()
+}
+
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
@@ -2948,12 +3944,20 @@ SetState(state, title, sub) {
 }
 
 UpdateStats() {
-    global stVals, mSub, running, monStart, launches, discCount, lastDiscShort
+    global stVals, mSub, running, monStart, launches, discCount, lastDiscShort, dayOnline, iniFile
     SetIf(stVals[1], running ? DurStr(A_TickCount - monStart) : "—")
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
     SetIf(mSub, TT("mini_sub", launches, discCount))
+    ; tempo online de hoje (pro resumo diário)
+    static n := 0
+    if (running && IsRobloxOpen()) {
+        DayRoll()
+        dayOnline++
+        if (Mod(++n, 60) = 0)
+            IniWrite(dayOnline, iniFile, "day", "online")
+    }
 }
 
 SetCompact(on) {
@@ -2988,7 +3992,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -3002,6 +4006,15 @@ SaveConfig() {
     IniWrite(chkOcr.Value, iniFile, "cfg", "ocr")
     IniWrite(Trim(edCur.Value), iniFile, "cfg", "currencies")
     IniWrite(chkAutoUpd.Value, iniFile, "cfg", "autoUpdate")
+    IniWrite(chkStartWin.Value, iniFile, "cfg", "startWin")
+    IniWrite(chkAutoMon.Value, iniFile, "cfg", "autoMon")
+    IniWrite(chkToast.Value, iniFile, "cfg", "toast")
+    IniWrite(chkTray.Value, iniFile, "cfg", "tray")
+    IniWrite(chkDaily.Value, iniFile, "cfg", "daily")
+    IniWrite(Trim(edDailyAt.Value), iniFile, "cfg", "dailyAt")
+    IniWrite(chkMention.Value, iniFile, "cfg", "mention")
+    IniWrite(Trim(edDiscId.Value), iniFile, "cfg", "discordId")
+    IniWrite(chkMulti.Value, iniFile, "cfg", "multi")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }
@@ -3021,6 +4034,7 @@ MarkDisconnect() {
     global discCount, lastDisc, lastDiscShort, lastDiscUnix
     lastDiscUnix := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     discCount++
+    DayAdd("drops")
     lastDisc := NowStr()
     lastDiscShort := FormatTime(, "dd/MM HH:mm")
 }
@@ -3089,7 +4103,7 @@ SetLang(code, *) {
     SaveConfig()
     if running
         IniWrite(1, iniFile, "cfg", "resume")
-    Reload()
+    Relaunch()
 }
 
 ; nome do usuário do Windows (nome de exibição se tiver, senão o login)
@@ -3472,10 +4486,11 @@ ApplyUpdate() {
     if running
         IniWrite(1, iniFile, "cfg", "resume")
     notas := ChangelogFor(pendingVer)
+    IniWrite(pendingVer, iniFile, "cfg", "justUpdated")
     Log(TT("log_updated", pendingVer))
     SendEvent("updated", notas != "" ? [notas] : [], false, pendingVer)
     Sleep(500)
-    Reload()
+    Relaunch()
 }
 
 ; ---------------- Webhook ----------------
@@ -3516,24 +4531,37 @@ EV := Map(
     "down",    ["🔴", "ev_down",    0xFF5C5C],
     "lic",     ["🔒", "ev_lic",     0xFF5C5C],
     "updated", ["✨", "ev_updated", 0xA78BFA],
-    "test",    ["🔔", "ev_test",    0x5B8CFF])
+    "test",    ["🔔", "ev_test",    0x5B8CFF],
+    "daily",   ["📊", "ev_daily",   0x5B8CFF])
 
 SendEvent(kind, lines := [], feedback := false, arg := "") {
-    global edHook, EV, APP_NAME, USER_NAME, LOGO_URL
+    global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId
+    ev := EV[kind]
+    ; notificação do Windows nos avisos importantes
+    if (kind = "down" || kind = "back" || kind = "error" || kind = "fail" || kind = "lic") {
+        plain := ""
+        for l in lines
+            plain .= StrReplace(l, "**") "`n"
+        Notify(TT(ev[2], arg), plain != "" ? RTrim(plain, "`n") : APP_NAME, kind = "back" ? "Iconi" : "Icon!")
+    }
     url := Trim(edHook.Value)
     if (url = "") {
         if feedback
             Log(TT("hook_need_url"))
         return
     }
-    ev := EV[kind]
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
+    ; marca só o seu ID (nunca @everyone / @here)
+    id := Trim(edDiscId.Value)
+    ping := (chkMention.Value && RegExMatch(id, "^\d{15,21}$") && (kind = "down" || kind = "error" || kind = "fail" || kind = "lic"))
     desc := ""
     for l in lines
         desc .= l "`n"
     desc .= "**" TT("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
-    e := '{"username":"Auto Reconnect","avatar_url":"' LOGO_URL '","embeds":[{'
+    e := '{"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
+       . (ping ? '"content":"<@' id '>","allowed_mentions":{"users":["' id '"]},' : '"allowed_mentions":{"parse":[]},')
+       . '"embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
        . '"title":"' JsonEsc(ev[1] "  " TT(ev[2], arg)) '",'
        . '"color":' ev[3] ','
@@ -3928,6 +4956,8 @@ CurrencyBlock(cur) {
             }
         }
         prevCur[lab] := n
+        if (n != "")
+            DayCoin(lab, n)
         out .= c.emoji "  **" val "**" delta "  ·  " lab "`n"
         view .= lab ": " val vdelta "`n"
     }
@@ -4091,6 +5121,8 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     joinedTick := 0, openedTick := 0
     if !tries
         launches++
+    if (!tries && !manual)
+        DayAdd("reopens")
     Log(TT(manual ? "log_opening" : "log_reopening", MethodName(m)))
     SetTimer(LaunchPoll, 1000)
     if (!manual && !tries)
@@ -4264,7 +5296,9 @@ CloseBrowserTab() {
 }
 
 Cleanup() {
-    global curHwnd, detectTick, tabDone, fsTries, placedLogged, chkShrink, chkMin, browserLaunch
+    global curHwnd, detectTick, tabDone, fsTries, placedLogged, chkShrink, chkMin, browserLaunch, multiActive
+    if multiActive
+        return
     h := FindGameWindow()
     if !h {
         curHwnd := 0
@@ -4401,8 +5435,8 @@ FindDisconnectDialog(hw) {
 }
 
 WatchError() {
-    global running, chkErr, edErrSec, edWait, lastLaunch, discTick, hungSince, pendingJoin, dlgSeen, watchN
-    if !running || !chkErr.Value
+    global running, chkErr, edErrSec, edWait, lastLaunch, discTick, hungSince, pendingJoin, dlgSeen, watchN, multiActive
+    if !running || !chkErr.Value || multiActive
         return
     ReadNewLogLines()
 
@@ -4498,7 +5532,7 @@ Check() {
 }
 
 Toggle(*) {
-    global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed
+    global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed, chkMulti, ACCS, multiActive
     if (!running && KaEnabled() && !licensed) {
         ShowKeyScreen(TT("activate_to_use"))
         return
@@ -4515,6 +5549,19 @@ Toggle(*) {
         iv := Integer(edInterval.Value || 15)
         if (iv < 5)
             iv := 5
+        if chkMulti.Value {
+            if !ACCS.Length {
+                Log(TT("acc_need"))
+                SetState("warn", TT("st_nolink"), TT("acc_need"))
+                ShowPage("Contas")
+                return
+            }
+            if IsRobloxOpen() {
+                Log(TT("multi_close"))
+                SetState("warn", "Roblox", TT("multi_close"))
+                return
+            }
+        }
         SaveConfig()
         wasOpen := IsRobloxOpen()
         downTick := 0
@@ -4527,12 +5574,24 @@ Toggle(*) {
         }
         SetState("wait", TT("st_monitoring"), TT("st_monitoring_sub"))
         Log(TT("log_mon_start", iv))
-        SetTimer(Check, iv * 1000)
+        if chkMulti.Value {
+            multiActive := true
+            MultiLock()
+            SetTimer(MultiCheck, iv * 1000)
+            MultiCheck()
+        } else {
+            SetTimer(Check, iv * 1000)
+            Check()
+        }
         ApplyReportTimer()
-        Check()
     } else {
         running := false
         SetTimer(Check, 0)
+        if multiActive {
+            SetTimer(MultiCheck, 0)
+            MultiUnlock()
+            multiActive := false
+        }
         ApplyReportTimer()
         for b in [btnStart, mBtn] {
             b.Text := TT("btn_start")
