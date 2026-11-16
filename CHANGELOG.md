@@ -1,4 +1,11 @@
-# Novidades do Roblox Auto-Rejoin
+# Novidades do Auto Reconnect Roblox
+
+## v1.2.0
+- Novo nome: Auto Reconnect Roblox
+- 8 idiomas (Português, English, Español, Français, Deutsch, Русский, Türkçe, Bahasa Indonesia), seguindo o idioma do Windows
+- Botão de idioma no topo da janela
+- Mostra o seu nome do Windows na tela
+- Todos os avisos do Discord agora são embeds
 
 ## v1.1.0
 - Sistema de licença com key travada por HWID (KeyAuth)

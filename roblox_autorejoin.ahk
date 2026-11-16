@@ -2,7 +2,7 @@
 #SingleInstance Force
 
 ; ==========================================================
-;  Roblox Auto-Rejoin  v2  (tema Obsidian)
+;  Auto Reconnect Roblox  (tema Obsidian)
 ;  - Reabre o Roblox no jogo/PV se ele fechar
 ;  - Posiciona a janela do Roblox no canto superior direito
 ;  - Fecha a guia nova do navegador depois que entrar no jogo
@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.1.0"
+VERSION     := "1.2.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -30,6 +30,7 @@ KEYAUTH_OWNERID := ""            ; Owner ID (10 caracteres)
 KEYAUTH_VER     := "1.0"         ; versão da aplicação no painel do KeyAuth (deixe sempre 1.0)
 KEYAUTH_URL     := "https://keyauth.win/api/1.3/"
 BUY_URL         := ""            ; link pra comprar key (Discord, loja...). Vazio = esconde o botão
+APP_NAME        := "Auto Reconnect Roblox"
 
 ; ---------------- Tema ----------------
 C_BG    := "0E0E11"   ; fundo do conteúdo
@@ -59,7 +60,7 @@ launches := 0
 wasOpen  := false
 downTick := 0
 discCount := 0
-lastDisc  := "nenhuma"
+lastDisc  := ""
 lastDiscShort := "—"
 lastDiscUnix := 0
 monStart  := 0
@@ -123,6 +124,1667 @@ savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
+savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
+; ---------------- Idiomas (gerado) ----------------
+LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
+LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
+I18N := Map()
+I18N["pt"] := Map(
+    "nav_home", "Início",
+    "nav_game", "Jogo",
+    "nav_window", "Janela",
+    "nav_hook", "Webhook",
+    "nav_coins", "Moedas",
+    "nav_logs", "Logs",
+    "nav_about", "Sobre",
+    "pg_home_sub", "Olá, {1}! Visão geral do monitoramento",
+    "pg_game_sub", "Servidor, intervalo de checagem e recuperação de erros",
+    "pg_win_sub", "Posição da janela do Roblox e guia do navegador",
+    "pg_hook_sub", "Avisos e status no Discord",
+    "pg_coins_sub", "Lê suas moedas na tela do Roblox e manda no webhook",
+    "pg_about_sub", "Licença, versão e novidades",
+    "pg_logs_sub", "Histórico desta sessão",
+    "idle", "Parado",
+    "click_start", "Clique em Iniciar para monitorar",
+    "btn_start", "Iniciar",
+    "btn_stop", "Parar",
+    "st_uptime", "TEMPO ATIVO",
+    "st_reopens", "REABERTURAS",
+    "st_drops", "QUEDAS",
+    "st_lastdrop", "ÚLTIMA QUEDA",
+    "quick", "AÇÕES RÁPIDAS",
+    "btn_open_now", "Abrir jogo agora",
+    "btn_place", "Posicionar janela",
+    "btn_compact", "Modo compacto",
+    "sec_server", "SERVIDOR",
+    "hint_link", "Link do jogo, link de servidor privado (PV) ou só o Place ID.",
+    "sec_monitor", "MONITORAMENTO",
+    "lbl_check", "Checar a cada (segundos)",
+    "lbl_wait", "Esperar após abrir (segundos)",
+    "sec_recovery", "RECUPERAÇÃO",
+    "sw_err", "Reiniciar se der erro, desconexão ou travar",
+    "sw_err_sub", "Desconexão no log, kick, teleport que falhou ou janela sem responder",
+    "lbl_tol", "Tolerância (segundos)",
+    "sec_pos", "POSIÇÃO",
+    "sw_place", "Posicionar no canto superior direito",
+    "sw_place_sub", "Mantém a janela do Roblox fixa e totalmente visível",
+    "lbl_width", "Largura",
+    "lbl_height", "Altura",
+    "btn_place_now", "Posicionar agora",
+    "sec_browser", "NAVEGADOR",
+    "sw_tab", "Fechar a guia do navegador após entrar",
+    "sw_tab_sub", "Fecha a guia com 'Roblox' no título e minimiza o navegador",
+    "btn_test", "Testar",
+    "hint_hook", "Avisos automáticos: queda, tentativa de reabrir, volta e erros (com horário).",
+    "sec_status", "STATUS PERIÓDICO",
+    "sw_rep", "Enviar status com print",
+    "sw_rep_sub", "Embed com o estado da conta + print só da janela do Roblox",
+    "lbl_interval", "Intervalo (minutos)",
+    "btn_send_now", "Enviar agora",
+    "sec_ocr", "LEITURA DA TELA (OCR)",
+    "sw_ocr", "Mandar moedas no embed de status",
+    "sw_ocr_sub", "Lê os valores que estiverem aparecendo na janela do Roblox",
+    "lbl_coins", "Moedas (separe com | ). Emoji opcional: Gems=<:gems:123456>",
+    "sec_lastread", "ÚLTIMA LEITURA",
+    "btn_testread", "Testar leitura",
+    "no_read", "Nenhuma leitura ainda.",
+    "not_found", "não encontrado",
+    "nothing_read", "Nada lido.",
+    "ocr_open", "Abra o Roblox (sem minimizar) e deixe as moedas aparecendo.",
+    "ocr_names", "Coloque os nomes das moedas acima.",
+    "log_ocr_tested", "Leitura de moedas testada ({1}/{2} encontradas).",
+    "ocr_err", "Erro no OCR: {1}",
+    "log_ocr_saw", "Texto que o OCR viu:",
+    "log_coin_err", "Erro ao ler moedas: {1}",
+    "sec_version", "VERSÃO INSTALADA",
+    "upd_never", "Ainda não verifiquei.",
+    "btn_checkupd", "Procurar atualização",
+    "sec_license", "LICENÇA",
+    "btn_changekey", "Trocar key",
+    "paste_new_key", "Cole a nova key.",
+    "sw_autoupd", "Atualizar sozinho",
+    "sec_news", "NOVIDADES",
+    "news_ph", "As novidades aparecem aqui depois de verificar.",
+    "btn_clear", "Limpar",
+    "upd_not_cfg", "Atualização não configurada.",
+    "upd_searching", "Procurando atualização...",
+    "upd_noconn", "Não consegui verificar agora.",
+    "upd_badfile", "O arquivo baixado não parece ser o script.",
+    "upd_latest", "Você está na versão mais nova.",
+    "upd_avail", "Nova versão v{1} disponível! Veja as novidades abaixo.",
+    "btn_upd_to", "Atualizar para v{1}",
+    "badge_new", "Nova versão v{1}",
+    "log_upd_avail", "Atualização disponível: v{1}.",
+    "log_upd_dlfail", "Falha ao baixar atualização: {1}",
+    "log_upd_fail", "Falha ao atualizar: {1}",
+    "log_updated", "Atualizado para v{1}! Reiniciando...",
+    "lang_menu", "Idioma",
+    "lang_auto", "Automático (sistema)",
+    "mini_sub", "reab {1} · quedas {2}",
+    "key_title", "Ativar licença",
+    "key_sub", "Cole sua key pra liberar o Auto Reconnect Roblox.",
+    "btn_activate", "Ativar",
+    "your_hwid", "SEU HWID",
+    "btn_copy", "Copiar",
+    "hwid_copied", "HWID copiado.",
+    "btn_buy", "Comprar key",
+    "checking_lic", "Verificando licença...",
+    "ka_app_nf", "Aplicação não encontrada no KeyAuth (confira nome/Owner ID).",
+    "ka_badver", "Versão do KeyAuth diferente (deixe KEYAUTH_VER igual ao painel).",
+    "key_nf", "Key não existe.",
+    "key_invalid", "Key inválida.",
+    "key_hwid", "Essa key já está ativada em outro PC (HWID diferente).",
+    "key_expired", "Sua key expirou.",
+    "hwid_banned", "Este PC foi banido.",
+    "key_banned", "Essa key foi banida.",
+    "session_exp", "Sessão expirou, tente de novo.",
+    "key_fail", "Não consegui validar a key.",
+    "paste_key_first", "Cole sua key primeiro.",
+    "checking", "Verificando...",
+    "connecting", "Conectando ao servidor de licenças...",
+    "no_conn", "Sem conexão com o servidor de licenças. Confira sua internet.",
+    "lic_lifetime", "Vitalícia",
+    "side_lifetime", "LICENÇA VITALÍCIA",
+    "lic_expires", "Expira em {1}  ({2} dias)",
+    "side_days", "LICENÇA: {1} DIAS",
+    "lic_active", "Ativa",
+    "side_active", "LICENÇA ATIVA",
+    "lic_offline", "Fiquei mais de 2h sem conseguir validar a licença.",
+    "log_lic_bad", "Licença inválida: {1}",
+    "activate_to_use", "Ative sua key pra usar.",
+    "hook_need_url", "Coloque a URL do webhook primeiro.",
+    "hook_sent", "Webhook enviado (HTTP {1}).",
+    "hook_fail", "Falha no webhook: {1}",
+    "log_status_sent", "Status enviado (HTTP {1}).",
+    "log_status_fail", "Falha ao enviar status: {1}",
+    "why_closed", "Roblox fechado",
+    "why_min", "janela minimizada",
+    "why_fail", "falha ao capturar",
+    "emb_offline", "Offline",
+    "emb_warn", "Online · desconexão no log",
+    "emb_online", "Online no jogo",
+    "up_stopped", "parado",
+    "none", "Nenhuma",
+    "next_status", "próximo status em {1} min",
+    "no_shot", "sem print ({1})",
+    "f_uptime", "Tempo ativo",
+    "f_reopens", "Reaberturas",
+    "f_drops", "Quedas",
+    "f_lastdrop", "Última queda",
+    "m_exe", "direto pelo Roblox",
+    "m_uri", "link roblox://",
+    "m_web", "navegador",
+    "roblox_not_reg", "Roblox não encontrado no registro",
+    "paste_link_first", "Cole o link do jogo primeiro.",
+    "log_all_failed", "Nenhum jeito de abrir funcionou. Tento de novo na próxima checagem.",
+    "log_method_failed", "Jeito {1}/{2} ({3}) falhou: {4}",
+    "log_opening", "Abrindo ({1})",
+    "log_reopening", "Reabrindo ({1})",
+    "log_opened", "Roblox abriu ({1}s). Entrando no jogo...",
+    "st_joining", "Entrando no jogo...",
+    "st_joining_sub", "Roblox aberto, carregando o servidor",
+    "log_joined", "Entrou no jogo ({1}s).",
+    "log_not_open25", "O Roblox não abriu em 25s, tentando outro jeito...",
+    "log_not_join60", "O Roblox abriu mas não entrou no jogo em 60s, tentando outro jeito...",
+    "log_not_open", "O Roblox não está aberto.",
+    "log_placed", "Janela do Roblox posicionada.",
+    "log_detected", "Janela do Roblox detectada.",
+    "log_placed_right", "Janela do Roblox posicionada no canto direito.",
+    "log_tab_closed", "Guia do Roblox fechada no navegador.",
+    "log_tab_nf", "Não achei a guia do Roblox. Títulos abertos:",
+    "none_lc", "nenhum",
+    "log_disc_log", "Desconexão no log. Aguardando reentrar...",
+    "log_err_restart", "Erro detectado: {1}. Reiniciando o Roblox...",
+    "log_disc_screen", "Tela de Disconnected na janela.",
+    "log_disc_screen_c", "Tela de Disconnected na janela (código {1}).",
+    "r_disc_screen", "tela de Disconnected",
+    "r_disc_screen_c", "tela de Disconnected - código {1}",
+    "log_rejoined", "Reentrou no jogo/teleport normal, ok.",
+    "r_no_rejoin", "desconexão/erro sem reentrar no jogo",
+    "r_hung", "janela travada (não respondendo)",
+    "log_back", "Roblox voltou (fora por {1}).",
+    "log_down", "Roblox fechou/desconectou.",
+    "st_loading", "Carregando...",
+    "st_loading_sub", "Aguardando o jogo abrir e entrar no servidor",
+    "st_on_warn_sub", "Desconexão no log, aguardando reentrar",
+    "st_on_sub", "No jogo · monitorando",
+    "st_off_sub", "Fechado, reabrindo agora",
+    "st_nolink", "Sem link",
+    "st_nolink_sub", "Cole o link do jogo na aba Jogo",
+    "st_monitoring", "Monitorando...",
+    "st_monitoring_sub", "Verificando o Roblox",
+    "log_mon_start", "Monitoramento iniciado (a cada {1}s).",
+    "log_mon_stop", "Monitoramento parado.",
+    "ev_start", "Monitoramento iniciado",
+    "ev_reopen", "Reabrindo o Roblox",
+    "ev_fail", "Não consegui abrir o Roblox",
+    "ev_error", "Erro detectado",
+    "ev_back", "Roblox voltou",
+    "ev_down", "Roblox fechou/desconectou",
+    "ev_lic", "Licença inválida",
+    "ev_updated", "Atualizado para v{1}",
+    "ev_test", "Webhook funcionando!",
+    "d_time", "Horário",
+    "d_away", "Ficou fora por",
+    "d_reason", "Motivo",
+    "d_restart", "Reiniciando o Roblox...",
+    "d_stopped", "Monitoramento parado.",
+    "d_retry", "Vou tentar de novo na próxima checagem.",
+    "d_test", "Os avisos vão chegar aqui.",
+    "d_method", "Jeito",
+    "d_interval", "Checagem a cada",
+    "d_user", "Usuário"
+)
+I18N["en"] := Map(
+    "nav_home", "Home",
+    "nav_game", "Game",
+    "nav_window", "Window",
+    "nav_hook", "Webhook",
+    "nav_coins", "Currency",
+    "nav_logs", "Logs",
+    "nav_about", "About",
+    "pg_home_sub", "Hi, {1}! Monitoring overview",
+    "pg_game_sub", "Server, check interval and error recovery",
+    "pg_win_sub", "Roblox window position and browser tab",
+    "pg_hook_sub", "Alerts and status on Discord",
+    "pg_coins_sub", "Reads your currency on the Roblox screen and sends it to the webhook",
+    "pg_about_sub", "License, version and what's new",
+    "pg_logs_sub", "History of this session",
+    "idle", "Stopped",
+    "click_start", "Click Start to begin monitoring",
+    "btn_start", "Start",
+    "btn_stop", "Stop",
+    "st_uptime", "UPTIME",
+    "st_reopens", "REOPENS",
+    "st_drops", "DROPS",
+    "st_lastdrop", "LAST DROP",
+    "quick", "QUICK ACTIONS",
+    "btn_open_now", "Open game now",
+    "btn_place", "Place window",
+    "btn_compact", "Compact mode",
+    "sec_server", "SERVER",
+    "hint_link", "Game link, private server link or just the Place ID.",
+    "sec_monitor", "MONITORING",
+    "lbl_check", "Check every (seconds)",
+    "lbl_wait", "Wait after opening (seconds)",
+    "sec_recovery", "RECOVERY",
+    "sw_err", "Restart on error, disconnect or freeze",
+    "sw_err_sub", "Disconnect in the log, kick, failed teleport or window not responding",
+    "lbl_tol", "Tolerance (seconds)",
+    "sec_pos", "POSITION",
+    "sw_place", "Place in the top-right corner",
+    "sw_place_sub", "Keeps the Roblox window fixed and fully visible",
+    "lbl_width", "Width",
+    "lbl_height", "Height",
+    "btn_place_now", "Place now",
+    "sec_browser", "BROWSER",
+    "sw_tab", "Close the browser tab after joining",
+    "sw_tab_sub", "Closes the tab with 'Roblox' in the title and minimizes the browser",
+    "btn_test", "Test",
+    "hint_hook", "Automatic alerts: drop, reopen attempt, back online and errors (with time).",
+    "sec_status", "PERIODIC STATUS",
+    "sw_rep", "Send status with screenshot",
+    "sw_rep_sub", "Embed with the account status + screenshot of the Roblox window only",
+    "lbl_interval", "Interval (minutes)",
+    "btn_send_now", "Send now",
+    "sec_ocr", "SCREEN READING (OCR)",
+    "sw_ocr", "Send currency in the status embed",
+    "sw_ocr_sub", "Reads the values shown in the Roblox window",
+    "lbl_coins", "Currencies (separate with | ). Optional emoji: Gems=<:gems:123456>",
+    "sec_lastread", "LAST READING",
+    "btn_testread", "Test reading",
+    "no_read", "No reading yet.",
+    "not_found", "not found",
+    "nothing_read", "Nothing read.",
+    "ocr_open", "Open Roblox (not minimized) with the currency visible.",
+    "ocr_names", "Enter the currency names above.",
+    "log_ocr_tested", "Currency reading tested ({1}/{2} found).",
+    "ocr_err", "OCR error: {1}",
+    "log_ocr_saw", "Text the OCR saw:",
+    "log_coin_err", "Error reading currency: {1}",
+    "sec_version", "INSTALLED VERSION",
+    "upd_never", "Not checked yet.",
+    "btn_checkupd", "Check for updates",
+    "sec_license", "LICENSE",
+    "btn_changekey", "Change key",
+    "paste_new_key", "Paste the new key.",
+    "sw_autoupd", "Update automatically",
+    "sec_news", "WHAT'S NEW",
+    "news_ph", "What's new shows up here after checking.",
+    "btn_clear", "Clear",
+    "upd_not_cfg", "Updates are not set up.",
+    "upd_searching", "Checking for updates...",
+    "upd_noconn", "Couldn't check right now.",
+    "upd_badfile", "The downloaded file doesn't look like the script.",
+    "upd_latest", "You're on the latest version.",
+    "upd_avail", "New version v{1} available! See what's new below.",
+    "btn_upd_to", "Update to v{1}",
+    "badge_new", "New version v{1}",
+    "log_upd_avail", "Update available: v{1}.",
+    "log_upd_dlfail", "Failed to download update: {1}",
+    "log_upd_fail", "Update failed: {1}",
+    "log_updated", "Updated to v{1}! Restarting...",
+    "lang_menu", "Language",
+    "lang_auto", "Automatic (system)",
+    "mini_sub", "reopens {1} · drops {2}",
+    "key_title", "Activate license",
+    "key_sub", "Paste your key to unlock Auto Reconnect Roblox.",
+    "btn_activate", "Activate",
+    "your_hwid", "YOUR HWID",
+    "btn_copy", "Copy",
+    "hwid_copied", "HWID copied.",
+    "btn_buy", "Buy key",
+    "checking_lic", "Checking license...",
+    "ka_app_nf", "Application not found on KeyAuth (check name/Owner ID).",
+    "ka_badver", "KeyAuth version mismatch (set KEYAUTH_VER to match the panel).",
+    "key_nf", "Key doesn't exist.",
+    "key_invalid", "Invalid key.",
+    "key_hwid", "This key is already activated on another PC (different HWID).",
+    "key_expired", "Your key has expired.",
+    "hwid_banned", "This PC has been banned.",
+    "key_banned", "This key has been banned.",
+    "session_exp", "Session expired, try again.",
+    "key_fail", "Couldn't validate the key.",
+    "paste_key_first", "Paste your key first.",
+    "checking", "Checking...",
+    "connecting", "Connecting to the license server...",
+    "no_conn", "Can't reach the license server. Check your internet.",
+    "lic_lifetime", "Lifetime",
+    "side_lifetime", "LIFETIME LICENSE",
+    "lic_expires", "Expires on {1}  ({2} days)",
+    "side_days", "LICENSE: {1} DAYS",
+    "lic_active", "Active",
+    "side_active", "LICENSE ACTIVE",
+    "lic_offline", "Couldn't validate the license for over 2 hours.",
+    "log_lic_bad", "Invalid license: {1}",
+    "activate_to_use", "Activate your key to use it.",
+    "hook_need_url", "Enter the webhook URL first.",
+    "hook_sent", "Webhook sent (HTTP {1}).",
+    "hook_fail", "Webhook failed: {1}",
+    "log_status_sent", "Status sent (HTTP {1}).",
+    "log_status_fail", "Failed to send status: {1}",
+    "why_closed", "Roblox closed",
+    "why_min", "window minimized",
+    "why_fail", "capture failed",
+    "emb_offline", "Offline",
+    "emb_warn", "Online · disconnect in the log",
+    "emb_online", "Online in game",
+    "up_stopped", "stopped",
+    "none", "None",
+    "next_status", "next status in {1} min",
+    "no_shot", "no screenshot ({1})",
+    "f_uptime", "Uptime",
+    "f_reopens", "Reopens",
+    "f_drops", "Drops",
+    "f_lastdrop", "Last drop",
+    "m_exe", "directly via Roblox",
+    "m_uri", "roblox:// link",
+    "m_web", "browser",
+    "roblox_not_reg", "Roblox not found in the registry",
+    "paste_link_first", "Paste the game link first.",
+    "log_all_failed", "No launch method worked. Retrying on the next check.",
+    "log_method_failed", "Method {1}/{2} ({3}) failed: {4}",
+    "log_opening", "Opening ({1})",
+    "log_reopening", "Reopening ({1})",
+    "log_opened", "Roblox opened ({1}s). Joining the game...",
+    "st_joining", "Joining the game...",
+    "st_joining_sub", "Roblox open, loading the server",
+    "log_joined", "Joined the game ({1}s).",
+    "log_not_open25", "Roblox didn't open in 25s, trying another method...",
+    "log_not_join60", "Roblox opened but didn't join the game in 60s, trying another method...",
+    "log_not_open", "Roblox isn't open.",
+    "log_placed", "Roblox window placed.",
+    "log_detected", "Roblox window detected.",
+    "log_placed_right", "Roblox window moved to the right corner.",
+    "log_tab_closed", "Roblox tab closed in the browser.",
+    "log_tab_nf", "Couldn't find the Roblox tab. Open titles:",
+    "none_lc", "none",
+    "log_disc_log", "Disconnect in the log. Waiting to rejoin...",
+    "log_err_restart", "Error detected: {1}. Restarting Roblox...",
+    "log_disc_screen", "Disconnected screen in the window.",
+    "log_disc_screen_c", "Disconnected screen in the window (code {1}).",
+    "r_disc_screen", "Disconnected screen",
+    "r_disc_screen_c", "Disconnected screen - code {1}",
+    "log_rejoined", "Rejoined / normal teleport, ok.",
+    "r_no_rejoin", "disconnect/error without rejoining",
+    "r_hung", "window frozen (not responding)",
+    "log_back", "Roblox is back (down for {1}).",
+    "log_down", "Roblox closed/disconnected.",
+    "st_loading", "Loading...",
+    "st_loading_sub", "Waiting for the game to open and join the server",
+    "st_on_warn_sub", "Disconnect in the log, waiting to rejoin",
+    "st_on_sub", "In game · monitoring",
+    "st_off_sub", "Closed, reopening now",
+    "st_nolink", "No link",
+    "st_nolink_sub", "Paste the game link in the Game tab",
+    "st_monitoring", "Monitoring...",
+    "st_monitoring_sub", "Checking Roblox",
+    "log_mon_start", "Monitoring started (every {1}s).",
+    "log_mon_stop", "Monitoring stopped.",
+    "ev_start", "Monitoring started",
+    "ev_reopen", "Reopening Roblox",
+    "ev_fail", "Couldn't open Roblox",
+    "ev_error", "Error detected",
+    "ev_back", "Roblox is back",
+    "ev_down", "Roblox closed/disconnected",
+    "ev_lic", "Invalid license",
+    "ev_updated", "Updated to v{1}",
+    "ev_test", "Webhook is working!",
+    "d_time", "Time",
+    "d_away", "Was down for",
+    "d_reason", "Reason",
+    "d_restart", "Restarting Roblox...",
+    "d_stopped", "Monitoring stopped.",
+    "d_retry", "I'll try again on the next check.",
+    "d_test", "Alerts will show up here.",
+    "d_method", "Method",
+    "d_interval", "Checking every",
+    "d_user", "User"
+)
+I18N["es"] := Map(
+    "nav_home", "Inicio",
+    "nav_game", "Juego",
+    "nav_window", "Ventana",
+    "nav_hook", "Webhook",
+    "nav_coins", "Monedas",
+    "nav_logs", "Registros",
+    "nav_about", "Acerca de",
+    "pg_home_sub", "¡Hola, {1}! Resumen del monitoreo",
+    "pg_game_sub", "Servidor, intervalo de revisión y recuperación de errores",
+    "pg_win_sub", "Posición de la ventana de Roblox y pestaña del navegador",
+    "pg_hook_sub", "Avisos y estado en Discord",
+    "pg_coins_sub", "Lee tus monedas en la pantalla de Roblox y las envía al webhook",
+    "pg_about_sub", "Licencia, versión y novedades",
+    "pg_logs_sub", "Historial de esta sesión",
+    "idle", "Detenido",
+    "click_start", "Haz clic en Iniciar para monitorear",
+    "btn_start", "Iniciar",
+    "btn_stop", "Detener",
+    "st_uptime", "TIEMPO ACTIVO",
+    "st_reopens", "REAPERTURAS",
+    "st_drops", "CAÍDAS",
+    "st_lastdrop", "ÚLTIMA CAÍDA",
+    "quick", "ACCIONES RÁPIDAS",
+    "btn_open_now", "Abrir juego ahora",
+    "btn_place", "Colocar ventana",
+    "btn_compact", "Modo compacto",
+    "sec_server", "SERVIDOR",
+    "hint_link", "Enlace del juego, enlace de servidor privado o solo el Place ID.",
+    "sec_monitor", "MONITOREO",
+    "lbl_check", "Revisar cada (segundos)",
+    "lbl_wait", "Esperar al abrir (segundos)",
+    "sec_recovery", "RECUPERACIÓN",
+    "sw_err", "Reiniciar si hay error, desconexión o congelamiento",
+    "sw_err_sub", "Desconexión en el registro, expulsión, teletransporte fallido o ventana sin respuesta",
+    "lbl_tol", "Tolerancia (segundos)",
+    "sec_pos", "POSICIÓN",
+    "sw_place", "Colocar en la esquina superior derecha",
+    "sw_place_sub", "Mantiene la ventana de Roblox fija y totalmente visible",
+    "lbl_width", "Ancho",
+    "lbl_height", "Alto",
+    "btn_place_now", "Colocar ahora",
+    "sec_browser", "NAVEGADOR",
+    "sw_tab", "Cerrar la pestaña del navegador al entrar",
+    "sw_tab_sub", "Cierra la pestaña con 'Roblox' en el título y minimiza el navegador",
+    "btn_test", "Probar",
+    "hint_hook", "Avisos automáticos: caída, intento de reabrir, regreso y errores (con hora).",
+    "sec_status", "ESTADO PERIÓDICO",
+    "sw_rep", "Enviar estado con captura",
+    "sw_rep_sub", "Embed con el estado de la cuenta + captura solo de la ventana de Roblox",
+    "lbl_interval", "Intervalo (minutos)",
+    "btn_send_now", "Enviar ahora",
+    "sec_ocr", "LECTURA DE PANTALLA (OCR)",
+    "sw_ocr", "Enviar monedas en el embed de estado",
+    "sw_ocr_sub", "Lee los valores que aparecen en la ventana de Roblox",
+    "lbl_coins", "Monedas (separa con | ). Emoji opcional: Gems=<:gems:123456>",
+    "sec_lastread", "ÚLTIMA LECTURA",
+    "btn_testread", "Probar lectura",
+    "no_read", "Sin lecturas aún.",
+    "not_found", "no encontrado",
+    "nothing_read", "Nada leído.",
+    "ocr_open", "Abre Roblox (sin minimizar) con las monedas visibles.",
+    "ocr_names", "Escribe los nombres de las monedas arriba.",
+    "log_ocr_tested", "Lectura de monedas probada ({1}/{2} encontradas).",
+    "ocr_err", "Error de OCR: {1}",
+    "log_ocr_saw", "Texto que vio el OCR:",
+    "log_coin_err", "Error al leer monedas: {1}",
+    "sec_version", "VERSIÓN INSTALADA",
+    "upd_never", "Aún no verificado.",
+    "btn_checkupd", "Buscar actualización",
+    "sec_license", "LICENCIA",
+    "btn_changekey", "Cambiar key",
+    "paste_new_key", "Pega la nueva key.",
+    "sw_autoupd", "Actualizar automáticamente",
+    "sec_news", "NOVEDADES",
+    "news_ph", "Las novedades aparecen aquí tras verificar.",
+    "btn_clear", "Limpiar",
+    "upd_not_cfg", "Actualizaciones no configuradas.",
+    "upd_searching", "Buscando actualización...",
+    "upd_noconn", "No se pudo verificar ahora.",
+    "upd_badfile", "El archivo descargado no parece ser el script.",
+    "upd_latest", "Tienes la versión más reciente.",
+    "upd_avail", "¡Nueva versión v{1} disponible! Mira las novedades abajo.",
+    "btn_upd_to", "Actualizar a v{1}",
+    "badge_new", "Nueva versión v{1}",
+    "log_upd_avail", "Actualización disponible: v{1}.",
+    "log_upd_dlfail", "Error al descargar la actualización: {1}",
+    "log_upd_fail", "Error al actualizar: {1}",
+    "log_updated", "¡Actualizado a v{1}! Reiniciando...",
+    "lang_menu", "Idioma",
+    "lang_auto", "Automático (sistema)",
+    "mini_sub", "reap. {1} · caídas {2}",
+    "key_title", "Activar licencia",
+    "key_sub", "Pega tu key para desbloquear Auto Reconnect Roblox.",
+    "btn_activate", "Activar",
+    "your_hwid", "TU HWID",
+    "btn_copy", "Copiar",
+    "hwid_copied", "HWID copiado.",
+    "btn_buy", "Comprar key",
+    "checking_lic", "Verificando licencia...",
+    "ka_app_nf", "Aplicación no encontrada en KeyAuth (revisa nombre/Owner ID).",
+    "ka_badver", "Versión de KeyAuth distinta (iguala KEYAUTH_VER al panel).",
+    "key_nf", "La key no existe.",
+    "key_invalid", "Key inválida.",
+    "key_hwid", "Esta key ya está activada en otra PC (HWID distinto).",
+    "key_expired", "Tu key expiró.",
+    "hwid_banned", "Esta PC fue baneada.",
+    "key_banned", "Esta key fue baneada.",
+    "session_exp", "La sesión expiró, intenta de nuevo.",
+    "key_fail", "No se pudo validar la key.",
+    "paste_key_first", "Pega tu key primero.",
+    "checking", "Verificando...",
+    "connecting", "Conectando al servidor de licencias...",
+    "no_conn", "Sin conexión con el servidor de licencias. Revisa tu internet.",
+    "lic_lifetime", "De por vida",
+    "side_lifetime", "LICENCIA DE POR VIDA",
+    "lic_expires", "Expira el {1}  ({2} días)",
+    "side_days", "LICENCIA: {1} DÍAS",
+    "lic_active", "Activa",
+    "side_active", "LICENCIA ACTIVA",
+    "lic_offline", "Más de 2 h sin poder validar la licencia.",
+    "log_lic_bad", "Licencia inválida: {1}",
+    "activate_to_use", "Activa tu key para usarlo.",
+    "hook_need_url", "Pon la URL del webhook primero.",
+    "hook_sent", "Webhook enviado (HTTP {1}).",
+    "hook_fail", "Fallo del webhook: {1}",
+    "log_status_sent", "Estado enviado (HTTP {1}).",
+    "log_status_fail", "Error al enviar estado: {1}",
+    "why_closed", "Roblox cerrado",
+    "why_min", "ventana minimizada",
+    "why_fail", "fallo al capturar",
+    "emb_offline", "Desconectado",
+    "emb_warn", "En línea · desconexión en el registro",
+    "emb_online", "En línea en el juego",
+    "up_stopped", "detenido",
+    "none", "Ninguna",
+    "next_status", "próximo estado en {1} min",
+    "no_shot", "sin captura ({1})",
+    "f_uptime", "Tiempo activo",
+    "f_reopens", "Reaperturas",
+    "f_drops", "Caídas",
+    "f_lastdrop", "Última caída",
+    "m_exe", "directo por Roblox",
+    "m_uri", "enlace roblox://",
+    "m_web", "navegador",
+    "roblox_not_reg", "Roblox no encontrado en el registro",
+    "paste_link_first", "Pega el enlace del juego primero.",
+    "log_all_failed", "Ningún método funcionó. Reintento en la próxima revisión.",
+    "log_method_failed", "Método {1}/{2} ({3}) falló: {4}",
+    "log_opening", "Abriendo ({1})",
+    "log_reopening", "Reabriendo ({1})",
+    "log_opened", "Roblox abrió ({1}s). Entrando al juego...",
+    "st_joining", "Entrando al juego...",
+    "st_joining_sub", "Roblox abierto, cargando el servidor",
+    "log_joined", "Entró al juego ({1}s).",
+    "log_not_open25", "Roblox no abrió en 25 s, probando otro método...",
+    "log_not_join60", "Roblox abrió pero no entró al juego en 60 s, probando otro método...",
+    "log_not_open", "Roblox no está abierto.",
+    "log_placed", "Ventana de Roblox colocada.",
+    "log_detected", "Ventana de Roblox detectada.",
+    "log_placed_right", "Ventana de Roblox colocada en la esquina derecha.",
+    "log_tab_closed", "Pestaña de Roblox cerrada en el navegador.",
+    "log_tab_nf", "No encontré la pestaña de Roblox. Títulos abiertos:",
+    "none_lc", "ninguno",
+    "log_disc_log", "Desconexión en el registro. Esperando reingreso...",
+    "log_err_restart", "Error detectado: {1}. Reiniciando Roblox...",
+    "log_disc_screen", "Pantalla de Disconnected en la ventana.",
+    "log_disc_screen_c", "Pantalla de Disconnected en la ventana (código {1}).",
+    "r_disc_screen", "pantalla de Disconnected",
+    "r_disc_screen_c", "pantalla de Disconnected - código {1}",
+    "log_rejoined", "Reingresó / teletransporte normal, ok.",
+    "r_no_rejoin", "desconexión/error sin reingresar",
+    "r_hung", "ventana congelada (sin respuesta)",
+    "log_back", "Roblox volvió (fuera por {1}).",
+    "log_down", "Roblox se cerró/desconectó.",
+    "st_loading", "Cargando...",
+    "st_loading_sub", "Esperando que el juego abra y entre al servidor",
+    "st_on_warn_sub", "Desconexión en el registro, esperando reingreso",
+    "st_on_sub", "En el juego · monitoreando",
+    "st_off_sub", "Cerrado, reabriendo ahora",
+    "st_nolink", "Sin enlace",
+    "st_nolink_sub", "Pega el enlace en la pestaña Juego",
+    "st_monitoring", "Monitoreando...",
+    "st_monitoring_sub", "Revisando Roblox",
+    "log_mon_start", "Monitoreo iniciado (cada {1}s).",
+    "log_mon_stop", "Monitoreo detenido.",
+    "ev_start", "Monitoreo iniciado",
+    "ev_reopen", "Reabriendo Roblox",
+    "ev_fail", "No se pudo abrir Roblox",
+    "ev_error", "Error detectado",
+    "ev_back", "Roblox volvió",
+    "ev_down", "Roblox se cerró/desconectó",
+    "ev_lic", "Licencia inválida",
+    "ev_updated", "Actualizado a v{1}",
+    "ev_test", "¡El webhook funciona!",
+    "d_time", "Hora",
+    "d_away", "Estuvo fuera",
+    "d_reason", "Motivo",
+    "d_restart", "Reiniciando Roblox...",
+    "d_stopped", "Monitoreo detenido.",
+    "d_retry", "Lo intentaré de nuevo en la próxima revisión.",
+    "d_test", "Los avisos llegarán aquí.",
+    "d_method", "Método",
+    "d_interval", "Revisión cada",
+    "d_user", "Usuario"
+)
+I18N["fr"] := Map(
+    "nav_home", "Accueil",
+    "nav_game", "Jeu",
+    "nav_window", "Fenêtre",
+    "nav_hook", "Webhook",
+    "nav_coins", "Monnaies",
+    "nav_logs", "Journal",
+    "nav_about", "À propos",
+    "pg_home_sub", "Salut, {1} ! Vue d'ensemble de la surveillance",
+    "pg_game_sub", "Serveur, intervalle de vérification et récupération d'erreurs",
+    "pg_win_sub", "Position de la fenêtre Roblox et onglet du navigateur",
+    "pg_hook_sub", "Alertes et statut sur Discord",
+    "pg_coins_sub", "Lit vos monnaies à l'écran de Roblox et les envoie au webhook",
+    "pg_about_sub", "Licence, version et nouveautés",
+    "pg_logs_sub", "Historique de cette session",
+    "idle", "Arrêté",
+    "click_start", "Cliquez sur Démarrer pour surveiller",
+    "btn_start", "Démarrer",
+    "btn_stop", "Arrêter",
+    "st_uptime", "TEMPS ACTIF",
+    "st_reopens", "RÉOUVERTURES",
+    "st_drops", "COUPURES",
+    "st_lastdrop", "DERNIÈRE COUPURE",
+    "quick", "ACTIONS RAPIDES",
+    "btn_open_now", "Ouvrir le jeu",
+    "btn_place", "Placer la fenêtre",
+    "btn_compact", "Mode compact",
+    "sec_server", "SERVEUR",
+    "hint_link", "Lien du jeu, lien de serveur privé ou juste le Place ID.",
+    "sec_monitor", "SURVEILLANCE",
+    "lbl_check", "Vérifier toutes les (secondes)",
+    "lbl_wait", "Attendre après ouverture (s)",
+    "sec_recovery", "RÉCUPÉRATION",
+    "sw_err", "Redémarrer en cas d'erreur, déconnexion ou gel",
+    "sw_err_sub", "Déconnexion dans le journal, expulsion, téléportation échouée ou fenêtre figée",
+    "lbl_tol", "Tolérance (secondes)",
+    "sec_pos", "POSITION",
+    "sw_place", "Placer dans le coin supérieur droit",
+    "sw_place_sub", "Garde la fenêtre Roblox fixe et entièrement visible",
+    "lbl_width", "Largeur",
+    "lbl_height", "Hauteur",
+    "btn_place_now", "Placer maintenant",
+    "sec_browser", "NAVIGATEUR",
+    "sw_tab", "Fermer l'onglet du navigateur après connexion",
+    "sw_tab_sub", "Ferme l'onglet avec 'Roblox' dans le titre et réduit le navigateur",
+    "btn_test", "Tester",
+    "hint_hook", "Alertes automatiques : coupure, réouverture, retour et erreurs (avec l'heure).",
+    "sec_status", "STATUT PÉRIODIQUE",
+    "sw_rep", "Envoyer le statut avec capture",
+    "sw_rep_sub", "Embed avec l'état du compte + capture de la fenêtre Roblox uniquement",
+    "lbl_interval", "Intervalle (minutes)",
+    "btn_send_now", "Envoyer",
+    "sec_ocr", "LECTURE D'ÉCRAN (OCR)",
+    "sw_ocr", "Envoyer les monnaies dans l'embed de statut",
+    "sw_ocr_sub", "Lit les valeurs affichées dans la fenêtre Roblox",
+    "lbl_coins", "Monnaies (séparez avec | ). Emoji facultatif : Gems=<:gems:123456>",
+    "sec_lastread", "DERNIÈRE LECTURE",
+    "btn_testread", "Tester la lecture",
+    "no_read", "Aucune lecture pour l'instant.",
+    "not_found", "introuvable",
+    "nothing_read", "Rien lu.",
+    "ocr_open", "Ouvrez Roblox (non réduit) avec les monnaies visibles.",
+    "ocr_names", "Saisissez les noms des monnaies ci-dessus.",
+    "log_ocr_tested", "Lecture des monnaies testée ({1}/{2} trouvées).",
+    "ocr_err", "Erreur OCR : {1}",
+    "log_ocr_saw", "Texte vu par l'OCR :",
+    "log_coin_err", "Erreur de lecture des monnaies : {1}",
+    "sec_version", "VERSION INSTALLÉE",
+    "upd_never", "Pas encore vérifié.",
+    "btn_checkupd", "Rechercher une mise à jour",
+    "sec_license", "LICENCE",
+    "btn_changekey", "Changer de clé",
+    "paste_new_key", "Collez la nouvelle clé.",
+    "sw_autoupd", "Mise à jour automatique",
+    "sec_news", "NOUVEAUTÉS",
+    "news_ph", "Les nouveautés s'affichent ici après vérification.",
+    "btn_clear", "Effacer",
+    "upd_not_cfg", "Mises à jour non configurées.",
+    "upd_searching", "Recherche de mise à jour...",
+    "upd_noconn", "Impossible de vérifier pour le moment.",
+    "upd_badfile", "Le fichier téléchargé ne semble pas être le script.",
+    "upd_latest", "Vous avez la dernière version.",
+    "upd_avail", "Nouvelle version v{1} disponible ! Voir les nouveautés ci-dessous.",
+    "btn_upd_to", "Mettre à jour v{1}",
+    "badge_new", "Nouvelle version v{1}",
+    "log_upd_avail", "Mise à jour disponible : v{1}.",
+    "log_upd_dlfail", "Échec du téléchargement de la mise à jour : {1}",
+    "log_upd_fail", "Échec de la mise à jour : {1}",
+    "log_updated", "Mis à jour en v{1} ! Redémarrage...",
+    "lang_menu", "Langue",
+    "lang_auto", "Automatique (système)",
+    "mini_sub", "réouv. {1} · coupures {2}",
+    "key_title", "Activer la licence",
+    "key_sub", "Collez votre clé pour débloquer Auto Reconnect Roblox.",
+    "btn_activate", "Activer",
+    "your_hwid", "VOTRE HWID",
+    "btn_copy", "Copier",
+    "hwid_copied", "HWID copié.",
+    "btn_buy", "Acheter une clé",
+    "checking_lic", "Vérification de la licence...",
+    "ka_app_nf", "Application introuvable sur KeyAuth (vérifiez nom/Owner ID).",
+    "ka_badver", "Version KeyAuth différente (alignez KEYAUTH_VER sur le panneau).",
+    "key_nf", "Cette clé n'existe pas.",
+    "key_invalid", "Clé invalide.",
+    "key_hwid", "Cette clé est déjà activée sur un autre PC (HWID différent).",
+    "key_expired", "Votre clé a expiré.",
+    "hwid_banned", "Ce PC a été banni.",
+    "key_banned", "Cette clé a été bannie.",
+    "session_exp", "Session expirée, réessayez.",
+    "key_fail", "Impossible de valider la clé.",
+    "paste_key_first", "Collez d'abord votre clé.",
+    "checking", "Vérification...",
+    "connecting", "Connexion au serveur de licences...",
+    "no_conn", "Serveur de licences injoignable. Vérifiez votre connexion.",
+    "lic_lifetime", "À vie",
+    "side_lifetime", "LICENCE À VIE",
+    "lic_expires", "Expire le {1}  ({2} jours)",
+    "side_days", "LICENCE : {1} JOURS",
+    "lic_active", "Active",
+    "side_active", "LICENCE ACTIVE",
+    "lic_offline", "Licence non vérifiée depuis plus de 2 h.",
+    "log_lic_bad", "Licence invalide : {1}",
+    "activate_to_use", "Activez votre clé pour l'utiliser.",
+    "hook_need_url", "Saisissez d'abord l'URL du webhook.",
+    "hook_sent", "Webhook envoyé (HTTP {1}).",
+    "hook_fail", "Échec du webhook : {1}",
+    "log_status_sent", "Statut envoyé (HTTP {1}).",
+    "log_status_fail", "Échec d'envoi du statut : {1}",
+    "why_closed", "Roblox fermé",
+    "why_min", "fenêtre réduite",
+    "why_fail", "échec de la capture",
+    "emb_offline", "Hors ligne",
+    "emb_warn", "En ligne · déconnexion dans le journal",
+    "emb_online", "En ligne en jeu",
+    "up_stopped", "arrêté",
+    "none", "Aucune",
+    "next_status", "prochain statut dans {1} min",
+    "no_shot", "sans capture ({1})",
+    "f_uptime", "Temps actif",
+    "f_reopens", "Réouvertures",
+    "f_drops", "Coupures",
+    "f_lastdrop", "Dernière coupure",
+    "m_exe", "directement via Roblox",
+    "m_uri", "lien roblox://",
+    "m_web", "navigateur",
+    "roblox_not_reg", "Roblox introuvable dans le registre",
+    "paste_link_first", "Collez d'abord le lien du jeu.",
+    "log_all_failed", "Aucune méthode n'a fonctionné. Nouvel essai à la prochaine vérification.",
+    "log_method_failed", "Méthode {1}/{2} ({3}) échouée : {4}",
+    "log_opening", "Ouverture ({1})",
+    "log_reopening", "Réouverture ({1})",
+    "log_opened", "Roblox ouvert ({1}s). Connexion au jeu...",
+    "st_joining", "Connexion au jeu...",
+    "st_joining_sub", "Roblox ouvert, chargement du serveur",
+    "log_joined", "Connecté au jeu ({1}s).",
+    "log_not_open25", "Roblox ne s'est pas ouvert en 25 s, autre méthode...",
+    "log_not_join60", "Roblox ouvert mais pas de connexion au jeu en 60 s, autre méthode...",
+    "log_not_open", "Roblox n'est pas ouvert.",
+    "log_placed", "Fenêtre Roblox placée.",
+    "log_detected", "Fenêtre Roblox détectée.",
+    "log_placed_right", "Fenêtre Roblox placée dans le coin droit.",
+    "log_tab_closed", "Onglet Roblox fermé dans le navigateur.",
+    "log_tab_nf", "Onglet Roblox introuvable. Titres ouverts :",
+    "none_lc", "aucun",
+    "log_disc_log", "Déconnexion dans le journal. En attente de reconnexion...",
+    "log_err_restart", "Erreur détectée : {1}. Redémarrage de Roblox...",
+    "log_disc_screen", "Écran Disconnected dans la fenêtre.",
+    "log_disc_screen_c", "Écran Disconnected dans la fenêtre (code {1}).",
+    "r_disc_screen", "écran Disconnected",
+    "r_disc_screen_c", "écran Disconnected - code {1}",
+    "log_rejoined", "Reconnecté / téléportation normale, ok.",
+    "r_no_rejoin", "déconnexion/erreur sans reconnexion",
+    "r_hung", "fenêtre figée (ne répond pas)",
+    "log_back", "Roblox est revenu (absent {1}).",
+    "log_down", "Roblox fermé/déconnecté.",
+    "st_loading", "Chargement...",
+    "st_loading_sub", "En attente de l'ouverture du jeu et de la connexion",
+    "st_on_warn_sub", "Déconnexion dans le journal, attente de reconnexion",
+    "st_on_sub", "En jeu · surveillance",
+    "st_off_sub", "Fermé, réouverture en cours",
+    "st_nolink", "Pas de lien",
+    "st_nolink_sub", "Collez le lien dans l'onglet Jeu",
+    "st_monitoring", "Surveillance...",
+    "st_monitoring_sub", "Vérification de Roblox",
+    "log_mon_start", "Surveillance démarrée (toutes les {1}s).",
+    "log_mon_stop", "Surveillance arrêtée.",
+    "ev_start", "Surveillance démarrée",
+    "ev_reopen", "Réouverture de Roblox",
+    "ev_fail", "Impossible d'ouvrir Roblox",
+    "ev_error", "Erreur détectée",
+    "ev_back", "Roblox est revenu",
+    "ev_down", "Roblox fermé/déconnecté",
+    "ev_lic", "Licence invalide",
+    "ev_updated", "Mis à jour en v{1}",
+    "ev_test", "Le webhook fonctionne !",
+    "d_time", "Heure",
+    "d_away", "Absent pendant",
+    "d_reason", "Raison",
+    "d_restart", "Redémarrage de Roblox...",
+    "d_stopped", "Surveillance arrêtée.",
+    "d_retry", "Nouvel essai à la prochaine vérification.",
+    "d_test", "Les alertes arriveront ici.",
+    "d_method", "Méthode",
+    "d_interval", "Vérification toutes les",
+    "d_user", "Utilisateur"
+)
+I18N["de"] := Map(
+    "nav_home", "Start",
+    "nav_game", "Spiel",
+    "nav_window", "Fenster",
+    "nav_hook", "Webhook",
+    "nav_coins", "Währungen",
+    "nav_logs", "Protokoll",
+    "nav_about", "Info",
+    "pg_home_sub", "Hallo, {1}! Überwachungsübersicht",
+    "pg_game_sub", "Server, Prüfintervall und Fehlerbehebung",
+    "pg_win_sub", "Position des Roblox-Fensters und Browser-Tab",
+    "pg_hook_sub", "Benachrichtigungen und Status auf Discord",
+    "pg_coins_sub", "Liest deine Währungen im Roblox-Fenster und sendet sie an den Webhook",
+    "pg_about_sub", "Lizenz, Version und Neuigkeiten",
+    "pg_logs_sub", "Verlauf dieser Sitzung",
+    "idle", "Gestoppt",
+    "click_start", "Klicke auf Starten, um zu überwachen",
+    "btn_start", "Starten",
+    "btn_stop", "Stoppen",
+    "st_uptime", "LAUFZEIT",
+    "st_reopens", "NEUSTARTS",
+    "st_drops", "ABBRÜCHE",
+    "st_lastdrop", "LETZTER ABBRUCH",
+    "quick", "SCHNELLAKTIONEN",
+    "btn_open_now", "Spiel jetzt öffnen",
+    "btn_place", "Fenster platzieren",
+    "btn_compact", "Kompaktmodus",
+    "sec_server", "SERVER",
+    "hint_link", "Spiel-Link, Link zum privaten Server oder nur die Place-ID.",
+    "sec_monitor", "ÜBERWACHUNG",
+    "lbl_check", "Prüfen alle (Sekunden)",
+    "lbl_wait", "Warten nach dem Öffnen (Sek.)",
+    "sec_recovery", "WIEDERHERSTELLUNG",
+    "sw_err", "Neustart bei Fehler, Verbindungsabbruch oder Hänger",
+    "sw_err_sub", "Abbruch im Log, Kick, fehlgeschlagener Teleport oder Fenster reagiert nicht",
+    "lbl_tol", "Toleranz (Sekunden)",
+    "sec_pos", "POSITION",
+    "sw_place", "Oben rechts platzieren",
+    "sw_place_sub", "Hält das Roblox-Fenster fest und vollständig sichtbar",
+    "lbl_width", "Breite",
+    "lbl_height", "Höhe",
+    "btn_place_now", "Jetzt platzieren",
+    "sec_browser", "BROWSER",
+    "sw_tab", "Browser-Tab nach dem Beitreten schließen",
+    "sw_tab_sub", "Schließt den Tab mit 'Roblox' im Titel und minimiert den Browser",
+    "btn_test", "Testen",
+    "hint_hook", "Automatische Meldungen: Abbruch, Neustartversuch, wieder online und Fehler (mit Uhrzeit).",
+    "sec_status", "REGELMÄSSIGER STATUS",
+    "sw_rep", "Status mit Screenshot senden",
+    "sw_rep_sub", "Embed mit Kontostatus + Screenshot nur vom Roblox-Fenster",
+    "lbl_interval", "Intervall (Minuten)",
+    "btn_send_now", "Jetzt senden",
+    "sec_ocr", "BILDSCHIRM LESEN (OCR)",
+    "sw_ocr", "Währungen im Status-Embed senden",
+    "sw_ocr_sub", "Liest die im Roblox-Fenster angezeigten Werte",
+    "lbl_coins", "Währungen (mit | trennen). Emoji optional: Gems=<:gems:123456>",
+    "sec_lastread", "LETZTE LESUNG",
+    "btn_testread", "Lesen testen",
+    "no_read", "Noch keine Lesung.",
+    "not_found", "nicht gefunden",
+    "nothing_read", "Nichts gelesen.",
+    "ocr_open", "Öffne Roblox (nicht minimiert) mit sichtbaren Währungen.",
+    "ocr_names", "Gib oben die Namen der Währungen ein.",
+    "log_ocr_tested", "Währungslesung getestet ({1}/{2} gefunden).",
+    "ocr_err", "OCR-Fehler: {1}",
+    "log_ocr_saw", "Vom OCR erkannter Text:",
+    "log_coin_err", "Fehler beim Lesen der Währungen: {1}",
+    "sec_version", "INSTALLIERTE VERSION",
+    "upd_never", "Noch nicht geprüft.",
+    "btn_checkupd", "Nach Updates suchen",
+    "sec_license", "LIZENZ",
+    "btn_changekey", "Key ändern",
+    "paste_new_key", "Füge den neuen Key ein.",
+    "sw_autoupd", "Automatisch aktualisieren",
+    "sec_news", "NEUIGKEITEN",
+    "news_ph", "Neuigkeiten erscheinen hier nach der Prüfung.",
+    "btn_clear", "Leeren",
+    "upd_not_cfg", "Updates nicht eingerichtet.",
+    "upd_searching", "Suche nach Updates...",
+    "upd_noconn", "Konnte gerade nicht prüfen.",
+    "upd_badfile", "Die heruntergeladene Datei scheint nicht das Skript zu sein.",
+    "upd_latest", "Du hast die neueste Version.",
+    "upd_avail", "Neue Version v{1} verfügbar! Neuigkeiten siehe unten.",
+    "btn_upd_to", "Auf v{1} aktualisieren",
+    "badge_new", "Neue Version v{1}",
+    "log_upd_avail", "Update verfügbar: v{1}.",
+    "log_upd_dlfail", "Update-Download fehlgeschlagen: {1}",
+    "log_upd_fail", "Aktualisierung fehlgeschlagen: {1}",
+    "log_updated", "Auf v{1} aktualisiert! Neustart...",
+    "lang_menu", "Sprache",
+    "lang_auto", "Automatisch (System)",
+    "mini_sub", "Neustarts {1} · Abbrüche {2}",
+    "key_title", "Lizenz aktivieren",
+    "key_sub", "Füge deinen Key ein, um Auto Reconnect Roblox freizuschalten.",
+    "btn_activate", "Aktivieren",
+    "your_hwid", "DEINE HWID",
+    "btn_copy", "Kopieren",
+    "hwid_copied", "HWID kopiert.",
+    "btn_buy", "Key kaufen",
+    "checking_lic", "Lizenz wird geprüft...",
+    "ka_app_nf", "Anwendung bei KeyAuth nicht gefunden (Name/Owner ID prüfen).",
+    "ka_badver", "KeyAuth-Version passt nicht (KEYAUTH_VER wie im Panel setzen).",
+    "key_nf", "Key existiert nicht.",
+    "key_invalid", "Ungültiger Key.",
+    "key_hwid", "Dieser Key ist bereits auf einem anderen PC aktiviert (andere HWID).",
+    "key_expired", "Dein Key ist abgelaufen.",
+    "hwid_banned", "Dieser PC wurde gesperrt.",
+    "key_banned", "Dieser Key wurde gesperrt.",
+    "session_exp", "Sitzung abgelaufen, versuche es erneut.",
+    "key_fail", "Key konnte nicht geprüft werden.",
+    "paste_key_first", "Füge zuerst deinen Key ein.",
+    "checking", "Prüfe...",
+    "connecting", "Verbinde mit dem Lizenzserver...",
+    "no_conn", "Lizenzserver nicht erreichbar. Prüfe deine Internetverbindung.",
+    "lic_lifetime", "Lebenslang",
+    "side_lifetime", "LEBENSLANGE LIZENZ",
+    "lic_expires", "Läuft ab am {1}  ({2} Tage)",
+    "side_days", "LIZENZ: {1} TAGE",
+    "lic_active", "Aktiv",
+    "side_active", "LIZENZ AKTIV",
+    "lic_offline", "Lizenz seit über 2 Std. nicht prüfbar.",
+    "log_lic_bad", "Ungültige Lizenz: {1}",
+    "activate_to_use", "Aktiviere deinen Key, um es zu nutzen.",
+    "hook_need_url", "Gib zuerst die Webhook-URL ein.",
+    "hook_sent", "Webhook gesendet (HTTP {1}).",
+    "hook_fail", "Webhook fehlgeschlagen: {1}",
+    "log_status_sent", "Status gesendet (HTTP {1}).",
+    "log_status_fail", "Status konnte nicht gesendet werden: {1}",
+    "why_closed", "Roblox geschlossen",
+    "why_min", "Fenster minimiert",
+    "why_fail", "Aufnahme fehlgeschlagen",
+    "emb_offline", "Offline",
+    "emb_warn", "Online · Abbruch im Log",
+    "emb_online", "Online im Spiel",
+    "up_stopped", "gestoppt",
+    "none", "Keiner",
+    "next_status", "nächster Status in {1} Min.",
+    "no_shot", "kein Screenshot ({1})",
+    "f_uptime", "Laufzeit",
+    "f_reopens", "Neustarts",
+    "f_drops", "Abbrüche",
+    "f_lastdrop", "Letzter Abbruch",
+    "m_exe", "direkt über Roblox",
+    "m_uri", "roblox://-Link",
+    "m_web", "Browser",
+    "roblox_not_reg", "Roblox nicht in der Registry gefunden",
+    "paste_link_first", "Füge zuerst den Spiel-Link ein.",
+    "log_all_failed", "Keine Startmethode hat funktioniert. Neuer Versuch bei der nächsten Prüfung.",
+    "log_method_failed", "Methode {1}/{2} ({3}) fehlgeschlagen: {4}",
+    "log_opening", "Öffne ({1})",
+    "log_reopening", "Starte neu ({1})",
+    "log_opened", "Roblox geöffnet ({1}s). Trete dem Spiel bei...",
+    "st_joining", "Trete dem Spiel bei...",
+    "st_joining_sub", "Roblox offen, Server wird geladen",
+    "log_joined", "Spiel beigetreten ({1}s).",
+    "log_not_open25", "Roblox hat sich in 25 s nicht geöffnet, versuche andere Methode...",
+    "log_not_join60", "Roblox offen, aber in 60 s nicht beigetreten, versuche andere Methode...",
+    "log_not_open", "Roblox ist nicht geöffnet.",
+    "log_placed", "Roblox-Fenster platziert.",
+    "log_detected", "Roblox-Fenster erkannt.",
+    "log_placed_right", "Roblox-Fenster in die rechte Ecke verschoben.",
+    "log_tab_closed", "Roblox-Tab im Browser geschlossen.",
+    "log_tab_nf", "Roblox-Tab nicht gefunden. Offene Titel:",
+    "none_lc", "keine",
+    "log_disc_log", "Abbruch im Log. Warte auf Wiederbeitritt...",
+    "log_err_restart", "Fehler erkannt: {1}. Roblox wird neu gestartet...",
+    "log_disc_screen", "Disconnected-Bildschirm im Fenster.",
+    "log_disc_screen_c", "Disconnected-Bildschirm im Fenster (Code {1}).",
+    "r_disc_screen", "Disconnected-Bildschirm",
+    "r_disc_screen_c", "Disconnected-Bildschirm - Code {1}",
+    "log_rejoined", "Wieder beigetreten / normaler Teleport, ok.",
+    "r_no_rejoin", "Abbruch/Fehler ohne Wiederbeitritt",
+    "r_hung", "Fenster hängt (reagiert nicht)",
+    "log_back", "Roblox ist zurück (weg für {1}).",
+    "log_down", "Roblox geschlossen/getrennt.",
+    "st_loading", "Lädt...",
+    "st_loading_sub", "Warte, bis das Spiel öffnet und dem Server beitritt",
+    "st_on_warn_sub", "Abbruch im Log, warte auf Wiederbeitritt",
+    "st_on_sub", "Im Spiel · überwache",
+    "st_off_sub", "Geschlossen, starte jetzt neu",
+    "st_nolink", "Kein Link",
+    "st_nolink_sub", "Füge den Link im Tab Spiel ein",
+    "st_monitoring", "Überwache...",
+    "st_monitoring_sub", "Prüfe Roblox",
+    "log_mon_start", "Überwachung gestartet (alle {1}s).",
+    "log_mon_stop", "Überwachung gestoppt.",
+    "ev_start", "Überwachung gestartet",
+    "ev_reopen", "Roblox wird neu gestartet",
+    "ev_fail", "Roblox konnte nicht geöffnet werden",
+    "ev_error", "Fehler erkannt",
+    "ev_back", "Roblox ist zurück",
+    "ev_down", "Roblox geschlossen/getrennt",
+    "ev_lic", "Ungültige Lizenz",
+    "ev_updated", "Auf v{1} aktualisiert",
+    "ev_test", "Webhook funktioniert!",
+    "d_time", "Uhrzeit",
+    "d_away", "Weg für",
+    "d_reason", "Grund",
+    "d_restart", "Roblox wird neu gestartet...",
+    "d_stopped", "Überwachung gestoppt.",
+    "d_retry", "Neuer Versuch bei der nächsten Prüfung.",
+    "d_test", "Benachrichtigungen kommen hier an.",
+    "d_method", "Methode",
+    "d_interval", "Prüfung alle",
+    "d_user", "Benutzer"
+)
+I18N["ru"] := Map(
+    "nav_home", "Главная",
+    "nav_game", "Игра",
+    "nav_window", "Окно",
+    "nav_hook", "Вебхук",
+    "nav_coins", "Валюта",
+    "nav_logs", "Журнал",
+    "nav_about", "О программе",
+    "pg_home_sub", "Привет, {1}! Обзор мониторинга",
+    "pg_game_sub", "Сервер, интервал проверки и восстановление после ошибок",
+    "pg_win_sub", "Положение окна Roblox и вкладка браузера",
+    "pg_hook_sub", "Уведомления и статус в Discord",
+    "pg_coins_sub", "Считывает валюту с экрана Roblox и отправляет в вебхук",
+    "pg_about_sub", "Лицензия, версия и новое",
+    "pg_logs_sub", "История этой сессии",
+    "idle", "Остановлено",
+    "click_start", "Нажмите «Старт», чтобы начать",
+    "btn_start", "Старт",
+    "btn_stop", "Стоп",
+    "st_uptime", "ВРЕМЯ РАБОТЫ",
+    "st_reopens", "ПЕРЕЗАПУСКИ",
+    "st_drops", "ВЫЛЕТЫ",
+    "st_lastdrop", "ПОСЛЕДНИЙ ВЫЛЕТ",
+    "quick", "БЫСТРЫЕ ДЕЙСТВИЯ",
+    "btn_open_now", "Открыть игру",
+    "btn_place", "Разместить окно",
+    "btn_compact", "Компактный режим",
+    "sec_server", "СЕРВЕР",
+    "hint_link", "Ссылка на игру, на приватный сервер или просто Place ID.",
+    "sec_monitor", "МОНИТОРИНГ",
+    "lbl_check", "Проверять каждые (сек)",
+    "lbl_wait", "Ждать после запуска (сек)",
+    "sec_recovery", "ВОССТАНОВЛЕНИЕ",
+    "sw_err", "Перезапуск при ошибке, отключении или зависании",
+    "sw_err_sub", "Отключение в логе, кик, неудачный телепорт или зависшее окно",
+    "lbl_tol", "Допуск (сек)",
+    "sec_pos", "ПОЛОЖЕНИЕ",
+    "sw_place", "Разместить в правом верхнем углу",
+    "sw_place_sub", "Окно Roblox остаётся на месте и полностью видно",
+    "lbl_width", "Ширина",
+    "lbl_height", "Высота",
+    "btn_place_now", "Разместить",
+    "sec_browser", "БРАУЗЕР",
+    "sw_tab", "Закрывать вкладку браузера после входа",
+    "sw_tab_sub", "Закрывает вкладку с 'Roblox' в заголовке и сворачивает браузер",
+    "btn_test", "Тест",
+    "hint_hook", "Автоуведомления: вылет, попытка перезапуска, возвращение и ошибки (со временем).",
+    "sec_status", "ПЕРИОДИЧЕСКИЙ СТАТУС",
+    "sw_rep", "Отправлять статус со скриншотом",
+    "sw_rep_sub", "Embed со статусом аккаунта + скриншот только окна Roblox",
+    "lbl_interval", "Интервал (мин)",
+    "btn_send_now", "Отправить",
+    "sec_ocr", "ЧТЕНИЕ ЭКРАНА (OCR)",
+    "sw_ocr", "Отправлять валюту в статусе",
+    "sw_ocr_sub", "Считывает значения, видимые в окне Roblox",
+    "lbl_coins", "Валюты (через | ). Эмодзи по желанию: Gems=<:gems:123456>",
+    "sec_lastread", "ПОСЛЕДНЕЕ ЧТЕНИЕ",
+    "btn_testread", "Проверить",
+    "no_read", "Пока нет данных.",
+    "not_found", "не найдено",
+    "nothing_read", "Ничего не считано.",
+    "ocr_open", "Откройте Roblox (не свёрнутым), чтобы валюта была видна.",
+    "ocr_names", "Введите названия валют выше.",
+    "log_ocr_tested", "Чтение валюты проверено (найдено {1}/{2}).",
+    "ocr_err", "Ошибка OCR: {1}",
+    "log_ocr_saw", "Текст, который увидел OCR:",
+    "log_coin_err", "Ошибка чтения валюты: {1}",
+    "sec_version", "УСТАНОВЛЕННАЯ ВЕРСИЯ",
+    "upd_never", "Ещё не проверено.",
+    "btn_checkupd", "Проверить обновления",
+    "sec_license", "ЛИЦЕНЗИЯ",
+    "btn_changekey", "Сменить ключ",
+    "paste_new_key", "Вставьте новый ключ.",
+    "sw_autoupd", "Обновлять автоматически",
+    "sec_news", "ЧТО НОВОГО",
+    "news_ph", "Новое появится здесь после проверки.",
+    "btn_clear", "Очистить",
+    "upd_not_cfg", "Обновления не настроены.",
+    "upd_searching", "Поиск обновлений...",
+    "upd_noconn", "Не удалось проверить.",
+    "upd_badfile", "Скачанный файл не похож на скрипт.",
+    "upd_latest", "У вас последняя версия.",
+    "upd_avail", "Доступна новая версия v{1}! Что нового — ниже.",
+    "btn_upd_to", "Обновить до v{1}",
+    "badge_new", "Новая версия v{1}",
+    "log_upd_avail", "Доступно обновление: v{1}.",
+    "log_upd_dlfail", "Не удалось скачать обновление: {1}",
+    "log_upd_fail", "Ошибка обновления: {1}",
+    "log_updated", "Обновлено до v{1}! Перезапуск...",
+    "lang_menu", "Язык",
+    "lang_auto", "Автоматически (система)",
+    "mini_sub", "перезап. {1} · вылеты {2}",
+    "key_title", "Активация лицензии",
+    "key_sub", "Вставьте ключ, чтобы открыть Auto Reconnect Roblox.",
+    "btn_activate", "Активировать",
+    "your_hwid", "ВАШ HWID",
+    "btn_copy", "Копировать",
+    "hwid_copied", "HWID скопирован.",
+    "btn_buy", "Купить ключ",
+    "checking_lic", "Проверка лицензии...",
+    "ka_app_nf", "Приложение не найдено в KeyAuth (проверьте имя/Owner ID).",
+    "ka_badver", "Версия KeyAuth не совпадает (KEYAUTH_VER как в панели).",
+    "key_nf", "Ключ не существует.",
+    "key_invalid", "Неверный ключ.",
+    "key_hwid", "Ключ уже активирован на другом ПК (другой HWID).",
+    "key_expired", "Срок действия ключа истёк.",
+    "hwid_banned", "Этот ПК заблокирован.",
+    "key_banned", "Этот ключ заблокирован.",
+    "session_exp", "Сессия истекла, попробуйте снова.",
+    "key_fail", "Не удалось проверить ключ.",
+    "paste_key_first", "Сначала вставьте ключ.",
+    "checking", "Проверка...",
+    "connecting", "Подключение к серверу лицензий...",
+    "no_conn", "Нет связи с сервером лицензий. Проверьте интернет.",
+    "lic_lifetime", "Бессрочная",
+    "side_lifetime", "БЕССРОЧНАЯ ЛИЦЕНЗИЯ",
+    "lic_expires", "Истекает {1}  ({2} дн.)",
+    "side_days", "ЛИЦЕНЗИЯ: {1} ДН.",
+    "lic_active", "Активна",
+    "side_active", "ЛИЦЕНЗИЯ АКТИВНА",
+    "lic_offline", "Не удаётся проверить лицензию более 2 ч.",
+    "log_lic_bad", "Лицензия недействительна: {1}",
+    "activate_to_use", "Активируйте ключ, чтобы пользоваться.",
+    "hook_need_url", "Сначала укажите URL вебхука.",
+    "hook_sent", "Вебхук отправлен (HTTP {1}).",
+    "hook_fail", "Ошибка вебхука: {1}",
+    "log_status_sent", "Статус отправлен (HTTP {1}).",
+    "log_status_fail", "Не удалось отправить статус: {1}",
+    "why_closed", "Roblox закрыт",
+    "why_min", "окно свёрнуто",
+    "why_fail", "не удалось сделать снимок",
+    "emb_offline", "Не в сети",
+    "emb_warn", "В сети · отключение в логе",
+    "emb_online", "В игре",
+    "up_stopped", "остановлен",
+    "none", "Нет",
+    "next_status", "следующий статус через {1} мин",
+    "no_shot", "без скриншота ({1})",
+    "f_uptime", "Время работы",
+    "f_reopens", "Перезапуски",
+    "f_drops", "Вылеты",
+    "f_lastdrop", "Последний вылет",
+    "m_exe", "напрямую через Roblox",
+    "m_uri", "ссылка roblox://",
+    "m_web", "браузер",
+    "roblox_not_reg", "Roblox не найден в реестре",
+    "paste_link_first", "Сначала вставьте ссылку на игру.",
+    "log_all_failed", "Ни один способ не сработал. Повтор при следующей проверке.",
+    "log_method_failed", "Способ {1}/{2} ({3}) не сработал: {4}",
+    "log_opening", "Запуск ({1})",
+    "log_reopening", "Перезапуск ({1})",
+    "log_opened", "Roblox запущен ({1}с). Вход в игру...",
+    "st_joining", "Вход в игру...",
+    "st_joining_sub", "Roblox открыт, загрузка сервера",
+    "log_joined", "Вошёл в игру ({1}с).",
+    "log_not_open25", "Roblox не открылся за 25 с, пробую другой способ...",
+    "log_not_join60", "Roblox открыт, но не вошёл в игру за 60 с, пробую другой способ...",
+    "log_not_open", "Roblox не запущен.",
+    "log_placed", "Окно Roblox размещено.",
+    "log_detected", "Окно Roblox обнаружено.",
+    "log_placed_right", "Окно Roblox перемещено в правый угол.",
+    "log_tab_closed", "Вкладка Roblox закрыта в браузере.",
+    "log_tab_nf", "Вкладка Roblox не найдена. Открытые заголовки:",
+    "none_lc", "нет",
+    "log_disc_log", "Отключение в логе. Жду повторного входа...",
+    "log_err_restart", "Обнаружена ошибка: {1}. Перезапуск Roblox...",
+    "log_disc_screen", "Экран Disconnected в окне.",
+    "log_disc_screen_c", "Экран Disconnected в окне (код {1}).",
+    "r_disc_screen", "экран Disconnected",
+    "r_disc_screen_c", "экран Disconnected - код {1}",
+    "log_rejoined", "Повторный вход / обычный телепорт, ок.",
+    "r_no_rejoin", "отключение/ошибка без повторного входа",
+    "r_hung", "окно зависло (не отвечает)",
+    "log_back", "Roblox вернулся (не было {1}).",
+    "log_down", "Roblox закрылся/отключился.",
+    "st_loading", "Загрузка...",
+    "st_loading_sub", "Ждём запуска игры и входа на сервер",
+    "st_on_warn_sub", "Отключение в логе, жду повторного входа",
+    "st_on_sub", "В игре · мониторинг",
+    "st_off_sub", "Закрыт, перезапускаю",
+    "st_nolink", "Нет ссылки",
+    "st_nolink_sub", "Вставьте ссылку во вкладке «Игра»",
+    "st_monitoring", "Мониторинг...",
+    "st_monitoring_sub", "Проверка Roblox",
+    "log_mon_start", "Мониторинг запущен (каждые {1}с).",
+    "log_mon_stop", "Мониторинг остановлен.",
+    "ev_start", "Мониторинг запущен",
+    "ev_reopen", "Перезапуск Roblox",
+    "ev_fail", "Не удалось открыть Roblox",
+    "ev_error", "Обнаружена ошибка",
+    "ev_back", "Roblox вернулся",
+    "ev_down", "Roblox закрылся/отключился",
+    "ev_lic", "Лицензия недействительна",
+    "ev_updated", "Обновлено до v{1}",
+    "ev_test", "Вебхук работает!",
+    "d_time", "Время",
+    "d_away", "Не было",
+    "d_reason", "Причина",
+    "d_restart", "Перезапуск Roblox...",
+    "d_stopped", "Мониторинг остановлен.",
+    "d_retry", "Попробую снова при следующей проверке.",
+    "d_test", "Уведомления будут приходить сюда.",
+    "d_method", "Способ",
+    "d_interval", "Проверка каждые",
+    "d_user", "Пользователь"
+)
+I18N["tr"] := Map(
+    "nav_home", "Ana Sayfa",
+    "nav_game", "Oyun",
+    "nav_window", "Pencere",
+    "nav_hook", "Webhook",
+    "nav_coins", "Paralar",
+    "nav_logs", "Kayıtlar",
+    "nav_about", "Hakkında",
+    "pg_home_sub", "Merhaba, {1}! İzleme özeti",
+    "pg_game_sub", "Sunucu, kontrol aralığı ve hata kurtarma",
+    "pg_win_sub", "Roblox pencere konumu ve tarayıcı sekmesi",
+    "pg_hook_sub", "Discord'da uyarılar ve durum",
+    "pg_coins_sub", "Roblox ekranındaki paralarını okur ve webhook'a gönderir",
+    "pg_about_sub", "Lisans, sürüm ve yenilikler",
+    "pg_logs_sub", "Bu oturumun geçmişi",
+    "idle", "Durduruldu",
+    "click_start", "İzlemek için Başlat'a tıkla",
+    "btn_start", "Başlat",
+    "btn_stop", "Durdur",
+    "st_uptime", "ÇALIŞMA SÜRESİ",
+    "st_reopens", "YENİDEN AÇMA",
+    "st_drops", "DÜŞMELER",
+    "st_lastdrop", "SON DÜŞME",
+    "quick", "HIZLI İŞLEMLER",
+    "btn_open_now", "Oyunu şimdi aç",
+    "btn_place", "Pencereyi yerleştir",
+    "btn_compact", "Kompakt mod",
+    "sec_server", "SUNUCU",
+    "hint_link", "Oyun linki, özel sunucu linki veya sadece Place ID.",
+    "sec_monitor", "İZLEME",
+    "lbl_check", "Kontrol aralığı (saniye)",
+    "lbl_wait", "Açıldıktan sonra bekle (sn)",
+    "sec_recovery", "KURTARMA",
+    "sw_err", "Hata, bağlantı kopması veya donmada yeniden başlat",
+    "sw_err_sub", "Logda bağlantı kopması, atılma, başarısız ışınlanma veya yanıt vermeyen pencere",
+    "lbl_tol", "Tolerans (saniye)",
+    "sec_pos", "KONUM",
+    "sw_place", "Sağ üst köşeye yerleştir",
+    "sw_place_sub", "Roblox penceresini sabit ve tamamen görünür tutar",
+    "lbl_width", "Genişlik",
+    "lbl_height", "Yükseklik",
+    "btn_place_now", "Şimdi yerleştir",
+    "sec_browser", "TARAYICI",
+    "sw_tab", "Girdikten sonra tarayıcı sekmesini kapat",
+    "sw_tab_sub", "Başlığında 'Roblox' olan sekmeyi kapatır ve tarayıcıyı küçültür",
+    "btn_test", "Test et",
+    "hint_hook", "Otomatik uyarılar: düşme, yeniden açma denemesi, geri dönüş ve hatalar (saatli).",
+    "sec_status", "PERİYODİK DURUM",
+    "sw_rep", "Ekran görüntüsüyle durum gönder",
+    "sw_rep_sub", "Hesap durumu + sadece Roblox penceresinin görüntüsü",
+    "lbl_interval", "Aralık (dakika)",
+    "btn_send_now", "Şimdi gönder",
+    "sec_ocr", "EKRAN OKUMA (OCR)",
+    "sw_ocr", "Paraları durum embed'inde gönder",
+    "sw_ocr_sub", "Roblox penceresinde görünen değerleri okur",
+    "lbl_coins", "Paralar ( | ile ayır). İsteğe bağlı emoji: Gems=<:gems:123456>",
+    "sec_lastread", "SON OKUMA",
+    "btn_testread", "Okumayı test et",
+    "no_read", "Henüz okuma yok.",
+    "not_found", "bulunamadı",
+    "nothing_read", "Hiçbir şey okunmadı.",
+    "ocr_open", "Roblox'u (küçültmeden) paralar görünür şekilde aç.",
+    "ocr_names", "Para adlarını yukarıya yaz.",
+    "log_ocr_tested", "Para okuma test edildi ({1}/{2} bulundu).",
+    "ocr_err", "OCR hatası: {1}",
+    "log_ocr_saw", "OCR'ın gördüğü metin:",
+    "log_coin_err", "Para okuma hatası: {1}",
+    "sec_version", "YÜKLÜ SÜRÜM",
+    "upd_never", "Henüz kontrol edilmedi.",
+    "btn_checkupd", "Güncelleme ara",
+    "sec_license", "LİSANS",
+    "btn_changekey", "Anahtarı değiştir",
+    "paste_new_key", "Yeni anahtarı yapıştır.",
+    "sw_autoupd", "Otomatik güncelle",
+    "sec_news", "YENİLİKLER",
+    "news_ph", "Yenilikler kontrol ettikten sonra burada görünür.",
+    "btn_clear", "Temizle",
+    "upd_not_cfg", "Güncelleme ayarlanmadı.",
+    "upd_searching", "Güncelleme aranıyor...",
+    "upd_noconn", "Şu an kontrol edilemedi.",
+    "upd_badfile", "İndirilen dosya betik gibi görünmüyor.",
+    "upd_latest", "En yeni sürümdesin.",
+    "upd_avail", "Yeni sürüm v{1} mevcut! Yenilikler aşağıda.",
+    "btn_upd_to", "v{1} sürümüne güncelle",
+    "badge_new", "Yeni sürüm v{1}",
+    "log_upd_avail", "Güncelleme mevcut: v{1}.",
+    "log_upd_dlfail", "Güncelleme indirilemedi: {1}",
+    "log_upd_fail", "Güncelleme başarısız: {1}",
+    "log_updated", "v{1} sürümüne güncellendi! Yeniden başlatılıyor...",
+    "lang_menu", "Dil",
+    "lang_auto", "Otomatik (sistem)",
+    "mini_sub", "yen. açma {1} · düşme {2}",
+    "key_title", "Lisansı etkinleştir",
+    "key_sub", "Auto Reconnect Roblox'u açmak için anahtarını yapıştır.",
+    "btn_activate", "Etkinleştir",
+    "your_hwid", "HWID'İN",
+    "btn_copy", "Kopyala",
+    "hwid_copied", "HWID kopyalandı.",
+    "btn_buy", "Anahtar satın al",
+    "checking_lic", "Lisans kontrol ediliyor...",
+    "ka_app_nf", "KeyAuth'ta uygulama bulunamadı (ad/Owner ID kontrol et).",
+    "ka_badver", "KeyAuth sürümü farklı (KEYAUTH_VER panelle aynı olmalı).",
+    "key_nf", "Anahtar mevcut değil.",
+    "key_invalid", "Geçersiz anahtar.",
+    "key_hwid", "Bu anahtar başka bir PC'de etkin (farklı HWID).",
+    "key_expired", "Anahtarının süresi doldu.",
+    "hwid_banned", "Bu PC yasaklandı.",
+    "key_banned", "Bu anahtar yasaklandı.",
+    "session_exp", "Oturum sona erdi, tekrar dene.",
+    "key_fail", "Anahtar doğrulanamadı.",
+    "paste_key_first", "Önce anahtarını yapıştır.",
+    "checking", "Kontrol ediliyor...",
+    "connecting", "Lisans sunucusuna bağlanılıyor...",
+    "no_conn", "Lisans sunucusuna ulaşılamıyor. İnternetini kontrol et.",
+    "lic_lifetime", "Ömür boyu",
+    "side_lifetime", "ÖMÜR BOYU LİSANS",
+    "lic_expires", "Bitiş: {1}  ({2} gün)",
+    "side_days", "LİSANS: {1} GÜN",
+    "lic_active", "Etkin",
+    "side_active", "LİSANS ETKİN",
+    "lic_offline", "2 saatten fazla lisans doğrulanamadı.",
+    "log_lic_bad", "Geçersiz lisans: {1}",
+    "activate_to_use", "Kullanmak için anahtarını etkinleştir.",
+    "hook_need_url", "Önce webhook URL'sini gir.",
+    "hook_sent", "Webhook gönderildi (HTTP {1}).",
+    "hook_fail", "Webhook başarısız: {1}",
+    "log_status_sent", "Durum gönderildi (HTTP {1}).",
+    "log_status_fail", "Durum gönderilemedi: {1}",
+    "why_closed", "Roblox kapalı",
+    "why_min", "pencere küçültülmüş",
+    "why_fail", "yakalama başarısız",
+    "emb_offline", "Çevrimdışı",
+    "emb_warn", "Çevrimiçi · logda kopma",
+    "emb_online", "Oyunda çevrimiçi",
+    "up_stopped", "durduruldu",
+    "none", "Yok",
+    "next_status", "sonraki durum {1} dk sonra",
+    "no_shot", "görüntü yok ({1})",
+    "f_uptime", "Çalışma süresi",
+    "f_reopens", "Yeniden açma",
+    "f_drops", "Düşmeler",
+    "f_lastdrop", "Son düşme",
+    "m_exe", "doğrudan Roblox ile",
+    "m_uri", "roblox:// linki",
+    "m_web", "tarayıcı",
+    "roblox_not_reg", "Roblox kayıt defterinde bulunamadı",
+    "paste_link_first", "Önce oyun linkini yapıştır.",
+    "log_all_failed", "Hiçbir açma yöntemi işe yaramadı. Sonraki kontrolde tekrar denenecek.",
+    "log_method_failed", "Yöntem {1}/{2} ({3}) başarısız: {4}",
+    "log_opening", "Açılıyor ({1})",
+    "log_reopening", "Yeniden açılıyor ({1})",
+    "log_opened", "Roblox açıldı ({1}sn). Oyuna giriliyor...",
+    "st_joining", "Oyuna giriliyor...",
+    "st_joining_sub", "Roblox açık, sunucu yükleniyor",
+    "log_joined", "Oyuna girildi ({1}sn).",
+    "log_not_open25", "Roblox 25 sn'de açılmadı, başka yöntem deneniyor...",
+    "log_not_join60", "Roblox açıldı ama 60 sn'de oyuna girmedi, başka yöntem deneniyor...",
+    "log_not_open", "Roblox açık değil.",
+    "log_placed", "Roblox penceresi yerleştirildi.",
+    "log_detected", "Roblox penceresi algılandı.",
+    "log_placed_right", "Roblox penceresi sağ köşeye yerleştirildi.",
+    "log_tab_closed", "Tarayıcıdaki Roblox sekmesi kapatıldı.",
+    "log_tab_nf", "Roblox sekmesi bulunamadı. Açık başlıklar:",
+    "none_lc", "yok",
+    "log_disc_log", "Logda bağlantı koptu. Yeniden giriş bekleniyor...",
+    "log_err_restart", "Hata algılandı: {1}. Roblox yeniden başlatılıyor...",
+    "log_disc_screen", "Pencerede Disconnected ekranı.",
+    "log_disc_screen_c", "Pencerede Disconnected ekranı (kod {1}).",
+    "r_disc_screen", "Disconnected ekranı",
+    "r_disc_screen_c", "Disconnected ekranı - kod {1}",
+    "log_rejoined", "Yeniden girildi / normal ışınlanma, tamam.",
+    "r_no_rejoin", "yeniden girmeden kopma/hata",
+    "r_hung", "pencere dondu (yanıt vermiyor)",
+    "log_back", "Roblox geri döndü ({1} boyunca kapalı).",
+    "log_down", "Roblox kapandı/bağlantı koptu.",
+    "st_loading", "Yükleniyor...",
+    "st_loading_sub", "Oyunun açılıp sunucuya girmesi bekleniyor",
+    "st_on_warn_sub", "Logda kopma, yeniden giriş bekleniyor",
+    "st_on_sub", "Oyunda · izleniyor",
+    "st_off_sub", "Kapalı, şimdi yeniden açılıyor",
+    "st_nolink", "Link yok",
+    "st_nolink_sub", "Oyun linkini Oyun sekmesine yapıştır",
+    "st_monitoring", "İzleniyor...",
+    "st_monitoring_sub", "Roblox kontrol ediliyor",
+    "log_mon_start", "İzleme başladı (her {1}sn).",
+    "log_mon_stop", "İzleme durduruldu.",
+    "ev_start", "İzleme başladı",
+    "ev_reopen", "Roblox yeniden açılıyor",
+    "ev_fail", "Roblox açılamadı",
+    "ev_error", "Hata algılandı",
+    "ev_back", "Roblox geri döndü",
+    "ev_down", "Roblox kapandı/bağlantı koptu",
+    "ev_lic", "Geçersiz lisans",
+    "ev_updated", "v{1} sürümüne güncellendi",
+    "ev_test", "Webhook çalışıyor!",
+    "d_time", "Saat",
+    "d_away", "Kapalı kaldığı süre",
+    "d_reason", "Sebep",
+    "d_restart", "Roblox yeniden başlatılıyor...",
+    "d_stopped", "İzleme durduruldu.",
+    "d_retry", "Sonraki kontrolde tekrar deneyeceğim.",
+    "d_test", "Uyarılar buraya gelecek.",
+    "d_method", "Yöntem",
+    "d_interval", "Kontrol aralığı",
+    "d_user", "Kullanıcı"
+)
+I18N["id"] := Map(
+    "nav_home", "Beranda",
+    "nav_game", "Game",
+    "nav_window", "Jendela",
+    "nav_hook", "Webhook",
+    "nav_coins", "Mata Uang",
+    "nav_logs", "Log",
+    "nav_about", "Tentang",
+    "pg_home_sub", "Halo, {1}! Ringkasan pemantauan",
+    "pg_game_sub", "Server, interval pengecekan dan pemulihan error",
+    "pg_win_sub", "Posisi jendela Roblox dan tab browser",
+    "pg_hook_sub", "Notifikasi dan status di Discord",
+    "pg_coins_sub", "Membaca mata uangmu di layar Roblox dan mengirim ke webhook",
+    "pg_about_sub", "Lisensi, versi dan yang baru",
+    "pg_logs_sub", "Riwayat sesi ini",
+    "idle", "Berhenti",
+    "click_start", "Klik Mulai untuk memantau",
+    "btn_start", "Mulai",
+    "btn_stop", "Berhenti",
+    "st_uptime", "WAKTU AKTIF",
+    "st_reopens", "BUKA ULANG",
+    "st_drops", "PUTUS",
+    "st_lastdrop", "PUTUS TERAKHIR",
+    "quick", "AKSI CEPAT",
+    "btn_open_now", "Buka game sekarang",
+    "btn_place", "Atur jendela",
+    "btn_compact", "Mode ringkas",
+    "sec_server", "SERVER",
+    "hint_link", "Link game, link server privat, atau cukup Place ID.",
+    "sec_monitor", "PEMANTAUAN",
+    "lbl_check", "Cek setiap (detik)",
+    "lbl_wait", "Tunggu setelah dibuka (detik)",
+    "sec_recovery", "PEMULIHAN",
+    "sw_err", "Mulai ulang saat error, terputus, atau macet",
+    "sw_err_sub", "Terputus di log, kick, teleport gagal, atau jendela tidak merespons",
+    "lbl_tol", "Toleransi (detik)",
+    "sec_pos", "POSISI",
+    "sw_place", "Letakkan di pojok kanan atas",
+    "sw_place_sub", "Menjaga jendela Roblox tetap dan terlihat penuh",
+    "lbl_width", "Lebar",
+    "lbl_height", "Tinggi",
+    "btn_place_now", "Atur sekarang",
+    "sec_browser", "BROWSER",
+    "sw_tab", "Tutup tab browser setelah masuk",
+    "sw_tab_sub", "Menutup tab berjudul 'Roblox' dan meminimalkan browser",
+    "btn_test", "Tes",
+    "hint_hook", "Notifikasi otomatis: putus, coba buka ulang, kembali online, dan error (dengan jam).",
+    "sec_status", "STATUS BERKALA",
+    "sw_rep", "Kirim status dengan tangkapan layar",
+    "sw_rep_sub", "Embed status akun + tangkapan jendela Roblox saja",
+    "lbl_interval", "Interval (menit)",
+    "btn_send_now", "Kirim sekarang",
+    "sec_ocr", "BACA LAYAR (OCR)",
+    "sw_ocr", "Kirim mata uang di embed status",
+    "sw_ocr_sub", "Membaca nilai yang tampil di jendela Roblox",
+    "lbl_coins", "Mata uang (pisahkan dengan | ). Emoji opsional: Gems=<:gems:123456>",
+    "sec_lastread", "BACAAN TERAKHIR",
+    "btn_testread", "Tes baca",
+    "no_read", "Belum ada bacaan.",
+    "not_found", "tidak ditemukan",
+    "nothing_read", "Tidak ada yang terbaca.",
+    "ocr_open", "Buka Roblox (jangan diminimalkan) dengan mata uang terlihat.",
+    "ocr_names", "Masukkan nama mata uang di atas.",
+    "log_ocr_tested", "Baca mata uang dites ({1}/{2} ditemukan).",
+    "ocr_err", "Error OCR: {1}",
+    "log_ocr_saw", "Teks yang dilihat OCR:",
+    "log_coin_err", "Gagal membaca mata uang: {1}",
+    "sec_version", "VERSI TERPASANG",
+    "upd_never", "Belum dicek.",
+    "btn_checkupd", "Cek pembaruan",
+    "sec_license", "LISENSI",
+    "btn_changekey", "Ganti key",
+    "paste_new_key", "Tempel key baru.",
+    "sw_autoupd", "Perbarui otomatis",
+    "sec_news", "YANG BARU",
+    "news_ph", "Yang baru muncul di sini setelah dicek.",
+    "btn_clear", "Bersihkan",
+    "upd_not_cfg", "Pembaruan belum diatur.",
+    "upd_searching", "Mencari pembaruan...",
+    "upd_noconn", "Tidak bisa cek sekarang.",
+    "upd_badfile", "File yang diunduh sepertinya bukan skrip.",
+    "upd_latest", "Kamu memakai versi terbaru.",
+    "upd_avail", "Versi baru v{1} tersedia! Lihat yang baru di bawah.",
+    "btn_upd_to", "Perbarui ke v{1}",
+    "badge_new", "Versi baru v{1}",
+    "log_upd_avail", "Pembaruan tersedia: v{1}.",
+    "log_upd_dlfail", "Gagal mengunduh pembaruan: {1}",
+    "log_upd_fail", "Pembaruan gagal: {1}",
+    "log_updated", "Diperbarui ke v{1}! Memulai ulang...",
+    "lang_menu", "Bahasa",
+    "lang_auto", "Otomatis (sistem)",
+    "mini_sub", "buka ulang {1} · putus {2}",
+    "key_title", "Aktifkan lisensi",
+    "key_sub", "Tempel key untuk membuka Auto Reconnect Roblox.",
+    "btn_activate", "Aktifkan",
+    "your_hwid", "HWID KAMU",
+    "btn_copy", "Salin",
+    "hwid_copied", "HWID disalin.",
+    "btn_buy", "Beli key",
+    "checking_lic", "Memeriksa lisensi...",
+    "ka_app_nf", "Aplikasi tidak ditemukan di KeyAuth (cek nama/Owner ID).",
+    "ka_badver", "Versi KeyAuth berbeda (samakan KEYAUTH_VER dengan panel).",
+    "key_nf", "Key tidak ada.",
+    "key_invalid", "Key tidak valid.",
+    "key_hwid", "Key ini sudah aktif di PC lain (HWID berbeda).",
+    "key_expired", "Key kamu sudah kedaluwarsa.",
+    "hwid_banned", "PC ini telah diblokir.",
+    "key_banned", "Key ini telah diblokir.",
+    "session_exp", "Sesi kedaluwarsa, coba lagi.",
+    "key_fail", "Tidak bisa memvalidasi key.",
+    "paste_key_first", "Tempel key dulu.",
+    "checking", "Memeriksa...",
+    "connecting", "Menghubungkan ke server lisensi...",
+    "no_conn", "Tidak bisa terhubung ke server lisensi. Cek internetmu.",
+    "lic_lifetime", "Seumur hidup",
+    "side_lifetime", "LISENSI SEUMUR HIDUP",
+    "lic_expires", "Berakhir {1}  ({2} hari)",
+    "side_days", "LISENSI: {1} HARI",
+    "lic_active", "Aktif",
+    "side_active", "LISENSI AKTIF",
+    "lic_offline", "Lebih dari 2 jam lisensi tidak bisa divalidasi.",
+    "log_lic_bad", "Lisensi tidak valid: {1}",
+    "activate_to_use", "Aktifkan key untuk memakai.",
+    "hook_need_url", "Masukkan URL webhook dulu.",
+    "hook_sent", "Webhook terkirim (HTTP {1}).",
+    "hook_fail", "Webhook gagal: {1}",
+    "log_status_sent", "Status terkirim (HTTP {1}).",
+    "log_status_fail", "Gagal mengirim status: {1}",
+    "why_closed", "Roblox tertutup",
+    "why_min", "jendela diminimalkan",
+    "why_fail", "gagal menangkap",
+    "emb_offline", "Offline",
+    "emb_warn", "Online · terputus di log",
+    "emb_online", "Online di game",
+    "up_stopped", "berhenti",
+    "none", "Tidak ada",
+    "next_status", "status berikutnya {1} menit lagi",
+    "no_shot", "tanpa tangkapan ({1})",
+    "f_uptime", "Waktu aktif",
+    "f_reopens", "Buka ulang",
+    "f_drops", "Putus",
+    "f_lastdrop", "Putus terakhir",
+    "m_exe", "langsung lewat Roblox",
+    "m_uri", "link roblox://",
+    "m_web", "browser",
+    "roblox_not_reg", "Roblox tidak ditemukan di registry",
+    "paste_link_first", "Tempel link game dulu.",
+    "log_all_failed", "Tidak ada cara yang berhasil. Coba lagi di pengecekan berikutnya.",
+    "log_method_failed", "Cara {1}/{2} ({3}) gagal: {4}",
+    "log_opening", "Membuka ({1})",
+    "log_reopening", "Membuka ulang ({1})",
+    "log_opened", "Roblox terbuka ({1}d). Masuk ke game...",
+    "st_joining", "Masuk ke game...",
+    "st_joining_sub", "Roblox terbuka, memuat server",
+    "log_joined", "Masuk ke game ({1}d).",
+    "log_not_open25", "Roblox tidak terbuka dalam 25 d, mencoba cara lain...",
+    "log_not_join60", "Roblox terbuka tapi tidak masuk game dalam 60 d, mencoba cara lain...",
+    "log_not_open", "Roblox tidak terbuka.",
+    "log_placed", "Jendela Roblox diatur.",
+    "log_detected", "Jendela Roblox terdeteksi.",
+    "log_placed_right", "Jendela Roblox dipindah ke pojok kanan.",
+    "log_tab_closed", "Tab Roblox di browser ditutup.",
+    "log_tab_nf", "Tab Roblox tidak ditemukan. Judul yang terbuka:",
+    "none_lc", "tidak ada",
+    "log_disc_log", "Terputus di log. Menunggu masuk ulang...",
+    "log_err_restart", "Error terdeteksi: {1}. Memulai ulang Roblox...",
+    "log_disc_screen", "Layar Disconnected di jendela.",
+    "log_disc_screen_c", "Layar Disconnected di jendela (kode {1}).",
+    "r_disc_screen", "layar Disconnected",
+    "r_disc_screen_c", "layar Disconnected - kode {1}",
+    "log_rejoined", "Masuk ulang / teleport normal, ok.",
+    "r_no_rejoin", "terputus/error tanpa masuk ulang",
+    "r_hung", "jendela macet (tidak merespons)",
+    "log_back", "Roblox kembali (mati selama {1}).",
+    "log_down", "Roblox tertutup/terputus.",
+    "st_loading", "Memuat...",
+    "st_loading_sub", "Menunggu game terbuka dan masuk server",
+    "st_on_warn_sub", "Terputus di log, menunggu masuk ulang",
+    "st_on_sub", "Di game · memantau",
+    "st_off_sub", "Tertutup, membuka ulang sekarang",
+    "st_nolink", "Tidak ada link",
+    "st_nolink_sub", "Tempel link di tab Game",
+    "st_monitoring", "Memantau...",
+    "st_monitoring_sub", "Memeriksa Roblox",
+    "log_mon_start", "Pemantauan dimulai (setiap {1}d).",
+    "log_mon_stop", "Pemantauan dihentikan.",
+    "ev_start", "Pemantauan dimulai",
+    "ev_reopen", "Membuka ulang Roblox",
+    "ev_fail", "Tidak bisa membuka Roblox",
+    "ev_error", "Error terdeteksi",
+    "ev_back", "Roblox kembali",
+    "ev_down", "Roblox tertutup/terputus",
+    "ev_lic", "Lisensi tidak valid",
+    "ev_updated", "Diperbarui ke v{1}",
+    "ev_test", "Webhook berfungsi!",
+    "d_time", "Waktu",
+    "d_away", "Mati selama",
+    "d_reason", "Alasan",
+    "d_restart", "Memulai ulang Roblox...",
+    "d_stopped", "Pemantauan dihentikan.",
+    "d_retry", "Akan dicoba lagi di pengecekan berikutnya.",
+    "d_test", "Notifikasi akan muncul di sini.",
+    "d_method", "Cara",
+    "d_interval", "Cek setiap",
+    "d_user", "Pengguna"
+)
+LANG := SystemLang()
+for c in LANG_CODES
+    if (c = savedLang)
+        LANG := c
+USER_NAME  := UserDisplayName()
+USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
+NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -142,7 +1804,7 @@ W := 760, H := 490, SIDE := 184
 CX := SIDE + 28          ; x do conteúdo
 CW := W - CX - 28        ; largura do conteúdo
 
-g := Gui("-Caption +MinimizeBox", "Roblox Auto-Rejoin")
+g := Gui("-Caption +MinimizeBox", APP_NAME)
 g.BackColor := C_BG
 g.MarginX := 0, g.MarginY := 0
 
@@ -151,9 +1813,9 @@ sideBg := g.Add("Text", Format("x0 y0 w{} h{} +0x4000000 Background{}", SIDE, H,
 Bg(sideBg)
 
 FontUI(g, "s13 w700")
-g.Add("Text", Format("x24 y24 w140 c{} Background{}", C_TEXT, C_SIDE), "Auto-Rejoin")
+g.Add("Text", Format("x24 y24 w150 c{} Background{}", C_TEXT, C_SIDE), "Auto Reconnect")
 FontUI(g, "s7 w700")
-g.Add("Text", Format("x25 y+1 w140 c{} Background{}", C_DIM, C_SIDE), "ROBLOX  MONITOR")
+g.Add("Text", Format("x25 y+1 w140 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 AddNav("Início",  Chr(0xE80F), 96)
 AddNav("Jogo",    Chr(0xE7FC), 138)
@@ -166,9 +1828,9 @@ AddNav("Sobre",   Chr(0xE946), 348)
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
 FontUI(g, "s9 w600")
-sideStat := g.Add("Text", Format("x42 y{} w130 c{} Background{}", H - 61, C_TEXT, C_SIDE), "Parado")
+sideStat := g.Add("Text", Format("x42 y{} w130 c{} Background{}", H - 61, C_TEXT, C_SIDE), T("idle"))
 FontUI(g, "s8")
-g.Add("Text", Format("x24 y+4 w150 c{} Background{}", C_DIM, C_SIDE), A_ComputerName "  ·  v" VERSION)
+g.Add("Text", Format("x24 y+4 w150 c{} Background{}", C_DIM, C_SIDE), USER_NAME "  ·  v" VERSION)
 FontUI(g, "s7 w700")
 sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE), "")
 
@@ -176,9 +1838,10 @@ sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE),
 MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_BG)
 MakeBtn(g, W - 92,  0, 46, 34, Chr(0xE921), (*) => g.Minimize(), "ghost", true, "s9", 0, C_BG)
 MakeBtn(g, W - 138, 0, 46, 34, Chr(0xE73F), (*) => SetCompact(true), "ghost", true, "s9", 0, C_BG)
+MakeBtn(g, W - 184, 0, 46, 34, Chr(0xE774), (*) => LangMenu(), "ghost", true, "s9", 0, C_BG)
 
 ; ---- selo "nova versão" (fica escondido até achar atualização) ----
-updBadge := MakeBtn(g, W - 138 - 196, 6, 188, 24, "", (*) => ShowPage("Sobre"), "primary", false, "s8 w700", 24)
+updBadge := MakeBtn(g, W - 184 - 196, 6, 188, 24, "", (*) => ShowPage("Sobre"), "primary", false, "s8 w700", 24)
 updBadge.Visible := false
 
 ; ---- título da página ----
@@ -188,17 +1851,17 @@ FontUI(g, "s9")
 pageSub := g.Add("Text", Format("x{} y+2 w{} c{} Background{}", CX, CW, C_MUTED, C_BG), "")
 
 ; ---------------- Página: Início ----------------
-BeginPage("Início", "Início", "Visão geral do monitoramento")
+BeginPage("Início", T("nav_home"), T("pg_home_sub", USER_FIRST))
 y := 92
 Card(CX, y, CW, 96)
 dashDot   := Lbl(CX + 22, y + 26, 30, "●", "s20", C_DIM)
-dashTitle := Lbl(CX + 58, y + 22, 290, "Parado", "s16 w700")
-dashSub   := Lbl(CX + 59, y + 56, 300, "Clique em Iniciar para monitorar", "s9", C_MUTED)
-btnStart  := Btn(CX + CW - 152, y + 29, 132, 38, "Iniciar", Toggle, "primary")
+dashTitle := Lbl(CX + 58, y + 22, 290, T("idle"), "s16 w700")
+dashSub   := Lbl(CX + 59, y + 56, 300, T("click_start"), "s9", C_MUTED)
+btnStart  := Btn(CX + CW - 152, y + 29, 132, 38, T("btn_start"), Toggle, "primary")
 
 y := 200, sw := (CW - 36) // 4
 stVals := []
-for i, lab in ["TEMPO ATIVO", "REABERTURAS", "QUEDAS", "ÚLTIMA QUEDA"] {
+for i, lab in [T("st_uptime"), T("st_reopens"), T("st_drops"), T("st_lastdrop")] {
     sx := CX + (i - 1) * (sw + 12)
     Card(sx, y, sw, 84)
     Lbl(sx + 18, y + 16, sw - 30, lab, "s7 w700", C_DIM)
@@ -207,171 +1870,166 @@ for i, lab in ["TEMPO ATIVO", "REABERTURAS", "QUEDAS", "ÚLTIMA QUEDA"] {
 
 y := 296, bw := (CW - 40 - 24) // 3
 Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, "AÇÕES RÁPIDAS", "s7 w700", C_DIM)
-Btn(CX + 20,                y + 46, bw, 38, "Abrir jogo agora",  (*) => LaunchGame(true))
-Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, "Posicionar janela", (*) => ForcePlace())
-Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, "Modo compacto",    (*) => SetCompact(true))
+Lbl(CX + 20, y + 16, 300, T("quick"), "s7 w700", C_DIM)
+Btn(CX + 20,                y + 46, bw, 38, T("btn_open_now"),  (*) => LaunchGame(true))
+Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, T("btn_place"), (*) => ForcePlace())
+Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, T("btn_compact"),    (*) => SetCompact(true))
 
 ; ---------------- Página: Jogo ----------------
-BeginPage("Jogo", "Jogo", "Servidor, intervalo de checagem e recuperação de erros")
+BeginPage("Jogo", T("nav_game"), T("pg_game_sub"))
 y := 92
 Card(CX, y, CW, 108)
-Lbl(CX + 20, y + 16, 300, "SERVIDOR", "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, T("sec_server"), "s7 w700", C_DIM)
 edLink := Input(CX + 20, y + 38, CW - 40, savedLink)
-Lbl(CX + 20, y + 78, CW - 40, "Link do jogo, link de servidor privado (PV) ou só o Place ID.", "s8", C_MUTED)
+Lbl(CX + 20, y + 78, CW - 40, T("hint_link"), "s8", C_MUTED)
 
 y := 212, half := (CW - 40) // 2
 Card(CX, y, CW, 110)
-Lbl(CX + 20, y + 16, 300, "MONITORAMENTO", "s7 w700", C_DIM)
-Lbl(CX + 20, y + 40, half, "Checar a cada (segundos)", "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, T("sec_monitor"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 40, half, T("lbl_check"), "s9", C_MUTED)
 edInterval := Input(CX + 20, y + 62, 120, savedInterval, "Number")
-Lbl(CX + 20 + half, y + 40, half, "Esperar após abrir (segundos)", "s9", C_MUTED)
+Lbl(CX + 20 + half, y + 40, half, T("lbl_wait"), "s9", C_MUTED)
 edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 
 y := 334
 Card(CX, y, CW, 132)
-Lbl(CX + 20, y + 16, 300, "RECUPERAÇÃO", "s7 w700", C_DIM)
-chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, "Reiniciar se der erro, desconexão ou travar", savedErr
-    , "Desconexão no log, kick, teleport que falhou ou janela sem responder")
-Lbl(CX + 20, y + 96, 200, "Tolerância (segundos)", "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, T("sec_recovery"), "s7 w700", C_DIM)
+chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_err"), savedErr, T("sw_err_sub"))
+Lbl(CX + 20, y + 96, 200, T("lbl_tol"), "s9", C_MUTED)
 edErrSec := Input(CX + 170, y + 89, 90, savedErrSec, "Number")
 
 ; ---------------- Página: Janela ----------------
-BeginPage("Janela", "Janela", "Posição da janela do Roblox e guia do navegador")
+BeginPage("Janela", T("nav_window"), T("pg_win_sub"))
 y := 92
 Card(CX, y, CW, 142)
-Lbl(CX + 20, y + 16, 300, "POSIÇÃO", "s7 w700", C_DIM)
-chkShrink := ToggleSwitch(CX + 20, y + 40, CW - 40, "Posicionar no canto superior direito", savedShrink
-    , "Mantém a janela do Roblox fixa e totalmente visível")
-Lbl(CX + 20, y + 98, 60, "Largura", "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, T("sec_pos"), "s7 w700", C_DIM)
+chkShrink := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_place"), savedShrink, T("sw_place_sub"))
+Lbl(CX + 20, y + 98, 60, T("lbl_width"), "s9", C_MUTED)
 edW := Input(CX + 78, y + 91, 80, winW, "Number")
-Lbl(CX + 178, y + 98, 50, "Altura", "s9", C_MUTED)
+Lbl(CX + 178, y + 98, 50, T("lbl_height"), "s9", C_MUTED)
 edH := Input(CX + 228, y + 91, 80, winH, "Number")
-Btn(CX + CW - 170, y + 91, 150, 32, "Posicionar agora", (*) => ForcePlace())
+Btn(CX + CW - 170, y + 91, 150, 32, T("btn_place_now"), (*) => ForcePlace())
 edW.OnEvent("Change", (*) => (winW := Integer(edW.Value || 800)))
 edH.OnEvent("Change", (*) => (winH := Integer(edH.Value || 630)))
 
 y := 246
 Card(CX, y, CW, 96)
-Lbl(CX + 20, y + 16, 300, "NAVEGADOR", "s7 w700", C_DIM)
-chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, "Fechar a guia do navegador após entrar", savedMin
-    , "Fecha a guia com 'Roblox' no título e minimiza o navegador")
+Lbl(CX + 20, y + 16, 300, T("sec_browser"), "s7 w700", C_DIM)
+chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_tab"), savedMin, T("sw_tab_sub"))
 
 ; ---------------- Página: Webhook ----------------
-BeginPage("Webhook", "Webhook", "Avisos e status no Discord")
+BeginPage("Webhook", T("nav_hook"), T("pg_hook_sub"))
 y := 92
 Card(CX, y, CW, 112)
 Lbl(CX + 20, y + 16, 300, "DISCORD", "s7 w700", C_DIM)
 edHook := Input(CX + 20, y + 38, CW - 40 - 132, savedHook)
-Btn(CX + CW - 140, y + 38, 120, 32, "Testar", (*) => SendWebhook(":white_check_mark: Teste de webhook - PC: " A_ComputerName, true))
-Lbl(CX + 20, y + 80, CW - 40, "Avisos automáticos: queda, tentativa de reabrir, volta e erros (com horário).", "s8", C_MUTED)
+Btn(CX + CW - 140, y + 38, 120, 32, T("btn_test"), (*) => SendEvent("test", [T("d_test")], true))
+Lbl(CX + 20, y + 80, CW - 40, T("hint_hook"), "s8", C_MUTED)
 
 y := 216
 Card(CX, y, CW, 140)
-Lbl(CX + 20, y + 16, 300, "STATUS PERIÓDICO", "s7 w700", C_DIM)
-chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, "Enviar status com print", savedRep
-    , "Embed com o estado da conta + print só da janela do Roblox")
+Lbl(CX + 20, y + 16, 300, T("sec_status"), "s7 w700", C_DIM)
+chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_rep"), savedRep, T("sw_rep_sub"))
 chkRep.onChange := ApplyReportTimer
-Lbl(CX + 20, y + 98, 120, "Intervalo (minutos)", "s9", C_MUTED)
+Lbl(CX + 20, y + 98, 120, T("lbl_interval"), "s9", C_MUTED)
 edRepMin := Input(CX + 150, y + 91, 80, savedRepMin, "Number")
-Btn(CX + CW - 160, y + 91, 140, 32, "Enviar agora", (*) => SendStatusReport(true))
+Btn(CX + CW - 160, y + 91, 140, 32, T("btn_send_now"), (*) => SendStatusReport(true))
 
 ; ---------------- Página: Moedas ----------------
-BeginPage("Moedas", "Moedas", "Lê suas moedas na tela do Roblox e manda no webhook")
+BeginPage("Moedas", T("nav_coins"), T("pg_coins_sub"))
 y := 92
 Card(CX, y, CW, 166)
-Lbl(CX + 20, y + 16, 300, "LEITURA DA TELA (OCR)", "s7 w700", C_DIM)
-chkOcr := ToggleSwitch(CX + 20, y + 40, CW - 40, "Mandar moedas no embed de status", savedOcr
-    , "Lê os valores que estiverem aparecendo na janela do Roblox")
-Lbl(CX + 20, y + 94, CW - 40, "Moedas (separe com | ). Emoji opcional: Gems=<:gems:123456>", "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, T("sec_ocr"), "s7 w700", C_DIM)
+chkOcr := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_ocr"), savedOcr, T("sw_ocr_sub"))
+Lbl(CX + 20, y + 94, CW - 40, T("lbl_coins"), "s9", C_MUTED)
 edCur := Input(CX + 20, y + 116, CW - 40, savedCur)
 
 y := 270
 Card(CX, y, CW, 150)
-Lbl(CX + 20, y + 16, 300, "ÚLTIMA LEITURA", "s7 w700", C_DIM)
-Btn(CX + CW - 160, y + 12, 140, 32, "Testar leitura", (*) => TestCurrencies())
+Lbl(CX + 20, y + 16, 300, T("sec_lastread"), "s7 w700", C_DIM)
+Btn(CX + CW - 160, y + 12, 140, 32, T("btn_testread"), (*) => TestCurrencies())
 FontMono(g, "s9")
 curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 52, CW - 40, 84, C_TEXT, C_CARD)
-    , "Nenhuma leitura ainda."))
+    , T("no_read")))
 
 ; ---------------- Página: Sobre ----------------
-BeginPage("Sobre", "Sobre", "Licença, versão e novidades")
+BeginPage("Sobre", T("nav_about"), T("pg_about_sub"))
 y := 92
 Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, "VERSÃO INSTALADA", "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, T("sec_version"), "s7 w700", C_DIM)
 Lbl(CX + 20, y + 36, 200, "v" VERSION, "s20 w700")
-updStatus := Lbl(CX + 20, y + 76, CW - 210, "Ainda não verifiquei.", "s9", C_MUTED)
-btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, "Procurar atualização", (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
+updStatus := Lbl(CX + 20, y + 76, CW - 210, T("upd_never"), "s9", C_MUTED)
+btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, T("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
 
 y := 208
 Card(CX, y, CW, 80)
-Lbl(CX + 20, y + 16, 300, "LICENÇA", "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, T("sec_license"), "s7 w700", C_DIM)
 licInfo := Lbl(CX + 20, y + 38, CW - 200, "—", "s10 w600")
 licSub  := Lbl(CX + 20, y + 58, CW - 200, "", "s8", C_MUTED)
-Btn(CX + CW - 150, y + 24, 130, 32, "Trocar key", (*) => ShowKeyScreen("Cole a nova key."))
+Btn(CX + CW - 150, y + 24, 130, 32, T("btn_changekey"), (*) => ShowKeyScreen(T("paste_new_key")))
 
 y := 300
 Card(CX, y, CW, 172)
-chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, "Atualizar sozinho", savedAutoUpd)
-Lbl(CX + 20, y + 52, 300, "NOVIDADES", "s7 w700", C_DIM)
+chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, T("sw_autoupd"), savedAutoUpd)
+Lbl(CX + 20, y + 52, 300, T("sec_news"), "s7 w700", C_DIM)
 FontUI(g, "s9")
 changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E0x200 c{} Background{}"
-    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), "As novidades aparecem aqui depois de verificar."))
+    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), T("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
 ; ---------------- Página: Logs ----------------
-BeginPage("Logs", "Logs", "Histórico desta sessão")
+BeginPage("Logs", T("nav_logs"), T("pg_logs_sub"))
 y := 92
 Card(CX, y, CW, 324)
 FontMono(g, "s9")
 logBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly -Wrap +Multi +VScroll -E0x200 c{} Background{}"
     , CX + 16, y + 14, CW - 32, 296, "C9C9CF", C_CARD)))
 DllCall("uxtheme\SetWindowTheme", "Ptr", logBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
-Btn(CX + CW - 110, y + 336, 110, 32, "Limpar", (*) => (logBox.Value := ""))
+Btn(CX + CW - 110, y + 336, 110, 32, T("btn_clear"), (*) => (logBox.Value := ""))
 
 curBuild := ""
 
 ; ==========================================================
 ;  GUI compacta
 ; ==========================================================
-gm := Gui("-Caption +AlwaysOnTop +ToolWindow", "Auto-Rejoin")
+gm := Gui("-Caption +AlwaysOnTop +ToolWindow", APP_NAME)
 gm.BackColor := C_CARD
 gm.MarginX := 0, gm.MarginY := 0
 FontUI(gm, "s12")
 mDot := gm.Add("Text", Format("x14 y13 w16 c{} Background{}", C_DIM, C_CARD), "●")
 FontUI(gm, "s9 w700")
-mStat := gm.Add("Text", Format("x34 y9 w128 c{} Background{}", C_TEXT, C_CARD), "Parado")
+mStat := gm.Add("Text", Format("x34 y9 w128 c{} Background{}", C_TEXT, C_CARD), T("idle"))
 FontUI(gm, "s8")
-mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD), "reab 0 · quedas 0")
-mBtn := MakeBtn(gm, 166, 11, 70, 30, "Iniciar", Toggle, "primary", false, "s9 w600", 10)
+mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD), T("mini_sub", 0, 0))
+mBtn := MakeBtn(gm, 166, 11, 70, 30, T("btn_start"), Toggle, "primary", false, "s9 w600", 10)
 MakeBtn(gm, 242, 11, 30, 30, Chr(0xE740), (*) => SetCompact(false), "sec", true, "s9", 10)
 
 ; ==========================================================
 ;  Tela de licença
 ; ==========================================================
-gk := Gui("-Caption +MinimizeBox", "Auto-Rejoin - Licença")
+gk := Gui("-Caption +MinimizeBox", APP_NAME)
 gk.BackColor := C_CARD
 gk.MarginX := 0, gk.MarginY := 0
 KW := 420, KH := 330
 MakeBtn(gk, KW - 46, 0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_CARD)
 FontUI(gk, "s16 w700")
-gk.Add("Text", Format("x32 y32 w300 c{} Background{}", C_TEXT, C_CARD), "Ativar licença")
+gk.Add("Text", Format("x32 y32 w300 c{} Background{}", C_TEXT, C_CARD), T("key_title"))
 FontUI(gk, "s9")
-gk.Add("Text", Format("x32 y+4 w356 c{} Background{}", C_MUTED, C_CARD), "Cole sua key pra liberar o Roblox Auto-Rejoin.")
+gk.Add("Text", Format("x32 y+4 w356 c{} Background{}", C_MUTED, C_CARD), T("key_sub"))
 kBox := gk.Add("Text", Format("x32 y104 w356 h38 +0x4000000 Background{}", C_INPUT))
 Bg(kBox, 10)
 FontMono(gk, "s10")
 edKey := gk.Add("Edit", Format("x44 y113 w332 h22 -E0x200 c{} Background{}", C_TEXT, C_INPUT), IniRead(iniFile, "cfg", "key", ""))
-btnKey := MakeBtn(gk, 32, 156, 356, 40, "Ativar", (*) => ActivateKey(), "primary", false, "s10 w700", 10)
+btnKey := MakeBtn(gk, 32, 156, 356, 40, T("btn_activate"), (*) => ActivateKey(), "primary", false, "s10 w700", 10)
 FontUI(gk, "s9")
 kStatus := gk.Add("Text", Format("x32 y208 w356 h36 c{} Background{}", C_MUTED, C_CARD), "")
 FontUI(gk, "s7 w700")
-gk.Add("Text", Format("x32 y256 w200 c{} Background{}", C_DIM, C_CARD), "SEU HWID")
+gk.Add("Text", Format("x32 y256 w200 c{} Background{}", C_DIM, C_CARD), T("your_hwid"))
 FontMono(gk, "s8")
 kHwid := gk.Add("Text", Format("x32 y+3 w250 c{} Background{}", C_MUTED, C_CARD), "")
-MakeBtn(gk, 296, 258, 92, 28, "Copiar", (*) => (A_Clipboard := GetHWID(), kStatus.Value := "HWID copiado."), "sec", false, "s9 w600", 8)
+MakeBtn(gk, 296, 258, 92, 28, T("btn_copy"), (*) => (A_Clipboard := GetHWID(), kStatus.Value := T("hwid_copied")), "sec", false, "s9 w600", 8)
 if (BUY_URL != "")
-    MakeBtn(gk, 32, 296, 120, 22, "Comprar key", (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
+    MakeBtn(gk, 32, 296, 120, 22, T("btn_buy"), (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
 gk.OnEvent("Close", (*) => ExitApp())
 
 ; ---- acabamento ----
@@ -386,7 +2044,7 @@ kHwid.Value := ShortHWID()
 if !KaEnabled()
     StartApp()                                   ; key desligada (KEYAUTH_OWNERID vazio)
 else if (Trim(edKey.Value) != "") {
-    ShowKeyScreen("Verificando licença...")
+    ShowKeyScreen(T("checking_lic"))
     SetTimer(() => ActivateKey(true), -300)      ; tenta entrar sozinho com a key salva
 } else
     ShowKeyScreen("")
@@ -516,12 +2174,12 @@ SetBtnStyle(b, style) {
 }
 
 AddNav(name, icon, y) {
-    global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC
+    global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK
     bar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", y + 10, C_ACC))
     FontIcon(g, "s11")
     ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), name)
+    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), T(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, bar: bar}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
@@ -680,7 +2338,7 @@ UpdateStats() {
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
-    SetIf(mSub, "reab " launches " · quedas " discCount)
+    SetIf(mSub, T("mini_sub", launches, discCount))
 }
 
 SetCompact(on) {
@@ -750,6 +2408,68 @@ MarkDisconnect() {
     discCount++
     lastDisc := NowStr()
     lastDiscShort := FormatTime(, "dd/MM HH:mm")
+}
+
+; ---------------- Idioma ----------------
+; texto traduzido (tabela I18N lá em cima)
+T(id, args*) {
+    global LANG, I18N
+    s := I18N[LANG].Has(id) ? I18N[LANG][id] : (I18N["en"].Has(id) ? I18N["en"][id] : id)
+    return args.Length ? Format(s, args*) : s
+}
+
+; idioma do Windows -> um dos idiomas do script (inglês se não tiver)
+SystemLang() {
+    static m := Map(0x16, "pt", 0x09, "en", 0x0A, "es", 0x0C, "fr", 0x07, "de", 0x19, "ru", 0x1F, "tr", 0x21, "id")
+    try {
+        lcid := DllCall("GetUserDefaultUILanguage", "UShort")
+        if m.Has(lcid & 0x3FF)
+            return m[lcid & 0x3FF]
+    }
+    try {
+        p := Integer("0x" A_Language) & 0x3FF
+        if m.Has(p)
+            return m[p]
+    }
+    return "en"
+}
+
+LangMenu() {
+    global LANG_CODES, LANG_NAMES, savedLang
+    mn := Menu()
+    mn.Add(T("lang_auto"), (*) => SetLang("auto"))
+    if (savedLang = "auto")
+        mn.Check(T("lang_auto"))
+    mn.Add()
+    for i, c in LANG_CODES {
+        name := LANG_NAMES[i]
+        mn.Add(name, SetLang.Bind(c))
+        if (savedLang = c)
+            mn.Check(name)
+    }
+    mn.Show()
+}
+
+SetLang(code, *) {
+    global iniFile, running
+    IniWrite(code, iniFile, "cfg", "lang")
+    SaveConfig()
+    if running
+        IniWrite(1, iniFile, "cfg", "resume")
+    Reload()
+}
+
+; nome do usuário do Windows (nome de exibição se tiver, senão o login)
+UserDisplayName() {
+    buf := Buffer(1024, 0), n := 512
+    try {
+        if DllCall("secur32\GetUserNameExW", "Int", 3, "Ptr", buf, "UInt*", &n) {
+            name := Trim(StrGet(buf))
+            if (name != "")
+                return name
+        }
+    }
+    return A_UserName
 }
 
 ; ---------------- Licença (KeyAuth) ----------------
@@ -829,10 +2549,10 @@ KaInit() {
     global kaSession, KEYAUTH_VER
     r := KaPost(Map("type", "init", "ver", KEYAUTH_VER))
     if (r = "KeyAuth_Invalid")
-        return "Aplicação não encontrada no KeyAuth (confira nome/Owner ID)."
+        return T("ka_app_nf")
     if !JOk(r) {
         m := JStr(r, "message")
-        return (m = "invalidver") ? "Versão do KeyAuth diferente (deixe KEYAUTH_VER igual ao painel)." : m
+        return (m = "invalidver") ? T("ka_badver") : m
     }
     kaSession := JStr(r, "sessionid")
     return ""
@@ -870,20 +2590,20 @@ KaFile(fileid, dest) {
 ; mensagens do KeyAuth em português
 TranslateKa(m) {
     static t := Map(
-        "Key not found", "Key não existe.",
-        "Invalid license key", "Key inválida.",
-        "HWID doesn't match", "Essa key já está ativada em outro PC (HWID diferente).",
-        "HWID Doesn't match", "Essa key já está ativada em outro PC (HWID diferente).",
-        "Subscription expired", "Sua key expirou.",
-        "No active subscriptions found.", "Sua key expirou.",
-        "Your HWID is blacklisted", "Este PC foi banido.",
-        "User is banned", "Essa key foi banida.",
-        "Your license is banned", "Essa key foi banida.",
-        "Invalid session", "Sessão expirou, tente de novo.")
+        "Key not found", "key_nf",
+        "Invalid license key", "key_invalid",
+        "HWID doesn't match", "key_hwid",
+        "HWID Doesn't match", "key_hwid",
+        "Subscription expired", "key_expired",
+        "No active subscriptions found.", "key_expired",
+        "Your HWID is blacklisted", "hwid_banned",
+        "User is banned", "key_banned",
+        "Your license is banned", "key_banned",
+        "Invalid session", "session_exp")
     for k, v in t
         if InStr(m, k)
-            return v
-    return m != "" ? m : "Não consegui validar a key."
+            return T(v)
+    return m != "" ? m : T("key_fail")
 }
 
 ShowKeyScreen(msg := "") {
@@ -904,19 +2624,19 @@ ActivateKey(auto := false) {
     global edKey, btnKey, iniFile, licensed, licFailSince
     key := Trim(edKey.Value)
     if (key = "") {
-        KeyMsg("Cole sua key primeiro.", true)
+        KeyMsg(T("paste_key_first"), true)
         return
     }
-    btnKey.Text := "Verificando..."
-    KeyMsg("Conectando ao servidor de licenças...")
+    btnKey.Text := T("checking")
+    KeyMsg(T("connecting"))
     try {
         err := KaInit()
         if (err = "")
             err := KaLicense(key)
     } catch as e {
-        err := "Sem conexão com o servidor de licenças. Confira sua internet."
+        err := T("no_conn")
     }
-    btnKey.Text := "Ativar"
+    btnKey.Text := T("btn_activate")
     if (err != "") {
         licensed := false
         KeyMsg(err, true)
@@ -937,13 +2657,13 @@ UpdateLicenseInfo() {
         exp := DateAdd(exp, DateDiff(A_Now, A_NowUTC, "Seconds"), "Seconds")   ; UTC -> horário do PC
         dias := DateDiff(exp, A_Now, "Days")
         if (dias > 3650) {
-            licInfo.Value := "Vitalícia", sideLic.Value := "LICENÇA VITALÍCIA"
+            licInfo.Value := T("lic_lifetime"), sideLic.Value := T("side_lifetime")
         } else {
-            licInfo.Value := "Expira em " FormatTime(exp, "dd/MM/yyyy HH:mm") "  (" Max(dias, 0) " dias)"
-            sideLic.Value := "LICENÇA: " Max(dias, 0) " DIAS"
+            licInfo.Value := T("lic_expires", FormatTime(exp, "ShortDate") " " FormatTime(exp, "HH:mm"), Max(dias, 0))
+            sideLic.Value := T("side_days", Max(dias, 0))
         }
     } else
-        licInfo.Value := "Ativa", sideLic.Value := "LICENÇA ATIVA"
+        licInfo.Value := T("lic_active"), sideLic.Value := T("side_active")
     licSub.Value := "Key " masked "  ·  HWID " ShortHWID()
 }
 
@@ -960,7 +2680,7 @@ LicenseRecheck() {
             licFailSince := A_TickCount
         if (A_TickCount - licFailSince < 2 * 3600000)
             return
-        err := "Fiquei mais de 2h sem conseguir validar a licença."
+        err := T("lic_offline")
     }
     if (err = "") {
         licFailSince := 0
@@ -968,8 +2688,8 @@ LicenseRecheck() {
         return
     }
     licensed := false
-    Log("Licença inválida: " err)
-    SendWebhook(":lock: Licença inválida (" err ") - monitoramento parado - PC: " A_ComputerName)
+    Log(T("log_lic_bad", err))
+    SendEvent("lic", ["**" T("d_reason") ":** " err, T("d_stopped")])
     if running
         Toggle()
     ShowKeyScreen(err)
@@ -996,10 +2716,10 @@ CheckUpdate(manual := false) {
         return KaCheckUpdate(manual)
     if (updBase = "") {
         if manual
-            updStatus.Value := "Atualização não configurada (GITHUB_REPO vazio)."
+            updStatus.Value := T("upd_not_cfg")
         return
     }
-    updStatus.Value := "Procurando atualização..."
+    updStatus.Value := T("upd_searching")
     base := UpdBaseNow()
     LoadChangelog(base)
     tmp := A_Temp "\autorejoin_update.ahk"
@@ -1007,28 +2727,28 @@ CheckUpdate(manual := false) {
         Download(base "roblox_autorejoin.ahk?t=" A_Now, tmp)
         txt := FileRead(tmp, "UTF-8")
     } catch as e {
-        updStatus.Value := "Não consegui verificar (sem internet?)."
+        updStatus.Value := T("upd_noconn")
         if manual
-            Log("Erro ao procurar atualização: " e.Message)
+            Log(T("upd_noconn") " " e.Message)
         return
     }
     if !(InStr(txt, "#Requires AutoHotkey v2") && RegExMatch(txt, 'm)^VERSION\s*:=\s*"([^"]+)"', &v)) {
-        updStatus.Value := "O arquivo no GitHub não parece ser o script."
+        updStatus.Value := T("upd_badfile")
         return
     }
     if (VerCompare(v[1], VERSION) <= 0) {
-        updStatus.Value := "Você está na versão mais nova."
+        updStatus.Value := T("upd_latest")
         pendingUpd := ""
         updBadge.Visible := false
         return
     }
     pendingUpd := tmp, pendingVer := v[1]
-    updStatus.Value := "Nova versão v" v[1] " disponível! Veja as novidades abaixo."
-    btnUpd.Text := "Atualizar para v" v[1]
+    updStatus.Value := T("upd_avail", v[1])
+    btnUpd.Text := T("btn_upd_to", v[1])
     SetBtnStyle(btnUpd, "primary")
-    updBadge.Text := Chr(0x2B06) "  Nova versão v" v[1]
+    updBadge.Text := Chr(0x2B06) "  " T("badge_new", v[1])
     updBadge.Visible := true
-    Log("Atualização disponível: v" v[1] ".")
+    Log(T("log_upd_avail", v[1]))
     if chkAutoUpd.Value
         ApplyUpdate()
 }
@@ -1062,29 +2782,29 @@ KaCheckUpdate(manual) {
     global VERSION, updStatus, btnUpd, chkAutoUpd, pendingUpd, pendingVer, pendingFileId, updBadge, changeBox, licensed, iniFile
     if !licensed
         return
-    updStatus.Value := "Procurando atualização..."
+    updStatus.Value := T("upd_searching")
     try {
         if (KaInit() != "" || KaLicense(IniRead(iniFile, "cfg", "key", "")) != "")
             throw Error("licença")
         ver := Trim(KaVar("versao")), fid := Trim(KaVar("arquivo")), notas := KaVar("novidades")
     } catch {
-        updStatus.Value := "Não consegui verificar agora."
+        updStatus.Value := T("upd_noconn")
         return
     }
     if (notas != "")
         changeBox.Value := StrReplace(StrReplace(notas, "`r`n", "`n"), "`n", "`r`n")
     if (ver = "" || fid = "" || VerCompare(ver, VERSION) <= 0) {
-        updStatus.Value := "Você está na versão mais nova."
+        updStatus.Value := T("upd_latest")
         updBadge.Visible := false, pendingFileId := ""
         return
     }
     pendingVer := ver, pendingFileId := fid, pendingUpd := "keyauth"
-    updStatus.Value := "Nova versão v" ver " disponível! Veja as novidades abaixo."
-    btnUpd.Text := "Atualizar para v" ver
+    updStatus.Value := T("upd_avail", ver)
+    btnUpd.Text := T("btn_upd_to", ver)
     SetBtnStyle(btnUpd, "primary")
-    updBadge.Text := Chr(0x2B06) "  Nova versão v" ver
+    updBadge.Text := Chr(0x2B06) "  " T("badge_new", ver)
     updBadge.Visible := true
-    Log("Atualização disponível: v" ver ".")
+    Log(T("log_upd_avail", ver))
     if chkAutoUpd.Value
         ApplyUpdate()
 }
@@ -1096,9 +2816,9 @@ ApplyUpdate() {
         try {
             KaFile(pendingFileId, tmp)
             if !InStr(FileRead(tmp, "UTF-8"), "#Requires AutoHotkey v2")
-                throw Error("o arquivo enviado no KeyAuth não é o script")
+                throw Error(T("upd_badfile"))
         } catch as e {
-            Log("Falha ao baixar atualização: " e.Message)
+            Log(T("log_upd_dlfail", e.Message))
             return
         }
         pendingUpd := tmp
@@ -1109,15 +2829,15 @@ ApplyUpdate() {
         FileCopy(A_ScriptFullPath, A_ScriptFullPath ".bak", 1)   ; backup da versão atual
         FileCopy(pendingUpd, A_ScriptFullPath, 1)
     } catch as e {
-        Log("Falha ao atualizar: " e.Message)
+        Log(T("log_upd_fail", e.Message))
         return
     }
     SaveConfig()
     if running
         IniWrite(1, iniFile, "cfg", "resume")
     notas := ChangelogFor(pendingVer)
-    Log("Atualizado para v" pendingVer "! Reiniciando o script...")
-    SendWebhook(":sparkles: **Auto-Rejoin atualizado para v" pendingVer "** - PC: " A_ComputerName (notas != "" ? "`n" notas : ""))
+    Log(T("log_updated", pendingVer))
+    SendEvent("updated", notas != "" ? [notas] : [], false, pendingVer)
     Sleep(500)
     Reload()
 }
@@ -1150,20 +2870,65 @@ HttpPost(url, body, contentType) {
     return http.Status
 }
 
+; Avisos do webhook, sempre como embed: kind = tipo (emoji, título, cor), lines = linhas extras
+EV := Map(
+    "start",   ["✅", "ev_start",   0x3DDC84],
+    "reopen",  ["🔄", "ev_reopen",  0x5B8CFF],
+    "fail",    ["❌", "ev_fail",    0xFF5C5C],
+    "error",   ["⚠️", "ev_error",   0xF5A142],
+    "back",    ["🟢", "ev_back",    0x3DDC84],
+    "down",    ["🔴", "ev_down",    0xFF5C5C],
+    "lic",     ["🔒", "ev_lic",     0xFF5C5C],
+    "updated", ["✨", "ev_updated", 0xA78BFA],
+    "test",    ["🔔", "ev_test",    0x5B8CFF])
+
+SendEvent(kind, lines := [], feedback := false, arg := "") {
+    global edHook, EV, APP_NAME, USER_NAME
+    url := Trim(edHook.Value)
+    if (url = "") {
+        if feedback
+            Log(T("hook_need_url"))
+        return
+    }
+    ev := EV[kind]
+    now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
+    desc := ""
+    for l in lines
+        desc .= l "`n"
+    desc .= "**" T("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    e := '{"username":"Auto Reconnect","embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '"},'
+       . '"title":"' JsonEsc(ev[1] "  " T(ev[2], arg)) '",'
+       . '"color":' ev[3] ','
+       . '"description":"' JsonEsc(desc) '",'
+       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName) '"},'
+       . '"timestamp":"' ts '"'
+       . '}]}'
+    try {
+        st := HttpPost(url, e, "application/json")
+        if feedback
+            Log(T("hook_sent", st))
+    } catch as err {
+        Log(T("hook_fail", err.Message))
+    }
+}
+
+; Texto simples pro webhook (não usado pelos avisos)
 SendWebhook(msg, feedback := false) {
     global edHook
     url := Trim(edHook.Value)
     if (url = "") {
         if feedback
-            Log("Coloque a URL do webhook primeiro.")
+            Log(T("hook_need_url"))
         return
     }
     try {
         st := HttpPost(url, '{"content":"' JsonEsc(msg) '"}', "application/json")
         if feedback
-            Log("Webhook enviado (HTTP " st ").")
+            Log(T("hook_sent", st))
     } catch as e {
-        Log("Falha no webhook: " e.Message)
+        Log(T("hook_fail", e.Message))
     }
 }
 
@@ -1249,11 +3014,11 @@ SaveHBitmapPng(hBM, file) {
 }
 
 SendStatusReport(manual := false) {
-    global edHook, running, launches, discCount, lastDisc, lastDiscUnix, monStart, discTick, chkOcr, chkRep, edRepMin
+    global edHook, running, launches, discCount, lastDisc, lastDiscUnix, monStart, discTick, chkOcr, chkRep, edRepMin, USER_NAME, APP_NAME
     url := Trim(edHook.Value)
     if (url = "") {
         if manual
-            Log("Coloque a URL do webhook primeiro.")
+            Log(T("hook_need_url"))
         return
     }
     open := IsRobloxOpen()
@@ -1262,46 +3027,46 @@ SendStatusReport(manual := false) {
     png := A_Temp "\roblox_status.png"
     shot := false, why := ""
     if !hw
-        why := "Roblox fechado"
+        why := T("why_closed")
     else if (WinGetMinMax(hw) = -1)
-        why := "janela minimizada"
+        why := T("why_min")
     else {
         try shot := CaptureWindowPng(hw, png)
         if !shot
-            why := "falha ao capturar"
+            why := T("why_fail")
     }
 
     stats := ""
     if (shot && chkOcr.Value) {
         try stats := CurrencyBlock(ReadCurrencies(hw))
         catch as err
-            Log("Erro ao ler moedas: " err.Message)
+            Log(T("log_coin_err", err.Message))
     }
 
     if !open
-        title := "🔴  Offline", color := 0xFF5C5C
+        title := "🔴  " T("emb_offline"), color := 0xFF5C5C
     else if discTick
-        title := "🟡  Online  ·  desconexão no log", color := 0xF5C542
+        title := "🟡  " T("emb_warn"), color := 0xF5C542
     else
-        title := "🟢  Online no jogo", color := 0x3DDC84
+        title := "🟢  " T("emb_online"), color := 0x3DDC84
 
-    up := running ? DurStr(A_TickCount - monStart) : "parado"
-    queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : "Nenhuma"
+    up := running ? DurStr(A_TickCount - monStart) : T("up_stopped")
+    queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : T("none")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
-    foot := A_ComputerName (running && chkRep.Value ? "  •  próximo status em " Integer(edRepMin.Value || 60) " min" : "")
+    foot := USER_NAME "  •  " A_ComputerName (running && chkRep.Value ? "  •  " T("next_status", Integer(edRepMin.Value || 60)) : "")
     if !shot
-        foot .= "  •  sem print (" why ")"
+        foot .= "  •  " T("no_shot", why)
 
-    e := '{"username":"Auto-Rejoin","embeds":[{'
-       . '"author":{"name":"' JsonEsc("Roblox Auto-Rejoin") '"},'
+    e := '{"username":"Auto Reconnect","embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '"},'
        . '"title":"' JsonEsc(title) '",'
        . '"color":' color ','
        . (stats != "" ? '"description":"' JsonEsc(stats) '",' : '')
        . '"fields":['
-       . '{"name":"' JsonEsc("⏱️ Tempo ativo") '","value":"``' JsonEsc(up) '``","inline":true},'
-       . '{"name":"' JsonEsc("🔁 Reaberturas") '","value":"``' launches '``","inline":true},'
-       . '{"name":"' JsonEsc("📉 Quedas") '","value":"``' discCount '``","inline":true},'
-       . '{"name":"' JsonEsc("🕒 Última queda") '","value":"' JsonEsc(queda) '","inline":false}'
+       . '{"name":"' JsonEsc("⏱️ " T("f_uptime")) '","value":"``' JsonEsc(up) '``","inline":true},'
+       . '{"name":"' JsonEsc("🔁 " T("f_reopens")) '","value":"``' launches '``","inline":true},'
+       . '{"name":"' JsonEsc("📉 " T("f_drops")) '","value":"``' discCount '``","inline":true},'
+       . '{"name":"' JsonEsc("🕒 " T("f_lastdrop")) '","value":"' JsonEsc(queda) '","inline":false}'
        . '],'
        . (shot ? '"image":{"url":"attachment://roblox.png"},' : '')
        . '"footer":{"text":"' JsonEsc(foot) '"},'
@@ -1310,9 +3075,9 @@ SendStatusReport(manual := false) {
 
     try {
         st := shot ? SendWebhookImage(url, e, png) : HttpPost(url, e, "application/json")
-        Log("Status enviado (HTTP " st ")" (shot ? "" : " sem print: " why) ".")
+        Log(T("log_status_sent", st) (shot ? "" : "  " T("no_shot", why)))
     } catch as err {
-        Log("Falha ao enviar status: " err.Message)
+        Log(T("log_status_fail", err.Message))
     }
 }
 
@@ -1512,7 +3277,7 @@ CurrencyBlock(cur) {
     for c in CurrencySpec() {
         lab := c.name
         if !found.Has(lab) {
-            view .= lab ": não encontrado`n"
+            view .= lab ": " T("not_found") "`n"
             continue
         }
         val := found[lab], delta := "", vdelta := ""
@@ -1530,7 +3295,7 @@ CurrencyBlock(cur) {
         out .= c.emoji "  **" val "**" delta "  ·  " lab "`n"
         view .= lab ": " val vdelta "`n"
     }
-    curView.Value := view = "" ? "Nada lido." : RTrim(view, "`n")
+    curView.Value := view = "" ? T("nothing_read") : RTrim(view, "`n")
     return out = "" ? "" : "### Player Stats`n" out
 }
 
@@ -1538,7 +3303,7 @@ TestCurrencies() {
     global curView, lastOcrText
     hw := FindGameWindow()
     if !hw || WinGetMinMax(hw) = -1 {
-        curView.Value := "Abra o Roblox (sem minimizar) e deixe as moedas aparecendo."
+        curView.Value := T("ocr_open")
         return
     }
     try {
@@ -1546,14 +3311,14 @@ TestCurrencies() {
         found := cur[2]
         view := ""
         for lab in cur[1]
-            view .= lab ": " (found.Has(lab) ? found[lab] : "não encontrado") "`n"
-        curView.Value := view = "" ? "Coloque os nomes das moedas acima." : RTrim(view, "`n")
-        Log("Leitura de moedas testada (" found.Count "/" cur[1].Length " encontradas).")
+            view .= lab ": " (found.Has(lab) ? found[lab] : T("not_found")) "`n"
+        curView.Value := view = "" ? T("ocr_names") : RTrim(view, "`n")
+        Log(T("log_ocr_tested", found.Count, cur[1].Length))
         if (found.Count < cur[1].Length)
-            Log("Texto que o OCR viu:`r`n" StrReplace(RTrim(lastOcrText, "`n"), "`n", "`r`n"))
+            Log(T("log_ocr_saw") "`r`n" StrReplace(RTrim(lastOcrText, "`n"), "`n", "`r`n"))
     } catch as e {
-        curView.Value := "Erro no OCR: " e.Message
-        Log("Erro no OCR: " e.Message)
+        curView.Value := T("ocr_err", e.Message)
+        Log(T("ocr_err", e.Message))
     }
 }
 
@@ -1630,7 +3395,7 @@ RunMethod(m) {
     if (m.kind = "exe") {
         cmd := PlayerCommand()
         if (cmd = "")
-            throw Error("Roblox não encontrado no registro")
+            throw Error(T("roblox_not_reg"))
         cmd := StrReplace(cmd, '"%1"', '"' m.target '"')
         cmd := StrReplace(cmd, "%1", '"' m.target '"')
         Run(cmd)
@@ -1639,7 +3404,7 @@ RunMethod(m) {
 }
 
 MethodName(m) {
-    return Map("exe", "direto pelo Roblox", "uri", "link roblox://", "web", "navegador")[m.kind]
+    return T(Map("exe", "m_exe", "uri", "m_uri", "web", "m_web")[m.kind])
 }
 
 IsRobloxOpen() {
@@ -1660,16 +3425,16 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     global edLink, lastLaunch, launches, browserLaunch, launchToken, iniFile, joinedTick, openedTick, launchStart
     link := Trim(edLink.Value)
     if (link = "") {
-        Log("Cole o link do jogo primeiro.")
+        Log(T("paste_link_first"))
         return
     }
     list := LaunchMethods(link)
     if (idx > list.Length || tries >= list.Length) {
-        Log("Nenhum jeito de abrir funcionou. Tento de novo na próxima checagem.")
+        Log(T("log_all_failed"))
         static lastFail := 0
         if (!lastFail || A_TickCount - lastFail > 600000) {   ; avisa no máximo a cada 10 min
             lastFail := A_TickCount
-            SendWebhook(":x: Não consegui abrir o Roblox (" NowStr() ") - PC: " A_ComputerName)
+            SendEvent("fail", [T("d_retry")])
         }
         return
     }
@@ -1681,7 +3446,7 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     try {
         RunMethod(m)
     } catch as err {
-        Log("Jeito " idx "/" list.Length " (" MethodName(m) ") falhou: " err.Message)
+        Log(T("log_method_failed", idx, list.Length, MethodName(m), err.Message))
         return LaunchGame(manual, nextIdx, tries + 1)
     }
     browserLaunch := (m.kind = "web") ? A_TickCount : 0
@@ -1690,10 +3455,10 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     joinedTick := 0, openedTick := 0
     if !tries
         launches++
-    Log((manual ? "Abrindo (manual, " : "Reabrindo (") MethodName(m) ")")
+    Log(T(manual ? "log_opening" : "log_reopening", MethodName(m)))
     SetTimer(LaunchPoll, 1000)
     if (!manual && !tries)
-        SendWebhook(":arrows_counterclockwise: Tentando reabrir o Roblox (" NowStr() ") - PC: " A_ComputerName)
+        SendEvent("reopen", ["**" T("d_method") ":** " MethodName(m)])
 
     ; confere se abriu de verdade
     token := ++launchToken
@@ -1716,11 +3481,11 @@ LaunchPoll() {
     ReadNewLogLines()
     if (!openedTick && IsRobloxOpen()) {
         openedTick := A_TickCount
-        Log("Roblox abriu (" Round(el / 1000) "s). Entrando no jogo...")
-        SetState("wait", "Entrando no jogo...", "Roblox aberto, carregando o servidor")
+        Log(T("log_opened", Round(el / 1000)))
+        SetState("wait", T("st_joining"), T("st_joining_sub"))
     }
     if (openedTick && joinedTick && FindGameWindow()) {
-        Log("Entrou no jogo (" Round((A_TickCount - lastLaunch) / 1000) "s).")
+        Log(T("log_joined", Round((A_TickCount - lastLaunch) / 1000)))
         lastLaunch := 0
         SetTimer(LaunchPoll, 0)
         Check()
@@ -1737,7 +3502,7 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
         return
     if (stage = 1) {
         if !IsRobloxOpen() {
-            Log("O Roblox não abriu em 25s, tentando outro jeito...")
+            Log(T("log_not_open25"))
             return LaunchGame(manual, nextIdx, tries + 1)
         }
         SetTimer(() => VerifyLaunch(token, manual, idx, nextIdx, tries, 2), -35000)
@@ -1748,7 +3513,7 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
     }
     ; só troca de jeito se o log do Roblox estiver funcionando (log novo apareceu)
     if (logSeenTick >= launchStart && IsRobloxOpen()) {
-        Log("O Roblox abriu mas não entrou no jogo em 60s, tentando outro jeito...")
+        Log(T("log_not_join60"))
         KillRoblox()
         Sleep(2000)
         LaunchGame(manual, nextIdx, tries + 1)
@@ -1816,12 +3581,12 @@ ForcePlace() {
     global fsTries
     h := FindGameWindow()
     if !h {
-        Log("O Roblox não está aberto.")
+        Log(T("log_not_open"))
         return
     }
     fsTries := 0
     PlaceRoblox(h)
-    Log("Janela do Roblox posicionada.")
+    Log(T("log_placed"))
 }
 
 ; título da guia ativa, sem o nome do navegador no final
@@ -1875,7 +3640,7 @@ Cleanup() {
         tabDone := false
         fsTries := 0
         placedLogged := false
-        Log("Janela do Roblox detectada.")
+        Log(T("log_detected"))
     }
     since := A_TickCount - detectTick
 
@@ -1883,7 +3648,7 @@ Cleanup() {
         try {
             if !PlaceRoblox(h) && !placedLogged {
                 placedLogged := true
-                Log("Janela do Roblox posicionada no canto direito.")
+                Log(T("log_placed_right"))
             }
         }
     }
@@ -1894,14 +3659,14 @@ Cleanup() {
             browserLaunch := 0
             n := CloseBrowserTab()
             if n
-                Log("Guia do Roblox fechada no navegador.")
+                Log(T("log_tab_closed"))
             else {
                 t := ""
                 for exe in ["brave.exe", "chrome.exe", "msedge.exe", "firefox.exe", "opera.exe"]
                     for hw in WinGetList("ahk_exe " exe)
                         if ((wt := WinGetTitle(hw)) != "")
                             t .= "`r`n    • " wt
-                Log("Não achei a guia do Roblox. Títulos abertos:" (t = "" ? " nenhum" : t))
+                Log(T("log_tab_nf") (t = "" ? " " T("none_lc") : t))
             }
         }
     }
@@ -1964,7 +3729,7 @@ ReadNewLogLines() {
             pendingJoin := 0
             if !discTick {
                 discTick := A_TickCount
-                Log("Desconexão no log. Aguardando reentrar...")
+                Log(T("log_disc_log"))
             }
         }
     }
@@ -1972,8 +3737,8 @@ ReadNewLogLines() {
 
 RecoverRoblox(reason) {
     global wasOpen, downTick
-    Log("Erro detectado: " reason ". Reiniciando o Roblox...")
-    SendWebhook(":warning: **Erro detectado** (" reason ") às " NowStr() " - reiniciando - PC: " A_ComputerName)
+    Log(T("log_err_restart", reason))
+    SendEvent("error", ["**" T("d_reason") ":** " reason, T("d_restart")])
     MarkDisconnect()
     wasOpen := false
     downTick := A_TickCount
@@ -2018,12 +3783,12 @@ WatchError() {
         if (code != "") {
             dlgSeen++
             if (dlgSeen = 1) {
-                Log("Tela de Disconnected na janela" (code != "?" ? " (código " code ")" : "") ".")
+                Log(code != "?" ? T("log_disc_screen_c", code) : T("log_disc_screen"))
                 if !discTick
                     discTick := A_TickCount
             } else {
                 dlgSeen := 0, discTick := 0, pendingJoin := 0
-                RecoverRoblox("tela de Disconnected" (code != "?" ? " - código " code : ""))
+                RecoverRoblox(code != "?" ? T("r_disc_screen_c", code) : T("r_disc_screen"))
                 return
             }
         } else
@@ -2033,7 +3798,7 @@ WatchError() {
     ; 2) entrou de novo e ficou estável 20s -> foi teleport/reconexão normal
     if (discTick && pendingJoin && A_TickCount - pendingJoin > 20000) {
         discTick := 0, pendingJoin := 0
-        Log("Reentrou no jogo/teleport normal, ok.")
+        Log(T("log_rejoined"))
     }
 
     ; 3) desconectou e não voltou dentro da tolerância
@@ -2042,7 +3807,7 @@ WatchError() {
         el := A_TickCount - discTick
         if ((el > tol && !pendingJoin) || el > tol * 2) {
             discTick := 0, pendingJoin := 0
-            RecoverRoblox("desconexão/erro sem reentrar no jogo")
+            RecoverRoblox(T("r_no_rejoin"))
             return
         }
     }
@@ -2053,7 +3818,7 @@ WatchError() {
             hungSince := A_TickCount
         else if (A_TickCount - hungSince > 30000) {
             hungSince := 0
-            RecoverRoblox("janela travada (não respondendo)")
+            RecoverRoblox(T("r_hung"))
         }
     } else {
         hungSince := 0
@@ -2068,8 +3833,8 @@ Check() {
 
     if open {
         if (!wasOpen && downTick) {
-            SendWebhook(":green_circle: Roblox voltou às " NowStr() " (ficou fora por " DurStr(A_TickCount - downTick) ") - PC: " A_ComputerName)
-            Log("Roblox voltou (fora por " DurStr(A_TickCount - downTick) ").")
+            SendEvent("back", ["**" T("d_away") ":** " DurStr(A_TickCount - downTick)])
+            Log(T("log_back", DurStr(A_TickCount - downTick)))
             downTick := 0
         }
         wasOpen := true
@@ -2077,21 +3842,21 @@ Check() {
         wasOpen := false
         downTick := A_TickCount
         MarkDisconnect()
-        Log("Roblox fechou/desconectou.")
-        SendWebhook(":red_circle: **Roblox fechou/desconectou** às " NowStr() " - PC: " A_ComputerName)
+        Log(T("log_down"))
+        SendEvent("down")
     }
 
     if (lastLaunch && (A_TickCount - lastLaunch) < Integer(edWait.Value || 90) * 1000) {
-        SetState("wait", "Carregando...", "Aguardando o jogo abrir e entrar no servidor")
+        SetState("wait", T("st_loading"), T("st_loading_sub"))
         return
     }
     if open {
         if discTick
-            SetState("warn", "Roblox ON", "Desconexão no log, aguardando reentrar")
+            SetState("warn", "Roblox ON", T("st_on_warn_sub"))
         else
-            SetState("on", "Roblox ON", "No jogo · monitorando")
+            SetState("on", "Roblox ON", T("st_on_sub"))
     } else {
-        SetState("off", "Roblox OFF", "Fechado, reabrindo agora")
+        SetState("off", "Roblox OFF", T("st_off_sub"))
         LaunchGame()
     }
 }
@@ -2099,13 +3864,13 @@ Check() {
 Toggle(*) {
     global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed
     if (!running && KaEnabled() && !licensed) {
-        ShowKeyScreen("Ative sua key pra usar.")
+        ShowKeyScreen(T("activate_to_use"))
         return
     }
     if !running {
         if (Trim(edLink.Value) = "") {
-            Log("Cole o link do jogo primeiro.")
-            SetState("warn", "Sem link", "Cole o link do jogo na aba Jogo")
+            Log(T("paste_link_first"))
+            SetState("warn", T("st_nolink"), T("st_nolink_sub"))
             if WinExist("ahk_id " gm.Hwnd) && DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
                 SetCompact(false)
             ShowPage("Jogo")
@@ -2119,13 +3884,13 @@ Toggle(*) {
         downTick := 0
         monStart := A_TickCount
         running := true
-        SendWebhook(":white_check_mark: Monitoramento iniciado (" NowStr() ") - PC: " A_ComputerName)
+        SendEvent("start", ["**" T("d_interval") ":** " iv "s"])
         for b in [btnStart, mBtn] {
-            b.Text := "Parar"
+            b.Text := T("btn_stop")
             SetBtnStyle(b, "sec")
         }
-        SetState("wait", "Monitorando...", "Verificando o Roblox")
-        Log("Monitoramento iniciado (a cada " iv "s).")
+        SetState("wait", T("st_monitoring"), T("st_monitoring_sub"))
+        Log(T("log_mon_start", iv))
         SetTimer(Check, iv * 1000)
         ApplyReportTimer()
         Check()
@@ -2134,11 +3899,11 @@ Toggle(*) {
         SetTimer(Check, 0)
         ApplyReportTimer()
         for b in [btnStart, mBtn] {
-            b.Text := "Iniciar"
+            b.Text := T("btn_start")
             SetBtnStyle(b, "primary")
         }
-        SetState("idle", "Parado", "Clique em Iniciar para monitorar")
-        Log("Monitoramento parado.")
+        SetState("idle", T("idle"), T("click_start"))
+        Log(T("log_mon_stop"))
     }
 }
 

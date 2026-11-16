@@ -1,6 +1,6 @@
-# Roblox Auto-Rejoin
+# Auto Reconnect Roblox
 
-Script em AutoHotkey v2 que mantém você no jogo do Roblox: reabre se fechar ou desconectar, posiciona a janela, manda status no Discord (com print e moedas) e se atualiza sozinho.
+Script em AutoHotkey v2 que mantém você no jogo do Roblox (8 idiomas): reabre se fechar ou desconectar, posiciona a janela, manda status no Discord (com print e moedas) e se atualiza sozinho.
 
 ## Como usar
 1. Instale o [AutoHotkey v2](https://www.autohotkey.com/).
