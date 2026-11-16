@@ -1,5 +1,9 @@
 # Novidades do Roblox Auto-Rejoin
 
+## v1.0.2
+- Abertura sempre na ordem: direto pelo Roblox > link roblox:// > navegador
+- Não fica mais preso no último jeito que funcionou
+
 ## v1.0.1
 - Teste do sistema de atualização automática
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.1"
+VERSION     := "1.0.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -71,7 +71,6 @@ pendingUpd := ""   ; arquivo da atualização já baixado
 pendingVer := ""
 changelogTxt := ""
 launchToken := 0
-launchIdx := Integer(IniRead(A_ScriptDir "\config.ini", "cfg", "launchMethod2", "0"))
 joinedTick := 0   ; quando o log disse que entrou no jogo (após abrir)
 logSeenTick := 0  ; quando apareceu um log novo do Roblox
 launchStart := 0
@@ -1319,14 +1318,14 @@ FindGameWindow() {
 
 ; Abre o jogo. Se um jeito falhar (erro ou o Roblox não aparecer em 25s), tenta o próximo.
 LaunchGame(manual := false, idx := 0, tries := 0) {
-    global edLink, lastLaunch, launches, browserLaunch, launchIdx, launchToken, iniFile, joinedTick, openedTick, launchStart
+    global edLink, lastLaunch, launches, browserLaunch, launchToken, iniFile, joinedTick, openedTick, launchStart
     link := Trim(edLink.Value)
     if (link = "") {
         Log("Cole o link do jogo primeiro.")
         return
     }
     list := LaunchMethods(link)
-    if (tries >= list.Length) {
+    if (idx > list.Length || tries >= list.Length) {
         Log("Nenhum jeito de abrir funcionou. Tento de novo na próxima checagem.")
         static lastFail := 0
         if (!lastFail || A_TickCount - lastFail > 600000) {   ; avisa no máximo a cada 10 min
@@ -1336,9 +1335,9 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
         return
     }
     if !idx
-        idx := (launchIdx >= 1 && launchIdx <= list.Length) ? launchIdx : 1
+        idx := 1   ; sempre começa pelo primeiro: direto > link roblox:// > navegador
     m := list[idx]
-    nextIdx := Mod(idx, list.Length) + 1
+    nextIdx := idx + 1
 
     try {
         RunMethod(m)
@@ -1394,7 +1393,7 @@ LaunchPoll() {
 ;   60s: tem que ter entrado no jogo (pelo log). Se o Roblox abriu mas ficou na tela inicial,
 ;        fecha e tenta o próximo jeito.
 VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
-    global launchToken, launchIdx, iniFile, joinedTick, logSeenTick, launchStart
+    global launchToken, iniFile, joinedTick, logSeenTick, launchStart
     if (token != launchToken)      ; já teve outra abertura depois dessa
         return
     if (stage = 1) {
@@ -1406,10 +1405,6 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
         return
     }
     if joinedTick {
-        if (launchIdx != idx) {
-            launchIdx := idx
-            IniWrite(idx, iniFile, "cfg", "launchMethod2")
-        }
         return
     }
     ; só troca de jeito se o log do Roblox estiver funcionando (log novo apareceu)
