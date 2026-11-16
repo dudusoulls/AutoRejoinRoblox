@@ -1828,7 +1828,7 @@ AddNav("Sobre",   Chr(0xE946), 348)
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
 FontUI(g, "s9 w600")
-sideStat := g.Add("Text", Format("x42 y{} w130 c{} Background{}", H - 61, C_TEXT, C_SIDE), T("idle"))
+sideStat := g.Add("Text", Format("x42 y{} w130 c{} Background{}", H - 61, C_TEXT, C_SIDE), TT("idle"))
 FontUI(g, "s8")
 g.Add("Text", Format("x24 y+4 w150 c{} Background{}", C_DIM, C_SIDE), USER_NAME "  ·  v" VERSION)
 FontUI(g, "s7 w700")
@@ -1851,17 +1851,17 @@ FontUI(g, "s9")
 pageSub := g.Add("Text", Format("x{} y+2 w{} c{} Background{}", CX, CW, C_MUTED, C_BG), "")
 
 ; ---------------- Página: Início ----------------
-BeginPage("Início", T("nav_home"), T("pg_home_sub", USER_FIRST))
+BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
 y := 92
 Card(CX, y, CW, 96)
 dashDot   := Lbl(CX + 22, y + 26, 30, "●", "s20", C_DIM)
-dashTitle := Lbl(CX + 58, y + 22, 290, T("idle"), "s16 w700")
-dashSub   := Lbl(CX + 59, y + 56, 300, T("click_start"), "s9", C_MUTED)
-btnStart  := Btn(CX + CW - 152, y + 29, 132, 38, T("btn_start"), Toggle, "primary")
+dashTitle := Lbl(CX + 58, y + 22, 290, TT("idle"), "s16 w700")
+dashSub   := Lbl(CX + 59, y + 56, 300, TT("click_start"), "s9", C_MUTED)
+btnStart  := Btn(CX + CW - 152, y + 29, 132, 38, TT("btn_start"), Toggle, "primary")
 
 y := 200, sw := (CW - 36) // 4
 stVals := []
-for i, lab in [T("st_uptime"), T("st_reopens"), T("st_drops"), T("st_lastdrop")] {
+for i, lab in [TT("st_uptime"), TT("st_reopens"), TT("st_drops"), TT("st_lastdrop")] {
     sx := CX + (i - 1) * (sw + 12)
     Card(sx, y, sw, 84)
     Lbl(sx + 18, y + 16, sw - 30, lab, "s7 w700", C_DIM)
@@ -1870,122 +1870,122 @@ for i, lab in [T("st_uptime"), T("st_reopens"), T("st_drops"), T("st_lastdrop")]
 
 y := 296, bw := (CW - 40 - 24) // 3
 Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, T("quick"), "s7 w700", C_DIM)
-Btn(CX + 20,                y + 46, bw, 38, T("btn_open_now"),  (*) => LaunchGame(true))
-Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, T("btn_place"), (*) => ForcePlace())
-Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, T("btn_compact"),    (*) => SetCompact(true))
+Lbl(CX + 20, y + 16, 300, TT("quick"), "s7 w700", C_DIM)
+Btn(CX + 20,                y + 46, bw, 38, TT("btn_open_now"),  (*) => LaunchGame(true))
+Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, TT("btn_place"), (*) => ForcePlace())
+Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, TT("btn_compact"),    (*) => SetCompact(true))
 
 ; ---------------- Página: Jogo ----------------
-BeginPage("Jogo", T("nav_game"), T("pg_game_sub"))
+BeginPage("Jogo", TT("nav_game"), TT("pg_game_sub"))
 y := 92
 Card(CX, y, CW, 108)
-Lbl(CX + 20, y + 16, 300, T("sec_server"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, TT("sec_server"), "s7 w700", C_DIM)
 edLink := Input(CX + 20, y + 38, CW - 40, savedLink)
-Lbl(CX + 20, y + 78, CW - 40, T("hint_link"), "s8", C_MUTED)
+Lbl(CX + 20, y + 78, CW - 40, TT("hint_link"), "s8", C_MUTED)
 
 y := 212, half := (CW - 40) // 2
 Card(CX, y, CW, 110)
-Lbl(CX + 20, y + 16, 300, T("sec_monitor"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 40, half, T("lbl_check"), "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, TT("sec_monitor"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 40, half, TT("lbl_check"), "s9", C_MUTED)
 edInterval := Input(CX + 20, y + 62, 120, savedInterval, "Number")
-Lbl(CX + 20 + half, y + 40, half, T("lbl_wait"), "s9", C_MUTED)
+Lbl(CX + 20 + half, y + 40, half, TT("lbl_wait"), "s9", C_MUTED)
 edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 
 y := 334
 Card(CX, y, CW, 132)
-Lbl(CX + 20, y + 16, 300, T("sec_recovery"), "s7 w700", C_DIM)
-chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_err"), savedErr, T("sw_err_sub"))
-Lbl(CX + 20, y + 96, 200, T("lbl_tol"), "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
+chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
+Lbl(CX + 20, y + 96, 200, TT("lbl_tol"), "s9", C_MUTED)
 edErrSec := Input(CX + 170, y + 89, 90, savedErrSec, "Number")
 
 ; ---------------- Página: Janela ----------------
-BeginPage("Janela", T("nav_window"), T("pg_win_sub"))
+BeginPage("Janela", TT("nav_window"), TT("pg_win_sub"))
 y := 92
 Card(CX, y, CW, 142)
-Lbl(CX + 20, y + 16, 300, T("sec_pos"), "s7 w700", C_DIM)
-chkShrink := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_place"), savedShrink, T("sw_place_sub"))
-Lbl(CX + 20, y + 98, 60, T("lbl_width"), "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, TT("sec_pos"), "s7 w700", C_DIM)
+chkShrink := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_place"), savedShrink, TT("sw_place_sub"))
+Lbl(CX + 20, y + 98, 60, TT("lbl_width"), "s9", C_MUTED)
 edW := Input(CX + 78, y + 91, 80, winW, "Number")
-Lbl(CX + 178, y + 98, 50, T("lbl_height"), "s9", C_MUTED)
+Lbl(CX + 178, y + 98, 50, TT("lbl_height"), "s9", C_MUTED)
 edH := Input(CX + 228, y + 91, 80, winH, "Number")
-Btn(CX + CW - 170, y + 91, 150, 32, T("btn_place_now"), (*) => ForcePlace())
+Btn(CX + CW - 170, y + 91, 150, 32, TT("btn_place_now"), (*) => ForcePlace())
 edW.OnEvent("Change", (*) => (winW := Integer(edW.Value || 800)))
 edH.OnEvent("Change", (*) => (winH := Integer(edH.Value || 630)))
 
 y := 246
 Card(CX, y, CW, 96)
-Lbl(CX + 20, y + 16, 300, T("sec_browser"), "s7 w700", C_DIM)
-chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_tab"), savedMin, T("sw_tab_sub"))
+Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
+chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
 
 ; ---------------- Página: Webhook ----------------
-BeginPage("Webhook", T("nav_hook"), T("pg_hook_sub"))
+BeginPage("Webhook", TT("nav_hook"), TT("pg_hook_sub"))
 y := 92
 Card(CX, y, CW, 112)
 Lbl(CX + 20, y + 16, 300, "DISCORD", "s7 w700", C_DIM)
 edHook := Input(CX + 20, y + 38, CW - 40 - 132, savedHook)
-Btn(CX + CW - 140, y + 38, 120, 32, T("btn_test"), (*) => SendEvent("test", [T("d_test")], true))
-Lbl(CX + 20, y + 80, CW - 40, T("hint_hook"), "s8", C_MUTED)
+Btn(CX + CW - 140, y + 38, 120, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
+Lbl(CX + 20, y + 80, CW - 40, TT("hint_hook"), "s8", C_MUTED)
 
 y := 216
 Card(CX, y, CW, 140)
-Lbl(CX + 20, y + 16, 300, T("sec_status"), "s7 w700", C_DIM)
-chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_rep"), savedRep, T("sw_rep_sub"))
+Lbl(CX + 20, y + 16, 300, TT("sec_status"), "s7 w700", C_DIM)
+chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_rep"), savedRep, TT("sw_rep_sub"))
 chkRep.onChange := ApplyReportTimer
-Lbl(CX + 20, y + 98, 120, T("lbl_interval"), "s9", C_MUTED)
+Lbl(CX + 20, y + 98, 120, TT("lbl_interval"), "s9", C_MUTED)
 edRepMin := Input(CX + 150, y + 91, 80, savedRepMin, "Number")
-Btn(CX + CW - 160, y + 91, 140, 32, T("btn_send_now"), (*) => SendStatusReport(true))
+Btn(CX + CW - 160, y + 91, 140, 32, TT("btn_send_now"), (*) => SendStatusReport(true))
 
 ; ---------------- Página: Moedas ----------------
-BeginPage("Moedas", T("nav_coins"), T("pg_coins_sub"))
+BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
 y := 92
 Card(CX, y, CW, 166)
-Lbl(CX + 20, y + 16, 300, T("sec_ocr"), "s7 w700", C_DIM)
-chkOcr := ToggleSwitch(CX + 20, y + 40, CW - 40, T("sw_ocr"), savedOcr, T("sw_ocr_sub"))
-Lbl(CX + 20, y + 94, CW - 40, T("lbl_coins"), "s9", C_MUTED)
+Lbl(CX + 20, y + 16, 300, TT("sec_ocr"), "s7 w700", C_DIM)
+chkOcr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_ocr"), savedOcr, TT("sw_ocr_sub"))
+Lbl(CX + 20, y + 94, CW - 40, TT("lbl_coins"), "s9", C_MUTED)
 edCur := Input(CX + 20, y + 116, CW - 40, savedCur)
 
 y := 270
 Card(CX, y, CW, 150)
-Lbl(CX + 20, y + 16, 300, T("sec_lastread"), "s7 w700", C_DIM)
-Btn(CX + CW - 160, y + 12, 140, 32, T("btn_testread"), (*) => TestCurrencies())
+Lbl(CX + 20, y + 16, 300, TT("sec_lastread"), "s7 w700", C_DIM)
+Btn(CX + CW - 160, y + 12, 140, 32, TT("btn_testread"), (*) => TestCurrencies())
 FontMono(g, "s9")
 curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 52, CW - 40, 84, C_TEXT, C_CARD)
-    , T("no_read")))
+    , TT("no_read")))
 
 ; ---------------- Página: Sobre ----------------
-BeginPage("Sobre", T("nav_about"), T("pg_about_sub"))
+BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
 y := 92
 Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, T("sec_version"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, TT("sec_version"), "s7 w700", C_DIM)
 Lbl(CX + 20, y + 36, 200, "v" VERSION, "s20 w700")
-updStatus := Lbl(CX + 20, y + 76, CW - 210, T("upd_never"), "s9", C_MUTED)
-btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, T("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
+updStatus := Lbl(CX + 20, y + 76, CW - 210, TT("upd_never"), "s9", C_MUTED)
+btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, TT("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
 
 y := 208
 Card(CX, y, CW, 80)
-Lbl(CX + 20, y + 16, 300, T("sec_license"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 16, 300, TT("sec_license"), "s7 w700", C_DIM)
 licInfo := Lbl(CX + 20, y + 38, CW - 200, "—", "s10 w600")
 licSub  := Lbl(CX + 20, y + 58, CW - 200, "", "s8", C_MUTED)
-Btn(CX + CW - 150, y + 24, 130, 32, T("btn_changekey"), (*) => ShowKeyScreen(T("paste_new_key")))
+Btn(CX + CW - 150, y + 24, 130, 32, TT("btn_changekey"), (*) => ShowKeyScreen(TT("paste_new_key")))
 
 y := 300
 Card(CX, y, CW, 172)
-chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, T("sw_autoupd"), savedAutoUpd)
-Lbl(CX + 20, y + 52, 300, T("sec_news"), "s7 w700", C_DIM)
+chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, TT("sw_autoupd"), savedAutoUpd)
+Lbl(CX + 20, y + 52, 300, TT("sec_news"), "s7 w700", C_DIM)
 FontUI(g, "s9")
 changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E0x200 c{} Background{}"
-    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), T("news_ph")))
+    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
 ; ---------------- Página: Logs ----------------
-BeginPage("Logs", T("nav_logs"), T("pg_logs_sub"))
+BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
 y := 92
 Card(CX, y, CW, 324)
 FontMono(g, "s9")
 logBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly -Wrap +Multi +VScroll -E0x200 c{} Background{}"
     , CX + 16, y + 14, CW - 32, 296, "C9C9CF", C_CARD)))
 DllCall("uxtheme\SetWindowTheme", "Ptr", logBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
-Btn(CX + CW - 110, y + 336, 110, 32, T("btn_clear"), (*) => (logBox.Value := ""))
+Btn(CX + CW - 110, y + 336, 110, 32, TT("btn_clear"), (*) => (logBox.Value := ""))
 
 curBuild := ""
 
@@ -1998,10 +1998,10 @@ gm.MarginX := 0, gm.MarginY := 0
 FontUI(gm, "s12")
 mDot := gm.Add("Text", Format("x14 y13 w16 c{} Background{}", C_DIM, C_CARD), "●")
 FontUI(gm, "s9 w700")
-mStat := gm.Add("Text", Format("x34 y9 w128 c{} Background{}", C_TEXT, C_CARD), T("idle"))
+mStat := gm.Add("Text", Format("x34 y9 w128 c{} Background{}", C_TEXT, C_CARD), TT("idle"))
 FontUI(gm, "s8")
-mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD), T("mini_sub", 0, 0))
-mBtn := MakeBtn(gm, 166, 11, 70, 30, T("btn_start"), Toggle, "primary", false, "s9 w600", 10)
+mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD), TT("mini_sub", 0, 0))
+mBtn := MakeBtn(gm, 166, 11, 70, 30, TT("btn_start"), Toggle, "primary", false, "s9 w600", 10)
 MakeBtn(gm, 242, 11, 30, 30, Chr(0xE740), (*) => SetCompact(false), "sec", true, "s9", 10)
 
 ; ==========================================================
@@ -2013,23 +2013,23 @@ gk.MarginX := 0, gk.MarginY := 0
 KW := 420, KH := 330
 MakeBtn(gk, KW - 46, 0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_CARD)
 FontUI(gk, "s16 w700")
-gk.Add("Text", Format("x32 y32 w300 c{} Background{}", C_TEXT, C_CARD), T("key_title"))
+gk.Add("Text", Format("x32 y32 w300 c{} Background{}", C_TEXT, C_CARD), TT("key_title"))
 FontUI(gk, "s9")
-gk.Add("Text", Format("x32 y+4 w356 c{} Background{}", C_MUTED, C_CARD), T("key_sub"))
+gk.Add("Text", Format("x32 y+4 w356 c{} Background{}", C_MUTED, C_CARD), TT("key_sub"))
 kBox := gk.Add("Text", Format("x32 y104 w356 h38 +0x4000000 Background{}", C_INPUT))
 Bg(kBox, 10)
 FontMono(gk, "s10")
 edKey := gk.Add("Edit", Format("x44 y113 w332 h22 -E0x200 c{} Background{}", C_TEXT, C_INPUT), IniRead(iniFile, "cfg", "key", ""))
-btnKey := MakeBtn(gk, 32, 156, 356, 40, T("btn_activate"), (*) => ActivateKey(), "primary", false, "s10 w700", 10)
+btnKey := MakeBtn(gk, 32, 156, 356, 40, TT("btn_activate"), (*) => ActivateKey(), "primary", false, "s10 w700", 10)
 FontUI(gk, "s9")
 kStatus := gk.Add("Text", Format("x32 y208 w356 h36 c{} Background{}", C_MUTED, C_CARD), "")
 FontUI(gk, "s7 w700")
-gk.Add("Text", Format("x32 y256 w200 c{} Background{}", C_DIM, C_CARD), T("your_hwid"))
+gk.Add("Text", Format("x32 y256 w200 c{} Background{}", C_DIM, C_CARD), TT("your_hwid"))
 FontMono(gk, "s8")
 kHwid := gk.Add("Text", Format("x32 y+3 w250 c{} Background{}", C_MUTED, C_CARD), "")
-MakeBtn(gk, 296, 258, 92, 28, T("btn_copy"), (*) => (A_Clipboard := GetHWID(), kStatus.Value := T("hwid_copied")), "sec", false, "s9 w600", 8)
+MakeBtn(gk, 296, 258, 92, 28, TT("btn_copy"), (*) => (A_Clipboard := GetHWID(), kStatus.Value := TT("hwid_copied")), "sec", false, "s9 w600", 8)
 if (BUY_URL != "")
-    MakeBtn(gk, 32, 296, 120, 22, T("btn_buy"), (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
+    MakeBtn(gk, 32, 296, 120, 22, TT("btn_buy"), (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
 gk.OnEvent("Close", (*) => ExitApp())
 
 ; ---- acabamento ----
@@ -2044,7 +2044,7 @@ kHwid.Value := ShortHWID()
 if !KaEnabled()
     StartApp()                                   ; key desligada (KEYAUTH_OWNERID vazio)
 else if (Trim(edKey.Value) != "") {
-    ShowKeyScreen(T("checking_lic"))
+    ShowKeyScreen(TT("checking_lic"))
     SetTimer(() => ActivateKey(true), -300)      ; tenta entrar sozinho com a key salva
 } else
     ShowKeyScreen("")
@@ -2179,7 +2179,7 @@ AddNav(name, icon, y) {
     FontIcon(g, "s11")
     ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), T(NAVK[name]))
+    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, bar: bar}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
@@ -2338,7 +2338,7 @@ UpdateStats() {
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
-    SetIf(mSub, T("mini_sub", launches, discCount))
+    SetIf(mSub, TT("mini_sub", launches, discCount))
 }
 
 SetCompact(on) {
@@ -2412,7 +2412,7 @@ MarkDisconnect() {
 
 ; ---------------- Idioma ----------------
 ; texto traduzido (tabela I18N lá em cima)
-T(id, args*) {
+TT(id, args*) {
     global LANG, I18N
     s := I18N[LANG].Has(id) ? I18N[LANG][id] : (I18N["en"].Has(id) ? I18N["en"][id] : id)
     return args.Length ? Format(s, args*) : s
@@ -2437,9 +2437,9 @@ SystemLang() {
 LangMenu() {
     global LANG_CODES, LANG_NAMES, savedLang
     mn := Menu()
-    mn.Add(T("lang_auto"), (*) => SetLang("auto"))
+    mn.Add(TT("lang_auto"), (*) => SetLang("auto"))
     if (savedLang = "auto")
-        mn.Check(T("lang_auto"))
+        mn.Check(TT("lang_auto"))
     mn.Add()
     for i, c in LANG_CODES {
         name := LANG_NAMES[i]
@@ -2549,10 +2549,10 @@ KaInit() {
     global kaSession, KEYAUTH_VER
     r := KaPost(Map("type", "init", "ver", KEYAUTH_VER))
     if (r = "KeyAuth_Invalid")
-        return T("ka_app_nf")
+        return TT("ka_app_nf")
     if !JOk(r) {
         m := JStr(r, "message")
-        return (m = "invalidver") ? T("ka_badver") : m
+        return (m = "invalidver") ? TT("ka_badver") : m
     }
     kaSession := JStr(r, "sessionid")
     return ""
@@ -2602,8 +2602,8 @@ TranslateKa(m) {
         "Invalid session", "session_exp")
     for k, v in t
         if InStr(m, k)
-            return T(v)
-    return m != "" ? m : T("key_fail")
+            return TT(v)
+    return m != "" ? m : TT("key_fail")
 }
 
 ShowKeyScreen(msg := "") {
@@ -2624,19 +2624,19 @@ ActivateKey(auto := false) {
     global edKey, btnKey, iniFile, licensed, licFailSince
     key := Trim(edKey.Value)
     if (key = "") {
-        KeyMsg(T("paste_key_first"), true)
+        KeyMsg(TT("paste_key_first"), true)
         return
     }
-    btnKey.Text := T("checking")
-    KeyMsg(T("connecting"))
+    btnKey.Text := TT("checking")
+    KeyMsg(TT("connecting"))
     try {
         err := KaInit()
         if (err = "")
             err := KaLicense(key)
     } catch as e {
-        err := T("no_conn")
+        err := TT("no_conn")
     }
-    btnKey.Text := T("btn_activate")
+    btnKey.Text := TT("btn_activate")
     if (err != "") {
         licensed := false
         KeyMsg(err, true)
@@ -2657,13 +2657,13 @@ UpdateLicenseInfo() {
         exp := DateAdd(exp, DateDiff(A_Now, A_NowUTC, "Seconds"), "Seconds")   ; UTC -> horário do PC
         dias := DateDiff(exp, A_Now, "Days")
         if (dias > 3650) {
-            licInfo.Value := T("lic_lifetime"), sideLic.Value := T("side_lifetime")
+            licInfo.Value := TT("lic_lifetime"), sideLic.Value := TT("side_lifetime")
         } else {
-            licInfo.Value := T("lic_expires", FormatTime(exp, "ShortDate") " " FormatTime(exp, "HH:mm"), Max(dias, 0))
-            sideLic.Value := T("side_days", Max(dias, 0))
+            licInfo.Value := TT("lic_expires", FormatTime(exp, "ShortDate") " " FormatTime(exp, "HH:mm"), Max(dias, 0))
+            sideLic.Value := TT("side_days", Max(dias, 0))
         }
     } else
-        licInfo.Value := T("lic_active"), sideLic.Value := T("side_active")
+        licInfo.Value := TT("lic_active"), sideLic.Value := TT("side_active")
     licSub.Value := "Key " masked "  ·  HWID " ShortHWID()
 }
 
@@ -2680,7 +2680,7 @@ LicenseRecheck() {
             licFailSince := A_TickCount
         if (A_TickCount - licFailSince < 2 * 3600000)
             return
-        err := T("lic_offline")
+        err := TT("lic_offline")
     }
     if (err = "") {
         licFailSince := 0
@@ -2688,8 +2688,8 @@ LicenseRecheck() {
         return
     }
     licensed := false
-    Log(T("log_lic_bad", err))
-    SendEvent("lic", ["**" T("d_reason") ":** " err, T("d_stopped")])
+    Log(TT("log_lic_bad", err))
+    SendEvent("lic", ["**" TT("d_reason") ":** " err, TT("d_stopped")])
     if running
         Toggle()
     ShowKeyScreen(err)
@@ -2716,10 +2716,10 @@ CheckUpdate(manual := false) {
         return KaCheckUpdate(manual)
     if (updBase = "") {
         if manual
-            updStatus.Value := T("upd_not_cfg")
+            updStatus.Value := TT("upd_not_cfg")
         return
     }
-    updStatus.Value := T("upd_searching")
+    updStatus.Value := TT("upd_searching")
     base := UpdBaseNow()
     LoadChangelog(base)
     tmp := A_Temp "\autorejoin_update.ahk"
@@ -2727,28 +2727,28 @@ CheckUpdate(manual := false) {
         Download(base "roblox_autorejoin.ahk?t=" A_Now, tmp)
         txt := FileRead(tmp, "UTF-8")
     } catch as e {
-        updStatus.Value := T("upd_noconn")
+        updStatus.Value := TT("upd_noconn")
         if manual
-            Log(T("upd_noconn") " " e.Message)
+            Log(TT("upd_noconn") " " e.Message)
         return
     }
     if !(InStr(txt, "#Requires AutoHotkey v2") && RegExMatch(txt, 'm)^VERSION\s*:=\s*"([^"]+)"', &v)) {
-        updStatus.Value := T("upd_badfile")
+        updStatus.Value := TT("upd_badfile")
         return
     }
     if (VerCompare(v[1], VERSION) <= 0) {
-        updStatus.Value := T("upd_latest")
+        updStatus.Value := TT("upd_latest")
         pendingUpd := ""
         updBadge.Visible := false
         return
     }
     pendingUpd := tmp, pendingVer := v[1]
-    updStatus.Value := T("upd_avail", v[1])
-    btnUpd.Text := T("btn_upd_to", v[1])
+    updStatus.Value := TT("upd_avail", v[1])
+    btnUpd.Text := TT("btn_upd_to", v[1])
     SetBtnStyle(btnUpd, "primary")
-    updBadge.Text := Chr(0x2B06) "  " T("badge_new", v[1])
+    updBadge.Text := Chr(0x2B06) "  " TT("badge_new", v[1])
     updBadge.Visible := true
-    Log(T("log_upd_avail", v[1]))
+    Log(TT("log_upd_avail", v[1]))
     if chkAutoUpd.Value
         ApplyUpdate()
 }
@@ -2782,29 +2782,29 @@ KaCheckUpdate(manual) {
     global VERSION, updStatus, btnUpd, chkAutoUpd, pendingUpd, pendingVer, pendingFileId, updBadge, changeBox, licensed, iniFile
     if !licensed
         return
-    updStatus.Value := T("upd_searching")
+    updStatus.Value := TT("upd_searching")
     try {
         if (KaInit() != "" || KaLicense(IniRead(iniFile, "cfg", "key", "")) != "")
             throw Error("licença")
         ver := Trim(KaVar("versao")), fid := Trim(KaVar("arquivo")), notas := KaVar("novidades")
     } catch {
-        updStatus.Value := T("upd_noconn")
+        updStatus.Value := TT("upd_noconn")
         return
     }
     if (notas != "")
         changeBox.Value := StrReplace(StrReplace(notas, "`r`n", "`n"), "`n", "`r`n")
     if (ver = "" || fid = "" || VerCompare(ver, VERSION) <= 0) {
-        updStatus.Value := T("upd_latest")
+        updStatus.Value := TT("upd_latest")
         updBadge.Visible := false, pendingFileId := ""
         return
     }
     pendingVer := ver, pendingFileId := fid, pendingUpd := "keyauth"
-    updStatus.Value := T("upd_avail", ver)
-    btnUpd.Text := T("btn_upd_to", ver)
+    updStatus.Value := TT("upd_avail", ver)
+    btnUpd.Text := TT("btn_upd_to", ver)
     SetBtnStyle(btnUpd, "primary")
-    updBadge.Text := Chr(0x2B06) "  " T("badge_new", ver)
+    updBadge.Text := Chr(0x2B06) "  " TT("badge_new", ver)
     updBadge.Visible := true
-    Log(T("log_upd_avail", ver))
+    Log(TT("log_upd_avail", ver))
     if chkAutoUpd.Value
         ApplyUpdate()
 }
@@ -2816,9 +2816,9 @@ ApplyUpdate() {
         try {
             KaFile(pendingFileId, tmp)
             if !InStr(FileRead(tmp, "UTF-8"), "#Requires AutoHotkey v2")
-                throw Error(T("upd_badfile"))
+                throw Error(TT("upd_badfile"))
         } catch as e {
-            Log(T("log_upd_dlfail", e.Message))
+            Log(TT("log_upd_dlfail", e.Message))
             return
         }
         pendingUpd := tmp
@@ -2829,14 +2829,14 @@ ApplyUpdate() {
         FileCopy(A_ScriptFullPath, A_ScriptFullPath ".bak", 1)   ; backup da versão atual
         FileCopy(pendingUpd, A_ScriptFullPath, 1)
     } catch as e {
-        Log(T("log_upd_fail", e.Message))
+        Log(TT("log_upd_fail", e.Message))
         return
     }
     SaveConfig()
     if running
         IniWrite(1, iniFile, "cfg", "resume")
     notas := ChangelogFor(pendingVer)
-    Log(T("log_updated", pendingVer))
+    Log(TT("log_updated", pendingVer))
     SendEvent("updated", notas != "" ? [notas] : [], false, pendingVer)
     Sleep(500)
     Reload()
@@ -2887,7 +2887,7 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
     url := Trim(edHook.Value)
     if (url = "") {
         if feedback
-            Log(T("hook_need_url"))
+            Log(TT("hook_need_url"))
         return
     }
     ev := EV[kind]
@@ -2895,11 +2895,11 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
     desc := ""
     for l in lines
         desc .= l "`n"
-    desc .= "**" T("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
+    desc .= "**" TT("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     e := '{"username":"Auto Reconnect","embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '"},'
-       . '"title":"' JsonEsc(ev[1] "  " T(ev[2], arg)) '",'
+       . '"title":"' JsonEsc(ev[1] "  " TT(ev[2], arg)) '",'
        . '"color":' ev[3] ','
        . '"description":"' JsonEsc(desc) '",'
        . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName) '"},'
@@ -2908,9 +2908,9 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
     try {
         st := HttpPost(url, e, "application/json")
         if feedback
-            Log(T("hook_sent", st))
+            Log(TT("hook_sent", st))
     } catch as err {
-        Log(T("hook_fail", err.Message))
+        Log(TT("hook_fail", err.Message))
     }
 }
 
@@ -2920,15 +2920,15 @@ SendWebhook(msg, feedback := false) {
     url := Trim(edHook.Value)
     if (url = "") {
         if feedback
-            Log(T("hook_need_url"))
+            Log(TT("hook_need_url"))
         return
     }
     try {
         st := HttpPost(url, '{"content":"' JsonEsc(msg) '"}', "application/json")
         if feedback
-            Log(T("hook_sent", st))
+            Log(TT("hook_sent", st))
     } catch as e {
-        Log(T("hook_fail", e.Message))
+        Log(TT("hook_fail", e.Message))
     }
 }
 
@@ -3018,7 +3018,7 @@ SendStatusReport(manual := false) {
     url := Trim(edHook.Value)
     if (url = "") {
         if manual
-            Log(T("hook_need_url"))
+            Log(TT("hook_need_url"))
         return
     }
     open := IsRobloxOpen()
@@ -3027,35 +3027,35 @@ SendStatusReport(manual := false) {
     png := A_Temp "\roblox_status.png"
     shot := false, why := ""
     if !hw
-        why := T("why_closed")
+        why := TT("why_closed")
     else if (WinGetMinMax(hw) = -1)
-        why := T("why_min")
+        why := TT("why_min")
     else {
         try shot := CaptureWindowPng(hw, png)
         if !shot
-            why := T("why_fail")
+            why := TT("why_fail")
     }
 
     stats := ""
     if (shot && chkOcr.Value) {
         try stats := CurrencyBlock(ReadCurrencies(hw))
         catch as err
-            Log(T("log_coin_err", err.Message))
+            Log(TT("log_coin_err", err.Message))
     }
 
     if !open
-        title := "🔴  " T("emb_offline"), color := 0xFF5C5C
+        title := "🔴  " TT("emb_offline"), color := 0xFF5C5C
     else if discTick
-        title := "🟡  " T("emb_warn"), color := 0xF5C542
+        title := "🟡  " TT("emb_warn"), color := 0xF5C542
     else
-        title := "🟢  " T("emb_online"), color := 0x3DDC84
+        title := "🟢  " TT("emb_online"), color := 0x3DDC84
 
-    up := running ? DurStr(A_TickCount - monStart) : T("up_stopped")
-    queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : T("none")
+    up := running ? DurStr(A_TickCount - monStart) : TT("up_stopped")
+    queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : TT("none")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
-    foot := USER_NAME "  •  " A_ComputerName (running && chkRep.Value ? "  •  " T("next_status", Integer(edRepMin.Value || 60)) : "")
+    foot := USER_NAME "  •  " A_ComputerName (running && chkRep.Value ? "  •  " TT("next_status", Integer(edRepMin.Value || 60)) : "")
     if !shot
-        foot .= "  •  " T("no_shot", why)
+        foot .= "  •  " TT("no_shot", why)
 
     e := '{"username":"Auto Reconnect","embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '"},'
@@ -3063,10 +3063,10 @@ SendStatusReport(manual := false) {
        . '"color":' color ','
        . (stats != "" ? '"description":"' JsonEsc(stats) '",' : '')
        . '"fields":['
-       . '{"name":"' JsonEsc("⏱️ " T("f_uptime")) '","value":"``' JsonEsc(up) '``","inline":true},'
-       . '{"name":"' JsonEsc("🔁 " T("f_reopens")) '","value":"``' launches '``","inline":true},'
-       . '{"name":"' JsonEsc("📉 " T("f_drops")) '","value":"``' discCount '``","inline":true},'
-       . '{"name":"' JsonEsc("🕒 " T("f_lastdrop")) '","value":"' JsonEsc(queda) '","inline":false}'
+       . '{"name":"' JsonEsc("⏱️ " TT("f_uptime")) '","value":"``' JsonEsc(up) '``","inline":true},'
+       . '{"name":"' JsonEsc("🔁 " TT("f_reopens")) '","value":"``' launches '``","inline":true},'
+       . '{"name":"' JsonEsc("📉 " TT("f_drops")) '","value":"``' discCount '``","inline":true},'
+       . '{"name":"' JsonEsc("🕒 " TT("f_lastdrop")) '","value":"' JsonEsc(queda) '","inline":false}'
        . '],'
        . (shot ? '"image":{"url":"attachment://roblox.png"},' : '')
        . '"footer":{"text":"' JsonEsc(foot) '"},'
@@ -3075,9 +3075,9 @@ SendStatusReport(manual := false) {
 
     try {
         st := shot ? SendWebhookImage(url, e, png) : HttpPost(url, e, "application/json")
-        Log(T("log_status_sent", st) (shot ? "" : "  " T("no_shot", why)))
+        Log(TT("log_status_sent", st) (shot ? "" : "  " TT("no_shot", why)))
     } catch as err {
-        Log(T("log_status_fail", err.Message))
+        Log(TT("log_status_fail", err.Message))
     }
 }
 
@@ -3277,7 +3277,7 @@ CurrencyBlock(cur) {
     for c in CurrencySpec() {
         lab := c.name
         if !found.Has(lab) {
-            view .= lab ": " T("not_found") "`n"
+            view .= lab ": " TT("not_found") "`n"
             continue
         }
         val := found[lab], delta := "", vdelta := ""
@@ -3295,7 +3295,7 @@ CurrencyBlock(cur) {
         out .= c.emoji "  **" val "**" delta "  ·  " lab "`n"
         view .= lab ": " val vdelta "`n"
     }
-    curView.Value := view = "" ? T("nothing_read") : RTrim(view, "`n")
+    curView.Value := view = "" ? TT("nothing_read") : RTrim(view, "`n")
     return out = "" ? "" : "### Player Stats`n" out
 }
 
@@ -3303,7 +3303,7 @@ TestCurrencies() {
     global curView, lastOcrText
     hw := FindGameWindow()
     if !hw || WinGetMinMax(hw) = -1 {
-        curView.Value := T("ocr_open")
+        curView.Value := TT("ocr_open")
         return
     }
     try {
@@ -3311,14 +3311,14 @@ TestCurrencies() {
         found := cur[2]
         view := ""
         for lab in cur[1]
-            view .= lab ": " (found.Has(lab) ? found[lab] : T("not_found")) "`n"
-        curView.Value := view = "" ? T("ocr_names") : RTrim(view, "`n")
-        Log(T("log_ocr_tested", found.Count, cur[1].Length))
+            view .= lab ": " (found.Has(lab) ? found[lab] : TT("not_found")) "`n"
+        curView.Value := view = "" ? TT("ocr_names") : RTrim(view, "`n")
+        Log(TT("log_ocr_tested", found.Count, cur[1].Length))
         if (found.Count < cur[1].Length)
-            Log(T("log_ocr_saw") "`r`n" StrReplace(RTrim(lastOcrText, "`n"), "`n", "`r`n"))
+            Log(TT("log_ocr_saw") "`r`n" StrReplace(RTrim(lastOcrText, "`n"), "`n", "`r`n"))
     } catch as e {
-        curView.Value := T("ocr_err", e.Message)
-        Log(T("ocr_err", e.Message))
+        curView.Value := TT("ocr_err", e.Message)
+        Log(TT("ocr_err", e.Message))
     }
 }
 
@@ -3395,7 +3395,7 @@ RunMethod(m) {
     if (m.kind = "exe") {
         cmd := PlayerCommand()
         if (cmd = "")
-            throw Error(T("roblox_not_reg"))
+            throw Error(TT("roblox_not_reg"))
         cmd := StrReplace(cmd, '"%1"', '"' m.target '"')
         cmd := StrReplace(cmd, "%1", '"' m.target '"')
         Run(cmd)
@@ -3404,7 +3404,7 @@ RunMethod(m) {
 }
 
 MethodName(m) {
-    return T(Map("exe", "m_exe", "uri", "m_uri", "web", "m_web")[m.kind])
+    return TT(Map("exe", "m_exe", "uri", "m_uri", "web", "m_web")[m.kind])
 }
 
 IsRobloxOpen() {
@@ -3425,16 +3425,16 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     global edLink, lastLaunch, launches, browserLaunch, launchToken, iniFile, joinedTick, openedTick, launchStart
     link := Trim(edLink.Value)
     if (link = "") {
-        Log(T("paste_link_first"))
+        Log(TT("paste_link_first"))
         return
     }
     list := LaunchMethods(link)
     if (idx > list.Length || tries >= list.Length) {
-        Log(T("log_all_failed"))
+        Log(TT("log_all_failed"))
         static lastFail := 0
         if (!lastFail || A_TickCount - lastFail > 600000) {   ; avisa no máximo a cada 10 min
             lastFail := A_TickCount
-            SendEvent("fail", [T("d_retry")])
+            SendEvent("fail", [TT("d_retry")])
         }
         return
     }
@@ -3446,7 +3446,7 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     try {
         RunMethod(m)
     } catch as err {
-        Log(T("log_method_failed", idx, list.Length, MethodName(m), err.Message))
+        Log(TT("log_method_failed", idx, list.Length, MethodName(m), err.Message))
         return LaunchGame(manual, nextIdx, tries + 1)
     }
     browserLaunch := (m.kind = "web") ? A_TickCount : 0
@@ -3455,10 +3455,10 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     joinedTick := 0, openedTick := 0
     if !tries
         launches++
-    Log(T(manual ? "log_opening" : "log_reopening", MethodName(m)))
+    Log(TT(manual ? "log_opening" : "log_reopening", MethodName(m)))
     SetTimer(LaunchPoll, 1000)
     if (!manual && !tries)
-        SendEvent("reopen", ["**" T("d_method") ":** " MethodName(m)])
+        SendEvent("reopen", ["**" TT("d_method") ":** " MethodName(m)])
 
     ; confere se abriu de verdade
     token := ++launchToken
@@ -3481,11 +3481,11 @@ LaunchPoll() {
     ReadNewLogLines()
     if (!openedTick && IsRobloxOpen()) {
         openedTick := A_TickCount
-        Log(T("log_opened", Round(el / 1000)))
-        SetState("wait", T("st_joining"), T("st_joining_sub"))
+        Log(TT("log_opened", Round(el / 1000)))
+        SetState("wait", TT("st_joining"), TT("st_joining_sub"))
     }
     if (openedTick && joinedTick && FindGameWindow()) {
-        Log(T("log_joined", Round((A_TickCount - lastLaunch) / 1000)))
+        Log(TT("log_joined", Round((A_TickCount - lastLaunch) / 1000)))
         lastLaunch := 0
         SetTimer(LaunchPoll, 0)
         Check()
@@ -3502,7 +3502,7 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
         return
     if (stage = 1) {
         if !IsRobloxOpen() {
-            Log(T("log_not_open25"))
+            Log(TT("log_not_open25"))
             return LaunchGame(manual, nextIdx, tries + 1)
         }
         SetTimer(() => VerifyLaunch(token, manual, idx, nextIdx, tries, 2), -35000)
@@ -3513,7 +3513,7 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
     }
     ; só troca de jeito se o log do Roblox estiver funcionando (log novo apareceu)
     if (logSeenTick >= launchStart && IsRobloxOpen()) {
-        Log(T("log_not_join60"))
+        Log(TT("log_not_join60"))
         KillRoblox()
         Sleep(2000)
         LaunchGame(manual, nextIdx, tries + 1)
@@ -3581,12 +3581,12 @@ ForcePlace() {
     global fsTries
     h := FindGameWindow()
     if !h {
-        Log(T("log_not_open"))
+        Log(TT("log_not_open"))
         return
     }
     fsTries := 0
     PlaceRoblox(h)
-    Log(T("log_placed"))
+    Log(TT("log_placed"))
 }
 
 ; título da guia ativa, sem o nome do navegador no final
@@ -3640,7 +3640,7 @@ Cleanup() {
         tabDone := false
         fsTries := 0
         placedLogged := false
-        Log(T("log_detected"))
+        Log(TT("log_detected"))
     }
     since := A_TickCount - detectTick
 
@@ -3648,7 +3648,7 @@ Cleanup() {
         try {
             if !PlaceRoblox(h) && !placedLogged {
                 placedLogged := true
-                Log(T("log_placed_right"))
+                Log(TT("log_placed_right"))
             }
         }
     }
@@ -3659,14 +3659,14 @@ Cleanup() {
             browserLaunch := 0
             n := CloseBrowserTab()
             if n
-                Log(T("log_tab_closed"))
+                Log(TT("log_tab_closed"))
             else {
                 t := ""
                 for exe in ["brave.exe", "chrome.exe", "msedge.exe", "firefox.exe", "opera.exe"]
                     for hw in WinGetList("ahk_exe " exe)
                         if ((wt := WinGetTitle(hw)) != "")
                             t .= "`r`n    • " wt
-                Log(T("log_tab_nf") (t = "" ? " " T("none_lc") : t))
+                Log(TT("log_tab_nf") (t = "" ? " " TT("none_lc") : t))
             }
         }
     }
@@ -3729,7 +3729,7 @@ ReadNewLogLines() {
             pendingJoin := 0
             if !discTick {
                 discTick := A_TickCount
-                Log(T("log_disc_log"))
+                Log(TT("log_disc_log"))
             }
         }
     }
@@ -3737,8 +3737,8 @@ ReadNewLogLines() {
 
 RecoverRoblox(reason) {
     global wasOpen, downTick
-    Log(T("log_err_restart", reason))
-    SendEvent("error", ["**" T("d_reason") ":** " reason, T("d_restart")])
+    Log(TT("log_err_restart", reason))
+    SendEvent("error", ["**" TT("d_reason") ":** " reason, TT("d_restart")])
     MarkDisconnect()
     wasOpen := false
     downTick := A_TickCount
@@ -3783,12 +3783,12 @@ WatchError() {
         if (code != "") {
             dlgSeen++
             if (dlgSeen = 1) {
-                Log(code != "?" ? T("log_disc_screen_c", code) : T("log_disc_screen"))
+                Log(code != "?" ? TT("log_disc_screen_c", code) : TT("log_disc_screen"))
                 if !discTick
                     discTick := A_TickCount
             } else {
                 dlgSeen := 0, discTick := 0, pendingJoin := 0
-                RecoverRoblox(code != "?" ? T("r_disc_screen_c", code) : T("r_disc_screen"))
+                RecoverRoblox(code != "?" ? TT("r_disc_screen_c", code) : TT("r_disc_screen"))
                 return
             }
         } else
@@ -3798,7 +3798,7 @@ WatchError() {
     ; 2) entrou de novo e ficou estável 20s -> foi teleport/reconexão normal
     if (discTick && pendingJoin && A_TickCount - pendingJoin > 20000) {
         discTick := 0, pendingJoin := 0
-        Log(T("log_rejoined"))
+        Log(TT("log_rejoined"))
     }
 
     ; 3) desconectou e não voltou dentro da tolerância
@@ -3807,7 +3807,7 @@ WatchError() {
         el := A_TickCount - discTick
         if ((el > tol && !pendingJoin) || el > tol * 2) {
             discTick := 0, pendingJoin := 0
-            RecoverRoblox(T("r_no_rejoin"))
+            RecoverRoblox(TT("r_no_rejoin"))
             return
         }
     }
@@ -3818,7 +3818,7 @@ WatchError() {
             hungSince := A_TickCount
         else if (A_TickCount - hungSince > 30000) {
             hungSince := 0
-            RecoverRoblox(T("r_hung"))
+            RecoverRoblox(TT("r_hung"))
         }
     } else {
         hungSince := 0
@@ -3833,8 +3833,8 @@ Check() {
 
     if open {
         if (!wasOpen && downTick) {
-            SendEvent("back", ["**" T("d_away") ":** " DurStr(A_TickCount - downTick)])
-            Log(T("log_back", DurStr(A_TickCount - downTick)))
+            SendEvent("back", ["**" TT("d_away") ":** " DurStr(A_TickCount - downTick)])
+            Log(TT("log_back", DurStr(A_TickCount - downTick)))
             downTick := 0
         }
         wasOpen := true
@@ -3842,21 +3842,21 @@ Check() {
         wasOpen := false
         downTick := A_TickCount
         MarkDisconnect()
-        Log(T("log_down"))
+        Log(TT("log_down"))
         SendEvent("down")
     }
 
     if (lastLaunch && (A_TickCount - lastLaunch) < Integer(edWait.Value || 90) * 1000) {
-        SetState("wait", T("st_loading"), T("st_loading_sub"))
+        SetState("wait", TT("st_loading"), TT("st_loading_sub"))
         return
     }
     if open {
         if discTick
-            SetState("warn", "Roblox ON", T("st_on_warn_sub"))
+            SetState("warn", "Roblox ON", TT("st_on_warn_sub"))
         else
-            SetState("on", "Roblox ON", T("st_on_sub"))
+            SetState("on", "Roblox ON", TT("st_on_sub"))
     } else {
-        SetState("off", "Roblox OFF", T("st_off_sub"))
+        SetState("off", "Roblox OFF", TT("st_off_sub"))
         LaunchGame()
     }
 }
@@ -3864,13 +3864,13 @@ Check() {
 Toggle(*) {
     global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed
     if (!running && KaEnabled() && !licensed) {
-        ShowKeyScreen(T("activate_to_use"))
+        ShowKeyScreen(TT("activate_to_use"))
         return
     }
     if !running {
         if (Trim(edLink.Value) = "") {
-            Log(T("paste_link_first"))
-            SetState("warn", T("st_nolink"), T("st_nolink_sub"))
+            Log(TT("paste_link_first"))
+            SetState("warn", TT("st_nolink"), TT("st_nolink_sub"))
             if WinExist("ahk_id " gm.Hwnd) && DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
                 SetCompact(false)
             ShowPage("Jogo")
@@ -3884,13 +3884,13 @@ Toggle(*) {
         downTick := 0
         monStart := A_TickCount
         running := true
-        SendEvent("start", ["**" T("d_interval") ":** " iv "s"])
+        SendEvent("start", ["**" TT("d_interval") ":** " iv "s"])
         for b in [btnStart, mBtn] {
-            b.Text := T("btn_stop")
+            b.Text := TT("btn_stop")
             SetBtnStyle(b, "sec")
         }
-        SetState("wait", T("st_monitoring"), T("st_monitoring_sub"))
-        Log(T("log_mon_start", iv))
+        SetState("wait", TT("st_monitoring"), TT("st_monitoring_sub"))
+        Log(TT("log_mon_start", iv))
         SetTimer(Check, iv * 1000)
         ApplyReportTimer()
         Check()
@@ -3899,11 +3899,11 @@ Toggle(*) {
         SetTimer(Check, 0)
         ApplyReportTimer()
         for b in [btnStart, mBtn] {
-            b.Text := T("btn_start")
+            b.Text := TT("btn_start")
             SetBtnStyle(b, "primary")
         }
-        SetState("idle", T("idle"), T("click_start"))
-        Log(T("log_mon_stop"))
+        SetState("idle", TT("idle"), TT("click_start"))
+        Log(TT("log_mon_stop"))
     }
 }
 
