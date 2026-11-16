@@ -685,6 +685,19 @@ MarkDisconnect() {
 
 ; ---------------- Atualização pela nuvem ----------------
 ; Baixa o script do link, lê a VERSION de dentro dele e, se for mais nova, troca o arquivo e reinicia.
+; Endereço dos arquivos no commit mais recente (evita o cache de ~5 min do GitHub).
+; Se a API não responder, usa o endereço normal da branch.
+UpdBaseNow() {
+    global updBase, GITHUB_REPO, GITHUB_BRANCH
+    try {
+        tmp := A_Temp "\autorejoin_sha.json"
+        Download("https://api.github.com/repos/" GITHUB_REPO "/commits/" GITHUB_BRANCH, tmp)
+        if RegExMatch(FileRead(tmp, "UTF-8"), '"sha"\s*:\s*"([0-9a-f]{40})"', &m)
+            return "https://raw.githubusercontent.com/" GITHUB_REPO "/" m[1] "/"
+    }
+    return updBase
+}
+
 CheckUpdate(manual := false) {
     global updBase, VERSION, updStatus, btnUpd, chkAutoUpd, pendingUpd, pendingVer, updBadge, mSub
     if (updBase = "") {
@@ -693,10 +706,11 @@ CheckUpdate(manual := false) {
         return
     }
     updStatus.Value := "Procurando atualização..."
-    LoadChangelog()
+    base := UpdBaseNow()
+    LoadChangelog(base)
     tmp := A_Temp "\autorejoin_update.ahk"
     try {
-        Download(updBase "roblox_autorejoin.ahk?t=" A_Now, tmp)
+        Download(base "roblox_autorejoin.ahk?t=" A_Now, tmp)
         txt := FileRead(tmp, "UTF-8")
     } catch as e {
         updStatus.Value := "Não consegui verificar (sem internet?)."
@@ -726,11 +740,11 @@ CheckUpdate(manual := false) {
 }
 
 ; baixa o CHANGELOG.md do GitHub e mostra na aba Sobre
-LoadChangelog() {
-    global updBase, changeBox, changelogTxt
+LoadChangelog(base) {
+    global changeBox, changelogTxt
     tmp := A_Temp "\autorejoin_changelog.md"
     try {
-        Download(updBase "CHANGELOG.md?t=" A_Now, tmp)
+        Download(base "CHANGELOG.md?t=" A_Now, tmp)
         changelogTxt := FileRead(tmp, "UTF-8")
     } catch
         return
