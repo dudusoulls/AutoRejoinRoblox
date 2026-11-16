@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.1
+- Tutorial não trava mais ao clicar fora: acompanha a janela, some se ela for minimizada e volta junto
+- Tecla Esc fecha o tutorial
+
 ## v1.3.0
 - Tutorial passo a passo na primeira vez que abre (marca cada item com seta e explicação)
 - Botão "Ver tutorial" na aba Sobre pra rever quando quiser

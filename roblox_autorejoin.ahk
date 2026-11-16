@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.0"
+VERSION     := "1.3.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -81,6 +81,8 @@ miniShown := false
 tourOn := false
 tourIdx := 0
 tourWins := []
+tourPos := ""
+tourHidden := false
 appStarted := false
 licensed := false
 kaSession := ""
@@ -2262,6 +2264,9 @@ gk.OnEvent("Close", (*) => ExitApp())
 
 ; ---- acabamento ----
 FinishGui()
+HotIf((*) => tourOn)
+Hotkey("Esc", (*) => EndTour())
+HotIf()
 OnMessage(0x201, OnLButtonDown)
 OnMessage(0x200, OnMouseMove)
 
@@ -2472,15 +2477,43 @@ TourSteps() {
 }
 
 StartTour(*) {
-    global tourOn, tourIdx, gm
+    global tourOn, tourIdx, gm, g
     if DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
         SetCompact(false)
     tourOn := true, tourIdx := 1
+    WinActivate(g.Hwnd)
     ShowTourStep()
+    SetTimer(TourWatch, 250)
+}
+
+; acompanha a janela principal durante o tutorial:
+; minimizou/escondeu -> esconde o tutorial; voltou ou mudou de lugar -> desenha de novo
+TourWatch() {
+    global g, gm, tourOn, tourWins, tourPos, tourHidden
+    if !tourOn {
+        SetTimer(TourWatch, 0)
+        return
+    }
+    if DllCall("IsWindowVisible", "Ptr", gm.Hwnd)     ; foi pro modo compacto -> encerra
+        return EndTour()
+    if (!DllCall("IsWindowVisible", "Ptr", g.Hwnd) || DllCall("IsIconic", "Ptr", g.Hwnd)) {
+        if !tourHidden {
+            for w in tourWins
+                try w.Hide()
+            tourHidden := true
+        }
+        return
+    }
+    WinGetPos(&x, &y, &w, &h, g.Hwnd)
+    if (tourHidden || (x "," y "," w "," h) != tourPos) {
+        tourHidden := false
+        ShowTourStep()
+    }
 }
 
 EndTour(*) {
     global tourOn, iniFile
+    SetTimer(TourWatch, 0)
     TourClear()
     tourOn := false
     IniWrite(1, iniFile, "cfg", "tourDone")
@@ -2509,7 +2542,7 @@ Clamp(v, lo, hi) {
 }
 
 ShowTourStep() {
-    global g, tourIdx, tourWins, USER_FIRST, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC
+    global g, tourIdx, tourWins, tourPos, USER_FIRST, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC
     TourClear()
     steps := TourSteps(), st := steps[tourIdx], last := (tourIdx = steps.Length)
     if (st.page != "")
@@ -2517,6 +2550,7 @@ ShowTourStep() {
     Sleep(60)
     k := A_ScreenDPI / 96
     WinGetPos(&gx, &gy, &gw, &gh, g.Hwnd)
+    tourPos := gx "," gy "," gw "," gh
 
     ; área do item marcado (coordenadas de tela)
     has := st.targets.Length > 0
@@ -2532,7 +2566,7 @@ ShowTourStep() {
     rr := Round(14 * k)
 
     ; 1) fundo escuro com um "buraco" no item
-    ov := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+    ov := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +Owner" g.Hwnd)
     ov.BackColor := "000000"
     ov.Show(Format("NA x{} y{} w{} h{}", gx, gy, gw, gh))
     WinSetTransparent(170, ov)
@@ -2548,7 +2582,7 @@ ShowTourStep() {
     ; 2) moldura branca em volta do item
     if has {
         bd := Max(2, Round(2 * k)), fw := R - L + 2 * bd, fh := B - Tp + 2 * bd
-        fr := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+        fr := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +Owner" g.Hwnd)
         fr.BackColor := C_ACC
         fr.Show(Format("NA x{} y{} w{} h{}", L - bd, Tp - bd, fw, fh))
         outer := DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", fw + 1, "Int", fh + 1, "Int", rr + 2 * bd, "Int", rr + 2 * bd, "Ptr")
@@ -2595,7 +2629,7 @@ ShowTourStep() {
         aw := Round(20 * k), ah := Round(10 * k)
         ax := Clamp(cxm - aw // 2, bx + 14, bx + bwp - aw - 14)
         ay := down ? by - ah + 1 : by + bhp - 1
-        ar := Gui("-Caption +ToolWindow -DPIScale +Owner" g.Hwnd)
+        ar := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +Owner" g.Hwnd)
         ar.BackColor := C_CARD
         ar.Show(Format("NA x{} y{} w{} h{}", ax, ay, aw, ah))
         pts := Buffer(24, 0)
@@ -2629,8 +2663,11 @@ FinishGui() {
 ; arrastar a janela clicando em qualquer área vazia
 OnLButtonDown(wParam, lParam, msg, hwnd) {
     global g, gm, gk, tourOn
-    if tourOn
+    if tourOn {
+        if (hwnd != g.Hwnd)
+            try WinActivate(g.Hwnd)
         return
+    }
     if (hwnd = g.Hwnd || hwnd = gm.Hwnd || hwnd = gk.Hwnd)
         PostMessage(0xA1, 2, 0, , "ahk_id " hwnd)
 }
