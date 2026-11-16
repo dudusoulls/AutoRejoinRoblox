@@ -17,9 +17,19 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.2"
+VERSION     := "1.1.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
+
+; ---------------- Licença (KeyAuth - keyauth.cc) ----------------
+; Pegue esses dados em keyauth.cc > sua aplicação. Com KEYAUTH_OWNERID vazio a key fica DESLIGADA.
+; Com a key ligada, as atualizações também passam a vir do KeyAuth (só quem tem key baixa):
+;   variáveis da aplicação:  versao = "1.1.1"   arquivo = ID do arquivo enviado em Files   novidades = texto
+KEYAUTH_NAME    := ""            ; nome da aplicação
+KEYAUTH_OWNERID := ""            ; Owner ID (10 caracteres)
+KEYAUTH_VER     := "1.0"         ; versão da aplicação no painel do KeyAuth (deixe sempre 1.0)
+KEYAUTH_URL     := "https://keyauth.win/api/1.3/"
+BUY_URL         := ""            ; link pra comprar key (Discord, loja...). Vazio = esconde o botão
 
 ; ---------------- Tema ----------------
 C_BG    := "0E0E11"   ; fundo do conteúdo
@@ -67,6 +77,12 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+appStarted := false
+licensed := false
+kaSession := ""
+licExpiry := 0
+licFailSince := 0
+pendingFileId := ""
 pendingUpd := ""   ; arquivo da atualização já baixado
 pendingVer := ""
 changelogTxt := ""
@@ -153,6 +169,8 @@ FontUI(g, "s9 w600")
 sideStat := g.Add("Text", Format("x42 y{} w130 c{} Background{}", H - 61, C_TEXT, C_SIDE), "Parado")
 FontUI(g, "s8")
 g.Add("Text", Format("x24 y+4 w150 c{} Background{}", C_DIM, C_SIDE), A_ComputerName "  ·  v" VERSION)
+FontUI(g, "s7 w700")
+sideLic := g.Add("Text", Format("x24 y+2 w150 c{} Background{}", C_DIM, C_SIDE), "")
 
 ; ---- botões da janela (topo direito) ----
 MakeBtn(g, W - 46,  0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_BG)
@@ -277,7 +295,7 @@ curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y
     , "Nenhuma leitura ainda."))
 
 ; ---------------- Página: Sobre ----------------
-BeginPage("Sobre", "Sobre", "Versão, atualizações e novidades")
+BeginPage("Sobre", "Sobre", "Licença, versão e novidades")
 y := 92
 Card(CX, y, CW, 104)
 Lbl(CX + 20, y + 16, 300, "VERSÃO INSTALADA", "s7 w700", C_DIM)
@@ -287,15 +305,18 @@ btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, "Procurar atualização", (*) => (
 
 y := 208
 Card(CX, y, CW, 80)
-chkAutoUpd := ToggleSwitch(CX + 20, y + 18, CW - 40, "Atualizar sozinho", savedAutoUpd
-    , "Atualiza assim que sair versão nova e volta a monitorar sozinho")
+Lbl(CX + 20, y + 16, 300, "LICENÇA", "s7 w700", C_DIM)
+licInfo := Lbl(CX + 20, y + 38, CW - 200, "—", "s10 w600")
+licSub  := Lbl(CX + 20, y + 58, CW - 200, "", "s8", C_MUTED)
+Btn(CX + CW - 150, y + 24, 130, 32, "Trocar key", (*) => ShowKeyScreen("Cole a nova key."))
 
 y := 300
 Card(CX, y, CW, 172)
-Lbl(CX + 20, y + 16, 300, "NOVIDADES", "s7 w700", C_DIM)
+chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, "Atualizar sozinho", savedAutoUpd)
+Lbl(CX + 20, y + 52, 300, "NOVIDADES", "s7 w700", C_DIM)
 FontUI(g, "s9")
 changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E0x200 c{} Background{}"
-    , CX + 20, y + 38, CW - 40, 120, C_TEXT, C_CARD), "As novidades aparecem aqui depois de verificar."))
+    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), "As novidades aparecem aqui depois de verificar."))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
 ; ---------------- Página: Logs ----------------
@@ -325,28 +346,77 @@ mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD),
 mBtn := MakeBtn(gm, 166, 11, 70, 30, "Iniciar", Toggle, "primary", false, "s9 w600", 10)
 MakeBtn(gm, 242, 11, 30, 30, Chr(0xE740), (*) => SetCompact(false), "sec", true, "s9", 10)
 
+; ==========================================================
+;  Tela de licença
+; ==========================================================
+gk := Gui("-Caption +MinimizeBox", "Auto-Rejoin - Licença")
+gk.BackColor := C_CARD
+gk.MarginX := 0, gk.MarginY := 0
+KW := 420, KH := 330
+MakeBtn(gk, KW - 46, 0, 46, 34, Chr(0xE8BB), (*) => ExitApp(), "close", true, "s9", 0, C_CARD)
+FontUI(gk, "s16 w700")
+gk.Add("Text", Format("x32 y32 w300 c{} Background{}", C_TEXT, C_CARD), "Ativar licença")
+FontUI(gk, "s9")
+gk.Add("Text", Format("x32 y+4 w356 c{} Background{}", C_MUTED, C_CARD), "Cole sua key pra liberar o Roblox Auto-Rejoin.")
+kBox := gk.Add("Text", Format("x32 y104 w356 h38 +0x4000000 Background{}", C_INPUT))
+Bg(kBox, 10)
+FontMono(gk, "s10")
+edKey := gk.Add("Edit", Format("x44 y113 w332 h22 -E0x200 c{} Background{}", C_TEXT, C_INPUT), IniRead(iniFile, "cfg", "key", ""))
+btnKey := MakeBtn(gk, 32, 156, 356, 40, "Ativar", (*) => ActivateKey(), "primary", false, "s10 w700", 10)
+FontUI(gk, "s9")
+kStatus := gk.Add("Text", Format("x32 y208 w356 h36 c{} Background{}", C_MUTED, C_CARD), "")
+FontUI(gk, "s7 w700")
+gk.Add("Text", Format("x32 y256 w200 c{} Background{}", C_DIM, C_CARD), "SEU HWID")
+FontMono(gk, "s8")
+kHwid := gk.Add("Text", Format("x32 y+3 w250 c{} Background{}", C_MUTED, C_CARD), "")
+MakeBtn(gk, 296, 258, 92, 28, "Copiar", (*) => (A_Clipboard := GetHWID(), kStatus.Value := "HWID copiado."), "sec", false, "s9 w600", 8)
+if (BUY_URL != "")
+    MakeBtn(gk, 32, 296, 120, 22, "Comprar key", (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
+gk.OnEvent("Close", (*) => ExitApp())
+
 ; ---- acabamento ----
 FinishGui()
 OnMessage(0x201, OnLButtonDown)
 OnMessage(0x200, OnMouseMove)
 
 ShowPage("Início")
-if (savedCompact = "1")
-    SetCompact(true)
-else
-    g.Show(Format("w{} h{}", W, H))
-
-SetTimer(Cleanup, 2000)
-SetTimer(WatchError, 3000)
-SetTimer(UpdateStats, 1000)
-SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
-SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
-; voltou de uma atualização automática com o monitoramento ligado -> liga de novo
-if (IniRead(iniFile, "cfg", "resume", "0") = "1") {
-    IniDelete(iniFile, "cfg", "resume")
-    SetTimer(() => (running ? 0 : Toggle()), -1500)
-}
 OnExit(OnQuit)
+kHwid.Value := ShortHWID()
+
+if !KaEnabled()
+    StartApp()                                   ; key desligada (KEYAUTH_OWNERID vazio)
+else if (Trim(edKey.Value) != "") {
+    ShowKeyScreen("Verificando licença...")
+    SetTimer(() => ActivateKey(true), -300)      ; tenta entrar sozinho com a key salva
+} else
+    ShowKeyScreen("")
+
+; abre o programa de verdade (depois da licença ok)
+StartApp() {
+    global g, gk, W, H, savedCompact, iniFile, running, appStarted
+    gk.Hide()
+    if appStarted {
+        g.Show()
+        return
+    }
+    appStarted := true
+    if (savedCompact = "1")
+        SetCompact(true)
+    else
+        g.Show(Format("w{} h{}", W, H))
+    SetTimer(Cleanup, 2000)
+    SetTimer(WatchError, 3000)
+    SetTimer(UpdateStats, 1000)
+    SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
+    SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
+    if KaEnabled()
+        SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
+    ; voltou de uma atualização automática com o monitoramento ligado -> liga de novo
+    if (IniRead(iniFile, "cfg", "resume", "0") = "1") {
+        IniDelete(iniFile, "cfg", "resume")
+        SetTimer(() => (running ? 0 : Toggle()), -1500)
+    }
+}
 
 ; ==========================================================
 ;  Helpers da GUI
@@ -485,7 +555,7 @@ ShowPage(name) {
 
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
 FinishGui() {
-    global g, gm, bgCtrls, roundQ
+    global g, gm, gk, bgCtrls, roundQ
     k := A_ScreenDPI / 96
     for item in roundQ {
         rc := Buffer(16, 0)
@@ -499,7 +569,7 @@ FinishGui() {
         c := bgCtrls[bgCtrls.Length - A_Index + 1]
         DllCall("SetWindowPos", "Ptr", c.Hwnd, "Ptr", 1, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)
     }
-    for hw in [g.Hwnd, gm.Hwnd] {
+    for hw in [g.Hwnd, gm.Hwnd, gk.Hwnd] {
         DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", hw, "UInt", 33, "Int*", 2, "UInt", 4)          ; cantos arredondados (Win11)
         DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", hw, "UInt", 34, "UInt*", 0x00332E2E, "UInt", 4) ; borda sutil
     }
@@ -507,8 +577,8 @@ FinishGui() {
 
 ; arrastar a janela clicando em qualquer área vazia
 OnLButtonDown(wParam, lParam, msg, hwnd) {
-    global g, gm
-    if (hwnd = g.Hwnd || hwnd = gm.Hwnd)
+    global g, gm, gk
+    if (hwnd = g.Hwnd || hwnd = gm.Hwnd || hwnd = gk.Hwnd)
         PostMessage(0xA1, 2, 0, , "ahk_id " hwnd)
 }
 
@@ -682,6 +752,229 @@ MarkDisconnect() {
     lastDiscShort := FormatTime(, "dd/MM HH:mm")
 }
 
+; ---------------- Licença (KeyAuth) ----------------
+KaEnabled() {
+    global KEYAUTH_OWNERID
+    return KEYAUTH_OWNERID != ""
+}
+
+; HWID = MachineGuid do Windows (muda só se formatar o PC)
+GetHWID() {
+    static id := ""
+    if (id != "")
+        return id
+    try id := RegRead("HKLM\SOFTWARE\Microsoft\Cryptography", "MachineGuid")
+    if (id = "") {
+        try id := RegRead("HKLM64\SOFTWARE\Microsoft\Cryptography", "MachineGuid")
+    }
+    if (id = "")
+        id := A_ComputerName "-" DriveGetSerial("C:\")
+    return id
+}
+
+ShortHWID() {
+    h := GetHWID()
+    return StrLen(h) > 24 ? SubStr(h, 1, 13) "…" SubStr(h, -8) : h
+}
+
+UrlEnc(s) {
+    buf := Buffer(StrPut(s, "UTF-8")), StrPut(s, buf, "UTF-8")
+    out := ""
+    Loop buf.Size - 1 {
+        b := NumGet(buf, A_Index - 1, "UChar")
+        out .= (b >= 48 && b <= 57 || b >= 65 && b <= 90 || b >= 97 && b <= 122 || b = 45 || b = 46 || b = 95 || b = 126)
+            ? Chr(b) : Format("%{:02X}", b)
+    }
+    return out
+}
+
+; manda um pedido pro KeyAuth e devolve o texto da resposta (JSON)
+KaPost(fields) {
+    global KEYAUTH_URL, KEYAUTH_NAME, KEYAUTH_OWNERID
+    fields["name"] := KEYAUTH_NAME
+    fields["ownerid"] := KEYAUTH_OWNERID
+    body := ""
+    for k, v in fields
+        body .= (body = "" ? "" : "&") k "=" UrlEnc(v)
+    http := ComObject("WinHttp.WinHttpRequest.5.1")
+    http.SetTimeouts(5000, 5000, 15000, 30000)
+    http.Open("POST", KEYAUTH_URL, false)
+    http.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    http.Send(body)
+    ; lê como UTF-8
+    st := ComObject("ADODB.Stream")
+    st.Type := 1, st.Open(), st.Write(http.ResponseBody), st.Position := 0
+    st.Type := 2, st.Charset := "utf-8"
+    txt := st.ReadText(), st.Close()
+    return txt
+}
+
+JStr(txt, key) {
+    if !RegExMatch(txt, '"' key '"\s*:\s*"((?:[^"\\]|\\.)*)"', &m)
+        return ""
+    v := m[1]
+    v := StrReplace(v, "\n", "`n"), v := StrReplace(v, "\r", ""), v := StrReplace(v, "\t", "`t")
+    v := StrReplace(v, '\"', '"'), v := StrReplace(v, "\/", "/")
+    while RegExMatch(v, "\\u([0-9a-fA-F]{4})", &u)
+        v := StrReplace(v, u[0], Chr(Integer("0x" u[1])))
+    return StrReplace(v, "\\", "\")
+}
+
+JOk(txt) {
+    return RegExMatch(txt, '"success"\s*:\s*true')
+}
+
+; abre uma sessão no KeyAuth. Retorna "" se ok, ou a mensagem de erro.
+KaInit() {
+    global kaSession, KEYAUTH_VER
+    r := KaPost(Map("type", "init", "ver", KEYAUTH_VER))
+    if (r = "KeyAuth_Invalid")
+        return "Aplicação não encontrada no KeyAuth (confira nome/Owner ID)."
+    if !JOk(r) {
+        m := JStr(r, "message")
+        return (m = "invalidver") ? "Versão do KeyAuth diferente (deixe KEYAUTH_VER igual ao painel)." : m
+    }
+    kaSession := JStr(r, "sessionid")
+    return ""
+}
+
+; valida a key + HWID. Retorna "" se ok, ou a mensagem de erro.
+KaLicense(key) {
+    global kaSession, licExpiry
+    r := KaPost(Map("type", "license", "key", key, "hwid", GetHWID(), "sessionid", kaSession))
+    if !JOk(r)
+        return TranslateKa(JStr(r, "message"))
+    licExpiry := RegExMatch(r, '"expiry"\s*:\s*"?(\d+)', &e) ? Integer(e[1]) : 0
+    return ""
+}
+
+KaVar(id) {
+    global kaSession
+    r := KaPost(Map("type", "var", "varid", id, "sessionid", kaSession))
+    return JOk(r) ? JStr(r, "message") : ""
+}
+
+; baixa um arquivo enviado em Files no KeyAuth
+KaFile(fileid, dest) {
+    global kaSession
+    r := KaPost(Map("type", "file", "fileid", fileid, "sessionid", kaSession))
+    if !JOk(r)
+        throw Error(JStr(r, "message"))
+    hex := JStr(r, "contents")
+    DllCall("crypt32\CryptStringToBinaryW", "Str", hex, "UInt", 0, "UInt", 0xC, "Ptr", 0, "UInt*", &n := 0, "Ptr", 0, "Ptr", 0)
+    buf := Buffer(n)
+    DllCall("crypt32\CryptStringToBinaryW", "Str", hex, "UInt", 0, "UInt", 0xC, "Ptr", buf, "UInt*", &n, "Ptr", 0, "Ptr", 0)
+    f := FileOpen(dest, "w"), f.RawWrite(buf, n), f.Close()
+}
+
+; mensagens do KeyAuth em português
+TranslateKa(m) {
+    static t := Map(
+        "Key not found", "Key não existe.",
+        "Invalid license key", "Key inválida.",
+        "HWID doesn't match", "Essa key já está ativada em outro PC (HWID diferente).",
+        "HWID Doesn't match", "Essa key já está ativada em outro PC (HWID diferente).",
+        "Subscription expired", "Sua key expirou.",
+        "No active subscriptions found.", "Sua key expirou.",
+        "Your HWID is blacklisted", "Este PC foi banido.",
+        "User is banned", "Essa key foi banida.",
+        "Your license is banned", "Essa key foi banida.",
+        "Invalid session", "Sessão expirou, tente de novo.")
+    for k, v in t
+        if InStr(m, k)
+            return v
+    return m != "" ? m : "Não consegui validar a key."
+}
+
+ShowKeyScreen(msg := "") {
+    global g, gm, gk, kStatus, KW, KH, C_MUTED, C_OFF
+    g.Hide(), gm.Hide()
+    kStatus.SetFont("c" C_MUTED)
+    kStatus.Value := msg
+    gk.Show(Format("w{} h{} Center", KW, KH))
+}
+
+KeyMsg(msg, isErr := false) {
+    global kStatus, C_MUTED, C_OFF, C_ON
+    kStatus.SetFont("c" (isErr ? C_OFF : C_MUTED))
+    kStatus.Value := msg
+}
+
+ActivateKey(auto := false) {
+    global edKey, btnKey, iniFile, licensed, licFailSince
+    key := Trim(edKey.Value)
+    if (key = "") {
+        KeyMsg("Cole sua key primeiro.", true)
+        return
+    }
+    btnKey.Text := "Verificando..."
+    KeyMsg("Conectando ao servidor de licenças...")
+    try {
+        err := KaInit()
+        if (err = "")
+            err := KaLicense(key)
+    } catch as e {
+        err := "Sem conexão com o servidor de licenças. Confira sua internet."
+    }
+    btnKey.Text := "Ativar"
+    if (err != "") {
+        licensed := false
+        KeyMsg(err, true)
+        return
+    }
+    licensed := true, licFailSince := 0
+    IniWrite(key, iniFile, "cfg", "key")
+    UpdateLicenseInfo()
+    StartApp()
+}
+
+UpdateLicenseInfo() {
+    global licInfo, licSub, sideLic, licExpiry, edKey
+    k := Trim(edKey.Value)
+    masked := StrLen(k) > 8 ? SubStr(k, 1, 4) "••••" SubStr(k, -4) : k
+    if (licExpiry > 0) {
+        exp := DateAdd("19700101000000", licExpiry, "Seconds")
+        exp := DateAdd(exp, DateDiff(A_Now, A_NowUTC, "Seconds"), "Seconds")   ; UTC -> horário do PC
+        dias := DateDiff(exp, A_Now, "Days")
+        if (dias > 3650) {
+            licInfo.Value := "Vitalícia", sideLic.Value := "LICENÇA VITALÍCIA"
+        } else {
+            licInfo.Value := "Expira em " FormatTime(exp, "dd/MM/yyyy HH:mm") "  (" Max(dias, 0) " dias)"
+            sideLic.Value := "LICENÇA: " Max(dias, 0) " DIAS"
+        }
+    } else
+        licInfo.Value := "Ativa", sideLic.Value := "LICENÇA ATIVA"
+    licSub.Value := "Key " masked "  ·  HWID " ShortHWID()
+}
+
+; confere de novo a cada 30 min. Queda de internet não derruba (tolera 2h);
+; key expirada/banida para o monitoramento e pede a key.
+LicenseRecheck() {
+    global edKey, licensed, licFailSince, running
+    try {
+        err := KaInit()
+        if (err = "")
+            err := KaLicense(Trim(edKey.Value))
+    } catch {
+        if !licFailSince
+            licFailSince := A_TickCount
+        if (A_TickCount - licFailSince < 2 * 3600000)
+            return
+        err := "Fiquei mais de 2h sem conseguir validar a licença."
+    }
+    if (err = "") {
+        licFailSince := 0
+        UpdateLicenseInfo()
+        return
+    }
+    licensed := false
+    Log("Licença inválida: " err)
+    SendWebhook(":lock: Licença inválida (" err ") - monitoramento parado - PC: " A_ComputerName)
+    if running
+        Toggle()
+    ShowKeyScreen(err)
+}
+
 ; ---------------- Atualização pela nuvem ----------------
 ; Baixa o script do link, lê a VERSION de dentro dele e, se for mais nova, troca o arquivo e reinicia.
 ; Endereço dos arquivos no commit mais recente (evita o cache de ~5 min do GitHub).
@@ -699,6 +992,8 @@ UpdBaseNow() {
 
 CheckUpdate(manual := false) {
     global updBase, VERSION, updStatus, btnUpd, chkAutoUpd, pendingUpd, pendingVer, updBadge, mSub
+    if KaEnabled()
+        return KaCheckUpdate(manual)
     if (updBase = "") {
         if manual
             updStatus.Value := "Atualização não configurada (GITHUB_REPO vazio)."
@@ -762,8 +1057,52 @@ ChangelogFor(ver) {
     return ""
 }
 
+; atualização vinda do KeyAuth (só quem tem key consegue baixar)
+KaCheckUpdate(manual) {
+    global VERSION, updStatus, btnUpd, chkAutoUpd, pendingUpd, pendingVer, pendingFileId, updBadge, changeBox, licensed, iniFile
+    if !licensed
+        return
+    updStatus.Value := "Procurando atualização..."
+    try {
+        if (KaInit() != "" || KaLicense(IniRead(iniFile, "cfg", "key", "")) != "")
+            throw Error("licença")
+        ver := Trim(KaVar("versao")), fid := Trim(KaVar("arquivo")), notas := KaVar("novidades")
+    } catch {
+        updStatus.Value := "Não consegui verificar agora."
+        return
+    }
+    if (notas != "")
+        changeBox.Value := StrReplace(StrReplace(notas, "`r`n", "`n"), "`n", "`r`n")
+    if (ver = "" || fid = "" || VerCompare(ver, VERSION) <= 0) {
+        updStatus.Value := "Você está na versão mais nova."
+        updBadge.Visible := false, pendingFileId := ""
+        return
+    }
+    pendingVer := ver, pendingFileId := fid, pendingUpd := "keyauth"
+    updStatus.Value := "Nova versão v" ver " disponível! Veja as novidades abaixo."
+    btnUpd.Text := "Atualizar para v" ver
+    SetBtnStyle(btnUpd, "primary")
+    updBadge.Text := Chr(0x2B06) "  Nova versão v" ver
+    updBadge.Visible := true
+    Log("Atualização disponível: v" ver ".")
+    if chkAutoUpd.Value
+        ApplyUpdate()
+}
+
 ApplyUpdate() {
-    global pendingUpd, pendingVer, running, iniFile
+    global pendingUpd, pendingVer, pendingFileId, running, iniFile, changelogTxt, changeBox
+    if (pendingUpd = "keyauth") {
+        tmp := A_Temp "\autorejoin_update.ahk"
+        try {
+            KaFile(pendingFileId, tmp)
+            if !InStr(FileRead(tmp, "UTF-8"), "#Requires AutoHotkey v2")
+                throw Error("o arquivo enviado no KeyAuth não é o script")
+        } catch as e {
+            Log("Falha ao baixar atualização: " e.Message)
+            return
+        }
+        pendingUpd := tmp
+    }
     if (pendingUpd = "" || !FileExist(pendingUpd))
         return CheckUpdate(true)
     try {
@@ -1758,7 +2097,11 @@ Check() {
 }
 
 Toggle(*) {
-    global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm
+    global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed
+    if (!running && KaEnabled() && !licensed) {
+        ShowKeyScreen("Ative sua key pra usar.")
+        return
+    }
     if !running {
         if (Trim(edLink.Value) = "") {
             Log("Cole o link do jogo primeiro.")

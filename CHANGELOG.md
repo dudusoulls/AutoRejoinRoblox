@@ -1,5 +1,11 @@
 # Novidades do Roblox Auto-Rejoin
 
+## v1.1.0
+- Sistema de licença com key travada por HWID (KeyAuth)
+- Tela de ativação com HWID e botão de copiar
+- Aba Sobre mostra a validade da key
+- Atualizações podem vir pelo KeyAuth (só quem tem key baixa)
+
 ## v1.0.2
 - Abertura sempre na ordem: direto pelo Roblox > link roblox:// > navegador
 - Não fica mais preso no último jeito que funcionou
