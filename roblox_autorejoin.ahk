@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.1"
+VERSION     := "1.0.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -80,7 +80,17 @@ THEMES := [
     {name: "Classic", BG: "121212", SIDE: "0C0C0C", CARD: "1A1A1A", INPUT: "242424", TEXT: "EEEEEE", MUTED: "909090", DIM: "5C5C5C", ACC: "FFFFFF", ACCH: "DDDDDD", BTN: "2A2A2A", BTNH: "353535", NAVA: "222222", NAVH: "181818", SWOFF: "333333"},
     {name: "Midnight", BG: "0B0F17", SIDE: "070A10", CARD: "111723", INPUT: "18202F", TEXT: "E6ECF5", MUTED: "8A96AA", DIM: "535E72", ACC: "3B82F6", ACCH: "2F6DD6", BTN: "1B2333", BTNH: "243044", NAVA: "182030", NAVH: "101622", SWOFF: "222C3E"},
     {name: "Slate", BG: "1E232B", SIDE: "181C23", CARD: "262C36", INPUT: "2F3642", TEXT: "E8EDF3", MUTED: "98A3B3", DIM: "66707E", ACC: "7CC4D8", ACCH: "5FB0C6", BTN: "333B48", BTNH: "3D4656", NAVA: "2E3542", NAVH: "232932", SWOFF: "3A4250"},
-    {name: "Rose", BG: "141014", SIDE: "0E0B0E", CARD: "1D171D", INPUT: "282028", TEXT: "F6EDF0", MUTED: "A99AA2", DIM: "6A5D64", ACC: "F2B8C6", ACCH: "E29CAE", BTN: "2D242C", BTNH: "382D37", NAVA: "281F27", NAVH: "1B151B", SWOFF: "352B33"}
+    {name: "Rose", BG: "141014", SIDE: "0E0B0E", CARD: "1D171D", INPUT: "282028", TEXT: "F6EDF0", MUTED: "A99AA2", DIM: "6A5D64", ACC: "F2B8C6", ACCH: "E29CAE", BTN: "2D242C", BTNH: "382D37", NAVA: "281F27", NAVH: "1B151B", SWOFF: "352B33"},
+    {name: "Marble", BG: "F6F6F8", SIDE: "ECECEF", CARD: "FFFFFF", INPUT: "F0F0F3", TEXT: "1B1B20", MUTED: "63636C", DIM: "9C9CA5", ACC: "2A2A30", ACCH: "45454D", BTN: "E8E8ED", BTNH: "DCDCE2", NAVA: "DEDEE4", NAVH: "E4E4EA", SWOFF: "D4D4DA"},
+    {name: "Sakura", BG: "FBF4F6", SIDE: "F3E6EB", CARD: "FFFFFF", INPUT: "FBEEF2", TEXT: "2A1A20", MUTED: "8A6670", DIM: "B89AA2", ACC: "E86A94", ACCH: "D4517E", BTN: "F6E2E9", BTNH: "F0D4DE", NAVA: "F2DCE4", NAVH: "F6E6EC", SWOFF: "EBCCD6"},
+    {name: "Mint", BG: "F1F8F4", SIDE: "E2F0E8", CARD: "FFFFFF", INPUT: "ECF6F0", TEXT: "14241C", MUTED: "5E7A6C", DIM: "97B3A5", ACC: "1FA971", ACCH: "16905E", BTN: "DFF0E7", BTNH: "D2E8DB", NAVA: "DAEDE3", NAVH: "E4F3EB", SWOFF: "CCE4D7"},
+    {name: "Sky", BG: "F0F5FB", SIDE: "E1EBF5", CARD: "FFFFFF", INPUT: "EBF2FA", TEXT: "151C28", MUTED: "5C6A7E", DIM: "97A6BC", ACC: "2F7FE6", ACCH: "2168C6", BTN: "DEEAF7", BTNH: "D0E0F2", NAVA: "D8E6F5", NAVH: "E3EEFA", SWOFF: "CADCF0"},
+    {name: "Sunset", BG: "170F14", SIDE: "100A0E", CARD: "22141D", INPUT: "301C28", TEXT: "FBEDF2", MUTED: "BB8EA0", DIM: "74505E", ACC: "FF6B8A", ACCH: "E84F70", BTN: "3A212D", BTNH: "482A38", NAVA: "331B27", NAVH: "22121B", SWOFF: "44262F"},
+    {name: "Grape", BG: "100A1C", SIDE: "0A0613", CARD: "1A1030", INPUT: "251640", TEXT: "EFE9FA", MUTED: "9D8FC2", DIM: "605380", ACC: "9D5CFF", ACCH: "8343E8", BTN: "2B1E4A", BTNH: "36275A", NAVA: "261A42", NAVH: "18102E", SWOFF: "342554"},
+    {name: "Carbon", BG: "0A0A0A", SIDE: "050505", CARD: "141414", INPUT: "1E1E1E", TEXT: "F0F0F0", MUTED: "8A8A8A", DIM: "565656", ACC: "E0E0E0", ACCH: "C2C2C2", BTN: "222222", BTNH: "2D2D2D", NAVA: "1A1A1A", NAVH: "111111", SWOFF: "2B2B2B"},
+    {name: "Gold", BG: "121008", SIDE: "0C0B05", CARD: "1C1810", INPUT: "282218", TEXT: "F7F2E4", MUTED: "B0A682", DIM: "6E6646", ACC: "E5B84B", ACCH: "CC9F30", BTN: "2E2718", BTNH: "3A3120", NAVA: "272015", NAVH: "18140C", SWOFF: "38301E"},
+    {name: "Ocean", BG: "081018", SIDE: "050B11", CARD: "0F1C2A", INPUT: "16283A", TEXT: "E4F0FA", MUTED: "84A0BC", DIM: "4F6880", ACC: "3BA0E6", ACCH: "2B86C6", BTN: "172E42", BTNH: "1F3C54", NAVA: "14293C", NAVH: "0D1B28", SWOFF: "21394F"},
+    {name: "Cyber", BG: "0A0812", SIDE: "06040C", CARD: "130F20", INPUT: "1D172F", TEXT: "EAF6FF", MUTED: "8894B8", DIM: "505874", ACC: "22E0D0", ACCH: "14C0B2", BTN: "22203A", BTNH: "2C2948", NAVA: "1C1930", NAVH: "110E1E", SWOFF: "2A2742"}
 ]
 curTheme := IniRead(iniFile, "cfg", "theme", "Obsidian")
 for th in THEMES
@@ -4552,9 +4562,9 @@ BeginPage("Aparência", TT("nav_look"), TT("pg_look_sub"))
 y := 92
 Card(CX, y, CW, 470)
 Lbl(CX + 20, y + 16, 300, TT("sec_theme"), "s7 w700", C_DIM)
-tw := (CW - 40 - 36) // 4, thh := 66
+tw := (CW - 40 - 48) // 5, thh := 52
 for i, th in THEMES
-    ThemeTile(CX + 20 + Mod(i - 1, 4) * (tw + 12), y + 44 + ((i - 1) // 4) * (thh + 34), tw, thh, th)
+    ThemeTile(CX + 20 + Mod(i - 1, 5) * (tw + 12), y + 44 + ((i - 1) // 5) * (thh + 26), tw, thh, th)
 
 ; ---------------- Página: HUD (sub-aba de Aparência) ----------------
 BeginPage("HUD", TT("nav_hud"), TT("pg_hud_sub"))

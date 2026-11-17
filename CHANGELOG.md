@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.2 (BETA)
+- **10 temas novos** (total 25): claros no estilo da referência (Marble, Sakura, Mint, Sky) e escuros variados (Sunset, Grape, Carbon, Gold, Ocean, Cyber).
+- Grade de temas reorganizada pra 5 por linha (miniaturas menores) pra caber todos.
+
+
 ## v1.0.1 (BETA)
 - **Fixar versão do Roblox** (aba Jogo): novo campo onde você cola a versão que o seu executor aceita (ex.: version-4ea8e85481e34f46). O app passa a abrir SEMPRE essa versão, em vez da mais nova. Deixe vazio pra abrir a mais nova (pra quem não usa executor).
 - Botão **"Ver versões"** lista no Logs todas as versões do Roblox instaladas, pra você saber qual colar.
