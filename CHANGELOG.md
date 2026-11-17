@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## Revertido para a v2.6.0 (17/11)
+- A pedido, o app voltou para o código da v2.6.0. As versões 2.6.1 a 2.7.5 continuam no histórico do Git e podem ser recuperadas a qualquer momento.
+
+
 ## v2.7.5
 - **Conserto da abertura**: a checagem de RAM (250MB) estava matando o Roblox enquanto ele carregava pelo link (na tela de loading ele usa pouca RAM), entrando num loop de abrir-e-matar. Agora o app só fecha o Roblox "fantasma" quando ele está SEM janela de verdade — RAM baixa com janela é tratada como loading normal.
 - Aumentei a margem pra 60s sem janela antes de considerar travado.

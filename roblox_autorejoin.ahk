@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.5"
+VERSION     := "2.6.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -38,7 +38,6 @@ APP_NAME        := "Auto Reconnect Roblox"
 ; Dica: compile pra .exe pra esse link não ficar à vista no código.
 REPORT_WEBHOOK  := ReportUrl()   ; link montado em runtime (escondido) - veja ReportUrl()
 netDown         := 0
-reportImg       := ""
 reactReady      := false
 reactBusy       := 0
 PANEL_EMO       := [["%E2%96%B6%EF%B8%8F", "play"], ["%E2%8F%B9%EF%B8%8F", "stop"], ["%F0%9F%94%84", "restart"], ["%F0%9F%93%B8", "print"]]
@@ -711,13 +710,7 @@ I18N["pt"] := Map(
     "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado",
     "hud_side", "Painel lateral no Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Painel grudado na janela do Roblox com os stats",
-    "btn_report_img", "Anexar imagem",
-    "report_noimg", "Nenhuma imagem anexada",
-    "report_img_set", "Imagem: {1}",
-    "cmd_panel", "liga e manda o painel ao vivo fixado",
-    "btn_killall", "Matar todos os Roblox",
-    "log_killed", "Roblox fechado(s) à força."
+    "pg_hud_sub", "Painel grudado na janela do Roblox com os stats"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1194,13 +1187,7 @@ I18N["en"] := Map(
     "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck",
     "hud_side", "Side panel on Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel docked to the Roblox window with stats",
-    "btn_report_img", "Attach image",
-    "report_noimg", "No image attached",
-    "report_img_set", "Image: {1}",
-    "cmd_panel", "turns on and posts the pinned live panel",
-    "btn_killall", "Kill all Roblox",
-    "log_killed", "Roblox force-closed."
+    "pg_hud_sub", "Panel docked to the Roblox window with stats"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1677,13 +1664,7 @@ I18N["es"] := Map(
     "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado",
     "hud_side", "Panel lateral en Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats",
-    "btn_report_img", "Adjuntar imagen",
-    "report_noimg", "Sin imagen adjunta",
-    "report_img_set", "Imagen: {1}",
-    "cmd_panel", "activa y envía el panel en vivo fijado",
-    "btn_killall", "Cerrar todos los Roblox",
-    "log_killed", "Roblox cerrado(s) a la fuerza."
+    "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2160,13 +2141,7 @@ I18N["fr"] := Map(
     "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué",
     "hud_side", "Panneau latéral sur Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats",
-    "btn_report_img", "Joindre une image",
-    "report_noimg", "Aucune image jointe",
-    "report_img_set", "Image : {1}",
-    "cmd_panel", "active et envoie le panneau en direct épinglé",
-    "btn_killall", "Tuer tous les Roblox",
-    "log_killed", "Roblox fermé(s) de force."
+    "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2643,13 +2618,7 @@ I18N["de"] := Map(
     "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt",
     "hud_side", "Seitenpanel an Roblox (Stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats",
-    "btn_report_img", "Bild anhängen",
-    "report_noimg", "Kein Bild angehängt",
-    "report_img_set", "Bild: {1}",
-    "cmd_panel", "aktiviert und sendet das angepinnte Live-Panel",
-    "btn_killall", "Alle Roblox beenden",
-    "log_killed", "Roblox zwangsweise geschlossen."
+    "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3126,13 +3095,7 @@ I18N["ru"] := Map(
     "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис",
     "hud_side", "Боковая панель на Roblox (статы)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Панель у окна Roblox со статами",
-    "btn_report_img", "Прикрепить изображение",
-    "report_noimg", "Изображение не прикреплено",
-    "report_img_set", "Изображение: {1}",
-    "cmd_panel", "включает и отправляет закреплённую живую панель",
-    "btn_killall", "Закрыть все Roblox",
-    "log_killed", "Roblox принудительно закрыт."
+    "pg_hud_sub", "Панель у окна Roblox со статами"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3609,13 +3572,7 @@ I18N["tr"] := Map(
     "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı",
     "hud_side", "Roblox'ta yan panel (istatistik)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli",
-    "btn_report_img", "Resim ekle",
-    "report_noimg", "Resim eklenmedi",
-    "report_img_set", "Resim: {1}",
-    "cmd_panel", "sabit canlı paneli açar ve gönderir",
-    "btn_killall", "Tüm Roblox'u kapat",
-    "log_killed", "Roblox zorla kapatıldı."
+    "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4092,13 +4049,7 @@ I18N["id"] := Map(
     "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet",
     "hud_side", "Panel samping di Roblox (statistik)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik",
-    "btn_report_img", "Lampirkan gambar",
-    "report_noimg", "Tidak ada gambar",
-    "report_img_set", "Gambar: {1}",
-    "cmd_panel", "menyalakan dan mengirim panel langsung yang disematkan",
-    "btn_killall", "Tutup semua Roblox",
-    "log_killed", "Roblox ditutup paksa."
+    "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4281,7 +4232,6 @@ edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 y := 334
 Card(CX, y, CW, 190)
 Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
-Btn(CX + CW - 210, y + 11, 190, 30, TT("btn_killall"), KillRobloxManual)
 chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
 chkZombie := ToggleSwitch(CX + 20, y + 96, CW - 40, TT("sw_zombie"), savedZombie, TT("sw_zombie_sub"))
 Lbl(CX + 20, y + 152, 150, TT("lbl_tol"), "s9", C_MUTED)
@@ -4515,11 +4465,9 @@ Bg(rbox, 10)
 P(rbox)
 FontUI(g, "s10")
 edReport := P(g.Add("Edit", Format("x{} y{} w{} h106 -E0x200 +Multi +Wrap c{} Background{}", CX + 30, y + 70, CW - 60, C_TEXT, C_INPUT)))
-chkReportShot := ToggleSwitch(CX + 20, y + 178, CW - 40, TT("sw_report_shot"), "1")
-btnPickImg := Btn(CX + 20, y + 216, 150, 30, TT("btn_report_img"), PickReportImg)
-repImgLbl := Lbl(CX + 180, y + 223, CW - 360, TT("report_noimg"), "s9", C_MUTED)
-repStatus := Lbl(CX + 20, y + 262, CW - 220, "", "s9 w600", C_TEXT)
-btnReport := Btn(CX + CW - 180, y + 256, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
+chkReportShot := ToggleSwitch(CX + 20, y + 192, CW - 40, TT("sw_report_shot"), "1")
+repStatus := Lbl(CX + 20, y + 248, CW - 220, "", "s9 w600", C_TEXT)
+btnReport := Btn(CX + CW - 180, y + 240, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
 
 y := 404
 Card(CX, y, CW, 100)
@@ -5819,7 +5767,7 @@ BotGotMessages(ch, tok, me, http) {
 }
 
 BotCommand(cmd, ch, mid, tok) {
-    global running, multiActive, monStart, botCtx, edLink, pendingUpd, pendingVer, restartReply, chkPanel
+    global running, multiActive, monStart, botCtx, edLink, pendingUpd, pendingVer, restartReply
     parts := StrSplit(Trim(cmd), " ", , 2)
     c := StrLower(parts[1]), arg := parts.Length > 1 ? Trim(parts[2]) : ""
     if (SubStr(c, 1, 1) != "!")
@@ -5859,11 +5807,6 @@ BotCommand(cmd, ch, mid, tok) {
                 BotHistory()
             case "!logs":
                 BotLogs()
-            case "!statsaovivo", "!painel", "!stats", "!live":
-                chkPanel.Value := 1
-                SaveConfig()
-                botCtx := 0
-                SetTimer(() => PanelUpdate(true), -600)
             case "!grafico", "!gráfico", "!chart":
                 BotChart()
             case "!gif", "!timelapse":
@@ -5971,7 +5914,7 @@ HelpFields() {
     return [[TT("grp_control"), "``!iniciar`` " TT("cmd_start") "`n``!parar`` " TT("cmd_stop") "`n``!reiniciar`` " TT("cmd_restart"), false]
         , [TT("grp_info"), "``!status`` " TT("cmd_status") "`n``!print`` " TT("cmd_print") "`n``!moedas`` " TT("cmd_coins")
             . "`n``!resumo`` " TT("cmd_summary") "`n``!historico`` " TT("cmd_hist") "`n``!pc`` " TT("cmd_pc")
-            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!statsaovivo`` " TT("cmd_panel") "`n``!grafico`` " TT("cmd_chart") "`n``!gif`` " TT("cmd_gif") "`n``!ping`` " TT("cmd_ping"), false]
+            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!grafico`` " TT("cmd_chart") "`n``!gif`` " TT("cmd_gif") "`n``!ping`` " TT("cmd_ping"), false]
         , [TT("grp_config"), "``!link`` " TT("cmd_link") "`n``!atualizar`` " TT("cmd_update")
             . "`n``!desligar`` " TT("cmd_shutdown") "`n``!cancelar`` " TT("cmd_cancel"), false]]
 }
@@ -6291,25 +6234,16 @@ PanelTick() {
 
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
-    global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    if !(chkPanel.Value && chkBot.Value) {
-        if force
-            Log("Painel · " (!chkBot.Value ? "ligue o toggle 'Controlar pelo Discord' (Bot)" : "ligue o toggle 'Painel ao vivo'"))
+    global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState
+    if !(chkPanel.Value && chkBot.Value)
         return
-    }
     tok := Trim(edToken.Value), ch := Trim(edChan.Value)
-    if (tok = "" || ch = "") {
-        if force
-            Log("Painel · token ou ID do canal vazio")
+    if (tok = "" || ch = "")
         return
-    }
     if (!force && A_TickCount - panelLast < 20000)
         return
-    if force
-        Log("Painel · montando embed…")
     panelLast := A_TickCount
 
-    try {
     open := IsRobloxOpen()
     if !open
         title := "🔴  Offline", color := 0xFF5C5C
@@ -6320,20 +6254,32 @@ PanelUpdate(force := false) {
     if !running
         title .= "  ·  " TT("up_stopped"), color := 0x8B8B94
 
-    ; painel leve: usa as moedas já lidas (prevCur) e dados rápidos — nada de OCR/WMI que trava
-    shot := "", coins := ""
-    for c in CurrencySpec()
-        if (prevCur.Has(c.name) && prevCur[c.name] != "")
-            coins .= c.emoji "  **" prevCur[c.name] "**  ·  " c.name "`n"
+    ; print + moedas
+    hw := FindGameWindow(), shot := "", coins := ""
+    if (hw && WinGetMinMax(hw) != -1) {
+        try {
+            if CaptureWindowPng(hw, A_Temp "\roblox_panel.png")
+                shot := A_Temp "\roblox_panel.png"
+        }
+        if chkOcr.Value {
+            try {
+                cur := ReadCurrencies(hw)
+                CoinsObserved(cur[2])
+                for c in CurrencySpec()
+                    if cur[2].Has(c.name)
+                        coins .= c.emoji "  **" cur[2][c.name] "**  ·  " c.name "`n"
+            }
+        }
+    }
     DayRoll()
-    ms := Buffer(64, 0), NumPut("UInt", 64, ms), DllCall("GlobalMemoryStatusEx", "Ptr", ms)
-    cpu := CpuLoad(), ramPct := NumGet(ms, 4, "UInt")
+    pcf := PcFields()
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     desc := (coins != "" ? "### Player Stats`n" coins "`n" : "")
-        . "**" TT("f_cpu") "**  " cpu "%`n**" TT("f_ram") "**  " ramPct "%"
+        . "**" pcf[1][1] "**  " pcf[1][2] "`n**" pcf[2][1] "**  " pcf[2][2]
         . "`n`n🔄 " TT("d_updated") " <t:" now ":R>"
     fields := [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
         , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
+        , [TT("f_roblox_ram"), pcf[3][2], true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
         , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
@@ -6347,48 +6293,37 @@ PanelUpdate(force := false) {
         . '"timestamp":"' ts '"}],'
         . '"attachments":' (shot != "" ? '[{"id":0,"filename":"roblox.png"}]' : '[]') '}'
     base := "https://discord.com/api/v10/channels/" ch "/messages"
-    if force
-        Log("Painel · enviando ao Discord…")
     try {
+        body := MultipartBody(payload, shot, &ct)
         if (panelMsg != "")
-            AsyncReq("PATCH", base "/" panelMsg, payload, "application/json", "Bot " tok, PanelPatched.Bind(base, payload, "", tok, ch))
+            AsyncReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok, PanelPatched.Bind(base, payload, shot, tok, ch))
         else
-            PanelCreate(base, payload, "", tok, ch)
-    } catch as e
-        Log("Painel · " TT("hook_fail", e.Message))
-    } catch as e2
-        Log("Painel · ERRO montando: " e2.Message " [linha " e2.Line "]")
+            PanelCreate(base, payload, shot, tok, ch)
+    }
 }
 
 PanelPatched(base, payload, shot, tok, ch, http) {
     global panelMsg
-    st := HttpStatus(http)
-    if (st >= 200 && st < 300)
-        return
-    panelMsg := ""                            ; qualquer falha (apagada/antiga): recria do zero
-    Log("Painel · " TT("hook_fail", "edit HTTP " st " → recriando"))
-    PanelCreate(base, payload, shot, tok, ch)
+    if (HttpStatus(http) = 404) {             ; mensagem apagada: cria outra
+        panelMsg := ""
+        PanelCreate(base, payload, shot, tok, ch)
+    }
 }
 
 PanelCreate(base, payload, shot, tok, ch) {
-    AsyncReq("POST", base, payload, "application/json", "Bot " tok, PanelCreated.Bind(tok, ch))
+    body := MultipartBody(payload, shot, &ct)
+    AsyncReq("POST", base, body, ct, "Bot " tok, PanelCreated.Bind(tok, ch))
 }
 
 PanelCreated(tok, ch, http) {
     global panelMsg, iniFile, reactReady
-    st := HttpStatus(http)
-    if (st < 200 || st >= 300) {
-        rt := ""
-        try rt := http.ResponseText
-        Log("Painel · " TT("hook_fail", "HTTP " st "  " SubStr(rt, 1, 150)))
+    if (HttpStatus(http) != 200)
         return
-    }
     try {
         panelMsg := JsonPick(http.ResponseText, "a.id")
         IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
         reactReady := false
         AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
-        Log("Painel · " TT("hook_sent", st))
     }
 }
 
@@ -6591,7 +6526,7 @@ HudTick(force := false) {
 ;  Suporte: relatório de erro -> webhook secreto (sem IP, sem dado pessoal)
 ; ==========================================================
 SendReport() {
-    global edReport, chkReportShot, repStatus, REPORT_WEBHOOK, APP_NAME, USER_NAME, VERSION, LOGO_URL, iniFile, ANON_ID, LANG, reportImg
+    global edReport, chkReportShot, repStatus, REPORT_WEBHOOK, APP_NAME, USER_NAME, VERSION, LOGO_URL, iniFile, ANON_ID, LANG
     txt := Trim(edReport.Value)
     if (txt = "") {
         repStatus.Value := TT("report_need_text")
@@ -6602,12 +6537,8 @@ SendReport() {
         return
     }
     repStatus.Value := TT("report_sending")
-    shot := "", fname := "roblox.png"
-    if (reportImg != "" && FileExist(reportImg)) {        ; imagem escolhida pelo usuário tem prioridade
-        shot := reportImg
-        SplitPath(reportImg, , , &ext)
-        fname := "report." StrLower(ext)
-    } else if chkReportShot.Value {
+    shot := ""
+    if chkReportShot.Value {
         hw := FindGameWindow()
         if (hw && WinGetMinMax(hw) != -1) {
             try if CaptureWindowPng(hw, A_Temp "\roblox_report.png")
@@ -6628,12 +6559,12 @@ SendReport() {
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
        . '"title":"' JsonEsc("🐞  " TT("ev_report")) '","color":' 0xF5A142 ','
        . '"description":"' JsonEsc(txt) '",' FieldsJson(fields)
-       . (shot != "" ? '"image":{"url":"attachment://' fname '"},' : '')
+       . (shot != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
        . '"footer":{"text":"' JsonEsc(APP_NAME "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
        . '"timestamp":"' ts '"}]}'
     try {
         if (shot != "" && FileExist(shot))
-            SendWebhookImage(REPORT_WEBHOOK, e, shot, "", ReportCb, fname)
+            SendWebhookImage(REPORT_WEBHOOK, e, shot, "", ReportCb)
         else
             HttpPost(REPORT_WEBHOOK, e, "application/json", "", ReportCb)
     } catch as err {
@@ -6642,25 +6573,13 @@ SendReport() {
 }
 
 ReportCb(h) {
-    global repStatus, edReport, reportImg, repImgLbl
+    global repStatus, edReport
     st := HttpStatus(h)
     if (st >= 200 && st < 300) {
         repStatus.Value := TT("report_sent")
         edReport.Value := ""
-        reportImg := ""
-        try repImgLbl.Value := TT("report_noimg")
     } else
         repStatus.Value := TT("report_fail", "HTTP " st)
-}
-
-PickReportImg(*) {
-    global reportImg, repImgLbl
-    f := FileSelect(3, , TT("btn_report_img"), "Imagens (*.png; *.jpg; *.jpeg; *.gif)")
-    if (f = "")
-        return
-    reportImg := f
-    SplitPath(f, &nm)
-    repImgLbl.Value := TT("report_img_set", nm)
 }
 
 ; ==========================================================
@@ -7915,20 +7834,15 @@ SendWebhook(msg, feedback := false) {
     }
 }
 
-SendWebhookImage(url, payload, pngPath, auth := "", cb := 0, fname := "roblox.png") {
-    ct := "image/png"
-    if RegExMatch(fname, "i)\.jpe?g$")
-        ct := "image/jpeg"
-    else if RegExMatch(fname, "i)\.gif$")
-        ct := "image/gif"
+SendWebhookImage(url, payload, pngPath, auth := "", cb := 0) {
     bnd := "----AHKRejoin" A_TickCount
     head := "--" bnd "`r`n"
         . 'Content-Disposition: form-data; name="payload_json"' "`r`n"
         . "Content-Type: application/json`r`n`r`n"
         . payload "`r`n"
         . "--" bnd "`r`n"
-        . 'Content-Disposition: form-data; name="files[0]"; filename="' fname '"' "`r`n"
-        . "Content-Type: " ct "`r`n`r`n"
+        . 'Content-Disposition: form-data; name="files[0]"; filename="roblox.png"' "`r`n"
+        . "Content-Type: image/png`r`n`r`n"
     tail := "`r`n--" bnd "--`r`n"
 
     img := FileRead(pngPath, "RAW")
@@ -8536,12 +8450,6 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
     }
 }
 
-KillRobloxManual(*) {
-    KillRoblox()
-    Log(TT("log_killed"))
-    try SetState("off", "Roblox OFF", TT("st_off_sub"))
-}
-
 KillRoblox() {
     for exe in ["RobloxPlayerBeta.exe", "Windows10Universal.exe", "RobloxPlayerLauncher.exe", "RobloxCrashHandler.exe"] {
         Loop 10 {
@@ -8899,15 +8807,22 @@ Check() {
     }
     if open {
         gw := FindGameWindow()
-        if (chkZombie.Value && !gw) {                      ; processo SEM janela = fantasma de verdade (RAM baixa com janela é só loading, não mata)
+        lim := Integer(Trim(edRamMin.Value) || 0)
+        ramBad := false
+        if (chkZombie.Value && lim > 0 && gw) {            ; tem janela mas RAM baixíssima = fantasma
+            r := RobloxMaxRamMB()
+            if (r >= 0 && r < lim)
+                ramBad := true
+        }
+        if (chkZombie.Value && (!gw || ramBad)) {          ; sem janela OU RAM abaixo do limite = travado
             if !noWinSince
                 noWinSince := A_TickCount
-            else if (A_TickCount - noWinSince > 60000) {    ; 60s sem janela (além da espera) -> fecha e reabre
+            else if (A_TickCount - noWinSince > 45000) {    ; 45s travado (além da espera) -> fecha e reabre
                 noWinSince := 0
-                RecoverRoblox(TT("r_zombie"))
+                RecoverRoblox(ramBad ? TT("r_zombie_ram", RobloxMaxRamMB()) : TT("r_zombie"))
                 return
             }
-            SetState("wait", TT("st_zombie"), TT("st_zombie_sub"))
+            SetState("wait", TT("st_zombie"), ramBad ? TT("st_zombie_ram") : TT("st_zombie_sub"))
             return
         }
         noWinSince := 0
@@ -8917,6 +8832,20 @@ Check() {
             SetState("on", "Roblox ON", TT("st_on_sub"))
     } else {
         noWinSince := 0
+        if !InternetUp() {
+            if !netDown {
+                netDown := A_TickCount
+                Log(TT("log_net_down"))
+                SendEvent("neterr", [TT("d_net_wait")])
+            }
+            SetState("warn", TT("st_net"), TT("st_net_sub"))
+            return
+        }
+        if netDown {
+            SendEvent("netok", [TT("d_net_back", DurStr(A_TickCount - netDown))])
+            Log(TT("log_net_back"))
+            netDown := 0
+        }
         SetState("off", "Roblox OFF", TT("st_off_sub"))
         LaunchGame()
     }
