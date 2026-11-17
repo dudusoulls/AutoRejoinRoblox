@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.5.1
+- Corrige erro ao abrir com o painel lateral ("value of type Integer has no property named Hwnd"): faltava declarar as variáveis do painel lateral dentro da função que monta o HUD.
+
+
 ## v2.5.0
 - **Novo 3º tipo de HUD: painel lateral**. Gruda na direita da janela do Roblox e mostra tudo que vai pro webhook: status, tempo de sessão, reaberturas, quedas, tempo online hoje, cada moeda, CPU, RAM e a RAM do Roblox. Clique nele abre o programa.
 - Ele encosta do lado de fora da janela quando tem espaço; se não tiver, fica por cima da borda direita meio transparente, acompanhando o Roblox.

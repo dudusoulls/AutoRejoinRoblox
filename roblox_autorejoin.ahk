@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.5.0"
+VERSION     := "2.5.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6330,7 +6330,7 @@ CycleHud(bt, *) {
 }
 
 HudBuild() {
-    global hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, C_CARD, C_TEXT, C_MUTED, C_DIM
+    global hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, hudSide, hudSideDot, hudSideT, hudSideL, C_CARD, C_TEXT, C_MUTED, C_DIM
     k := A_ScreenDPI / 96
     ; barra (clicável: abre o programa)
     hudBar := Gui("-Caption +ToolWindow -DPIScale +E0x08000000")
