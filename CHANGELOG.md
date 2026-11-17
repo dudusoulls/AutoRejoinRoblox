@@ -1,5 +1,12 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.5 (BETA)
+- **Logo nova** no app (lateral/ícone) e nos embeds do Discord.
+- **Webhook reformulado — menos spam**: nova aba **Discord › Notificações** com toggles do que é enviado ao webhook: Aberturas/reconexões, Quedas, Erros, Atualizações. As "reconexões" (que mais enchiam) vêm **desligadas** por padrão; o resto ligado. Respostas de comando no Discord continuam normais.
+- **Removida a opção de RAM mín. (zombie)** do card Recuperação.
+- **Removido o FPS boost** (limite de FPS) do Modo Econômico — o resto do eco (gráficos mínimos, som, prioridade) continua.
+
+
 ## v1.0.4 (BETA)
 - **Corrige erro ao compilar em 32-bit** ("Call to nonexistent function" no SetWindowLongPtr). Agora o código usa a função certa em 32 ou 64 bits, então o .exe funciona compilado de qualquer jeito (mesmo assim, 64-bit é o recomendado).
 
