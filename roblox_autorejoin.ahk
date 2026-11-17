@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.1"
+VERSION     := "2.7.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6289,9 +6289,10 @@ PanelUpdate(force := false) {
     if (!force && A_TickCount - panelLast < 20000)
         return
     if force
-        Log("Painel · enviando…")
+        Log("Painel · montando embed…")
     panelLast := A_TickCount
 
+    try {
     open := IsRobloxOpen()
     if !open
         title := "🔴  Offline", color := 0xFF5C5C
@@ -6335,6 +6336,8 @@ PanelUpdate(force := false) {
         . '"timestamp":"' ts '"}],'
         . '"attachments":' (shot != "" ? '[{"id":0,"filename":"roblox.png"}]' : '[]') '}'
     base := "https://discord.com/api/v10/channels/" ch "/messages"
+    if force
+        Log("Painel · enviando ao Discord…")
     try {
         if (panelMsg != "")
             AsyncReq("PATCH", base "/" panelMsg, payload, "application/json", "Bot " tok, PanelPatched.Bind(base, payload, "", tok, ch))
@@ -6342,6 +6345,8 @@ PanelUpdate(force := false) {
             PanelCreate(base, payload, "", tok, ch)
     } catch as e
         Log("Painel · " TT("hook_fail", e.Message))
+    } catch as e2
+        Log("Painel · ERRO montando: " e2.Message " [linha " e2.Line "]")
 }
 
 PanelPatched(base, payload, shot, tok, ch, http) {
