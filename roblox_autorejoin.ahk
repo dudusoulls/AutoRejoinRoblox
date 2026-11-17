@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.2.0"
+VERSION     := "2.3.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -186,6 +186,8 @@ savedShrink   := IniRead(iniFile, "cfg", "shrink", "1")
 savedMin      := IniRead(iniFile, "cfg", "minBrowser", "1")
 savedErr      := IniRead(iniFile, "cfg", "restartOnError", "1")
 savedErrSec   := IniRead(iniFile, "cfg", "errSec", "60")
+savedZombie   := IniRead(iniFile, "cfg", "killZombie", "1")
+noWinSince    := 0
 savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
@@ -695,7 +697,12 @@ I18N["pt"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox não está aberto na tela.",
     "gif_desc", "{1} prints seguidos do jogo.",
-    "cmd_gif", "manda vários prints seguidos do jogo"
+    "cmd_gif", "manda vários prints seguidos do jogo",
+    "sw_zombie", "Fechar Roblox travado (sem janela) e reabrir",
+    "sw_zombie_sub", "O processo fica aberto mas o jogo some — comum em PC fraco",
+    "st_zombie", "Roblox travado",
+    "st_zombie_sub", "Processo aberto sem janela — fechando e reabrindo",
+    "r_zombie", "Roblox travado sem janela (processo fantasma)"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1161,7 +1168,12 @@ I18N["en"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox isn't open on screen.",
     "gif_desc", "{1} sequential game screenshots.",
-    "cmd_gif", "sends several sequential game screenshots"
+    "cmd_gif", "sends several sequential game screenshots",
+    "sw_zombie", "Close stuck Roblox (no window) and reopen",
+    "sw_zombie_sub", "The process stays open but the game is gone — common on weak PCs",
+    "st_zombie", "Roblox stuck",
+    "st_zombie_sub", "Process open with no window — closing and reopening",
+    "r_zombie", "Roblox stuck with no window (ghost process)"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1627,7 +1639,12 @@ I18N["es"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox no está abierto en pantalla.",
     "gif_desc", "{1} capturas seguidas del juego.",
-    "cmd_gif", "envía varias capturas seguidas del juego"
+    "cmd_gif", "envía varias capturas seguidas del juego",
+    "sw_zombie", "Cerrar Roblox atascado (sin ventana) y reabrir",
+    "sw_zombie_sub", "El proceso queda abierto pero el juego desaparece — común en PC débil",
+    "st_zombie", "Roblox atascado",
+    "st_zombie_sub", "Proceso abierto sin ventana — cerrando y reabriendo",
+    "r_zombie", "Roblox atascado sin ventana (proceso fantasma)"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2093,7 +2110,12 @@ I18N["fr"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox n'est pas ouvert à l'écran.",
     "gif_desc", "{1} captures du jeu à la suite.",
-    "cmd_gif", "envoie plusieurs captures du jeu"
+    "cmd_gif", "envoie plusieurs captures du jeu",
+    "sw_zombie", "Fermer Roblox bloqué (sans fenêtre) et rouvrir",
+    "sw_zombie_sub", "Le processus reste ouvert mais le jeu a disparu — fréquent sur PC faible",
+    "st_zombie", "Roblox bloqué",
+    "st_zombie_sub", "Processus ouvert sans fenêtre — fermeture et réouverture",
+    "r_zombie", "Roblox bloqué sans fenêtre (processus fantôme)"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2559,7 +2581,12 @@ I18N["de"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox ist nicht am Bildschirm offen.",
     "gif_desc", "{1} aufeinanderfolgende Spiel-Screenshots.",
-    "cmd_gif", "sendet mehrere Spiel-Screenshots"
+    "cmd_gif", "sendet mehrere Spiel-Screenshots",
+    "sw_zombie", "Hängendes Roblox (ohne Fenster) schließen und neu öffnen",
+    "sw_zombie_sub", "Der Prozess bleibt offen, aber das Spiel ist weg — häufig auf schwachen PCs",
+    "st_zombie", "Roblox hängt",
+    "st_zombie_sub", "Prozess offen ohne Fenster — schließen und neu öffnen",
+    "r_zombie", "Roblox hängt ohne Fenster (Geisterprozess)"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3025,7 +3052,12 @@ I18N["ru"] := Map(
     "ev_gif", "Таймлапс",
     "gif_none", "Roblox не открыт на экране.",
     "gif_desc", "{1} последовательных скриншота игры.",
-    "cmd_gif", "отправляет несколько скриншотов игры"
+    "cmd_gif", "отправляет несколько скриншотов игры",
+    "sw_zombie", "Закрыть зависший Roblox (без окна) и открыть заново",
+    "sw_zombie_sub", "Процесс остаётся, но игра пропала — часто на слабых ПК",
+    "st_zombie", "Roblox завис",
+    "st_zombie_sub", "Процесс без окна — закрываем и открываем",
+    "r_zombie", "Roblox завис без окна (процесс-призрак)"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3491,7 +3523,12 @@ I18N["tr"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox ekranda açık değil.",
     "gif_desc", "{1} ardışık oyun ekran görüntüsü.",
-    "cmd_gif", "oyundan ardışık birkaç ekran görüntüsü yollar"
+    "cmd_gif", "oyundan ardışık birkaç ekran görüntüsü yollar",
+    "sw_zombie", "Takılan Roblox'u (penceresiz) kapat ve yeniden aç",
+    "sw_zombie_sub", "İşlem açık kalır ama oyun kaybolur — zayıf PC'lerde yaygın",
+    "st_zombie", "Roblox takıldı",
+    "st_zombie_sub", "Penceresiz işlem — kapatılıp yeniden açılıyor",
+    "r_zombie", "Roblox penceresiz takıldı (hayalet işlem)"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3957,7 +3994,12 @@ I18N["id"] := Map(
     "ev_gif", "Timelapse",
     "gif_none", "Roblox tidak terbuka di layar.",
     "gif_desc", "{1} tangkapan layar game berurutan.",
-    "cmd_gif", "mengirim beberapa tangkapan layar game"
+    "cmd_gif", "mengirim beberapa tangkapan layar game",
+    "sw_zombie", "Tutup Roblox macet (tanpa jendela) dan buka ulang",
+    "sw_zombie_sub", "Prosesnya tetap terbuka tapi game hilang — umum di PC lemah",
+    "st_zombie", "Roblox macet",
+    "st_zombie_sub", "Proses tanpa jendela — menutup dan membuka ulang",
+    "r_zombie", "Roblox macet tanpa jendela (proses hantu)"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4137,11 +4179,12 @@ Lbl(CX + 20 + half, y + 40, half, TT("lbl_wait"), "s9", C_MUTED)
 edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 
 y := 334
-Card(CX, y, CW, 132)
+Card(CX, y, CW, 190)
 Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
 chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
-Lbl(CX + 20, y + 96, 200, TT("lbl_tol"), "s9", C_MUTED)
-edErrSec := Input(CX + 170, y + 89, 90, savedErrSec, "Number")
+chkZombie := ToggleSwitch(CX + 20, y + 96, CW - 40, TT("sw_zombie"), savedZombie, TT("sw_zombie_sub"))
+Lbl(CX + 20, y + 152, 200, TT("lbl_tol"), "s9", C_MUTED)
+edErrSec := Input(CX + 170, y + 145, 90, savedErrSec, "Number")
 
 ; ---------------- Página: Janela ----------------
 BeginPage("Janela", TT("nav_window"), TT("pg_win_sub"))
@@ -6952,7 +6995,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkZombie, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -6961,6 +7004,7 @@ SaveConfig() {
     IniWrite(chkMin.Value, iniFile, "cfg", "minBrowser")
     IniWrite(chkErr.Value, iniFile, "cfg", "restartOnError")
     IniWrite(edErrSec.Value, iniFile, "cfg", "errSec")
+    IniWrite(chkZombie.Value, iniFile, "cfg", "killZombie")
     IniWrite(chkRep.Value, iniFile, "cfg", "report")
     IniWrite(edRepMin.Value, iniFile, "cfg", "reportMin")
     IniWrite(chkOcr.Value, iniFile, "cfg", "ocr")
@@ -8622,7 +8666,7 @@ WatchError() {
 }
 
 Check() {
-    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown
+    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown, chkZombie, noWinSince
     if !running
         return
     open := IsRobloxOpen()
@@ -8647,11 +8691,24 @@ Check() {
         return
     }
     if open {
+        if (chkZombie.Value && !FindGameWindow()) {        ; processo aberto mas sem janela = travado
+            if !noWinSince
+                noWinSince := A_TickCount
+            else if (A_TickCount - noWinSince > 45000) {    ; 45s sem janela (além da espera) -> fantasma
+                noWinSince := 0
+                RecoverRoblox(TT("r_zombie"))
+                return
+            }
+            SetState("wait", TT("st_zombie"), TT("st_zombie_sub"))
+            return
+        }
+        noWinSince := 0
         if discTick
             SetState("warn", "Roblox ON", TT("st_on_warn_sub"))
         else
             SetState("on", "Roblox ON", TT("st_on_sub"))
     } else {
+        noWinSince := 0
         if !InternetUp() {
             if !netDown {
                 netDown := A_TickCount

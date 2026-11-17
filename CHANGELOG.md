@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.3.0
+- **Conserto do "Roblox fantasma"**: em PC fraco o Roblox às vezes trava e deixa o processo aberto sem janela nenhuma. O app achava que estava tudo certo e não reabria. Agora ele detecta o processo travado sem janela, **mata todos os Roblox e reabre sozinho** — ligado por padrão (aba Jogo › Recuperação).
+- Espera uma margem (a espera pós-abrir + 45s) antes de dar como travado, pra não fechar um Roblox que só está demorando a carregar no PC fraco.
+
+
 ## v2.2.0
 - Nova aba **Suporte**: o usuário escreve o problema e manda (com print do Roblox, se quiser) direto pro seu webhook secreto. Vai junto versão do app, Windows, nome do PC e um ID de instalação anônimo — **sem IP e sem dado pessoal**.
 - **Botões no painel do Discord**: reações ▶️ (iniciar), ⏹️ (parar), 🔄 (reiniciar) e 📸 (print) no painel fixado. Toca pelo celular e o app obedece.
