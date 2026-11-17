@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.6"
+VERSION     := "1.0.7"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -129,6 +129,7 @@ hudBar := 0, hudPan := 0, hudFrame := 0, hudBarDot := 0, hudBarL := 0, hudBarR :
 hudLastPos := "", hudLastHw := 0, hudN := 0, hudUserHidden := false, hudShown := false, hudFrameCol := ""
 hudSide := 0, hudSideDot := 0, hudSideT := 0, hudSideL := 0
 donateGui := 0
+donateThenTour := false
 asyncReqs := []
 botBusy := 0
 cpuLast := 0
@@ -4843,7 +4844,7 @@ else if (Trim(edKey.Value) != "") {
 
 ; abre o programa de verdade (depois da licença ok)
 StartApp() {
-    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME
+    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME, donateThenTour
     FadeHide(gk)
     if appStarted {
         FadeShow(g)
@@ -4870,13 +4871,15 @@ StartApp() {
         IniDelete(iniFile, "cfg", "resume")
         SetTimer(() => (running ? 0 : Toggle()), -1500)
     }
-    if firstRun
-        SetTimer(StartTour, -800)    ; primeira vez abrindo: mostra o passo a passo
-    else if (chkAutoMon.Value && !running)
+    donateNow := (IniRead(iniFile, "cfg", "showDonate", "1") = "1" && IniRead(iniFile, "cfg", "donateLast", "") != FormatTime(A_Now, "yyyyMMdd"))
+    donateThenTour := firstRun && donateNow
+    if donateNow
+        SetTimer(ShowDonate, -1200)                 ; apoio aparece primeiro
+    if (firstRun && !donateNow)
+        SetTimer(StartTour, -800)                   ; sem apoio: tutorial direto
+    else if (!firstRun && chkAutoMon.Value && !running)
         SetTimer(() => (running ? 0 : Toggle()), -2500)
     SetTimer(() => SendStatusReport(), -7000)   ; manda o status com print assim que abre
-    if (!firstRun && IniRead(iniFile, "cfg", "showDonate", "1") = "1" && IniRead(iniFile, "cfg", "donateLast", "") != FormatTime(A_Now, "yyyyMMdd"))
-        SetTimer(ShowDonate, -2800)
     SetTimer(DailyTick, 30000)
     SetTimer(ScheduleTick, 30000)
     SetTimer(BotTick, 6000)
@@ -7090,16 +7093,25 @@ ShowDonate(*) {
     FontUI(d, "s8 w600")
     d.Add("Text", Format("x0 y{} w{} +0x1 c{} Background{}", Round(128 * k) + qrw + Round(8 * k), DW, C_MUTED, C_CARD), TT("don_pix"))
     bw := Round(158 * k), bh := Round(38 * k), by := DH - bh - Round(20 * k)
-    MakeBtn(d, DW // 2 - bw - Round(6 * k), by, bw, bh, TT("don_close"), (*) => d.Destroy(), "primary", false, "s9 w700", 10, C_CARD)
+    MakeBtn(d, DW // 2 - bw - Round(6 * k), by, bw, bh, TT("don_close"), (*) => DonateClose(), "primary", false, "s9 w700", 10, C_CARD)
     MakeBtn(d, DW // 2 + Round(6 * k), by, bw, bh, TT("don_never"), DonateNever, "ghost", false, "s9 w600", 10, C_CARD)
     d.Show(Format("w{} h{} Center", DW, DH))
 }
 
 DonateNever(*) {
-    global chkDonate, iniFile, donateGui
+    global chkDonate, iniFile
     IniWrite(0, iniFile, "cfg", "showDonate")
     try chkDonate.Value := 0
+    DonateClose()
+}
+
+DonateClose() {
+    global donateGui, donateThenTour
     try donateGui.Destroy()
+    if donateThenTour {
+        donateThenTour := false
+        SetTimer(StartTour, -300)
+    }
 }
 
 FinishGui() {
