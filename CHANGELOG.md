@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## Atualizador agora também volta versão (17/11)
+- O botão/comando de atualizar passou a baixar a versão que está no GitHub sempre que ela for **diferente** da sua — antes só ia pra frente. Agora dá pra **voltar** pra uma versão anterior também: é só colocar a versão desejada no GitHub e mandar atualizar. (Base: código da v2.6.0.)
+
+
 ## Revertido para a v2.6.0 (17/11)
 - A pedido, o app voltou para o código da v2.6.0. As versões 2.6.1 a 2.7.5 continuam no histórico do Git e podem ser recuperadas a qualquer momento.
 

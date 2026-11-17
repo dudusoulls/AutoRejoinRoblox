@@ -7526,7 +7526,7 @@ CheckUpdate(manual := false) {
         updStatus.Value := TT("upd_badfile")
         return
     }
-    if (VerCompare(v[1], VERSION) <= 0) {
+    if (v[1] = VERSION) {                     ; mesma versão do GitHub = nada a fazer (serve pra frente E pra trás)
         updStatus.Value := TT("upd_latest")
         pendingUpd := ""
         updBadge.Visible := false
