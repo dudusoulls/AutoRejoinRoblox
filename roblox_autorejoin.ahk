@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.2"
+VERSION     := "2.6.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6262,13 +6262,21 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState
-    if !(chkPanel.Value && chkBot.Value)
+    if !(chkPanel.Value && chkBot.Value) {
+        if force
+            Log("Painel · " (!chkBot.Value ? "ligue o toggle 'Controlar pelo Discord' (Bot)" : "ligue o toggle 'Painel ao vivo'"))
         return
+    }
     tok := Trim(edToken.Value), ch := Trim(edChan.Value)
-    if (tok = "" || ch = "")
+    if (tok = "" || ch = "") {
+        if force
+            Log("Painel · token ou ID do canal vazio")
         return
+    }
     if (!force && A_TickCount - panelLast < 20000)
         return
+    if force
+        Log("Painel · enviando…")
     panelLast := A_TickCount
 
     open := IsRobloxOpen()
