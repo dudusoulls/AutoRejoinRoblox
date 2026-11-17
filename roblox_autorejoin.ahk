@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.9"
+VERSION     := "1.1.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -683,8 +683,8 @@ I18N["pt"] := Map(
     "sw_frame_sub", "Verde no jogo, amarelo com desconexão, vermelho fechado",
     "sw_hudcompact", "Modo compacto esconde o programa e deixa só o HUD",
     "hud_hint", "Atalhos: Ctrl+Alt+H mostra/esconde o HUD · Ctrl+Alt+S inicia/para · Ctrl+Alt+R reinicia o Roblox · Ctrl+Alt+P manda o status. Clique na barra pra abrir o programa.",
-    "nav_report", "Suporte",
-    "pg_report_sub", "Relate um erro ou problema direto pra mim",
+    "nav_report", "Apoie",
+    "pg_report_sub", "Apoie o projeto ou me relate um erro",
     "sec_report", "RELATAR PROBLEMA",
     "lbl_report", "Descreva o que aconteceu",
     "sw_report_shot", "Anexar um print do Roblox",
@@ -753,7 +753,7 @@ I18N["pt"] := Map(
     "don_close", "Fechar",
     "don_never", "Não mostrar mais",
     "sw_donate", "Mostrar apoio ao dev",
-    "sw_donate_sub", "Uma telinha de Pix quando o app abre (no máx. 1x por dia)"
+    "sw_donate_sub", "Mostra o QR de Pix toda vez que o app abre"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1186,7 +1186,7 @@ I18N["en"] := Map(
     "sw_hudcompact", "Compact mode hides the app and keeps only the HUD",
     "hud_hint", "Shortcuts: Ctrl+Alt+H show/hide HUD · Ctrl+Alt+S start/stop · Ctrl+Alt+R restart Roblox · Ctrl+Alt+P send status. Click the bar to open the app.",
     "nav_report", "Support",
-    "pg_report_sub", "Report a bug or problem straight to me",
+    "pg_report_sub", "Support the project or report a bug to me",
     "sec_report", "REPORT A PROBLEM",
     "lbl_report", "Describe what happened",
     "sw_report_shot", "Attach a Roblox screenshot",
@@ -1255,7 +1255,7 @@ I18N["en"] := Map(
     "don_close", "Close",
     "don_never", "Don't show again",
     "sw_donate", "Show support-the-dev",
-    "sw_donate_sub", "A small Pix screen when the app opens (max once a day)"
+    "sw_donate_sub", "Shows the Pix QR every time the app opens"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1688,7 +1688,7 @@ I18N["es"] := Map(
     "sw_hudcompact", "El modo compacto oculta el programa y deja solo el HUD",
     "hud_hint", "Atajos: Ctrl+Alt+H muestra/oculta el HUD · Ctrl+Alt+S inicia/detiene · Ctrl+Alt+R reinicia Roblox · Ctrl+Alt+P envía el estado. Clic en la barra para abrir el programa.",
     "nav_report", "Soporte",
-    "pg_report_sub", "Reporta un error o problema directo a mí",
+    "pg_report_sub", "Apoya el proyecto o repórtame un error",
     "sec_report", "REPORTAR PROBLEMA",
     "lbl_report", "Describe lo que pasó",
     "sw_report_shot", "Adjuntar una captura de Roblox",
@@ -1757,7 +1757,7 @@ I18N["es"] := Map(
     "don_close", "Cerrar",
     "don_never", "No mostrar más",
     "sw_donate", "Mostrar apoyo al dev",
-    "sw_donate_sub", "Una pantalla de Pix al abrir la app (máx. 1 vez al día)"
+    "sw_donate_sub", "Muestra el QR de Pix cada vez que abres la app"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2190,7 +2190,7 @@ I18N["fr"] := Map(
     "sw_hudcompact", "Le mode compact masque l'appli et garde seulement le HUD",
     "hud_hint", "Raccourcis : Ctrl+Alt+H afficher/masquer le HUD · Ctrl+Alt+S démarrer/arrêter · Ctrl+Alt+R redémarrer Roblox · Ctrl+Alt+P envoyer le statut. Cliquez sur la barre pour ouvrir l'appli.",
     "nav_report", "Support",
-    "pg_report_sub", "Signalez un bug ou un problème directement",
+    "pg_report_sub", "Soutiens le projet ou signale-moi un bug",
     "sec_report", "SIGNALER UN PROBLÈME",
     "lbl_report", "Décrivez ce qui s'est passé",
     "sw_report_shot", "Joindre une capture de Roblox",
@@ -2259,7 +2259,7 @@ I18N["fr"] := Map(
     "don_close", "Fermer",
     "don_never", "Ne plus afficher",
     "sw_donate", "Afficher le soutien au dev",
-    "sw_donate_sub", "Un petit écran Pix à l'ouverture (max 1x/jour)"
+    "sw_donate_sub", "Affiche le QR Pix à chaque ouverture"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2692,7 +2692,7 @@ I18N["de"] := Map(
     "sw_hudcompact", "Kompaktmodus blendet das Programm aus und lässt nur das HUD",
     "hud_hint", "Kürzel: Strg+Alt+H HUD ein/aus · Strg+Alt+S Start/Stopp · Strg+Alt+R Roblox neu starten · Strg+Alt+P Status senden. Klick auf die Leiste öffnet das Programm.",
     "nav_report", "Support",
-    "pg_report_sub", "Melde einen Fehler oder ein Problem direkt",
+    "pg_report_sub", "Unterstütze das Projekt oder melde einen Fehler",
     "sec_report", "PROBLEM MELDEN",
     "lbl_report", "Beschreibe, was passiert ist",
     "sw_report_shot", "Roblox-Screenshot anhängen",
@@ -2761,7 +2761,7 @@ I18N["de"] := Map(
     "don_close", "Schließen",
     "don_never", "Nicht mehr zeigen",
     "sw_donate", "Dev-Unterstützung zeigen",
-    "sw_donate_sub", "Ein kleiner Pix-Bildschirm beim Öffnen (max. 1×/Tag)"
+    "sw_donate_sub", "Zeigt den Pix-QR bei jedem Öffnen"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3194,7 +3194,7 @@ I18N["ru"] := Map(
     "sw_hudcompact", "Компактный режим прячет программу и оставляет только HUD",
     "hud_hint", "Горячие клавиши: Ctrl+Alt+H HUD · Ctrl+Alt+S старт/стоп · Ctrl+Alt+R перезапуск Roblox · Ctrl+Alt+P отправить статус. Клик по панели открывает программу.",
     "nav_report", "Поддержка",
-    "pg_report_sub", "Сообщите об ошибке или проблеме напрямую",
+    "pg_report_sub", "Поддержите проект или сообщите об ошибке",
     "sec_report", "СООБЩИТЬ О ПРОБЛЕМЕ",
     "lbl_report", "Опишите, что произошло",
     "sw_report_shot", "Приложить скриншот Roblox",
@@ -3263,7 +3263,7 @@ I18N["ru"] := Map(
     "don_close", "Закрыть",
     "don_never", "Больше не показывать",
     "sw_donate", "Показывать поддержку разработчика",
-    "sw_donate_sub", "Небольшой экран Pix при запуске (не чаще 1 раза в день)"
+    "sw_donate_sub", "Показывает QR Pix при каждом запуске"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3696,7 +3696,7 @@ I18N["tr"] := Map(
     "sw_hudcompact", "Kompakt mod programı gizler, sadece HUD kalır",
     "hud_hint", "Kısayollar: Ctrl+Alt+H HUD aç/kapa · Ctrl+Alt+S başlat/durdur · Ctrl+Alt+R Roblox'u yeniden başlat · Ctrl+Alt+P durumu gönder. Programı açmak için çubuğa tıkla.",
     "nav_report", "Destek",
-    "pg_report_sub", "Bir hatayı veya sorunu doğrudan bildir",
+    "pg_report_sub", "Projeyi destekle ya da bana bir hata bildir",
     "sec_report", "SORUN BİLDİR",
     "lbl_report", "Ne olduğunu anlat",
     "sw_report_shot", "Roblox ekran görüntüsü ekle",
@@ -3765,7 +3765,7 @@ I18N["tr"] := Map(
     "don_close", "Kapat",
     "don_never", "Bir daha gösterme",
     "sw_donate", "Geliştirici desteğini göster",
-    "sw_donate_sub", "Uygulama açılınca küçük bir Pix ekranı (günde en fazla 1)"
+    "sw_donate_sub", "Uygulama her açıldığında Pix QR'ını gösterir"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4198,7 +4198,7 @@ I18N["id"] := Map(
     "sw_hudcompact", "Mode ringkas menyembunyikan aplikasi dan hanya menyisakan HUD",
     "hud_hint", "Pintasan: Ctrl+Alt+H tampil/sembunyi HUD · Ctrl+Alt+S mulai/berhenti · Ctrl+Alt+R mulai ulang Roblox · Ctrl+Alt+P kirim status. Klik bar untuk membuka aplikasi.",
     "nav_report", "Dukungan",
-    "pg_report_sub", "Laporkan bug atau masalah langsung ke saya",
+    "pg_report_sub", "Dukung proyek atau laporkan bug ke saya",
     "sec_report", "LAPORKAN MASALAH",
     "lbl_report", "Jelaskan apa yang terjadi",
     "sw_report_shot", "Lampirkan tangkapan layar Roblox",
@@ -4267,7 +4267,7 @@ I18N["id"] := Map(
     "don_close", "Tutup",
     "don_never", "Jangan tampilkan lagi",
     "sw_donate", "Tampilkan dukungan dev",
-    "sw_donate_sub", "Layar Pix kecil saat app dibuka (maks 1x sehari)"
+    "sw_donate_sub", "Tampilkan QR Pix setiap app dibuka"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4724,32 +4724,34 @@ changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E
     , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
-y := 484
-Card(CX, y, CW, 70)
-chkDonate := ToggleSwitch(CX + 20, y + 22, CW - 40, TT("sw_donate"), savedDonate, TT("sw_donate_sub"))
 
-; ---------------- Página: Suporte (relatar erro) ----------------
+; ---------------- Página: Apoie + Suporte ----------------
 BeginPage("Suporte", TT("nav_report"), TT("pg_report_sub"))
+; --- Apoie o dev (QR sempre à mão) ---
 y := 92
-Card(CX, y, CW, 300)
-Lbl(CX + 20, y + 16, 300, TT("sec_report"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 40, CW - 40, TT("lbl_report"), "s9", C_MUTED)
-rbox := g.Add("Text", Format("x{} y{} w{} h120 +0x4000000 Background{}", CX + 20, y + 62, CW - 40, C_INPUT))
+Card(CX, y, CW, 160)
+try P(g.Add("Picture", Format("x{} y{} w120 h120", CX + 20, y + 20), ASSET_DIR "\donate.png"))
+Lbl(CX + 156, y + 22, CW - 176, TT("don_title"), "s13 w700")
+Lbl(CX + 156, y + 52, CW - 176, TT("don_msg"), "s9", C_MUTED)
+chkDonate := ToggleSwitch(CX + 156, y + 118, CW - 176, TT("sw_donate"), savedDonate, TT("sw_donate_sub"))
+chkDonate.onChange := (*) => IniWrite(chkDonate.Value, iniFile, "cfg", "showDonate")
+
+; --- Relatar erro ---
+y := 268
+Card(CX, y, CW, 284)
+Lbl(CX + 20, y + 14, 300, TT("sec_report"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 36, CW - 40, TT("lbl_report"), "s9", C_MUTED)
+rbox := g.Add("Text", Format("x{} y{} w{} h92 +0x4000000 Background{}", CX + 20, y + 58, CW - 40, C_INPUT))
 Bg(rbox, 10)
 P(rbox)
 FontUI(g, "s10")
-edReport := P(g.Add("Edit", Format("x{} y{} w{} h106 -E0x200 +Multi +Wrap c{} Background{}", CX + 30, y + 70, CW - 60, C_TEXT, C_INPUT)))
-chkReportShot := ToggleSwitch(CX + 20, y + 178, CW - 40, TT("sw_report_shot"), "1")
-btnPickImg := Btn(CX + 20, y + 216, 150, 30, TT("btn_report_img"), PickReportImg)
-repImgLbl := Lbl(CX + 180, y + 223, CW - 360, TT("report_noimg"), "s9", C_MUTED)
-repStatus := Lbl(CX + 20, y + 262, CW - 220, "", "s9 w600", C_TEXT)
-btnReport := Btn(CX + CW - 180, y + 256, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
-
-y := 404
-Card(CX, y, CW, 100)
-Lbl(CX + 20, y + 16, 300, TT("lbl_report_id"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 40, CW - 40, ANON_ID, "s13 w700", C_TEXT)
-Lbl(CX + 20, y + 68, CW - 40, TT("report_hint"), "s8", C_MUTED)
+edReport := P(g.Add("Edit", Format("x{} y{} w{} h78 -E0x200 +Multi +Wrap c{} Background{}", CX + 30, y + 66, CW - 60, C_TEXT, C_INPUT)))
+chkReportShot := ToggleSwitch(CX + 20, y + 160, CW - 40, TT("sw_report_shot"), "1")
+btnPickImg := Btn(CX + 20, y + 196, 150, 30, TT("btn_report_img"), PickReportImg)
+repImgLbl := Lbl(CX + 180, y + 203, CW - 360, TT("report_noimg"), "s9", C_MUTED)
+btnReport := Btn(CX + CW - 180, y + 194, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
+repStatus := Lbl(CX + 20, y + 238, CW - 40, "", "s9 w600", C_TEXT)
+Lbl(CX + 20, y + 260, CW - 40, TT("lbl_report_id") ": " ANON_ID, "s8", C_MUTED)
 
 ; ---------------- Página: Aparência ----------------
 BeginPage("Aparência", TT("nav_look"), TT("pg_look_sub"))
@@ -4911,7 +4913,7 @@ StartApp() {
         IniDelete(iniFile, "cfg", "resume")
         SetTimer(() => (running ? 0 : Toggle()), -1500)
     }
-    donateNow := (IniRead(iniFile, "cfg", "showDonate", "1") = "1" && IniRead(iniFile, "cfg", "donateLast", "") != FormatTime(A_Now, "yyyyMMdd"))
+    donateNow := (IniRead(iniFile, "cfg", "showDonate", "1") = "1")
     donateThenTour := firstRun && donateNow
     if donateNow
         SetTimer(ShowDonate, -1200)                 ; apoio aparece primeiro
@@ -7114,12 +7116,11 @@ ReportUrl() {
 }
 
 ; ==========================================================
-;  Apoie o dev — telinha de Pix (opcional, no máx 1x/dia)
+;  Apoie o dev — telinha de Pix (aparece sempre até desativar)
 ; ==========================================================
 ShowDonate(*) {
     global g, C_CARD, C_TEXT, C_MUTED, C_ACC, ASSET_DIR, iniFile, donateGui
     try donateGui.Destroy()
-    IniWrite(FormatTime(A_Now, "yyyyMMdd"), iniFile, "cfg", "donateLast")
     k := A_ScreenDPI / 96
     DW := Round(360 * k), DH := Round(486 * k), qrw := Round(240 * k)
     d := Gui("-Caption +ToolWindow +AlwaysOnTop +Owner" g.Hwnd)
