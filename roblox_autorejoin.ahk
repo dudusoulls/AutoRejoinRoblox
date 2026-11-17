@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.0"
+VERSION     := "1.0.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -181,6 +181,7 @@ DllCall("LoadLibrary", "Str", "gdiplus", "Ptr")
 
 ; ---------------- Config ----------------
 savedLink     := IniRead(iniFile, "cfg", "link", "")
+savedRbxVer   := IniRead(iniFile, "cfg", "rbxVer", "")
 savedInterval := IniRead(iniFile, "cfg", "interval", "15")
 savedWait     := IniRead(iniFile, "cfg", "wait", "90")
 savedHook     := IniRead(iniFile, "cfg", "webhook", "")
@@ -717,7 +718,9 @@ I18N["pt"] := Map(
     "report_img_set", "Imagem: {1}",
     "cmd_panel", "liga e manda o painel ao vivo fixado",
     "btn_killall", "Matar todos os Roblox",
-    "log_killed", "Roblox fechado(s) à força."
+    "log_killed", "Roblox fechado(s) à força.",
+    "lbl_rbxver", "Fixar versão do Roblox (vazio = mais nova)",
+    "btn_rbxlist", "Ver versões"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1200,7 +1203,9 @@ I18N["en"] := Map(
     "report_img_set", "Image: {1}",
     "cmd_panel", "turns on and posts the pinned live panel",
     "btn_killall", "Kill all Roblox",
-    "log_killed", "Roblox force-closed."
+    "log_killed", "Roblox force-closed.",
+    "lbl_rbxver", "Pin Roblox version (empty = newest)",
+    "btn_rbxlist", "List versions"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1683,7 +1688,9 @@ I18N["es"] := Map(
     "report_img_set", "Imagen: {1}",
     "cmd_panel", "activa y envía el panel en vivo fijado",
     "btn_killall", "Cerrar todos los Roblox",
-    "log_killed", "Roblox cerrado(s) a la fuerza."
+    "log_killed", "Roblox cerrado(s) a la fuerza.",
+    "lbl_rbxver", "Fijar versión de Roblox (vacío = más nueva)",
+    "btn_rbxlist", "Ver versiones"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2166,7 +2173,9 @@ I18N["fr"] := Map(
     "report_img_set", "Image : {1}",
     "cmd_panel", "active et envoie le panneau en direct épinglé",
     "btn_killall", "Tuer tous les Roblox",
-    "log_killed", "Roblox fermé(s) de force."
+    "log_killed", "Roblox fermé(s) de force.",
+    "lbl_rbxver", "Fixer la version Roblox (vide = la plus récente)",
+    "btn_rbxlist", "Voir les versions"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2649,7 +2658,9 @@ I18N["de"] := Map(
     "report_img_set", "Bild: {1}",
     "cmd_panel", "aktiviert und sendet das angepinnte Live-Panel",
     "btn_killall", "Alle Roblox beenden",
-    "log_killed", "Roblox zwangsweise geschlossen."
+    "log_killed", "Roblox zwangsweise geschlossen.",
+    "lbl_rbxver", "Roblox-Version festlegen (leer = neueste)",
+    "btn_rbxlist", "Versionen anzeigen"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3132,7 +3143,9 @@ I18N["ru"] := Map(
     "report_img_set", "Изображение: {1}",
     "cmd_panel", "включает и отправляет закреплённую живую панель",
     "btn_killall", "Закрыть все Roblox",
-    "log_killed", "Roblox принудительно закрыт."
+    "log_killed", "Roblox принудительно закрыт.",
+    "lbl_rbxver", "Закрепить версию Roblox (пусто = новейшая)",
+    "btn_rbxlist", "Список версий"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3615,7 +3628,9 @@ I18N["tr"] := Map(
     "report_img_set", "Resim: {1}",
     "cmd_panel", "sabit canlı paneli açar ve gönderir",
     "btn_killall", "Tüm Roblox'u kapat",
-    "log_killed", "Roblox zorla kapatıldı."
+    "log_killed", "Roblox zorla kapatıldı.",
+    "lbl_rbxver", "Roblox sürümünü sabitle (boş = en yeni)",
+    "btn_rbxlist", "Sürümleri gör"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4098,7 +4113,9 @@ I18N["id"] := Map(
     "report_img_set", "Gambar: {1}",
     "cmd_panel", "menyalakan dan mengirim panel langsung yang disematkan",
     "btn_killall", "Tutup semua Roblox",
-    "log_killed", "Roblox ditutup paksa."
+    "log_killed", "Roblox ditutup paksa.",
+    "lbl_rbxver", "Kunci versi Roblox (kosong = terbaru)",
+    "btn_rbxlist", "Lihat versi"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4265,12 +4282,15 @@ Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, TT("btn_compact"),    (*) => SetCom
 ; ---------------- Página: Jogo ----------------
 BeginPage("Jogo", TT("nav_game"), TT("pg_game_sub"))
 y := 92
-Card(CX, y, CW, 108)
+Card(CX, y, CW, 150)
 Lbl(CX + 20, y + 16, 300, TT("sec_server"), "s7 w700", C_DIM)
 edLink := Input(CX + 20, y + 38, CW - 40, savedLink)
-Lbl(CX + 20, y + 78, CW - 40, TT("hint_link"), "s8", C_MUTED)
+Lbl(CX + 20, y + 74, CW - 40, TT("hint_link"), "s8", C_MUTED)
+Lbl(CX + 20, y + 98, 300, TT("lbl_rbxver"), "s9", C_MUTED)
+Btn(CX + CW - 150, y + 94, 130, 26, TT("btn_rbxlist"), ListRbxVersions)
+edRbxVer := Input(CX + 20, y + 120, CW - 40, savedRbxVer)
 
-y := 212, half := (CW - 40) // 2
+y := 262, half := (CW - 40) // 2
 Card(CX, y, CW, 110)
 Lbl(CX + 20, y + 16, 300, TT("sec_monitor"), "s7 w700", C_DIM)
 Lbl(CX + 20, y + 40, half, TT("lbl_check"), "s9", C_MUTED)
@@ -4278,8 +4298,8 @@ edInterval := Input(CX + 20, y + 62, 120, savedInterval, "Number")
 Lbl(CX + 20 + half, y + 40, half, TT("lbl_wait"), "s9", C_MUTED)
 edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 
-y := 334
-Card(CX, y, CW, 190)
+y := 384
+Card(CX, y, CW, 178)
 Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
 Btn(CX + CW - 210, y + 11, 190, 30, TT("btn_killall"), KillRobloxManual)
 chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
@@ -7190,8 +7210,9 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkZombie, edRamMin, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
+    global iniFile, edLink, edRbxVer, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkZombie, edRamMin, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
+    IniWrite(Trim(edRbxVer.Value), iniFile, "cfg", "rbxVer")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
     IniWrite(edWait.Value, iniFile, "cfg", "wait")
@@ -8402,7 +8423,7 @@ PlayerCommand() {
 
 RunMethod(m) {
     if (m.kind = "newest") {
-        exe := NewestRobloxExe()
+        exe := ChosenRobloxExe()
         if (exe = "")
             throw Error("nenhuma instalacao do Roblox encontrada")
         cmd := PlayerCommand()
@@ -8430,6 +8451,48 @@ MethodName(m) {
     if (m.kind = "newest")
         return "Roblox (mais recente)"
     return TT(Map("exe", "m_exe", "uri", "m_uri", "web", "m_web")[m.kind])
+}
+
+; retorna o exe da versão FIXADA pelo usuário (se houver e existir), senão o da mais nova
+ChosenRobloxExe() {
+    global edRbxVer
+    pin := Trim(edRbxVer.Value)
+    if (pin != "") {
+        folder := InStr(pin, "version-") ? pin : "version-" pin
+        for v in ["LOCALAPPDATA", "ProgramFiles(x86)", "ProgramFiles"] {
+            base := EnvGet(v)
+            if (base = "")
+                continue
+            exe := base "\Roblox\Versions\" folder "\RobloxPlayerBeta.exe"
+            if FileExist(exe) {
+                Log("Versão do Roblox (fixada): " folder)
+                return exe
+            }
+        }
+        Log("Versão fixada não encontrada (" folder ") — abrindo a mais nova")
+    }
+    return NewestRobloxExe()
+}
+
+ListRbxVersions(*) {
+    found := false
+    Log("--- Versões do Roblox instaladas ---")
+    for v in ["LOCALAPPDATA", "ProgramFiles(x86)", "ProgramFiles"] {
+        base := EnvGet(v)
+        if (base = "")
+            continue
+        root := base "\Roblox\Versions"
+        if !DirExist(root)
+            continue
+        Loop Files, root "\*", "D" {
+            if FileExist(A_LoopFilePath "\RobloxPlayerBeta.exe") {
+                Log("• " A_LoopFileName)
+                found := true
+            }
+        }
+    }
+    if !found
+        Log("Nenhuma versão do Roblox encontrada.")
 }
 
 ; acha o RobloxPlayerBeta.exe da versão MAIS RECENTE instalada (pela data de CRIAÇÃO da pasta = quando foi instalada)

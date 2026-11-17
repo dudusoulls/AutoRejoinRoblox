@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.1 (BETA)
+- **Fixar versão do Roblox** (aba Jogo): novo campo onde você cola a versão que o seu executor aceita (ex.: version-4ea8e85481e34f46). O app passa a abrir SEMPRE essa versão, em vez da mais nova. Deixe vazio pra abrir a mais nova (pra quem não usa executor).
+- Botão **"Ver versões"** lista no Logs todas as versões do Roblox instaladas, pra você saber qual colar.
+
+
 ## v1.0.0 (BETA)
 Recomeço da numeração: daqui pra frente as versões são mais pra melhorar do que adicionar. O app está marcado como BETA.
 - **Abre sempre a versão mais recente do Roblox**: procura o RobloxPlayerBeta.exe da versão instalada mais nova (pela data de instalação da pasta) e abre essa primeiro. Mostra no Logs qual escolheu ("Versão do Roblox escolhida: version-...").
