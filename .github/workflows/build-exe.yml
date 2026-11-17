@@ -55,7 +55,10 @@ jobs:
           if (-not $base)    { Write-Error "AutoHotkey64.exe nao encontrado"; exit 1 }
           Write-Host "Ahk2Exe: $ahk2exe"
           Write-Host "Base:    $base"
-          & $ahk2exe /in roblox_autorejoin.ahk /out AutoReconnectRoblox.exe /base $base /icon AutoReconnectRoblox.ico
+          $out = & $ahk2exe /in roblox_autorejoin.ahk /out AutoReconnectRoblox.exe /base $base /icon AutoReconnectRoblox.ico 2>&1
+          Write-Host "--- saida do Ahk2Exe (exit=$LASTEXITCODE) ---"
+          $out | ForEach-Object { Write-Host $_ }
+          Write-Host "--- fim ---"
           if (!(Test-Path AutoReconnectRoblox.exe)) { Write-Error "Falhou ao gerar o .exe"; exit 1 }
           Write-Host "Gerado:" (Get-Item AutoReconnectRoblox.exe).Length "bytes"
 
