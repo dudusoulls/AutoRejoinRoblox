@@ -17,9 +17,10 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.2"
+VERSION     := "1.0.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
+EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
 
 ; ---------------- Licença (KeyAuth - keyauth.cc) ----------------
 ; Pegue esses dados em keyauth.cc > sua aplicação. Com KEYAUTH_OWNERID vazio a key fica DESLIGADA.
@@ -7644,7 +7645,8 @@ CheckUpdate(manual := false) {
         updBadge.Visible := false
         return
     }
-    pendingUpd := tmp, pendingVer := v[1]
+    pendingUpd := A_IsCompiled ? "exe" : tmp
+    pendingVer := v[1]
     updStatus.Value := TT("upd_avail", v[1])
     btnUpd.Text := TT("btn_upd_to", v[1])
     SetBtnStyle(btnUpd, "primary")
@@ -7711,8 +7713,49 @@ KaCheckUpdate(manual) {
         ApplyUpdate()
 }
 
+ApplyExeUpdate() {
+    global pendingVer, running, iniFile, EXE_NAME, GITHUB_REPO
+    url := "https://github.com/" GITHUB_REPO "/releases/latest/download/" EXE_NAME
+    tmp := A_Temp "\arr_update.exe"
+    try FileDelete(tmp)
+    try {
+        Download(url, tmp)
+    } catch as e {
+        Log(TT("log_upd_dlfail", e.Message))
+        return
+    }
+    if (!FileExist(tmp) || FileGetSize(tmp) < 200000) {   ; exe real tem MB; menos que isso = erro/página
+        Log(TT("log_upd_dlfail", "exe invalido"))
+        return
+    }
+    SaveConfig()
+    if running
+        IniWrite(1, iniFile, "cfg", "resume")
+    IniWrite(pendingVer, iniFile, "cfg", "justUpdated")
+    Log(TT("log_updated", pendingVer))
+    cur := A_ScriptFullPath
+    bat := A_Temp "\arr_swap.bat"
+    txt := "@echo off`r`n"
+         . "ping 127.0.0.1 -n 3 >nul`r`n"
+         . ":retry`r`n"
+         . "copy /y `"" tmp "`" `"" cur "`" >nul`r`n"
+         . "if errorlevel 1 (ping 127.0.0.1 -n 2 >nul & goto retry)`r`n"
+         . "start `"`" `"" cur "`"`r`n"
+         . "del `"" tmp "`" >nul`r`n"
+         . "del `"%~f0`" >nul`r`n"
+    try FileDelete(bat)
+    FileAppend(txt, bat)
+    Run(A_ComSpec ' /c "' bat '"', , "Hide")
+    Sleep 300
+    ExitApp()
+}
+
 ApplyUpdate() {
     global pendingUpd, pendingVer, pendingFileId, running, iniFile, changelogTxt, changeBox
+    if (A_IsCompiled && pendingUpd = "exe") {
+        ApplyExeUpdate()
+        return
+    }
     if (pendingUpd = "keyauth") {
         tmp := A_Temp "\autorejoin_update.ahk"
         try {
