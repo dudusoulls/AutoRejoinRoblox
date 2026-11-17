@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.1b"
+VERSION     := "2.6.1c"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -8348,7 +8348,7 @@ MethodName(m) {
 
 ; procura o RobloxPlayerBeta.exe da versão MAIS RECENTE instalada (pela data do arquivo)
 NewestRobloxExe() {
-    best := "", bestT := 0
+    best := "", bestT := 0, bestDir := ""
     roots := []
     for v in ["LOCALAPPDATA", "ProgramFiles(x86)", "ProgramFiles"] {
         base := EnvGet(v)
@@ -8361,12 +8361,14 @@ NewestRobloxExe() {
         Loop Files, root "\*", "D" {
             exe := A_LoopFilePath "\RobloxPlayerBeta.exe"
             if FileExist(exe) {
-                t := Integer(FileGetTime(exe, "M"))
+                t := Integer(FileGetTime(A_LoopFilePath, "C"))   ; data de CRIAÇÃO da pasta = quando a versão foi instalada
                 if (t > bestT)
-                    bestT := t, best := exe
+                    bestT := t, best := exe, bestDir := A_LoopFileName
             }
         }
     }
+    if (best != "")
+        Log("Versão do Roblox escolhida: " bestDir)
     return best
 }
 

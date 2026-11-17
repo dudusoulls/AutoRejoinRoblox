@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.6.1c
+- A detecção da "versão mais nova" agora usa a **data de criação da pasta** (quando a versão foi instalada), não a data do arquivo (que mudava ao abrir uma versão antiga).
+- Agora ele **mostra no Logs qual pasta de versão escolheu** ("Versão do Roblox escolhida: version-..."), pra ajudar a confirmar se pegou a certa.
+
+
 ## v2.6.1b
 - **Abre a versão mais nova do Roblox**: o app seguia o "atalho" do Windows, que às vezes aponta pra uma versão antiga instalada (daí o "fecha antes de abrir", porque o servidor recusa cliente velho). Agora ele procura o RobloxPlayerBeta.exe da versão **mais recente** instalada e abre essa primeiro — os métodos antigos ficam de reserva, caso não ache.
 
