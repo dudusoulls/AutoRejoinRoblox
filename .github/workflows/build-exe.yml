@@ -1,0 +1,54 @@
+name: build-exe
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'roblox_autorejoin.ahk'
+      - 'AutoReconnectRoblox.ico'
+      - '.github/workflows/build-exe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ler versão do script
+        id: ver
+        shell: pwsh
+        run: |
+          $m = Select-String -Path roblox_autorejoin.ahk -Pattern 'VERSION\s*:=\s*"([^"]+)"' | Select-Object -First 1
+          $v = $m.Matches[0].Groups[1].Value
+          "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Versão: $v"
+
+      - name: Baixar AutoHotkey v2 (com Ahk2Exe)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.autohotkey.com/download/ahk-v2.zip" -OutFile ahk.zip
+          Expand-Archive -Path ahk.zip -DestinationPath ahk -Force
+          Get-ChildItem -Recurse ahk | Where-Object { $_.Name -in @('Ahk2Exe.exe','AutoHotkey64.exe') } | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Compilar .exe
+        shell: pwsh
+        run: |
+          $ahk2exe = Get-ChildItem -Recurse ahk -Filter Ahk2Exe.exe | Select-Object -First 1 -ExpandProperty FullName
+          $base    = Get-ChildItem -Recurse ahk -Filter AutoHotkey64.exe | Select-Object -First 1 -ExpandProperty FullName
+          Write-Host "Ahk2Exe: $ahk2exe"
+          Write-Host "Base:    $base"
+          & $ahk2exe /in roblox_autorejoin.ahk /out AutoReconnectRoblox.exe /base $base /icon AutoReconnectRoblox.ico
+          if (!(Test-Path AutoReconnectRoblox.exe)) { Write-Error "Falhou ao gerar o .exe"; exit 1 }
+          Write-Host "Gerado:" (Get-Item AutoReconnectRoblox.exe).Length "bytes"
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: v${{ steps.ver.outputs.version }}
+          files: AutoReconnectRoblox.exe
+          fail_on_unmatched_files: true
