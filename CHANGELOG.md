@@ -1,5 +1,12 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.7.0
+- Bot do Discord: comandos !status, !iniciar, !parar, !reiniciar, !resumo e !ajuda (só obedece o seu ID)
+- Link diferente pra cada conta no modo de várias contas (duplo clique na conta)
+- Aba Histórico com gráfico dos últimos 14 dias (tempo online, quedas, reaberturas e moedas)
+- Agendamento: monitorar só em um horário, parar depois de X horas e fechar o Roblox ou desligar o PC no fim
+- Modo econômico: limite de FPS, gráficos no mínimo, som desligado e prioridade baixa pro Roblox
+
 ## v1.6.0
 - Várias contas ao mesmo tempo (aba Contas, experimental)
 - Marcar você no Discord quando cair ou der erro (só o seu ID, nunca @everyone)

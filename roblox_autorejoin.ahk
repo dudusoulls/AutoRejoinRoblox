@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.6.0"
+VERSION     := "1.7.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,9 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+schedPaused := false
+botLast := ""
+histMetric := "online", histCoinIdx := 1, histTarget := [], histT0 := 0
 multiActive := false
 ACCS := []
 multiHandles := []
@@ -149,6 +152,18 @@ savedDailyAt  := IniRead(iniFile, "cfg", "dailyAt", "23:55")
 savedMention  := IniRead(iniFile, "cfg", "mention", "0")
 savedDiscId   := IniRead(iniFile, "cfg", "discordId", "")
 savedMulti    := IniRead(iniFile, "cfg", "multi", "0")
+savedSched    := IniRead(iniFile, "cfg", "sched", "0")
+savedFrom     := IniRead(iniFile, "cfg", "schedFrom", "08:00")
+savedTo       := IniRead(iniFile, "cfg", "schedTo", "23:00")
+savedMaxH     := IniRead(iniFile, "cfg", "maxHours", "0")
+endAct        := Integer(IniRead(iniFile, "cfg", "endAct", "0"))
+savedEco      := IniRead(iniFile, "cfg", "eco", "0")
+ecoFps        := Integer(IniRead(iniFile, "cfg", "ecoFps", "30"))
+savedLowGfx   := IniRead(iniFile, "cfg", "lowGfx", "1")
+savedMute     := IniRead(iniFile, "cfg", "mute", "1")
+savedLowPrio  := IniRead(iniFile, "cfg", "lowPrio", "1")
+savedBot      := IniRead(iniFile, "cfg", "bot", "0")
+savedBotChan  := IniRead(iniFile, "cfg", "botChan", "")
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
 LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
@@ -442,7 +457,63 @@ I18N["pt"] := Map(
     "f_online_today", "Online hoje",
     "f_drops_today", "Quedas hoje",
     "f_reopens_today", "Reaberturas hoje",
-    "d_earned", "Ganhos de hoje"
+    "d_earned", "Ganhos de hoje",
+    "nav_auto", "Automação",
+    "nav_bot", "Bot",
+    "nav_hist", "Histórico",
+    "pg_auto_sub", "Horários e modo econômico",
+    "pg_bot_sub", "Controle o script pelo Discord",
+    "pg_hist_sub", "Seus últimos 14 dias",
+    "sec_sched", "AGENDAMENTO",
+    "sw_sched", "Só monitorar num horário",
+    "sw_sched_sub", "Fora do horário pausa e depois volta sozinho",
+    "lbl_from", "Das",
+    "lbl_to", "até",
+    "lbl_maxh", "Parar depois de (horas, 0 = nunca)",
+    "lbl_onend", "Ao terminar",
+    "act_none", "Não fazer nada",
+    "act_close", "Fechar o Roblox",
+    "act_shutdown", "Desligar o PC",
+    "sec_eco", "MODO ECONÔMICO",
+    "sw_eco", "Ativar modo econômico",
+    "sw_eco_sub", "Vale na próxima vez que o Roblox abrir",
+    "lbl_fps", "Limite de FPS",
+    "fps_none", "Sem limite",
+    "sw_lowgfx", "Gráficos no mínimo",
+    "sw_mute", "Som desligado",
+    "sw_lowprio", "Prioridade baixa pro Roblox",
+    "sec_bot", "BOT DO DISCORD",
+    "sw_bot", "Controlar pelo Discord",
+    "sw_bot_sub", "Só obedece o seu ID (aba Webhook)",
+    "lbl_token", "Token do bot",
+    "lbl_channel", "ID do canal",
+    "bot_off", "Desligado",
+    "bot_ok", "Conectado, ouvindo comandos",
+    "bot_err", "Erro: {1}",
+    "bot_need_id", "Coloque seu ID do Discord na aba Webhook.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Ative 'Message Content Intent', convide o bot pro servidor e copie o ID do canal (botão direito no canal).",
+    "sec_cmds", "COMANDOS",
+    "cmd_status", "mostra o status com print",
+    "cmd_start", "começa a monitorar",
+    "cmd_stop", "para de monitorar",
+    "cmd_restart", "fecha e abre o Roblox de novo",
+    "cmd_summary", "manda o resumo do dia",
+    "cmd_help", "lista os comandos",
+    "log_bot_cmd", "Comando do Discord: {1}",
+    "hist_online", "Tempo online",
+    "hist_coin", "Moeda: {1}",
+    "hist_empty", "Sem dados ainda. O histórico enche conforme os dias passam.",
+    "acc_edit", "Editar conta",
+    "acc_link", "Link desta conta (opcional)",
+    "acc_ck_keep", "Deixe vazio pra manter o cookie atual.",
+    "col_link", "Link",
+    "link_default", "padrão",
+    "acc_dbl_hint", "Clique duas vezes numa conta pra editar o link.",
+    "log_sched_pause", "Fora do horário, monitoramento pausado.",
+    "log_sched_resume", "Dentro do horário, monitoramento retomado.",
+    "log_maxh", "Tempo máximo atingido, parando.",
+    "ev_sched", "Monitoramento encerrado",
+    "d_shutdown", "O PC vai desligar em 60 segundos."
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -733,7 +804,63 @@ I18N["en"] := Map(
     "f_online_today", "Online today",
     "f_drops_today", "Drops today",
     "f_reopens_today", "Reopens today",
-    "d_earned", "Earned today"
+    "d_earned", "Earned today",
+    "nav_auto", "Automation",
+    "nav_bot", "Bot",
+    "nav_hist", "History",
+    "pg_auto_sub", "Schedule and eco mode",
+    "pg_bot_sub", "Control the script from Discord",
+    "pg_hist_sub", "Your last 14 days",
+    "sec_sched", "SCHEDULE",
+    "sw_sched", "Only monitor during set hours",
+    "sw_sched_sub", "Pauses outside the hours and resumes on its own",
+    "lbl_from", "From",
+    "lbl_to", "to",
+    "lbl_maxh", "Stop after (hours, 0 = never)",
+    "lbl_onend", "When done",
+    "act_none", "Do nothing",
+    "act_close", "Close Roblox",
+    "act_shutdown", "Shut down the PC",
+    "sec_eco", "ECO MODE",
+    "sw_eco", "Turn on eco mode",
+    "sw_eco_sub", "Applies the next time Roblox opens",
+    "lbl_fps", "FPS limit",
+    "fps_none", "No limit",
+    "sw_lowgfx", "Lowest graphics",
+    "sw_mute", "Sound off",
+    "sw_lowprio", "Low priority for Roblox",
+    "sec_bot", "DISCORD BOT",
+    "sw_bot", "Control from Discord",
+    "sw_bot_sub", "Only obeys your ID (Webhook tab)",
+    "lbl_token", "Bot token",
+    "lbl_channel", "Channel ID",
+    "bot_off", "Off",
+    "bot_ok", "Connected, listening for commands",
+    "bot_err", "Error: {1}",
+    "bot_need_id", "Enter your Discord ID in the Webhook tab.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Turn on 'Message Content Intent', invite the bot to your server and copy the channel ID (right-click the channel).",
+    "sec_cmds", "COMMANDS",
+    "cmd_status", "shows the status with a screenshot",
+    "cmd_start", "starts monitoring",
+    "cmd_stop", "stops monitoring",
+    "cmd_restart", "closes and reopens Roblox",
+    "cmd_summary", "sends today's summary",
+    "cmd_help", "lists the commands",
+    "log_bot_cmd", "Discord command: {1}",
+    "hist_online", "Time online",
+    "hist_coin", "Currency: {1}",
+    "hist_empty", "No data yet. History fills up as the days go by.",
+    "acc_edit", "Edit account",
+    "acc_link", "Link for this account (optional)",
+    "acc_ck_keep", "Leave empty to keep the current cookie.",
+    "col_link", "Link",
+    "link_default", "default",
+    "acc_dbl_hint", "Double-click an account to edit its link.",
+    "log_sched_pause", "Outside scheduled hours, monitoring paused.",
+    "log_sched_resume", "Within scheduled hours, monitoring resumed.",
+    "log_maxh", "Maximum time reached, stopping.",
+    "ev_sched", "Monitoring finished",
+    "d_shutdown", "The PC will shut down in 60 seconds."
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1024,7 +1151,63 @@ I18N["es"] := Map(
     "f_online_today", "En línea hoy",
     "f_drops_today", "Caídas hoy",
     "f_reopens_today", "Reaperturas hoy",
-    "d_earned", "Ganado hoy"
+    "d_earned", "Ganado hoy",
+    "nav_auto", "Automatización",
+    "nav_bot", "Bot",
+    "nav_hist", "Historial",
+    "pg_auto_sub", "Horarios y modo económico",
+    "pg_bot_sub", "Controla el script desde Discord",
+    "pg_hist_sub", "Tus últimos 14 días",
+    "sec_sched", "HORARIO",
+    "sw_sched", "Monitorear solo en un horario",
+    "sw_sched_sub", "Fuera del horario se pausa y luego vuelve solo",
+    "lbl_from", "Desde",
+    "lbl_to", "hasta",
+    "lbl_maxh", "Detener tras (horas, 0 = nunca)",
+    "lbl_onend", "Al terminar",
+    "act_none", "No hacer nada",
+    "act_close", "Cerrar Roblox",
+    "act_shutdown", "Apagar la PC",
+    "sec_eco", "MODO ECONÓMICO",
+    "sw_eco", "Activar modo económico",
+    "sw_eco_sub", "Se aplica la próxima vez que abra Roblox",
+    "lbl_fps", "Límite de FPS",
+    "fps_none", "Sin límite",
+    "sw_lowgfx", "Gráficos al mínimo",
+    "sw_mute", "Sonido apagado",
+    "sw_lowprio", "Prioridad baja para Roblox",
+    "sec_bot", "BOT DE DISCORD",
+    "sw_bot", "Controlar desde Discord",
+    "sw_bot_sub", "Solo obedece a tu ID (pestaña Webhook)",
+    "lbl_token", "Token del bot",
+    "lbl_channel", "ID del canal",
+    "bot_off", "Apagado",
+    "bot_ok", "Conectado, escuchando comandos",
+    "bot_err", "Error: {1}",
+    "bot_need_id", "Pon tu ID de Discord en la pestaña Webhook.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Activa 'Message Content Intent', invita el bot al servidor y copia el ID del canal (clic derecho en el canal).",
+    "sec_cmds", "COMANDOS",
+    "cmd_status", "muestra el estado con captura",
+    "cmd_start", "empieza a monitorear",
+    "cmd_stop", "deja de monitorear",
+    "cmd_restart", "cierra y vuelve a abrir Roblox",
+    "cmd_summary", "envía el resumen del día",
+    "cmd_help", "lista los comandos",
+    "log_bot_cmd", "Comando de Discord: {1}",
+    "hist_online", "Tiempo en línea",
+    "hist_coin", "Moneda: {1}",
+    "hist_empty", "Sin datos aún. El historial se llena con los días.",
+    "acc_edit", "Editar cuenta",
+    "acc_link", "Enlace de esta cuenta (opcional)",
+    "acc_ck_keep", "Déjalo vacío para mantener la cookie actual.",
+    "col_link", "Enlace",
+    "link_default", "por defecto",
+    "acc_dbl_hint", "Haz doble clic en una cuenta para editar su enlace.",
+    "log_sched_pause", "Fuera del horario, monitoreo en pausa.",
+    "log_sched_resume", "Dentro del horario, monitoreo reanudado.",
+    "log_maxh", "Tiempo máximo alcanzado, deteniendo.",
+    "ev_sched", "Monitoreo terminado",
+    "d_shutdown", "La PC se apagará en 60 segundos."
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1315,7 +1498,63 @@ I18N["fr"] := Map(
     "f_online_today", "En ligne aujourd'hui",
     "f_drops_today", "Coupures aujourd'hui",
     "f_reopens_today", "Réouvertures aujourd'hui",
-    "d_earned", "Gagné aujourd'hui"
+    "d_earned", "Gagné aujourd'hui",
+    "nav_auto", "Automatisation",
+    "nav_bot", "Bot",
+    "nav_hist", "Historique",
+    "pg_auto_sub", "Horaires et mode éco",
+    "pg_bot_sub", "Contrôlez le script depuis Discord",
+    "pg_hist_sub", "Vos 14 derniers jours",
+    "sec_sched", "PLANIFICATION",
+    "sw_sched", "Surveiller seulement à certaines heures",
+    "sw_sched_sub", "Se met en pause hors horaires puis reprend seul",
+    "lbl_from", "De",
+    "lbl_to", "à",
+    "lbl_maxh", "Arrêter après (heures, 0 = jamais)",
+    "lbl_onend", "À la fin",
+    "act_none", "Ne rien faire",
+    "act_close", "Fermer Roblox",
+    "act_shutdown", "Éteindre le PC",
+    "sec_eco", "MODE ÉCO",
+    "sw_eco", "Activer le mode éco",
+    "sw_eco_sub", "S'applique au prochain lancement de Roblox",
+    "lbl_fps", "Limite de FPS",
+    "fps_none", "Sans limite",
+    "sw_lowgfx", "Graphismes au minimum",
+    "sw_mute", "Son coupé",
+    "sw_lowprio", "Priorité basse pour Roblox",
+    "sec_bot", "BOT DISCORD",
+    "sw_bot", "Contrôler depuis Discord",
+    "sw_bot_sub", "N'obéit qu'à votre ID (onglet Webhook)",
+    "lbl_token", "Jeton du bot",
+    "lbl_channel", "ID du salon",
+    "bot_off", "Désactivé",
+    "bot_ok", "Connecté, en écoute des commandes",
+    "bot_err", "Erreur : {1}",
+    "bot_need_id", "Saisissez votre ID Discord dans l'onglet Webhook.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Activez 'Message Content Intent', invitez le bot sur le serveur et copiez l'ID du salon (clic droit sur le salon).",
+    "sec_cmds", "COMMANDES",
+    "cmd_status", "affiche le statut avec capture",
+    "cmd_start", "démarre la surveillance",
+    "cmd_stop", "arrête la surveillance",
+    "cmd_restart", "ferme et rouvre Roblox",
+    "cmd_summary", "envoie le résumé du jour",
+    "cmd_help", "liste les commandes",
+    "log_bot_cmd", "Commande Discord : {1}",
+    "hist_online", "Temps en ligne",
+    "hist_coin", "Monnaie : {1}",
+    "hist_empty", "Pas encore de données. L'historique se remplit au fil des jours.",
+    "acc_edit", "Modifier le compte",
+    "acc_link", "Lien de ce compte (facultatif)",
+    "acc_ck_keep", "Laissez vide pour garder le cookie actuel.",
+    "col_link", "Lien",
+    "link_default", "par défaut",
+    "acc_dbl_hint", "Double-cliquez sur un compte pour modifier son lien.",
+    "log_sched_pause", "Hors horaires, surveillance en pause.",
+    "log_sched_resume", "Dans les horaires, surveillance reprise.",
+    "log_maxh", "Durée maximale atteinte, arrêt.",
+    "ev_sched", "Surveillance terminée",
+    "d_shutdown", "Le PC va s'éteindre dans 60 secondes."
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -1606,7 +1845,63 @@ I18N["de"] := Map(
     "f_online_today", "Heute online",
     "f_drops_today", "Abbrüche heute",
     "f_reopens_today", "Neustarts heute",
-    "d_earned", "Heute verdient"
+    "d_earned", "Heute verdient",
+    "nav_auto", "Automatisierung",
+    "nav_bot", "Bot",
+    "nav_hist", "Verlauf",
+    "pg_auto_sub", "Zeitplan und Sparmodus",
+    "pg_bot_sub", "Steuere das Skript über Discord",
+    "pg_hist_sub", "Deine letzten 14 Tage",
+    "sec_sched", "ZEITPLAN",
+    "sw_sched", "Nur zu bestimmten Zeiten überwachen",
+    "sw_sched_sub", "Pausiert außerhalb der Zeit und läuft dann von selbst weiter",
+    "lbl_from", "Von",
+    "lbl_to", "bis",
+    "lbl_maxh", "Stoppen nach (Stunden, 0 = nie)",
+    "lbl_onend", "Danach",
+    "act_none", "Nichts tun",
+    "act_close", "Roblox schließen",
+    "act_shutdown", "PC herunterfahren",
+    "sec_eco", "SPARMODUS",
+    "sw_eco", "Sparmodus aktivieren",
+    "sw_eco_sub", "Gilt beim nächsten Start von Roblox",
+    "lbl_fps", "FPS-Limit",
+    "fps_none", "Kein Limit",
+    "sw_lowgfx", "Niedrigste Grafik",
+    "sw_mute", "Ton aus",
+    "sw_lowprio", "Niedrige Priorität für Roblox",
+    "sec_bot", "DISCORD-BOT",
+    "sw_bot", "Über Discord steuern",
+    "sw_bot_sub", "Gehorcht nur deiner ID (Tab Webhook)",
+    "lbl_token", "Bot-Token",
+    "lbl_channel", "Kanal-ID",
+    "bot_off", "Aus",
+    "bot_ok", "Verbunden, wartet auf Befehle",
+    "bot_err", "Fehler: {1}",
+    "bot_need_id", "Gib deine Discord-ID im Tab Webhook ein.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. 'Message Content Intent' aktivieren, Bot auf den Server einladen und Kanal-ID kopieren (Rechtsklick auf den Kanal).",
+    "sec_cmds", "BEFEHLE",
+    "cmd_status", "zeigt den Status mit Screenshot",
+    "cmd_start", "startet die Überwachung",
+    "cmd_stop", "stoppt die Überwachung",
+    "cmd_restart", "schließt und öffnet Roblox neu",
+    "cmd_summary", "sendet die Tageszusammenfassung",
+    "cmd_help", "listet die Befehle",
+    "log_bot_cmd", "Discord-Befehl: {1}",
+    "hist_online", "Online-Zeit",
+    "hist_coin", "Währung: {1}",
+    "hist_empty", "Noch keine Daten. Der Verlauf füllt sich mit der Zeit.",
+    "acc_edit", "Konto bearbeiten",
+    "acc_link", "Link für dieses Konto (optional)",
+    "acc_ck_keep", "Leer lassen, um das aktuelle Cookie zu behalten.",
+    "col_link", "Link",
+    "link_default", "Standard",
+    "acc_dbl_hint", "Doppelklicke auf ein Konto, um den Link zu ändern.",
+    "log_sched_pause", "Außerhalb der Zeit, Überwachung pausiert.",
+    "log_sched_resume", "Innerhalb der Zeit, Überwachung fortgesetzt.",
+    "log_maxh", "Maximale Zeit erreicht, stoppe.",
+    "ev_sched", "Überwachung beendet",
+    "d_shutdown", "Der PC fährt in 60 Sekunden herunter."
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -1897,7 +2192,63 @@ I18N["ru"] := Map(
     "f_online_today", "В сети сегодня",
     "f_drops_today", "Вылетов сегодня",
     "f_reopens_today", "Перезапусков сегодня",
-    "d_earned", "Заработано сегодня"
+    "d_earned", "Заработано сегодня",
+    "nav_auto", "Автоматизация",
+    "nav_bot", "Бот",
+    "nav_hist", "История",
+    "pg_auto_sub", "Расписание и эко-режим",
+    "pg_bot_sub", "Управляйте скриптом из Discord",
+    "pg_hist_sub", "Последние 14 дней",
+    "sec_sched", "РАСПИСАНИЕ",
+    "sw_sched", "Мониторинг только в заданные часы",
+    "sw_sched_sub", "Вне расписания ставится на паузу и потом продолжает сам",
+    "lbl_from", "С",
+    "lbl_to", "до",
+    "lbl_maxh", "Остановить через (часов, 0 = никогда)",
+    "lbl_onend", "По окончании",
+    "act_none", "Ничего не делать",
+    "act_close", "Закрыть Roblox",
+    "act_shutdown", "Выключить ПК",
+    "sec_eco", "ЭКО-РЕЖИМ",
+    "sw_eco", "Включить эко-режим",
+    "sw_eco_sub", "Применяется при следующем запуске Roblox",
+    "lbl_fps", "Лимит FPS",
+    "fps_none", "Без лимита",
+    "sw_lowgfx", "Минимальная графика",
+    "sw_mute", "Звук выключен",
+    "sw_lowprio", "Низкий приоритет для Roblox",
+    "sec_bot", "БОТ DISCORD",
+    "sw_bot", "Управлять из Discord",
+    "sw_bot_sub", "Слушается только вашего ID (вкладка «Вебхук»)",
+    "lbl_token", "Токен бота",
+    "lbl_channel", "ID канала",
+    "bot_off", "Выключен",
+    "bot_ok", "Подключён, жду команды",
+    "bot_err", "Ошибка: {1}",
+    "bot_need_id", "Укажите свой ID Discord во вкладке «Вебхук».",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Включите 'Message Content Intent', пригласите бота на сервер и скопируйте ID канала (ПКМ по каналу).",
+    "sec_cmds", "КОМАНДЫ",
+    "cmd_status", "статус со скриншотом",
+    "cmd_start", "запускает мониторинг",
+    "cmd_stop", "останавливает мониторинг",
+    "cmd_restart", "закрывает и снова открывает Roblox",
+    "cmd_summary", "отправляет сводку за день",
+    "cmd_help", "список команд",
+    "log_bot_cmd", "Команда из Discord: {1}",
+    "hist_online", "Время в сети",
+    "hist_coin", "Валюта: {1}",
+    "hist_empty", "Данных пока нет. История заполнится со временем.",
+    "acc_edit", "Изменить аккаунт",
+    "acc_link", "Ссылка для этого аккаунта (необязательно)",
+    "acc_ck_keep", "Оставьте пустым, чтобы сохранить текущий cookie.",
+    "col_link", "Ссылка",
+    "link_default", "по умолчанию",
+    "acc_dbl_hint", "Дважды щёлкните аккаунт, чтобы изменить ссылку.",
+    "log_sched_pause", "Вне расписания, мониторинг на паузе.",
+    "log_sched_resume", "По расписанию, мониторинг возобновлён.",
+    "log_maxh", "Достигнуто максимальное время, остановка.",
+    "ev_sched", "Мониторинг завершён",
+    "d_shutdown", "ПК выключится через 60 секунд."
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -2188,7 +2539,63 @@ I18N["tr"] := Map(
     "f_online_today", "Bugün çevrimiçi",
     "f_drops_today", "Bugünkü düşmeler",
     "f_reopens_today", "Bugünkü yeniden açmalar",
-    "d_earned", "Bugün kazanılan"
+    "d_earned", "Bugün kazanılan",
+    "nav_auto", "Otomasyon",
+    "nav_bot", "Bot",
+    "nav_hist", "Geçmiş",
+    "pg_auto_sub", "Zamanlama ve tasarruf modu",
+    "pg_bot_sub", "Betiği Discord'dan kontrol et",
+    "pg_hist_sub", "Son 14 günün",
+    "sec_sched", "ZAMANLAMA",
+    "sw_sched", "Sadece belirli saatlerde izle",
+    "sw_sched_sub", "Saat dışında durur, sonra kendiliğinden devam eder",
+    "lbl_from", "Başlangıç",
+    "lbl_to", "bitiş",
+    "lbl_maxh", "Şu kadar sonra dur (saat, 0 = asla)",
+    "lbl_onend", "Bitince",
+    "act_none", "Hiçbir şey yapma",
+    "act_close", "Roblox'u kapat",
+    "act_shutdown", "PC'yi kapat",
+    "sec_eco", "TASARRUF MODU",
+    "sw_eco", "Tasarruf modunu aç",
+    "sw_eco_sub", "Roblox bir sonraki açılışta geçerli olur",
+    "lbl_fps", "FPS sınırı",
+    "fps_none", "Sınırsız",
+    "sw_lowgfx", "En düşük grafik",
+    "sw_mute", "Ses kapalı",
+    "sw_lowprio", "Roblox için düşük öncelik",
+    "sec_bot", "DISCORD BOTU",
+    "sw_bot", "Discord'dan kontrol et",
+    "sw_bot_sub", "Sadece ID'ne uyar (Webhook sekmesi)",
+    "lbl_token", "Bot token'ı",
+    "lbl_channel", "Kanal ID'si",
+    "bot_off", "Kapalı",
+    "bot_ok", "Bağlandı, komutlar dinleniyor",
+    "bot_err", "Hata: {1}",
+    "bot_need_id", "Discord ID'ni Webhook sekmesine yaz.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. 'Message Content Intent'i aç, botu sunucuna davet et ve kanal ID'sini kopyala (kanala sağ tıkla).",
+    "sec_cmds", "KOMUTLAR",
+    "cmd_status", "ekran görüntüsüyle durumu gösterir",
+    "cmd_start", "izlemeyi başlatır",
+    "cmd_stop", "izlemeyi durdurur",
+    "cmd_restart", "Roblox'u kapatıp yeniden açar",
+    "cmd_summary", "günün özetini gönderir",
+    "cmd_help", "komutları listeler",
+    "log_bot_cmd", "Discord komutu: {1}",
+    "hist_online", "Çevrimiçi süre",
+    "hist_coin", "Para: {1}",
+    "hist_empty", "Henüz veri yok. Geçmiş günler geçtikçe dolar.",
+    "acc_edit", "Hesabı düzenle",
+    "acc_link", "Bu hesabın linki (isteğe bağlı)",
+    "acc_ck_keep", "Mevcut çerezi korumak için boş bırak.",
+    "col_link", "Link",
+    "link_default", "varsayılan",
+    "acc_dbl_hint", "Linkini düzenlemek için hesaba çift tıkla.",
+    "log_sched_pause", "Saat dışında, izleme duraklatıldı.",
+    "log_sched_resume", "Saat içinde, izleme devam ediyor.",
+    "log_maxh", "Azami süreye ulaşıldı, duruluyor.",
+    "ev_sched", "İzleme bitti",
+    "d_shutdown", "PC 60 saniye içinde kapanacak."
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -2479,7 +2886,63 @@ I18N["id"] := Map(
     "f_online_today", "Online hari ini",
     "f_drops_today", "Putus hari ini",
     "f_reopens_today", "Buka ulang hari ini",
-    "d_earned", "Didapat hari ini"
+    "d_earned", "Didapat hari ini",
+    "nav_auto", "Otomasi",
+    "nav_bot", "Bot",
+    "nav_hist", "Riwayat",
+    "pg_auto_sub", "Jadwal dan mode hemat",
+    "pg_bot_sub", "Kendalikan skrip dari Discord",
+    "pg_hist_sub", "14 hari terakhirmu",
+    "sec_sched", "JADWAL",
+    "sw_sched", "Pantau hanya di jam tertentu",
+    "sw_sched_sub", "Di luar jam berhenti, lalu lanjut sendiri",
+    "lbl_from", "Dari",
+    "lbl_to", "sampai",
+    "lbl_maxh", "Berhenti setelah (jam, 0 = tidak pernah)",
+    "lbl_onend", "Setelah selesai",
+    "act_none", "Tidak melakukan apa-apa",
+    "act_close", "Tutup Roblox",
+    "act_shutdown", "Matikan PC",
+    "sec_eco", "MODE HEMAT",
+    "sw_eco", "Aktifkan mode hemat",
+    "sw_eco_sub", "Berlaku saat Roblox dibuka berikutnya",
+    "lbl_fps", "Batas FPS",
+    "fps_none", "Tanpa batas",
+    "sw_lowgfx", "Grafik paling rendah",
+    "sw_mute", "Suara mati",
+    "sw_lowprio", "Prioritas rendah untuk Roblox",
+    "sec_bot", "BOT DISCORD",
+    "sw_bot", "Kendalikan dari Discord",
+    "sw_bot_sub", "Hanya menuruti ID kamu (tab Webhook)",
+    "lbl_token", "Token bot",
+    "lbl_channel", "ID channel",
+    "bot_off", "Mati",
+    "bot_ok", "Terhubung, menunggu perintah",
+    "bot_err", "Error: {1}",
+    "bot_need_id", "Masukkan ID Discord kamu di tab Webhook.",
+    "bot_setup", "discord.com/developers > New Application > Bot > Reset Token. Aktifkan 'Message Content Intent', undang bot ke server, lalu salin ID channel (klik kanan channel).",
+    "sec_cmds", "PERINTAH",
+    "cmd_status", "menampilkan status dengan tangkapan layar",
+    "cmd_start", "mulai memantau",
+    "cmd_stop", "berhenti memantau",
+    "cmd_restart", "menutup lalu membuka ulang Roblox",
+    "cmd_summary", "mengirim ringkasan hari ini",
+    "cmd_help", "menampilkan daftar perintah",
+    "log_bot_cmd", "Perintah Discord: {1}",
+    "hist_online", "Waktu online",
+    "hist_coin", "Mata uang: {1}",
+    "hist_empty", "Belum ada data. Riwayat terisi seiring hari berlalu.",
+    "acc_edit", "Edit akun",
+    "acc_link", "Link akun ini (opsional)",
+    "acc_ck_keep", "Biarkan kosong untuk memakai cookie yang sekarang.",
+    "col_link", "Link",
+    "link_default", "bawaan",
+    "acc_dbl_hint", "Klik dua kali akun untuk mengubah link-nya.",
+    "log_sched_pause", "Di luar jam, pemantauan dijeda.",
+    "log_sched_resume", "Di dalam jam, pemantauan dilanjutkan.",
+    "log_maxh", "Waktu maksimal tercapai, berhenti.",
+    "ev_sched", "Pemantauan selesai",
+    "d_shutdown", "PC akan mati dalam 60 detik."
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -2488,7 +2951,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -2504,7 +2967,7 @@ winH := Integer(IniRead(iniFile, "cfg", "winH", "630"))
 ; ==========================================================
 ;  GUI principal
 ; ==========================================================
-W := 760, H := 540, SIDE := 184
+W := 760, H := 600, SIDE := 184
 CX := SIDE + 28          ; x do conteúdo
 CW := W - CX - 28        ; largura do conteúdo
 
@@ -2574,16 +3037,19 @@ g.Add("Text", Format("x68 y24 w116 c{} Background{}", C_TEXT, C_SIDE), "Auto Rec
 FontUI(g, "s7 w700")
 g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
-AddNav("Início",  Chr(0xE80F), 92)
-AddNav("Jogo",    Chr(0xE7FC), 132)
-AddNav("Janela",  Chr(0xE7F4), 172)
-AddNav("Webhook", Chr(0xE71B), 212)
-AddNav("Moedas",  Chr(0xE8C7), 252)
-AddNav("Contas",  Chr(0xE716), 292)
-AddNav("Opções",  Chr(0xE713), 332)
-AddNav("Logs",    Chr(0xE81C), 372)
-AddNav("Sobre",   Chr(0xE946), 412)
-navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
+AddNav("Início",    Chr(0xE80F), 92)
+AddNav("Jogo",      Chr(0xE7FC), 128)
+AddNav("Contas",    Chr(0xE716), 164)
+AddNav("Janela",    Chr(0xE7F4), 200)
+AddNav("Automação", Chr(0xE916), 236)
+AddNav("Webhook",   Chr(0xE71B), 272)
+AddNav("Bot",       Chr(0xE8F2), 308)
+AddNav("Moedas",    Chr(0xE8C7), 344)
+AddNav("Histórico", Chr(0xE9D2), 380)
+AddNav("Opções",    Chr(0xE713), 416)
+AddNav("Logs",      Chr(0xE81C), 452)
+AddNav("Sobre",     Chr(0xE946), 488)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 100, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
@@ -2730,13 +3196,84 @@ y := 190
 Card(CX, y, CW, 290)
 FontUI(g, "s9")
 lvAcc := P(g.Add("ListView", Format("x{} y{} w{} h{} -E0x200 -Multi +LV0x10000 Background{} c{}"
-    , CX + 16, y + 14, CW - 32, 210, C_CARD, C_TEXT), [TT("col_account"), TT("col_status"), TT("f_reopens")]))
-lvAcc.ModifyCol(1, 190), lvAcc.ModifyCol(2, 170), lvAcc.ModifyCol(3, 100)
+    , CX + 16, y + 14, CW - 32, 190, C_CARD, C_TEXT), [TT("col_account"), TT("col_status"), TT("f_reopens"), TT("col_link")]))
+lvAcc.ModifyCol(1, 140), lvAcc.ModifyCol(2, 150), lvAcc.ModifyCol(3, 80), lvAcc.ModifyCol(4, 110)
+lvAcc.OnEvent("DoubleClick", (lv, row) => (row ? ShowAddAccount(row) : 0))
+Lbl(CX + 16, y + 210, CW - 32, TT("acc_dbl_hint"), "s8", C_DIM)
 DllCall("uxtheme\SetWindowTheme", "Ptr", lvAcc.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 try DllCall("uxtheme\SetWindowTheme", "Ptr", SendMessage(0x101F, 0, 0, lvAcc), "Str", "DarkMode_ItemsView", "Ptr", 0)
 Btn(CX + 16, y + 240, 160, 36, TT("btn_add_acc"), (*) => ShowAddAccount(), "primary")
 Btn(CX + 186, y + 240, 110, 36, TT("btn_rem_acc"), (*) => RemoveAccount())
 Btn(CX + CW - 186, y + 240, 170, 36, TT("btn_tile"), (*) => TileWindows())
+
+; ---------------- Página: Automação ----------------
+BeginPage("Automação", TT("nav_auto"), TT("pg_auto_sub"))
+y := 92
+Card(CX, y, CW, 186)
+Lbl(CX + 20, y + 16, 300, TT("sec_sched"), "s7 w700", C_DIM)
+chkSched := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_sched"), savedSched, TT("sw_sched_sub"))
+Lbl(CX + 20, y + 96, 40, TT("lbl_from"), "s9", C_MUTED)
+edFrom := Input(CX + 70, y + 89, 80, savedFrom)
+Lbl(CX + 164, y + 96, 40, TT("lbl_to"), "s9", C_MUTED)
+edTo := Input(CX + 210, y + 89, 80, savedTo)
+btnAct := Btn(CX + CW - 220, y + 89, 200, 32, TT("lbl_onend") ": " ActName(endAct), (*) => 0)
+btnAct.OnEvent("Click", CycleAction.Bind(btnAct))
+Lbl(CX + 20, y + 144, 280, TT("lbl_maxh"), "s9", C_MUTED)
+edMaxH := Input(CX + 300, y + 137, 70, savedMaxH, "Number")
+
+y := 290
+Card(CX, y, CW, 232)
+Lbl(CX + 20, y + 16, 300, TT("sec_eco"), "s7 w700", C_DIM)
+chkEco := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_eco"), savedEco, TT("sw_eco_sub"))
+btnFps := Btn(CX + 20, y + 92, 200, 32, FpsName(ecoFps), (*) => 0)
+btnFps.OnEvent("Click", CycleFps.Bind(btnFps))
+chkLowGfx := ToggleSwitch(CX + 20, y + 136, CW - 40, TT("sw_lowgfx"), savedLowGfx)
+chkMute := ToggleSwitch(CX + 20, y + 166, CW - 40, TT("sw_mute"), savedMute)
+chkLowPrio := ToggleSwitch(CX + 20, y + 196, CW - 40, TT("sw_lowprio"), savedLowPrio)
+
+; ---------------- Página: Bot do Discord ----------------
+BeginPage("Bot", TT("nav_bot"), TT("pg_bot_sub"))
+y := 92
+Card(CX, y, CW, 252)
+Lbl(CX + 20, y + 16, 300, TT("sec_bot"), "s7 w700", C_DIM)
+chkBot := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_bot"), savedBot, TT("sw_bot_sub"))
+Lbl(CX + 20, y + 96, 120, TT("lbl_token"), "s9", C_MUTED)
+edToken := Input(CX + 140, y + 89, CW - 160, DpapiUnprotect(IniRead(iniFile, "cfg", "botToken", "")), "Password")
+Lbl(CX + 20, y + 140, 120, TT("lbl_channel"), "s9", C_MUTED)
+edChan := Input(CX + 140, y + 133, 220, savedBotChan, "Number")
+botStatus := Lbl(CX + 20, y + 180, CW - 40, TT("bot_off"), "s9 w600", C_TEXT)
+Lbl(CX + 20, y + 202, CW - 40, TT("bot_setup"), "s8", C_MUTED)
+
+y := 356
+Card(CX, y, CW, 166)
+Lbl(CX + 20, y + 16, 300, TT("sec_cmds"), "s7 w700", C_DIM)
+FontMono(g, "s9")
+P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 40, CW - 40, 116, C_TEXT, C_CARD)
+    , "!status     " TT("cmd_status") "`n!iniciar    " TT("cmd_start") "`n!parar      " TT("cmd_stop")
+    . "`n!reiniciar  " TT("cmd_restart") "`n!resumo     " TT("cmd_summary") "`n!ajuda      " TT("cmd_help")))
+
+; ---------------- Página: Histórico ----------------
+BeginPage("Histórico", TT("nav_hist"), TT("pg_hist_sub"))
+y := 92
+Card(CX, y, CW, 430)
+histBtns := Map()
+histBtns["online"]  := Btn(CX + 20, y + 16, 120, 32, TT("hist_online"), SetHistMetric.Bind("online"), "primary")
+histBtns["drops"]   := Btn(CX + 148, y + 16, 100, 32, TT("f_drops"), SetHistMetric.Bind("drops"))
+histBtns["reopens"] := Btn(CX + 256, y + 16, 110, 32, TT("f_reopens"), SetHistMetric.Bind("reopens"))
+histBtns["coin"]    := Btn(CX + 374, y + 16, CW - 394, 32, TT("hist_coin", "…"), SetHistMetric.Bind("coin"))
+histBase := y + 390
+histBars := [], histVals := [], histDays := []
+slotW := (CW - 40) // 14
+Loop 14 {
+    bx := CX + 20 + (A_Index - 1) * slotW
+    histBars.Push(P(g.Add("Text", Format("x{} y{} w{} h2 Background{}", bx + (slotW - 20) // 2, histBase - 2, 20, A_Index = 14 ? C_ACC : "6B6B75"))))
+    FontUI(g, "s7 w600")
+    histVals.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase - 20, slotW, C_MUTED, C_CARD), "")))
+    FontUI(g, "s7")
+    histDays.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase + 8, slotW, C_DIM, C_CARD), "")))
+}
+histEmpty := Lbl(CX + 20, y + 200, CW - 40, TT("hist_empty"), "s9", C_MUTED)
+histEmpty.Opt("+Center")
 
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
@@ -2901,6 +3438,8 @@ StartApp() {
     else if (chkAutoMon.Value && !running)
         SetTimer(() => (running ? 0 : Toggle()), -2500)
     SetTimer(DailyTick, 30000)
+    SetTimer(ScheduleTick, 30000)
+    SetTimer(BotTick, 6000)
     upd := IniRead(iniFile, "cfg", "justUpdated", "")
     if (upd != "") {
         IniDelete(iniFile, "cfg", "justUpdated")
@@ -3007,9 +3546,9 @@ SetBtnStyle(b, style) {
 AddNav(name, icon, y) {
     global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK
     FontIcon(g, "s11")
-    ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
+    ic := g.Add("Text", Format("x14 y{} w42 h34 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
+    lb := g.Add("Text", Format("x56 y{} w{} h34 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, y: y}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
@@ -3034,8 +3573,10 @@ ShowPage(name) {
             c.SetFont("c" (act ? C_TEXT : C_MUTED))
         AnimColor(o, hoverCur = o ? o.hov : o.bg, 180)
         if act
-            SlideNav(o.y + 10)
+            SlideNav(o.y + 8)
     }
+    if (name = "Histórico")
+        SetTimer(HistDraw, -50)
     pageTitle.Value := pageInfo[name][1]
     pageSub.Value := pageInfo[name][2]
 }
@@ -3305,7 +3846,10 @@ KeyClose() {
 DayRoll() {
     global iniFile, dayOnline
     today := FormatTime(, "yyyyMMdd")
-    if (IniRead(iniFile, "day", "date", "") != today) {
+    old := IniRead(iniFile, "day", "date", "")
+    if (old != today) {
+        if (old != "")
+            HistSave(old)
         IniDelete(iniFile, "day")
         IniWrite(today, iniFile, "day", "date")
         dayOnline := 0
@@ -3323,9 +3867,10 @@ DayAdd(key) {
 DayCoin(name, n) {
     global iniFile
     DayRoll()
-    k := "start_" RegExReplace(name, "\W", "_")
-    if (IniRead(iniFile, "day", k, "") = "")
-        IniWrite(n, iniFile, "day", k)
+    k := RegExReplace(name, "\W", "_")
+    if (IniRead(iniFile, "day", "start_" k, "") = "")
+        IniWrite(n, iniFile, "day", "start_" k)
+    IniWrite(n, iniFile, "day", "last_" k)
 }
 
 DailyTick() {
@@ -3449,9 +3994,9 @@ RbxWhoAmI(ck) {
 }
 
 ; link da aba Jogo -> endereço do PlaceLauncher (resolve link de compartilhamento com o cookie)
-PlaceLauncherUrl(ck, bt) {
+PlaceLauncherUrl(ck, bt, link := "") {
     global edLink, shareCache
-    link := Trim(edLink.Value), place := "", code := ""
+    link := Trim(link) != "" ? Trim(link) : Trim(edLink.Value), place := "", code := ""
     if RegExMatch(link, "^\d+$")
         place := link
     else if RegExMatch(link, "i)(?:placeId=|games/)(\d+)", &m) {
@@ -3475,10 +4020,11 @@ PlaceLauncherUrl(ck, bt) {
 }
 
 LaunchAccount(acc) {
+    ApplyEco()
     ck := DpapiUnprotect(acc.ck)
     bt := Random(100000000000, 999999999999)
     try {
-        url := PlaceLauncherUrl(ck, bt)
+        url := PlaceLauncherUrl(ck, bt, acc.link)
         ticket := RbxCall("POST", "https://auth.roblox.com/v1/authentication-ticket", ck).GetResponseHeader("rbx-authentication-ticket")
         if (ticket = "")
             throw Error("ticket")
@@ -3560,6 +4106,7 @@ MultiCheck() {
             hw := WinExist("ahk_pid " a.pid " ahk_exe RobloxPlayerBeta.exe")
             if hw
                 a.status := TT("acc_st_on")
+            LowPrio(a.pid)
             if (hw && Mod(multiN, 3) = 0 && WinGetMinMax(hw) != -1) {
                 if (FindDisconnectDialog(hw) != "") {
                     if (++a.dlg >= 2) {
@@ -3611,7 +4158,7 @@ LoadAccounts() {
     ACCS := []
     Loop Integer(IniRead(iniFile, "accounts", "n", "0"))
         ACCS.Push({name: IniRead(iniFile, "accounts", "name" A_Index, "?"), uid: IniRead(iniFile, "accounts", "uid" A_Index, "")
-            , ck: IniRead(iniFile, "accounts", "ck" A_Index, ""), pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
+            , ck: IniRead(iniFile, "accounts", "ck" A_Index, ""), link: IniRead(iniFile, "accounts", "link" A_Index, ""), pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
     LvRefresh()
 }
 
@@ -3623,6 +4170,7 @@ SaveAccounts() {
         IniWrite(a.name, iniFile, "accounts", "name" i)
         IniWrite(a.uid, iniFile, "accounts", "uid" i)
         IniWrite(a.ck, iniFile, "accounts", "ck" i)
+        IniWrite(a.link, iniFile, "accounts", "link" i)
     }
 }
 
@@ -3631,7 +4179,7 @@ LvRefresh() {
     lvAcc.Opt("-Redraw")
     lvAcc.Delete()
     for a in ACCS
-        lvAcc.Add(, a.name, a.status, a.launches)
+        lvAcc.Add(, a.name, a.status, a.launches, a.link = "" ? TT("link_default") : a.link)
     lvAcc.Opt("+Redraw")
 }
 
@@ -3645,14 +4193,15 @@ RemoveAccount() {
     LvRefresh()
 }
 
-ShowAddAccount() {
-    global g, ga, gaCk, gaMsg, C_CARD, C_TEXT, C_MUTED, C_INPUT, C_DIM
+ShowAddAccount(row := 0) {
+    global g, ga, gaCk, gaLink, gaMsg, gaRow, ACCS, C_CARD, C_TEXT, C_MUTED, C_INPUT, C_DIM
     try ga.Destroy()
+    gaRow := row
     ga := Gui("-Caption +ToolWindow +Owner" g.Hwnd)
     ga.BackColor := C_CARD
     ga.MarginX := 0, ga.MarginY := 0
     FontUI(ga, "s14 w700")
-    ga.Add("Text", Format("x24 y20 w360 c{} Background{}", C_TEXT, C_CARD), TT("btn_add_acc"))
+    ga.Add("Text", Format("x24 y20 w360 c{} Background{}", C_TEXT, C_CARD), row ? TT("acc_edit") ": " ACCS[row].name : TT("btn_add_acc"))
     FontUI(ga, "s7 w700")
     ga.Add("Text", Format("x24 y62 w360 c{} Background{}", C_DIM, C_CARD), TT("acc_cookie"))
     box := ga.Add("Text", Format("x24 y80 w372 h34 Background{}", C_INPUT))
@@ -3660,12 +4209,17 @@ ShowAddAccount() {
     FontMono(ga, "s9")
     gaCk := ga.Add("Edit", Format("x34 y88 w352 h20 -E0x200 Password c{} Background{}", C_TEXT, C_INPUT))
     FontUI(ga, "s8")
-    ga.Add("Text", Format("x24 y124 w372 c{} Background{}", C_MUTED, C_CARD), TT("acc_cookie_hint"))
+    ga.Add("Text", Format("x24 y122 w372 c{} Background{}", C_MUTED, C_CARD), row ? TT("acc_ck_keep") : TT("acc_cookie_hint"))
+    FontUI(ga, "s7 w700")
+    ga.Add("Text", Format("x24 y184 w360 c{} Background{}", C_DIM, C_CARD), TT("acc_link"))
+    box2 := ga.Add("Text", Format("x24 y202 w372 h34 Background{}", C_INPUT))
+    RoundCtrl(box2, 10)
     FontUI(ga, "s9")
-    gaMsg := ga.Add("Text", Format("x24 y184 w372 h18 c{} Background{}", C_MUTED, C_CARD), "")
-    RoundCtrl(MakeBtn(ga, 256, 210, 140, 34, TT("btn_save"), (*) => SaveNewAccount(), "primary", false, "s9 w700", 10), 10)
-    RoundCtrl(MakeBtn(ga, 140, 210, 106, 34, TT("btn_cancel"), (*) => ga.Destroy(), "sec", false, "s9 w600", 10), 10)
-    ga.Show("Hide w420 h262")
+    gaLink := ga.Add("Edit", Format("x34 y210 w352 h20 -E0x200 c{} Background{}", C_TEXT, C_INPUT), row ? ACCS[row].link : "")
+    gaMsg := ga.Add("Text", Format("x24 y246 w372 h18 c{} Background{}", C_MUTED, C_CARD), "")
+    RoundCtrl(MakeBtn(ga, 256, 272, 140, 34, TT("btn_save"), (*) => SaveNewAccount(), "primary", false, "s9 w700", 10), 10)
+    RoundCtrl(MakeBtn(ga, 140, 272, 106, 34, TT("btn_cancel"), (*) => ga.Destroy(), "sec", false, "s9 w600", 10), 10)
+    ga.Show("Hide w420 h326")
     DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", ga.Hwnd, "UInt", 33, "Int*", 2, "UInt", 4)
     DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", ga.Hwnd, "UInt", 34, "UInt*", 0x00444040, "UInt", 4)
     WinGetPos(&gx, &gy, &gw, &gh, g.Hwnd)
@@ -3674,9 +4228,15 @@ ShowAddAccount() {
 }
 
 SaveNewAccount() {
-    global ga, gaCk, gaMsg, ACCS, C_OFF
-    ck := Trim(gaCk.Value)
-    ck := RegExReplace(ck, "^\.ROBLOSECURITY=")
+    global ga, gaCk, gaLink, gaMsg, gaRow, ACCS, C_OFF
+    ck := RegExReplace(Trim(gaCk.Value), "^\.ROBLOSECURITY=")
+    link := Trim(gaLink.Value)
+    ; editando e sem cookie novo: só troca o link
+    if (gaRow && ck = "") {
+        ACCS[gaRow].link := link
+        SaveAccounts(), LvRefresh(), ga.Destroy()
+        return
+    }
     gaMsg.Value := TT("acc_checking")
     who := RbxWhoAmI(ck)
     if !who {
@@ -3686,16 +4246,353 @@ SaveNewAccount() {
     }
     for a in ACCS
         if (a.uid = who.id) {
-            a.ck := DpapiProtect(ck)
-            SaveAccounts()
-            ga.Destroy()
+            a.ck := DpapiProtect(ck), a.link := link, a.name := who.name
+            SaveAccounts(), LvRefresh(), ga.Destroy()
             return
         }
-    ACCS.Push({name: who.name, uid: who.id, ck: DpapiProtect(ck), pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
+    ACCS.Push({name: who.name, uid: who.id, ck: DpapiProtect(ck), link: link, pid: 0, status: TT("acc_st_off"), launches: 0, lastLaunch: 0, dlg: 0})
     SaveAccounts()
     LvRefresh()
     Log(TT("acc_added", who.name))
     ga.Destroy()
+}
+
+; ==========================================================
+;  Agendamento
+; ==========================================================
+InTimeWindow(a, b) {
+    if !(RegExMatch(Trim(a), "^(\d{1,2}):(\d{2})$", &x) && RegExMatch(Trim(b), "^(\d{1,2}):(\d{2})$", &y))
+        return true
+    now := A_Hour * 60 + A_Min, st := x[1] * 60 + x[2], en := y[1] * 60 + y[2]
+    return st <= en ? (now >= st && now < en) : (now >= st || now < en)
+}
+
+ScheduleTick() {
+    global chkSched, edFrom, edTo, edMaxH, running, monStart, schedPaused
+    if chkSched.Value {
+        inWin := InTimeWindow(edFrom.Value, edTo.Value)
+        if (running && !inWin) {
+            Log(TT("log_sched_pause"))
+            schedPaused := true
+            Toggle()
+            EndAction()
+            return
+        } else if (!running && inWin && schedPaused) {
+            schedPaused := false
+            Log(TT("log_sched_resume"))
+            Toggle()
+            return
+        }
+    }
+    hrs := Number(Trim(edMaxH.Value) || 0)
+    if (running && hrs > 0 && A_TickCount - monStart > hrs * 3600000) {
+        Log(TT("log_maxh"))
+        schedPaused := false
+        Toggle()
+        EndAction()
+    }
+}
+
+EndAction() {
+    global endAct
+    lines := []
+    if (endAct = 1) {
+        KillRoblox()
+        lines.Push(TT("act_close"))
+    } else if (endAct = 2) {
+        lines.Push(TT("d_shutdown"))
+        Run("shutdown /s /t 60", , "Hide")
+    }
+    SendEvent("sched", lines)
+}
+
+ActName(i) {
+    return TT(["act_none", "act_close", "act_shutdown"][i + 1])
+}
+
+CycleAction(bt, *) {
+    global endAct
+    endAct := Mod(endAct + 1, 3)
+    bt.Text := TT("lbl_onend") ": " ActName(endAct)
+}
+
+; ==========================================================
+;  Modo econômico (configurações do Roblox + prioridade)
+; ==========================================================
+FpsName(v) {
+    return TT("lbl_fps") ": " (v ? v : TT("fps_none"))
+}
+
+CycleFps(bt, *) {
+    global ecoFps
+    opts := [15, 30, 60, 0]
+    for i, v in opts
+        if (v = ecoFps) {
+            ecoFps := opts[Mod(i, opts.Length) + 1]
+            break
+        }
+    bt.Text := FpsName(ecoFps)
+}
+
+XmlSet(x, kind, name, val) {
+    pat := '<' kind ' name="' name '">[^<]*</' kind '>'
+    nw := '<' kind ' name="' name '">' val '</' kind '>'
+    if RegExMatch(x, pat)
+        return RegExReplace(x, pat, nw, , 1)
+    return RegExReplace(x, "(<Properties>)", "$1`n`t`t`t" nw, , 1)
+}
+
+; mexe no arquivo de configurações do Roblox antes de abrir (FPS, gráficos, som)
+ApplyEco() {
+    global chkEco, ecoFps, chkLowGfx, chkMute
+    if !chkEco.Value
+        return
+    f := EnvGet("LOCALAPPDATA") "\Roblox\GlobalBasicSettings_13.xml"
+    if !FileExist(f)
+        return
+    try {
+        x := FileRead(f, "UTF-8")
+        x := XmlSet(x, "int", "FramerateCap", ecoFps ? ecoFps : -1)
+        if chkLowGfx.Value {
+            x := XmlSet(x, "int", "GraphicsQualityLevel", 1)
+            x := XmlSet(x, "token", "SavedQualityLevel", 1)
+        }
+        if chkMute.Value
+            x := XmlSet(x, "float", "MasterVolume", 0)
+        fo := FileOpen(f, "w", "UTF-8-RAW")
+        fo.Write(x)
+        fo.Close()
+    }
+}
+
+; deixa o Roblox com prioridade baixa (uma vez por processo)
+LowPrio(pid) {
+    global chkEco, chkLowPrio
+    static done := Map()
+    if (!pid || !chkEco.Value || !chkLowPrio.Value || done.Has(pid))
+        return
+    try ProcessSetPriority("BelowNormal", pid)
+    done[pid] := true
+}
+
+; ==========================================================
+;  Bot do Discord (lê comandos do canal e responde)
+; ==========================================================
+DiscordApi(method, url, tok, body := "") {
+    http := ComObject("WinHttp.WinHttpRequest.5.1")
+    http.SetTimeouts(5000, 5000, 10000, 10000)
+    http.Open(method, url, false)
+    http.SetRequestHeader("Authorization", "Bot " tok)
+    http.SetRequestHeader("User-Agent", "DiscordBot (https://github.com/dudusoulls/AutoRejoinRoblox, 1.0)")
+    if (body != "")
+        http.SetRequestHeader("Content-Type", "application/json")
+    http.Send(body)
+    return http
+}
+
+; JSON da lista de mensagens -> "id\x01autor\x01texto\x02..." (usa o JavaScript do Windows)
+JsFlatMessages(json) {
+    static doc := 0
+    if !doc {
+        doc := ComObject("htmlfile")
+        doc.write('<meta http-equiv="X-UA-Compatible" content="IE=9">')
+    }
+    return doc.parentWindow.eval("(function(a){var o=[];for(var i=0;i<a.length;i++){o.push(a[i].id+'\u0001'+a[i].author.id+'\u0001'+(a[i].content||''))}return o.join('\u0002')})(" json ")")
+}
+
+SnowGreater(a, b) {
+    if (b = "")
+        return true
+    return StrLen(a) != StrLen(b) ? StrLen(a) > StrLen(b) : StrCompare(a, b) > 0
+}
+
+BotTick() {
+    global chkBot, edToken, edChan, edDiscId, botLast, botStatus
+    if !chkBot.Value {
+        SetIf(botStatus, TT("bot_off"))
+        return
+    }
+    tok := Trim(edToken.Value), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
+    if (tok = "" || ch = "")
+        return
+    if (me = "") {
+        SetIf(botStatus, TT("bot_need_id"))
+        return
+    }
+    try {
+        url := "https://discord.com/api/v10/channels/" ch "/messages?limit=" (botLast = "" ? "1" : "10&after=" botLast)
+        http := DiscordApi("GET", url, tok)
+        if (http.Status != 200)
+            throw Error("HTTP " http.Status)
+        flat := JsFlatMessages(http.ResponseText)
+    } catch as e {
+        SetIf(botStatus, TT("bot_err", e.Message))
+        return
+    }
+    SetIf(botStatus, TT("bot_ok"))
+    first := (botLast = "")
+    msgs := (flat = "") ? [] : StrSplit(flat, Chr(2))
+    Loop msgs.Length {                       ; da mais antiga pra mais nova
+        f := StrSplit(msgs[msgs.Length - A_Index + 1], Chr(1), , 3)
+        if (f.Length < 3)
+            continue
+        if SnowGreater(f[1], botLast)
+            botLast := f[1]
+        if (first || f[2] != me)
+            continue
+        BotCommand(Trim(f[3]), ch, f[1], tok)
+    }
+}
+
+BotCommand(cmd, ch, mid, tok) {
+    global running, multiActive
+    c := StrLower(StrSplit(cmd, " ")[1])
+    known := true
+    switch c {
+        case "!status", "!print":
+            SendStatusReport(true)
+        case "!iniciar", "!start":
+            if !running
+                Toggle()
+        case "!parar", "!stop":
+            if running
+                Toggle()
+        case "!reiniciar", "!restart":
+            if multiActive
+                KillRoblox()
+            else
+                RecoverRoblox("Discord")
+        case "!resumo", "!summary":
+            SendDailySummary(true)
+        case "!ajuda", "!help":
+            BotHelp(ch, tok)
+        default:
+            known := false
+    }
+    if known {
+        Log(TT("log_bot_cmd", c))
+        try DiscordApi("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", tok)
+    }
+}
+
+BotHelp(ch, tok) {
+    global APP_NAME
+    d := "``!status`` · " TT("cmd_status") "`n``!iniciar`` · " TT("cmd_start") "`n``!parar`` · " TT("cmd_stop")
+       . "`n``!reiniciar`` · " TT("cmd_restart") "`n``!resumo`` · " TT("cmd_summary") "`n``!ajuda`` · " TT("cmd_help")
+    body := '{"embeds":[{"title":"' JsonEsc(TT("sec_cmds")) '","description":"' JsonEsc(d) '","color":' 0x5B8CFF
+        . ',"footer":{"text":"' JsonEsc(APP_NAME) '"}}],"allowed_mentions":{"parse":[]}}'
+    try DiscordApi("POST", "https://discord.com/api/v10/channels/" ch "/messages", tok, body)
+}
+
+; ==========================================================
+;  Histórico (gráfico dos últimos 14 dias)
+; ==========================================================
+; salva o dia que acabou no [history] do config.ini
+HistSave(date) {
+    global iniFile
+    try sec := IniRead(iniFile, "day")
+    catch
+        return
+    vals := Map()
+    for line in StrSplit(sec, "`n", "`r") {
+        kv := StrSplit(line, "=", , 2)
+        if (kv.Length = 2)
+            vals[kv[1]] := kv[2]
+    }
+    coins := ""
+    for k, v in vals
+        if (SubStr(k, 1, 6) = "start_" && vals.Has("last_" SubStr(k, 7)))
+            coins .= SubStr(k, 7) "=" (Integer(vals["last_" SubStr(k, 7)]) - Integer(v)) ";"
+    IniWrite((vals.Has("online") ? vals["online"] : 0) "|" (vals.Has("drops") ? vals["drops"] : 0) "|"
+        . (vals.Has("reopens") ? vals["reopens"] : 0) "|" RTrim(coins, ";"), iniFile, "history", date)
+}
+
+HistGet(date) {
+    global iniFile, dayOnline
+    r := {online: 0, drops: 0, reopens: 0, coins: Map(), has: false}
+    if (date = FormatTime(, "yyyyMMdd")) {
+        DayRoll()
+        r.online := dayOnline, r.drops := Integer(IniRead(iniFile, "day", "drops", "0"))
+        r.reopens := Integer(IniRead(iniFile, "day", "reopens", "0")), r.has := true
+        for c in CurrencySpec() {
+            k := RegExReplace(c.name, "\W", "_")
+            st := IniRead(iniFile, "day", "start_" k, ""), la := IniRead(iniFile, "day", "last_" k, "")
+            if (st != "" && la != "")
+                r.coins[k] := Integer(la) - Integer(st)
+        }
+        return r
+    }
+    v := IniRead(iniFile, "history", date, "")
+    if (v = "")
+        return r
+    f := StrSplit(v, "|")
+    r.online := Integer(f[1]), r.drops := Integer(f[2]), r.reopens := Integer(f[3]), r.has := true
+    if (f.Length >= 4)
+        for pair in StrSplit(f[4], ";")
+            if (kv := StrSplit(pair, "=")).Length = 2
+                r.coins[kv[1]] := Integer(kv[2])
+    return r
+}
+
+Compact(n) {
+    a := Abs(n)
+    return a >= 1000000 ? Round(n / 1000000, 1) "M" : a >= 1000 ? Round(n / 1000, 1) "k" : n
+}
+
+SetHistMetric(m, *) {
+    global histMetric, histCoinIdx, histBtns
+    specs := CurrencySpec()
+    if (m = "coin") {
+        if (histMetric = "coin")
+            histCoinIdx := Mod(histCoinIdx, Max(specs.Length, 1)) + 1
+        if specs.Length
+            histBtns["coin"].Text := TT("hist_coin", specs[Min(histCoinIdx, specs.Length)].name)
+    }
+    histMetric := m
+    for k, b in histBtns
+        SetBtnStyle(b, k = m ? "primary" : "sec")
+    HistDraw()
+}
+
+HistDraw() {
+    global histMetric, histCoinIdx, histBars, histVals, histDays, histEmpty, histTarget, histT0, C_ACC
+    specs := CurrencySpec()
+    ck := (specs.Length && histMetric = "coin") ? RegExReplace(specs[Min(histCoinIdx, specs.Length)].name, "\W", "_") : ""
+    vals := [], any := false
+    Loop 14 {
+        d := FormatTime(DateAdd(A_Now, -(14 - A_Index), "Days"), "yyyyMMdd")
+        r := HistGet(d)
+        any := any || r.has
+        v := histMetric = "online" ? r.online : histMetric = "drops" ? r.drops : histMetric = "reopens" ? r.reopens
+            : (r.coins.Has(ck) ? r.coins[ck] : 0)
+        vals.Push(v)
+        histDays[A_Index].Value := SubStr(d, 7, 2) "/" SubStr(d, 5, 2)
+        histVals[A_Index].Value := !r.has ? "" : histMetric = "online" ? Round(v / 3600, 1) "h" : Compact(v)
+    }
+    mx := 0
+    for v in vals
+        mx := Max(mx, v)
+    histTarget := []
+    for v in vals
+        histTarget.Push(mx > 0 ? Max(Round(v / mx * 260), v > 0 ? 3 : 0) : 0)
+    histEmpty.Visible := !any
+    histT0 := A_TickCount
+    SetTimer(HistAnim, 15)
+}
+
+; barras crescendo
+HistAnim() {
+    global histBars, histVals, histTarget, histT0, histBase
+    pr := Min(1, (A_TickCount - histT0) / 380)
+    e := EaseOut(pr)
+    for i, b in histBars {
+        hh := Max(2, Round(histTarget[i] * e))
+        b.GetPos(&bx)
+        b.Move(bx, histBase - hh, , hh)
+        histVals[i].Move(, histBase - hh - 18)
+    }
+    if (pr >= 1)
+        SetTimer(HistAnim, 0)
 }
 
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
@@ -3992,7 +4889,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -4015,6 +4912,19 @@ SaveConfig() {
     IniWrite(chkMention.Value, iniFile, "cfg", "mention")
     IniWrite(Trim(edDiscId.Value), iniFile, "cfg", "discordId")
     IniWrite(chkMulti.Value, iniFile, "cfg", "multi")
+    IniWrite(chkSched.Value, iniFile, "cfg", "sched")
+    IniWrite(Trim(edFrom.Value), iniFile, "cfg", "schedFrom")
+    IniWrite(Trim(edTo.Value), iniFile, "cfg", "schedTo")
+    IniWrite(Trim(edMaxH.Value), iniFile, "cfg", "maxHours")
+    IniWrite(endAct, iniFile, "cfg", "endAct")
+    IniWrite(chkEco.Value, iniFile, "cfg", "eco")
+    IniWrite(ecoFps, iniFile, "cfg", "ecoFps")
+    IniWrite(chkLowGfx.Value, iniFile, "cfg", "lowGfx")
+    IniWrite(chkMute.Value, iniFile, "cfg", "mute")
+    IniWrite(chkLowPrio.Value, iniFile, "cfg", "lowPrio")
+    IniWrite(chkBot.Value, iniFile, "cfg", "bot")
+    IniWrite(Trim(edToken.Value) = "" ? "" : DpapiProtect(Trim(edToken.Value)), iniFile, "cfg", "botToken")
+    IniWrite(Trim(edChan.Value), iniFile, "cfg", "botChan")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }
@@ -4532,7 +5442,8 @@ EV := Map(
     "lic",     ["🔒", "ev_lic",     0xFF5C5C],
     "updated", ["✨", "ev_updated", 0xA78BFA],
     "test",    ["🔔", "ev_test",    0x5B8CFF],
-    "daily",   ["📊", "ev_daily",   0x5B8CFF])
+    "daily",   ["📊", "ev_daily",   0x5B8CFF],
+    "sched",   ["⏹️", "ev_sched",   0x8B8B94])
 
 SendEvent(kind, lines := [], feedback := false, arg := "") {
     global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId
@@ -5109,6 +6020,8 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
     m := list[idx]
     nextIdx := idx + 1
 
+    if !tries
+        ApplyEco()
     try {
         RunMethod(m)
     } catch as err {
@@ -5304,6 +6217,7 @@ Cleanup() {
         curHwnd := 0
         return
     }
+    try LowPrio(WinGetPID(h))
     if (h != curHwnd) {
         curHwnd := h
         detectTick := A_TickCount
