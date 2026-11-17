@@ -1,5 +1,13 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.2.0
+- Nova aba **Suporte**: o usuário escreve o problema e manda (com print do Roblox, se quiser) direto pro seu webhook secreto. Vai junto versão do app, Windows, nome do PC e um ID de instalação anônimo — **sem IP e sem dado pessoal**.
+- **Botões no painel do Discord**: reações ▶️ (iniciar), ⏹️ (parar), 🔄 (reiniciar) e 📸 (print) no painel fixado. Toca pelo celular e o app obedece.
+- **!grafico**: manda um gráfico dos últimos 7 dias (moedas ou tempo online) no Discord.
+- **!gif**: manda vários prints seguidos do jogo (timelapse) numa mensagem só.
+- **Espera a internet voltar**: se a conexão cair, o app pausa as tentativas de reabrir o Roblox, avisa, e retoma sozinho quando a net volta (em vez de ficar falhando à toa).
+
+
 ## v2.1.0
 - HUD grudado na janela do Roblox: barra fina embaixo da janela (ou painel transparente no canto), com status, tempo de sessão, reaberturas, quedas, moedas, CPU e RAM.
 - Moldura colorida em volta da janela do Roblox que muda de cor conforme o status (verde = farmando, amarelo = reconectando, vermelho = erro).

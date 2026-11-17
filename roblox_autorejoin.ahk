@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 
 ; ==========================================================
@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.1.0"
+VERSION     := "2.2.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -31,6 +31,16 @@ KEYAUTH_VER     := "1.0"         ; versão da aplicação no painel do KeyAuth (
 KEYAUTH_URL     := "https://keyauth.win/api/1.3/"
 BUY_URL         := ""            ; link pra comprar key (Discord, loja...). Vazio = esconde o botão
 APP_NAME        := "Auto Reconnect Roblox"
+
+; ---------------- Relatório de erro (webhook secreto, só pra você) ----------------
+; Cole AQUI o seu webhook escondido. O que o usuário mandar na aba "Suporte"
+; (mensagem + print, se marcado) cai nesse webhook. Nunca vai IP nem dado pessoal.
+; Dica: compile pra .exe pra esse link não ficar à vista no código.
+REPORT_WEBHOOK  := ""
+netDown         := 0
+reactReady      := false
+reactBusy       := 0
+PANEL_EMO       := [["%E2%96%B6%EF%B8%8F", "play"], ["%E2%8F%B9%EF%B8%8F", "stop"], ["%F0%9F%94%84", "restart"], ["%F0%9F%93%B8", "print"]]
 
 ; ---------------- Tema ----------------
 C_BG    := "0E0E11"   ; fundo do conteúdo
@@ -211,6 +221,12 @@ stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
 hudMode       := Integer(IniRead(iniFile, "cfg", "hudMode", "1"))      ; 0 desligado, 1 barra, 2 painel
 savedFrame    := IniRead(iniFile, "cfg", "frame", "1")
 savedHudComp  := IniRead(iniFile, "cfg", "hudCompact", "1")
+ANON_ID := IniRead(iniFile, "cfg", "anonId", "")
+if (ANON_ID = "") {
+    Loop 8
+        ANON_ID .= SubStr("0123456789ABCDEF", Random(1, 16), 1)
+    IniWrite(ANON_ID, iniFile, "cfg", "anonId")
+}
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
 LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
@@ -644,7 +660,42 @@ I18N["pt"] := Map(
     "sw_frame", "Moldura colorida em volta do Roblox",
     "sw_frame_sub", "Verde no jogo, amarelo com desconexão, vermelho fechado",
     "sw_hudcompact", "Modo compacto esconde o programa e deixa só o HUD",
-    "hud_hint", "Atalhos: Ctrl+Alt+H mostra/esconde o HUD · Ctrl+Alt+S inicia/para · Ctrl+Alt+R reinicia o Roblox · Ctrl+Alt+P manda o status. Clique na barra pra abrir o programa."
+    "hud_hint", "Atalhos: Ctrl+Alt+H mostra/esconde o HUD · Ctrl+Alt+S inicia/para · Ctrl+Alt+R reinicia o Roblox · Ctrl+Alt+P manda o status. Clique na barra pra abrir o programa.",
+    "nav_report", "Suporte",
+    "pg_report_sub", "Relate um erro ou problema direto pra mim",
+    "sec_report", "RELATAR PROBLEMA",
+    "lbl_report", "Descreva o que aconteceu",
+    "sw_report_shot", "Anexar um print do Roblox",
+    "btn_report_send", "Enviar relatório",
+    "report_sending", "Enviando…",
+    "report_sent", "Relatório enviado. Valeu!",
+    "report_need_text", "Escreva uma mensagem antes de enviar.",
+    "report_nodest", "Envio de relatórios indisponível.",
+    "report_fail", "Falha ao enviar ({1}).",
+    "report_hint", "Vai junto: versão do app, Windows, nome do PC e seu ID de instalação. Nada de IP ou dados pessoais.",
+    "lbl_report_id", "SEU ID DE INSTALAÇÃO",
+    "ev_report", "Novo relatório",
+    "f_report_user", "Usuário",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "Sistema",
+    "f_report_lang", "Idioma",
+    "f_report_lic", "Licença",
+    "st_net", "Sem internet",
+    "st_net_sub", "Esperando a conexão voltar pra reconectar",
+    "ev_neterr", "Internet caiu",
+    "ev_netok", "Internet voltou",
+    "d_net_wait", "Sem conexão — esperando voltar pra reconectar o Roblox.",
+    "d_net_back", "Conexão voltou depois de {1}.",
+    "log_net_down", "Internet caiu — pausando reconexão.",
+    "log_net_back", "Internet voltou — retomando.",
+    "ev_chart", "Gráfico (7 dias)",
+    "chart_none", "Ainda não tenho histórico pra montar o gráfico.",
+    "cmd_chart", "gráfico das moedas/online nos últimos 7 dias",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox não está aberto na tela.",
+    "gif_desc", "{1} prints seguidos do jogo.",
+    "cmd_gif", "manda vários prints seguidos do jogo"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1075,7 +1126,42 @@ I18N["en"] := Map(
     "sw_frame", "Colored frame around Roblox",
     "sw_frame_sub", "Green in game, yellow on disconnect, red when closed",
     "sw_hudcompact", "Compact mode hides the app and keeps only the HUD",
-    "hud_hint", "Shortcuts: Ctrl+Alt+H show/hide HUD · Ctrl+Alt+S start/stop · Ctrl+Alt+R restart Roblox · Ctrl+Alt+P send status. Click the bar to open the app."
+    "hud_hint", "Shortcuts: Ctrl+Alt+H show/hide HUD · Ctrl+Alt+S start/stop · Ctrl+Alt+R restart Roblox · Ctrl+Alt+P send status. Click the bar to open the app.",
+    "nav_report", "Support",
+    "pg_report_sub", "Report a bug or problem straight to me",
+    "sec_report", "REPORT A PROBLEM",
+    "lbl_report", "Describe what happened",
+    "sw_report_shot", "Attach a Roblox screenshot",
+    "btn_report_send", "Send report",
+    "report_sending", "Sending…",
+    "report_sent", "Report sent. Thanks!",
+    "report_need_text", "Write a message before sending.",
+    "report_nodest", "Report sending is unavailable.",
+    "report_fail", "Failed to send ({1}).",
+    "report_hint", "Includes: app version, Windows, PC name and your install ID. No IP or personal data.",
+    "lbl_report_id", "YOUR INSTALL ID",
+    "ev_report", "New report",
+    "f_report_user", "User",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "System",
+    "f_report_lang", "Language",
+    "f_report_lic", "License",
+    "st_net", "No internet",
+    "st_net_sub", "Waiting for the connection to come back",
+    "ev_neterr", "Internet down",
+    "ev_netok", "Internet back",
+    "d_net_wait", "No connection — waiting to reconnect Roblox.",
+    "d_net_back", "Connection came back after {1}.",
+    "log_net_down", "Internet down — pausing reconnect.",
+    "log_net_back", "Internet back — resuming.",
+    "ev_chart", "Chart (7 days)",
+    "chart_none", "No history yet to build the chart.",
+    "cmd_chart", "chart of currency/online over the last 7 days",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox isn't open on screen.",
+    "gif_desc", "{1} sequential game screenshots.",
+    "cmd_gif", "sends several sequential game screenshots"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1506,7 +1592,42 @@ I18N["es"] := Map(
     "sw_frame", "Marco de color alrededor de Roblox",
     "sw_frame_sub", "Verde en el juego, amarillo con desconexión, rojo cerrado",
     "sw_hudcompact", "El modo compacto oculta el programa y deja solo el HUD",
-    "hud_hint", "Atajos: Ctrl+Alt+H muestra/oculta el HUD · Ctrl+Alt+S inicia/detiene · Ctrl+Alt+R reinicia Roblox · Ctrl+Alt+P envía el estado. Clic en la barra para abrir el programa."
+    "hud_hint", "Atajos: Ctrl+Alt+H muestra/oculta el HUD · Ctrl+Alt+S inicia/detiene · Ctrl+Alt+R reinicia Roblox · Ctrl+Alt+P envía el estado. Clic en la barra para abrir el programa.",
+    "nav_report", "Soporte",
+    "pg_report_sub", "Reporta un error o problema directo a mí",
+    "sec_report", "REPORTAR PROBLEMA",
+    "lbl_report", "Describe lo que pasó",
+    "sw_report_shot", "Adjuntar una captura de Roblox",
+    "btn_report_send", "Enviar reporte",
+    "report_sending", "Enviando…",
+    "report_sent", "¡Reporte enviado. Gracias!",
+    "report_need_text", "Escribe un mensaje antes de enviar.",
+    "report_nodest", "Envío de reportes no disponible.",
+    "report_fail", "Error al enviar ({1}).",
+    "report_hint", "Incluye: versión de la app, Windows, nombre del PC y tu ID de instalación. Sin IP ni datos personales.",
+    "lbl_report_id", "TU ID DE INSTALACIÓN",
+    "ev_report", "Nuevo reporte",
+    "f_report_user", "Usuario",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "Sistema",
+    "f_report_lang", "Idioma",
+    "f_report_lic", "Licencia",
+    "st_net", "Sin internet",
+    "st_net_sub", "Esperando que vuelva la conexión",
+    "ev_neterr", "Internet caído",
+    "ev_netok", "Internet restablecido",
+    "d_net_wait", "Sin conexión — esperando para reconectar Roblox.",
+    "d_net_back", "La conexión volvió tras {1}.",
+    "log_net_down", "Internet caído — pausando reconexión.",
+    "log_net_back", "Internet restablecido — reanudando.",
+    "ev_chart", "Gráfico (7 días)",
+    "chart_none", "Aún no hay historial para el gráfico.",
+    "cmd_chart", "gráfico de monedas/online de los últimos 7 días",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox no está abierto en pantalla.",
+    "gif_desc", "{1} capturas seguidas del juego.",
+    "cmd_gif", "envía varias capturas seguidas del juego"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1937,7 +2058,42 @@ I18N["fr"] := Map(
     "sw_frame", "Cadre coloré autour de Roblox",
     "sw_frame_sub", "Vert en jeu, jaune en cas de déconnexion, rouge fermé",
     "sw_hudcompact", "Le mode compact masque l'appli et garde seulement le HUD",
-    "hud_hint", "Raccourcis : Ctrl+Alt+H afficher/masquer le HUD · Ctrl+Alt+S démarrer/arrêter · Ctrl+Alt+R redémarrer Roblox · Ctrl+Alt+P envoyer le statut. Cliquez sur la barre pour ouvrir l'appli."
+    "hud_hint", "Raccourcis : Ctrl+Alt+H afficher/masquer le HUD · Ctrl+Alt+S démarrer/arrêter · Ctrl+Alt+R redémarrer Roblox · Ctrl+Alt+P envoyer le statut. Cliquez sur la barre pour ouvrir l'appli.",
+    "nav_report", "Support",
+    "pg_report_sub", "Signalez un bug ou un problème directement",
+    "sec_report", "SIGNALER UN PROBLÈME",
+    "lbl_report", "Décrivez ce qui s'est passé",
+    "sw_report_shot", "Joindre une capture de Roblox",
+    "btn_report_send", "Envoyer le rapport",
+    "report_sending", "Envoi…",
+    "report_sent", "Rapport envoyé. Merci !",
+    "report_need_text", "Écrivez un message avant d'envoyer.",
+    "report_nodest", "Envoi de rapports indisponible.",
+    "report_fail", "Échec de l'envoi ({1}).",
+    "report_hint", "Inclut : version de l'appli, Windows, nom du PC et votre ID d'installation. Pas d'IP ni de données personnelles.",
+    "lbl_report_id", "VOTRE ID D'INSTALLATION",
+    "ev_report", "Nouveau rapport",
+    "f_report_user", "Utilisateur",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "Système",
+    "f_report_lang", "Langue",
+    "f_report_lic", "Licence",
+    "st_net", "Pas d'internet",
+    "st_net_sub", "En attente du retour de la connexion",
+    "ev_neterr", "Internet coupé",
+    "ev_netok", "Internet rétabli",
+    "d_net_wait", "Pas de connexion — en attente pour reconnecter Roblox.",
+    "d_net_back", "La connexion est revenue après {1}.",
+    "log_net_down", "Internet coupé — pause de la reconnexion.",
+    "log_net_back", "Internet rétabli — reprise.",
+    "ev_chart", "Graphique (7 jours)",
+    "chart_none", "Pas encore d'historique pour le graphique.",
+    "cmd_chart", "graphique monnaies/en ligne sur 7 jours",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox n'est pas ouvert à l'écran.",
+    "gif_desc", "{1} captures du jeu à la suite.",
+    "cmd_gif", "envoie plusieurs captures du jeu"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2368,7 +2524,42 @@ I18N["de"] := Map(
     "sw_frame", "Farbiger Rahmen um Roblox",
     "sw_frame_sub", "Grün im Spiel, gelb bei Abbruch, rot wenn geschlossen",
     "sw_hudcompact", "Kompaktmodus blendet das Programm aus und lässt nur das HUD",
-    "hud_hint", "Kürzel: Strg+Alt+H HUD ein/aus · Strg+Alt+S Start/Stopp · Strg+Alt+R Roblox neu starten · Strg+Alt+P Status senden. Klick auf die Leiste öffnet das Programm."
+    "hud_hint", "Kürzel: Strg+Alt+H HUD ein/aus · Strg+Alt+S Start/Stopp · Strg+Alt+R Roblox neu starten · Strg+Alt+P Status senden. Klick auf die Leiste öffnet das Programm.",
+    "nav_report", "Support",
+    "pg_report_sub", "Melde einen Fehler oder ein Problem direkt",
+    "sec_report", "PROBLEM MELDEN",
+    "lbl_report", "Beschreibe, was passiert ist",
+    "sw_report_shot", "Roblox-Screenshot anhängen",
+    "btn_report_send", "Bericht senden",
+    "report_sending", "Senden…",
+    "report_sent", "Bericht gesendet. Danke!",
+    "report_need_text", "Schreibe eine Nachricht vor dem Senden.",
+    "report_nodest", "Berichtversand nicht verfügbar.",
+    "report_fail", "Senden fehlgeschlagen ({1}).",
+    "report_hint", "Enthält: App-Version, Windows, PC-Name und deine Installations-ID. Keine IP oder persönlichen Daten.",
+    "lbl_report_id", "DEINE INSTALLATIONS-ID",
+    "ev_report", "Neuer Bericht",
+    "f_report_user", "Benutzer",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "System",
+    "f_report_lang", "Sprache",
+    "f_report_lic", "Lizenz",
+    "st_net", "Kein Internet",
+    "st_net_sub", "Warte auf die Rückkehr der Verbindung",
+    "ev_neterr", "Internet weg",
+    "ev_netok", "Internet zurück",
+    "d_net_wait", "Keine Verbindung — warte, um Roblox neu zu verbinden.",
+    "d_net_back", "Verbindung nach {1} zurück.",
+    "log_net_down", "Internet weg — Reconnect pausiert.",
+    "log_net_back", "Internet zurück — fortsetzen.",
+    "ev_chart", "Diagramm (7 Tage)",
+    "chart_none", "Noch kein Verlauf für das Diagramm.",
+    "cmd_chart", "Diagramm Währung/Online der letzten 7 Tage",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox ist nicht am Bildschirm offen.",
+    "gif_desc", "{1} aufeinanderfolgende Spiel-Screenshots.",
+    "cmd_gif", "sendet mehrere Spiel-Screenshots"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2799,7 +2990,42 @@ I18N["ru"] := Map(
     "sw_frame", "Цветная рамка вокруг Roblox",
     "sw_frame_sub", "Зелёная в игре, жёлтая при отключении, красная если закрыт",
     "sw_hudcompact", "Компактный режим прячет программу и оставляет только HUD",
-    "hud_hint", "Горячие клавиши: Ctrl+Alt+H HUD · Ctrl+Alt+S старт/стоп · Ctrl+Alt+R перезапуск Roblox · Ctrl+Alt+P отправить статус. Клик по панели открывает программу."
+    "hud_hint", "Горячие клавиши: Ctrl+Alt+H HUD · Ctrl+Alt+S старт/стоп · Ctrl+Alt+R перезапуск Roblox · Ctrl+Alt+P отправить статус. Клик по панели открывает программу.",
+    "nav_report", "Поддержка",
+    "pg_report_sub", "Сообщите об ошибке или проблеме напрямую",
+    "sec_report", "СООБЩИТЬ О ПРОБЛЕМЕ",
+    "lbl_report", "Опишите, что произошло",
+    "sw_report_shot", "Приложить скриншот Roblox",
+    "btn_report_send", "Отправить отчёт",
+    "report_sending", "Отправка…",
+    "report_sent", "Отчёт отправлен. Спасибо!",
+    "report_need_text", "Напишите сообщение перед отправкой.",
+    "report_nodest", "Отправка отчётов недоступна.",
+    "report_fail", "Не удалось отправить ({1}).",
+    "report_hint", "Включает: версию приложения, Windows, имя ПК и ваш ID установки. Без IP и личных данных.",
+    "lbl_report_id", "ВАШ ID УСТАНОВКИ",
+    "ev_report", "Новый отчёт",
+    "f_report_user", "Пользователь",
+    "f_report_pc", "ПК",
+    "f_report_id", "ID",
+    "f_report_os", "Система",
+    "f_report_lang", "Язык",
+    "f_report_lic", "Лицензия",
+    "st_net", "Нет интернета",
+    "st_net_sub", "Ожидание восстановления соединения",
+    "ev_neterr", "Интернет пропал",
+    "ev_netok", "Интернет вернулся",
+    "d_net_wait", "Нет соединения — ждём, чтобы переподключить Roblox.",
+    "d_net_back", "Соединение восстановилось через {1}.",
+    "log_net_down", "Интернет пропал — пауза переподключения.",
+    "log_net_back", "Интернет вернулся — продолжаем.",
+    "ev_chart", "График (7 дней)",
+    "chart_none", "Пока нет истории для графика.",
+    "cmd_chart", "график валюты/онлайна за 7 дней",
+    "ev_gif", "Таймлапс",
+    "gif_none", "Roblox не открыт на экране.",
+    "gif_desc", "{1} последовательных скриншота игры.",
+    "cmd_gif", "отправляет несколько скриншотов игры"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3230,7 +3456,42 @@ I18N["tr"] := Map(
     "sw_frame", "Roblox etrafında renkli çerçeve",
     "sw_frame_sub", "Oyundayken yeşil, kopunca sarı, kapalıyken kırmızı",
     "sw_hudcompact", "Kompakt mod programı gizler, sadece HUD kalır",
-    "hud_hint", "Kısayollar: Ctrl+Alt+H HUD aç/kapa · Ctrl+Alt+S başlat/durdur · Ctrl+Alt+R Roblox'u yeniden başlat · Ctrl+Alt+P durumu gönder. Programı açmak için çubuğa tıkla."
+    "hud_hint", "Kısayollar: Ctrl+Alt+H HUD aç/kapa · Ctrl+Alt+S başlat/durdur · Ctrl+Alt+R Roblox'u yeniden başlat · Ctrl+Alt+P durumu gönder. Programı açmak için çubuğa tıkla.",
+    "nav_report", "Destek",
+    "pg_report_sub", "Bir hatayı veya sorunu doğrudan bildir",
+    "sec_report", "SORUN BİLDİR",
+    "lbl_report", "Ne olduğunu anlat",
+    "sw_report_shot", "Roblox ekran görüntüsü ekle",
+    "btn_report_send", "Raporu gönder",
+    "report_sending", "Gönderiliyor…",
+    "report_sent", "Rapor gönderildi. Teşekkürler!",
+    "report_need_text", "Göndermeden önce bir mesaj yaz.",
+    "report_nodest", "Rapor gönderimi kullanılamıyor.",
+    "report_fail", "Gönderilemedi ({1}).",
+    "report_hint", "İçerir: uygulama sürümü, Windows, PC adı ve kurulum kimliğin. IP veya kişisel veri yok.",
+    "lbl_report_id", "KURULUM KİMLİĞİN",
+    "ev_report", "Yeni rapor",
+    "f_report_user", "Kullanıcı",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "Sistem",
+    "f_report_lang", "Dil",
+    "f_report_lic", "Lisans",
+    "st_net", "İnternet yok",
+    "st_net_sub", "Bağlantının geri gelmesi bekleniyor",
+    "ev_neterr", "İnternet gitti",
+    "ev_netok", "İnternet geldi",
+    "d_net_wait", "Bağlantı yok — Roblox'u yeniden bağlamak için bekleniyor.",
+    "d_net_back", "Bağlantı {1} sonra geldi.",
+    "log_net_down", "İnternet gitti — yeniden bağlanma duraklatıldı.",
+    "log_net_back", "İnternet geldi — devam ediliyor.",
+    "ev_chart", "Grafik (7 gün)",
+    "chart_none", "Grafik için henüz geçmiş yok.",
+    "cmd_chart", "son 7 günün para/çevrimiçi grafiği",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox ekranda açık değil.",
+    "gif_desc", "{1} ardışık oyun ekran görüntüsü.",
+    "cmd_gif", "oyundan ardışık birkaç ekran görüntüsü yollar"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3661,7 +3922,42 @@ I18N["id"] := Map(
     "sw_frame", "Bingkai warna di sekitar Roblox",
     "sw_frame_sub", "Hijau di game, kuning saat putus, merah saat tertutup",
     "sw_hudcompact", "Mode ringkas menyembunyikan aplikasi dan hanya menyisakan HUD",
-    "hud_hint", "Pintasan: Ctrl+Alt+H tampil/sembunyi HUD · Ctrl+Alt+S mulai/berhenti · Ctrl+Alt+R mulai ulang Roblox · Ctrl+Alt+P kirim status. Klik bar untuk membuka aplikasi."
+    "hud_hint", "Pintasan: Ctrl+Alt+H tampil/sembunyi HUD · Ctrl+Alt+S mulai/berhenti · Ctrl+Alt+R mulai ulang Roblox · Ctrl+Alt+P kirim status. Klik bar untuk membuka aplikasi.",
+    "nav_report", "Dukungan",
+    "pg_report_sub", "Laporkan bug atau masalah langsung ke saya",
+    "sec_report", "LAPORKAN MASALAH",
+    "lbl_report", "Jelaskan apa yang terjadi",
+    "sw_report_shot", "Lampirkan tangkapan layar Roblox",
+    "btn_report_send", "Kirim laporan",
+    "report_sending", "Mengirim…",
+    "report_sent", "Laporan terkirim. Terima kasih!",
+    "report_need_text", "Tulis pesan sebelum mengirim.",
+    "report_nodest", "Pengiriman laporan tidak tersedia.",
+    "report_fail", "Gagal mengirim ({1}).",
+    "report_hint", "Termasuk: versi aplikasi, Windows, nama PC, dan ID instalasimu. Tanpa IP atau data pribadi.",
+    "lbl_report_id", "ID INSTALASI ANDA",
+    "ev_report", "Laporan baru",
+    "f_report_user", "Pengguna",
+    "f_report_pc", "PC",
+    "f_report_id", "ID",
+    "f_report_os", "Sistem",
+    "f_report_lang", "Bahasa",
+    "f_report_lic", "Lisensi",
+    "st_net", "Tidak ada internet",
+    "st_net_sub", "Menunggu koneksi kembali",
+    "ev_neterr", "Internet putus",
+    "ev_netok", "Internet kembali",
+    "d_net_wait", "Tidak ada koneksi — menunggu untuk menyambungkan Roblox lagi.",
+    "d_net_back", "Koneksi kembali setelah {1}.",
+    "log_net_down", "Internet putus — jeda penyambungan ulang.",
+    "log_net_back", "Internet kembali — melanjutkan.",
+    "ev_chart", "Grafik (7 hari)",
+    "chart_none", "Belum ada riwayat untuk grafik.",
+    "cmd_chart", "grafik mata uang/online 7 hari terakhir",
+    "ev_gif", "Timelapse",
+    "gif_none", "Roblox tidak terbuka di layar.",
+    "gif_desc", "{1} tangkapan layar game berurutan.",
+    "cmd_gif", "mengirim beberapa tangkapan layar game"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -3670,7 +3966,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look", "Suporte", "nav_report")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -3759,7 +4055,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
     , "Discord", ["Webhook", "Bot"], "Moedas", ["Moedas", "Histórico"], "Aparência", ["Aparência"]
-    , "Logs", ["Logs"], "Sobre", ["Sobre"])
+    , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 GROUP_OF := Map()
 for gk, subs in GROUPS
     for sb in subs
@@ -4072,6 +4368,27 @@ changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E
     , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
+; ---------------- Página: Suporte (relatar erro) ----------------
+BeginPage("Suporte", TT("nav_report"), TT("pg_report_sub"))
+y := 92
+Card(CX, y, CW, 300)
+Lbl(CX + 20, y + 16, 300, TT("sec_report"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 40, CW - 40, TT("lbl_report"), "s9", C_MUTED)
+rbox := g.Add("Text", Format("x{} y{} w{} h120 +0x4000000 Background{}", CX + 20, y + 62, CW - 40, C_INPUT))
+Bg(rbox, 10)
+P(rbox)
+FontUI(g, "s10")
+edReport := P(g.Add("Edit", Format("x{} y{} w{} h106 -E0x200 +Multi +Wrap c{} Background{}", CX + 30, y + 70, CW - 60, C_TEXT, C_INPUT)))
+chkReportShot := ToggleSwitch(CX + 20, y + 192, CW - 40, TT("sw_report_shot"), "1")
+repStatus := Lbl(CX + 20, y + 248, CW - 220, "", "s9 w600", C_TEXT)
+btnReport := Btn(CX + CW - 180, y + 240, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
+
+y := 404
+Card(CX, y, CW, 100)
+Lbl(CX + 20, y + 16, 300, TT("lbl_report_id"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 40, CW - 40, ANON_ID, "s13 w700", C_TEXT)
+Lbl(CX + 20, y + 68, CW - 40, TT("report_hint"), "s8", C_MUTED)
+
 ; ---------------- Página: Aparência ----------------
 BeginPage("Aparência", TT("nav_look"), TT("pg_look_sub"))
 y := 92
@@ -4230,6 +4547,7 @@ StartApp() {
     SetTimer(BotTick, 6000)
     SetTimer(PanelTick, 30000)
     SetTimer(StuckTick, 60000)
+    SetTimer(ReactTick, 9000)
     upd := IniRead(iniFile, "cfg", "justUpdated", "")
     if (upd != "") {
         IniDelete(iniFile, "cfg", "justUpdated")
@@ -5391,6 +5709,10 @@ BotCommand(cmd, ch, mid, tok) {
                 BotHistory()
             case "!logs":
                 BotLogs()
+            case "!grafico", "!gráfico", "!chart":
+                BotChart()
+            case "!gif", "!timelapse":
+                BotGif()
             case "!ping":
                 lat := DateDiff(A_NowUTC, "19700101000000", "Seconds") * 1000 + A_MSec - ((Integer(mid) >> 22) + 1420070400000)
                 SendEvent("pong", [], false, "", [[TT("f_latency"), Max(0, lat) " ms", true]
@@ -5494,7 +5816,7 @@ HelpFields() {
     return [[TT("grp_control"), "``!iniciar`` " TT("cmd_start") "`n``!parar`` " TT("cmd_stop") "`n``!reiniciar`` " TT("cmd_restart"), false]
         , [TT("grp_info"), "``!status`` " TT("cmd_status") "`n``!print`` " TT("cmd_print") "`n``!moedas`` " TT("cmd_coins")
             . "`n``!resumo`` " TT("cmd_summary") "`n``!historico`` " TT("cmd_hist") "`n``!pc`` " TT("cmd_pc")
-            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!ping`` " TT("cmd_ping"), false]
+            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!grafico`` " TT("cmd_chart") "`n``!gif`` " TT("cmd_gif") "`n``!ping`` " TT("cmd_ping"), false]
         , [TT("grp_config"), "``!link`` " TT("cmd_link") "`n``!atualizar`` " TT("cmd_update")
             . "`n``!desligar`` " TT("cmd_shutdown") "`n``!cancelar`` " TT("cmd_cancel"), false]]
 }
@@ -5896,12 +6218,13 @@ PanelCreate(base, payload, shot, tok, ch) {
 }
 
 PanelCreated(tok, ch, http) {
-    global panelMsg, iniFile
+    global panelMsg, iniFile, reactReady
     if (HttpStatus(http) != 200)
         return
     try {
         panelMsg := JsonPick(http.ResponseText, "a.id")
         IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
+        reactReady := false
         AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
     }
 }
@@ -6067,6 +6390,258 @@ HudTick(force := false) {
 }
 
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
+; ==========================================================
+;  Suporte: relatório de erro -> webhook secreto (sem IP, sem dado pessoal)
+; ==========================================================
+SendReport() {
+    global edReport, chkReportShot, repStatus, REPORT_WEBHOOK, APP_NAME, USER_NAME, VERSION, LOGO_URL, iniFile, ANON_ID, LANG
+    txt := Trim(edReport.Value)
+    if (txt = "") {
+        repStatus.Value := TT("report_need_text")
+        return
+    }
+    if (Trim(REPORT_WEBHOOK) = "") {
+        repStatus.Value := TT("report_nodest")
+        return
+    }
+    repStatus.Value := TT("report_sending")
+    shot := ""
+    if chkReportShot.Value {
+        hw := FindGameWindow()
+        if (hw && WinGetMinMax(hw) != -1) {
+            try if CaptureWindowPng(hw, A_Temp "\roblox_report.png")
+                shot := A_Temp "\roblox_report.png"
+        }
+    }
+    key := IniRead(iniFile, "cfg", "key", "")
+    fields := [[TT("f_report_user"), USER_NAME, true]
+        , [TT("f_report_pc"), A_ComputerName, true]
+        , [TT("f_report_id"), ANON_ID, true]
+        , [TT("f_version"), "v" VERSION, true]
+        , [TT("f_report_os"), "Windows " A_OSVersion "  ·  " (A_Is64bitOS ? "x64" : "x86"), true]
+        , [TT("f_report_lang"), LANG, true]]
+    if (Trim(key) != "")
+        fields.Push([TT("f_report_lic"), "``" SubStr(key, 1, 40) "``", false])
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    e := '{"username":"' JsonEsc(APP_NAME " Report") '","avatar_url":"' LOGO_URL '","allowed_mentions":{"parse":[]},"embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
+       . '"title":"' JsonEsc("🐞  " TT("ev_report")) '","color":' 0xF5A142 ','
+       . '"description":"' JsonEsc(txt) '",' FieldsJson(fields)
+       . (shot != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
+       . '"footer":{"text":"' JsonEsc(APP_NAME "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+       . '"timestamp":"' ts '"}]}'
+    try {
+        if (shot != "" && FileExist(shot))
+            SendWebhookImage(REPORT_WEBHOOK, e, shot, "", ReportCb)
+        else
+            HttpPost(REPORT_WEBHOOK, e, "application/json", "", ReportCb)
+    } catch as err {
+        repStatus.Value := TT("report_fail", err.Message)
+    }
+}
+
+ReportCb(h) {
+    global repStatus, edReport
+    st := HttpStatus(h)
+    if (st >= 200 && st < 300) {
+        repStatus.Value := TT("report_sent")
+        edReport.Value := ""
+    } else
+        repStatus.Value := TT("report_fail", "HTTP " st)
+}
+
+; ==========================================================
+;  Esperar a internet voltar
+; ==========================================================
+InternetUp() {
+    flags := 0
+    try return DllCall("Wininet\InternetGetConnectedState", "UInt*", &flags, "UInt", 0) ? true : false
+    return true
+}
+
+; ==========================================================
+;  Botões no painel do Discord (reações ▶️ ⏹️ 🔄 📸)
+; ==========================================================
+ReactTick() {
+    global chkBot, chkPanel, panelMsg, edToken, edChan, edDiscId, PANEL_EMO, reactReady, reactBusy
+    if !(chkBot.Value && chkPanel.Value) || panelMsg = ""
+        return
+    tok := Trim(edToken.Value), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
+    if (tok = "" || ch = "" || me = "")
+        return
+    base := "https://discord.com/api/v10/channels/" ch "/messages/" panelMsg
+    if !reactReady {
+        reactReady := true
+        for e in PANEL_EMO
+            try AsyncReq("PUT", base "/reactions/" e[1] "/@me", "", "", "Bot " tok)
+        return
+    }
+    if (reactBusy && A_TickCount - reactBusy < 20000)
+        return
+    reactBusy := A_TickCount
+    for e in PANEL_EMO
+        try AsyncReq("GET", base "/reactions/" e[1] "?limit=20", "", "", "Bot " tok, ReactGot.Bind(tok, me, e[1], e[2], base))
+    SetTimer(() => SetReactFree(), -4000)
+}
+
+SetReactFree() {
+    global reactBusy
+    reactBusy := 0
+}
+
+ReactGot(tok, me, emo, act, base, http) {
+    if (HttpStatus(http) != 200)
+        return
+    ids := ""
+    try ids := JsonPick(http.ResponseText, "a.map(function(u){return u.id}).join(',')")
+    if !InStr("," ids ",", "," me ",")
+        return
+    try AsyncReq("DELETE", base "/reactions/" emo "/" me, "", "", "Bot " tok)
+    parts := StrSplit(base, "/")
+    ch := parts[parts.Length - 2]
+    ReactDo(act, ch, tok)
+}
+
+ReactDo(act, ch, tok) {
+    global running, botCtx, panelMsg
+    botCtx := {ch: ch, mid: panelMsg, tok: tok}
+    try {
+        switch act {
+            case "play":
+                running ? SendEvent("already", [], false, "", SessionFields(), true) : Toggle()
+            case "stop":
+                running ? Toggle() : SendEvent("notrunning", [], false, "", SessionFields(), true)
+            case "restart":
+                SendEvent("restart", [TT("d_restart_how")], false, "", SessionFields(), true)
+                botCtx := 0
+                BotRestart()
+            case "print":
+                SendPrint()
+        }
+    }
+    botCtx := 0
+    SetTimer(() => PanelUpdate(true), -1500)
+}
+
+; ==========================================================
+;  !grafico -> imagem do QuickChart (dados do histórico, só seus)
+; ==========================================================
+UriEncode(str) {
+    static safe := "-_.!~*'()"
+    out := "", b := Buffer(StrPut(str, "UTF-8")), StrPut(str, b, "UTF-8")
+    Loop b.Size - 1 {
+        c := NumGet(b, A_Index - 1, "UChar"), ch := Chr(c)
+        if ((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || InStr(safe, ch))
+            out .= ch
+        else
+            out .= "%" Format("{:02X}", c)
+    }
+    return out
+}
+
+ChartTxt(x) {
+    return StrReplace(StrReplace(x, "\", ""), '"', "'")
+}
+
+BotChart() {
+    global APP_NAME, LOGO_URL, USER_NAME, VERSION
+    specs := CurrencySpec()
+    useCoin := specs.Length > 0
+    ck := useCoin ? RegExReplace(specs[1].name, "\W", "_") : ""
+    labels := "", data := "", any := false
+    Loop 7 {
+        d := FormatTime(DateAdd(A_Now, -(7 - A_Index), "Days"), "yyyyMMdd")
+        rec := HistGet(d)
+        v := useCoin ? (rec.coins.Has(ck) ? rec.coins[ck] : 0) : Round(rec.online / 60)
+        if (rec.has && v)
+            any := true
+        labels .= (labels = "" ? "" : ",") '"' FormatTime(d, "dd/MM") '"'
+        data .= (data = "" ? "" : ",") v
+    }
+    if !any
+        return SendEvent("chart", [TT("chart_none")], false, "", [], true)
+    title := useCoin ? specs[1].name : TT("hist_online")
+    cfg := '{type:"bar",data:{labels:[' labels '],datasets:[{data:[' data '],backgroundColor:"#5B8CFF",borderRadius:6}]},options:{plugins:{legend:{display:false},title:{display:true,text:"' ChartTxt(title) '",color:"#EDEDF0",font:{size:16}}},scales:{y:{beginAtZero:true,ticks:{color:"#9A9AA6"},grid:{color:"#2A2A30"}},x:{ticks:{color:"#9A9AA6"},grid:{display:false}}}}}'
+    url := "https://quickchart.io/chart?bkg=%2316161A&w=640&h=360&c=" UriEncode(cfg)
+    if !DiscordDest(&durl, &auth, &head)
+        return
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    e := '{' head '"allowed_mentions":{"parse":[]},"embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
+       . '"title":"' JsonEsc("📈  " TT("ev_chart")) '","color":' 0xA78BFA ','
+       . '"image":{"url":"' url '"},'
+       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+       . '"timestamp":"' ts '"}]}'
+    try HttpPost(durl, e, "application/json", auth, HookCb())
+}
+
+; ==========================================================
+;  !gif -> vários prints seguidos (timelapse) num anexo só
+; ==========================================================
+BotGif() {
+    global APP_NAME, LOGO_URL, USER_NAME, VERSION
+    hw := FindGameWindow()
+    if (!hw || WinGetMinMax(hw) = -1)
+        return SendEvent("gif", [TT("gif_none")], false, "", [], true)
+    frames := []
+    Loop 4 {
+        f := A_Temp "\rbx_tl" A_Index ".png"
+        try if CaptureWindowPng(hw, f)
+            frames.Push(f)
+        if (A_Index < 4)
+            Sleep 1000
+    }
+    if !frames.Length
+        return SendEvent("gif", [TT("gif_none")], false, "", [], true)
+    if !DiscordDest(&url, &auth, &head)
+        return
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    atts := ""
+    for i, f in frames
+        atts .= (atts = "" ? "" : ",") '{"id":' (i - 1) ',"filename":"frame' i '.png"}'
+    e := '{' head '"allowed_mentions":{"parse":[]},"embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
+       . '"title":"' JsonEsc("🎞️  " TT("ev_gif")) '","color":' 0x3DDC84 ','
+       . '"description":"' JsonEsc(TT("gif_desc", frames.Length)) '",'
+       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+       . '"timestamp":"' ts '"}],"attachments":[' atts ']}'
+    try SendWebhookImages(url, e, frames, auth, HookCb())
+}
+
+SendWebhookImages(url, payload, paths, auth := "", cb := 0) {
+    bnd := "----AHKMulti" A_TickCount
+    head := "--" bnd "`r`nContent-Disposition: form-data; name=`"payload_json`"`r`nContent-Type: application/json`r`n`r`n" payload "`r`n"
+    hb := Buffer(StrPut(head, "UTF-8")), StrPut(head, hb, "UTF-8"), hn := hb.Size - 1
+    total := hn
+    imgs := []
+    for i, pth in paths {
+        ph := "--" bnd "`r`nContent-Disposition: form-data; name=`"files[" (i - 1) "]`"; filename=`"frame" i ".png`"`r`nContent-Type: image/png`r`n`r`n"
+        pb := Buffer(StrPut(ph, "UTF-8")), StrPut(ph, pb, "UTF-8"), pn := pb.Size - 1
+        img := FileRead(pth, "RAW")
+        imgs.Push({hb: pb, hn: pn, img: img})
+        total += pn + img.Size + 2
+    }
+    tail := "--" bnd "--`r`n"
+    tb := Buffer(StrPut(tail, "UTF-8")), StrPut(tail, tb, "UTF-8"), tn := tb.Size - 1
+    total += tn
+    arr := ComObjArray(0x11, total)
+    psa := ComObjValue(arr)
+    DllCall("oleaut32\SafeArrayAccessData", "Ptr", psa, "Ptr*", &pp := 0)
+    off := 0
+    DllCall("RtlMoveMemory", "Ptr", pp + off, "Ptr", hb, "UPtr", hn), off += hn
+    crlf := Buffer(2), NumPut("UChar", 13, crlf, 0), NumPut("UChar", 10, crlf, 1)
+    for seg in imgs {
+        DllCall("RtlMoveMemory", "Ptr", pp + off, "Ptr", seg.hb, "UPtr", seg.hn), off += seg.hn
+        if seg.img.Size
+            DllCall("RtlMoveMemory", "Ptr", pp + off, "Ptr", seg.img, "UPtr", seg.img.Size)
+        off += seg.img.Size
+        DllCall("RtlMoveMemory", "Ptr", pp + off, "Ptr", crlf, "UPtr", 2), off += 2
+    }
+    DllCall("RtlMoveMemory", "Ptr", pp + off, "Ptr", tb, "UPtr", tn)
+    DllCall("oleaut32\SafeArrayUnaccessData", "Ptr", psa)
+    return HttpPost(url, arr, "multipart/form-data; boundary=" bnd, auth, cb)
+}
+
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
     k := A_ScreenDPI / 96
@@ -7028,7 +7603,11 @@ EV := Map(
     "shutconf", ["🔌", "ev_shutconf", 0xF5C542],
     "cancel",  ["✅", "ev_cancel",  0x3DDC84],
     "backin",  ["🟢", "ev_back",    0x3DDC84],
-    "stuck",   ["🧊", "ev_stuck",   0xF5C542])
+    "stuck",   ["🧊", "ev_stuck",   0xF5C542],
+    "neterr",  ["📴", "ev_neterr",  0xF5A142],
+    "netok",   ["🛜", "ev_netok",   0x3DDC84],
+    "chart",   ["📈", "ev_chart",   0xA78BFA],
+    "gif",     ["🎞️", "ev_gif",     0x3DDC84])
 
 SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb := false, img := "") {
     global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId, VERSION
@@ -8043,7 +8622,7 @@ WatchError() {
 }
 
 Check() {
-    global running, lastLaunch, edWait, wasOpen, downTick, discTick
+    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown
     if !running
         return
     open := IsRobloxOpen()
@@ -8073,6 +8652,20 @@ Check() {
         else
             SetState("on", "Roblox ON", TT("st_on_sub"))
     } else {
+        if !InternetUp() {
+            if !netDown {
+                netDown := A_TickCount
+                Log(TT("log_net_down"))
+                SendEvent("neterr", [TT("d_net_wait")])
+            }
+            SetState("warn", TT("st_net"), TT("st_net_sub"))
+            return
+        }
+        if netDown {
+            SendEvent("netok", [TT("d_net_back", DurStr(A_TickCount - netDown))])
+            Log(TT("log_net_back"))
+            netDown := 0
+        }
         SetState("off", "Roblox OFF", TT("st_off_sub"))
         LaunchGame()
     }
