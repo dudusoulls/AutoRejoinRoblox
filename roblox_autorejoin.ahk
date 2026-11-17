@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.0"
+VERSION     := "2.7.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6302,21 +6302,15 @@ PanelUpdate(force := false) {
     if !running
         title .= "  ·  " TT("up_stopped"), color := 0x8B8B94
 
-    ; print + moedas
+    ; moedas (sem print: o painel ao vivo manda só os stats por JSON, que é confiável)
     hw := FindGameWindow(), shot := "", coins := ""
-    if (hw && WinGetMinMax(hw) != -1) {
+    if (hw && WinGetMinMax(hw) != -1 && chkOcr.Value) {
         try {
-            if CaptureWindowPng(hw, A_Temp "\roblox_panel.png")
-                shot := A_Temp "\roblox_panel.png"
-        }
-        if chkOcr.Value {
-            try {
-                cur := ReadCurrencies(hw)
-                CoinsObserved(cur[2])
-                for c in CurrencySpec()
-                    if cur[2].Has(c.name)
-                        coins .= c.emoji "  **" cur[2][c.name] "**  ·  " c.name "`n"
-            }
+            cur := ReadCurrencies(hw)
+            CoinsObserved(cur[2])
+            for c in CurrencySpec()
+                if cur[2].Has(c.name)
+                    coins .= c.emoji "  **" cur[2][c.name] "**  ·  " c.name "`n"
         }
     }
     DayRoll()
@@ -6342,11 +6336,10 @@ PanelUpdate(force := false) {
         . '"attachments":' (shot != "" ? '[{"id":0,"filename":"roblox.png"}]' : '[]') '}'
     base := "https://discord.com/api/v10/channels/" ch "/messages"
     try {
-        body := MultipartBody(payload, shot, &ct)
         if (panelMsg != "")
-            AsyncReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok, PanelPatched.Bind(base, payload, shot, tok, ch))
+            AsyncReq("PATCH", base "/" panelMsg, payload, "application/json", "Bot " tok, PanelPatched.Bind(base, payload, "", tok, ch))
         else
-            PanelCreate(base, payload, shot, tok, ch)
+            PanelCreate(base, payload, "", tok, ch)
     } catch as e
         Log("Painel · " TT("hook_fail", e.Message))
 }
@@ -6362,8 +6355,7 @@ PanelPatched(base, payload, shot, tok, ch, http) {
 }
 
 PanelCreate(base, payload, shot, tok, ch) {
-    body := MultipartBody(payload, shot, &ct)
-    AsyncReq("POST", base, body, ct, "Bot " tok, PanelCreated.Bind(tok, ch))
+    AsyncReq("POST", base, payload, "application/json", "Bot " tok, PanelCreated.Bind(tok, ch))
 }
 
 PanelCreated(tok, ch, http) {
