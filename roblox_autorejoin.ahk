@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.4"
+VERSION     := "2.7.5"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -715,7 +715,9 @@ I18N["pt"] := Map(
     "btn_report_img", "Anexar imagem",
     "report_noimg", "Nenhuma imagem anexada",
     "report_img_set", "Imagem: {1}",
-    "cmd_panel", "liga e manda o painel ao vivo fixado"
+    "cmd_panel", "liga e manda o painel ao vivo fixado",
+    "btn_killall", "Matar todos os Roblox",
+    "log_killed", "Roblox fechado(s) à força."
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1196,7 +1198,9 @@ I18N["en"] := Map(
     "btn_report_img", "Attach image",
     "report_noimg", "No image attached",
     "report_img_set", "Image: {1}",
-    "cmd_panel", "turns on and posts the pinned live panel"
+    "cmd_panel", "turns on and posts the pinned live panel",
+    "btn_killall", "Kill all Roblox",
+    "log_killed", "Roblox force-closed."
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1677,7 +1681,9 @@ I18N["es"] := Map(
     "btn_report_img", "Adjuntar imagen",
     "report_noimg", "Sin imagen adjunta",
     "report_img_set", "Imagen: {1}",
-    "cmd_panel", "activa y envía el panel en vivo fijado"
+    "cmd_panel", "activa y envía el panel en vivo fijado",
+    "btn_killall", "Cerrar todos los Roblox",
+    "log_killed", "Roblox cerrado(s) a la fuerza."
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2158,7 +2164,9 @@ I18N["fr"] := Map(
     "btn_report_img", "Joindre une image",
     "report_noimg", "Aucune image jointe",
     "report_img_set", "Image : {1}",
-    "cmd_panel", "active et envoie le panneau en direct épinglé"
+    "cmd_panel", "active et envoie le panneau en direct épinglé",
+    "btn_killall", "Tuer tous les Roblox",
+    "log_killed", "Roblox fermé(s) de force."
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2639,7 +2647,9 @@ I18N["de"] := Map(
     "btn_report_img", "Bild anhängen",
     "report_noimg", "Kein Bild angehängt",
     "report_img_set", "Bild: {1}",
-    "cmd_panel", "aktiviert und sendet das angepinnte Live-Panel"
+    "cmd_panel", "aktiviert und sendet das angepinnte Live-Panel",
+    "btn_killall", "Alle Roblox beenden",
+    "log_killed", "Roblox zwangsweise geschlossen."
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3120,7 +3130,9 @@ I18N["ru"] := Map(
     "btn_report_img", "Прикрепить изображение",
     "report_noimg", "Изображение не прикреплено",
     "report_img_set", "Изображение: {1}",
-    "cmd_panel", "включает и отправляет закреплённую живую панель"
+    "cmd_panel", "включает и отправляет закреплённую живую панель",
+    "btn_killall", "Закрыть все Roblox",
+    "log_killed", "Roblox принудительно закрыт."
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3601,7 +3613,9 @@ I18N["tr"] := Map(
     "btn_report_img", "Resim ekle",
     "report_noimg", "Resim eklenmedi",
     "report_img_set", "Resim: {1}",
-    "cmd_panel", "sabit canlı paneli açar ve gönderir"
+    "cmd_panel", "sabit canlı paneli açar ve gönderir",
+    "btn_killall", "Tüm Roblox'u kapat",
+    "log_killed", "Roblox zorla kapatıldı."
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4082,7 +4096,9 @@ I18N["id"] := Map(
     "btn_report_img", "Lampirkan gambar",
     "report_noimg", "Tidak ada gambar",
     "report_img_set", "Gambar: {1}",
-    "cmd_panel", "menyalakan dan mengirim panel langsung yang disematkan"
+    "cmd_panel", "menyalakan dan mengirim panel langsung yang disematkan",
+    "btn_killall", "Tutup semua Roblox",
+    "log_killed", "Roblox ditutup paksa."
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4265,6 +4281,7 @@ edWait := Input(CX + 20 + half, y + 62, 120, savedWait, "Number")
 y := 334
 Card(CX, y, CW, 190)
 Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
+Btn(CX + CW - 210, y + 11, 190, 30, TT("btn_killall"), KillRobloxManual)
 chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
 chkZombie := ToggleSwitch(CX + 20, y + 96, CW - 40, TT("sw_zombie"), savedZombie, TT("sw_zombie_sub"))
 Lbl(CX + 20, y + 152, 150, TT("lbl_tol"), "s9", C_MUTED)
@@ -8519,6 +8536,12 @@ VerifyLaunch(token, manual, idx, nextIdx, tries, stage := 1) {
     }
 }
 
+KillRobloxManual(*) {
+    KillRoblox()
+    Log(TT("log_killed"))
+    try SetState("off", "Roblox OFF", TT("st_off_sub"))
+}
+
 KillRoblox() {
     for exe in ["RobloxPlayerBeta.exe", "Windows10Universal.exe", "RobloxPlayerLauncher.exe", "RobloxCrashHandler.exe"] {
         Loop 10 {
@@ -8876,22 +8899,15 @@ Check() {
     }
     if open {
         gw := FindGameWindow()
-        lim := Integer(Trim(edRamMin.Value) || 0)
-        ramBad := false
-        if (chkZombie.Value && lim > 0 && gw) {            ; tem janela mas RAM baixíssima = fantasma
-            r := RobloxMaxRamMB()
-            if (r >= 0 && r < lim)
-                ramBad := true
-        }
-        if (chkZombie.Value && (!gw || ramBad)) {          ; sem janela OU RAM abaixo do limite = travado
+        if (chkZombie.Value && !gw) {                      ; processo SEM janela = fantasma de verdade (RAM baixa com janela é só loading, não mata)
             if !noWinSince
                 noWinSince := A_TickCount
-            else if (A_TickCount - noWinSince > 45000) {    ; 45s travado (além da espera) -> fecha e reabre
+            else if (A_TickCount - noWinSince > 60000) {    ; 60s sem janela (além da espera) -> fecha e reabre
                 noWinSince := 0
-                RecoverRoblox(ramBad ? TT("r_zombie_ram", RobloxMaxRamMB()) : TT("r_zombie"))
+                RecoverRoblox(TT("r_zombie"))
                 return
             }
-            SetState("wait", TT("st_zombie"), ramBad ? TT("st_zombie_ram") : TT("st_zombie_sub"))
+            SetState("wait", TT("st_zombie"), TT("st_zombie_sub"))
             return
         }
         noWinSince := 0

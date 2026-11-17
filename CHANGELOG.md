@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.7.5
+- **Conserto da abertura**: a checagem de RAM (250MB) estava matando o Roblox enquanto ele carregava pelo link (na tela de loading ele usa pouca RAM), entrando num loop de abrir-e-matar. Agora o app só fecha o Roblox "fantasma" quando ele está SEM janela de verdade — RAM baixa com janela é tratada como loading normal.
+- Aumentei a margem pra 60s sem janela antes de considerar travado.
+- **Novo botão "Matar todos os Roblox"** na aba Jogo (card Recuperação), pra você fechar qualquer Roblox preso na hora.
+
+
 ## v2.7.4
 - **Conserto do travamento**: o painel ao vivo fazia leituras pesadas (WMI/OCR) que podiam congelar o app inteiro — e app congelado não fecha nem reabre o Roblox. Agora o painel usa só dados leves (moedas já lidas, CPU/RAM rápidos), sem nada que trave.
 - Junto com a v2.7.3 (que tirou o bloqueio de internet), o app volta a abrir o Roblox normal e a janela responde de novo.
