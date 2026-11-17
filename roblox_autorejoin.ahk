@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.4.0"
+VERSION     := "2.5.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -115,6 +115,7 @@ placedLogged := false
 miniShown := false
 hudBar := 0, hudPan := 0, hudFrame := 0, hudBarDot := 0, hudBarL := 0, hudBarR := 0, hudPanDot := 0, hudPanT := 0, hudPanL := 0
 hudLastPos := "", hudLastHw := 0, hudN := 0, hudUserHidden := false, hudShown := false, hudFrameCol := ""
+hudSide := 0, hudSideDot := 0, hudSideT := 0, hudSideL := 0
 asyncReqs := []
 botBusy := 0
 cpuLast := 0
@@ -706,7 +707,8 @@ I18N["pt"] := Map(
     "r_zombie", "Roblox travado sem janela (processo fantasma)",
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baixa — travado",
-    "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado"
+    "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado",
+    "hud_side", "Painel lateral no Roblox (stats)"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1180,7 +1182,8 @@ I18N["en"] := Map(
     "r_zombie", "Roblox stuck with no window (ghost process)",
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Low RAM — stuck",
-    "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck"
+    "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck",
+    "hud_side", "Side panel on Roblox (stats)"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1654,7 +1657,8 @@ I18N["es"] := Map(
     "r_zombie", "Roblox atascado sin ventana (proceso fantasma)",
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baja — atascado",
-    "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado"
+    "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado",
+    "hud_side", "Panel lateral en Roblox (stats)"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2128,7 +2132,8 @@ I18N["fr"] := Map(
     "r_zombie", "Roblox bloqué sans fenêtre (processus fantôme)",
     "lbl_rammin", "RAM min (Mo)",
     "st_zombie_ram", "RAM basse — bloqué",
-    "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué"
+    "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué",
+    "hud_side", "Panneau latéral sur Roblox (stats)"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2602,7 +2607,8 @@ I18N["de"] := Map(
     "r_zombie", "Roblox hängt ohne Fenster (Geisterprozess)",
     "lbl_rammin", "Min. RAM (MB)",
     "st_zombie_ram", "Wenig RAM — hängt",
-    "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt"
+    "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt",
+    "hud_side", "Seitenpanel an Roblox (Stats)"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3076,7 +3082,8 @@ I18N["ru"] := Map(
     "r_zombie", "Roblox завис без окна (процесс-призрак)",
     "lbl_rammin", "Мин. ОЗУ (МБ)",
     "st_zombie_ram", "Мало ОЗУ — завис",
-    "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис"
+    "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис",
+    "hud_side", "Боковая панель на Roblox (статы)"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3550,7 +3557,8 @@ I18N["tr"] := Map(
     "r_zombie", "Roblox penceresiz takıldı (hayalet işlem)",
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Düşük RAM — takıldı",
-    "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı"
+    "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı",
+    "hud_side", "Roblox'ta yan panel (istatistik)"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4024,7 +4032,8 @@ I18N["id"] := Map(
     "r_zombie", "Roblox macet tanpa jendela (proses hantu)",
     "lbl_rammin", "RAM min (MB)",
     "st_zombie_ram", "RAM rendah — macet",
-    "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet"
+    "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet",
+    "hud_side", "Panel samping di Roblox (statistik)"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -6310,12 +6319,12 @@ HudToggleUser(*) {
 }
 
 HudModeName(m) {
-    return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay"][m + 1])
+    return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay", "hud_side"][m + 1])
 }
 
 CycleHud(bt, *) {
     global hudMode
-    hudMode := Mod(hudMode + 1, 3)
+    hudMode := Mod(hudMode + 1, 4)
     bt.Text := HudModeName(hudMode)
     HudApply()
 }
@@ -6344,6 +6353,17 @@ HudBuild() {
     hudPanT := hudPan.Add("Text", Format("x{} y{} w{} c{} Background{}", Round(30 * k), Round(8 * k), Round(200 * k), C_TEXT, C_CARD), "")
     FontUI(hudPan, "s8")
     hudPanL := hudPan.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(30 * k), Round(220 * k), Round(62 * k), C_MUTED, C_CARD), "")
+    ; painel lateral direito (clicável: abre o programa) com stats completos
+    hudSide := Gui("-Caption +ToolWindow -DPIScale +E0x08000000")
+    hudSide.BackColor := C_CARD
+    hudSide.MarginX := 0, hudSide.MarginY := 0
+    FontUI(hudSide, "s9 w700")
+    hudSideDot := hudSide.Add("Text", Format("x{} y{} w{} c{} Background{}", Round(14 * k), Round(12 * k), Round(16 * k), C_DIM, C_CARD), "●")
+    hudSideT := hudSide.Add("Text", Format("x{} y{} w{} c{} Background{}", Round(32 * k), Round(12 * k), Round(188 * k), C_TEXT, C_CARD), "")
+    FontUI(hudSide, "s9")
+    hudSideL := hudSide.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(14 * k), Round(42 * k), Round(210 * k), Round(270 * k), C_MUTED, C_CARD), "")
+    for c in [hudSideDot, hudSideT, hudSideL]
+        c.OnEvent("Click", (*) => ShowMain())
     ; moldura
     hudFrame := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +E0x20")
     hudFrame.BackColor := C_DIM
@@ -6361,8 +6381,8 @@ HudApply() {
 }
 
 HudHideAll() {
-    global hudBar, hudPan, hudFrame, hudShown
-    for w in [hudBar, hudPan, hudFrame]
+    global hudBar, hudPan, hudFrame, hudSide, hudShown
+    for w in [hudBar, hudPan, hudFrame, hudSide]
         try w.Hide()
     hudShown := false
 }
@@ -6373,9 +6393,9 @@ HudOwn(gui, hw) {
 }
 
 HudTick(force := false) {
-    global hudMode, chkFrame, hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame
+    global hudMode, chkFrame, hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, hudSide, hudSideDot, hudSideT, hudSideL
     global hudLastPos, hudLastHw, hudN, hudUserHidden, hudShown, hudFrameCol
-    global curState, curStateCol, running, monStart, launches, discCount, prevCur, dashTitle
+    global curState, curStateCol, running, monStart, launches, discCount, prevCur, dashTitle, dayOnline
     if !IsObject(hudBar)
         return
     hw := FindGameWindow()
@@ -6391,7 +6411,7 @@ HudTick(force := false) {
     pos := v[1] "," v[2] "," v[3] "," v[4] "," hudMode "," chkFrame.Value
     moved := force || pos != hudLastPos || hw != hudLastHw
     if (hw != hudLastHw) {
-        for w in [hudBar, hudPan, hudFrame]
+        for w in [hudBar, hudPan, hudFrame, hudSide]
             HudOwn(w, hw)
         hudLastHw := hw
     }
@@ -6413,6 +6433,20 @@ HudTick(force := false) {
             hudPanDot.SetFont("c" col)
             SetIf(hudPanT, dashTitle.Value)
             SetIf(hudPanL, stats (coins != "" ? "`n" LTrim(coins) : "") "`n" pc)
+        } else if (hudMode = 3) {
+            hudSideDot.SetFont("c" col)
+            SetIf(hudSideT, dashTitle.Value)
+            ln := "⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped"))
+            ln .= "`n🔁 " TT("f_reopens") ": " launches "    📉 " TT("f_drops") ": " discCount
+            ln .= "`n🟢 " TT("f_online_today") ": " DurStr(dayOnline * 1000)
+            for c in CurrencySpec()
+                if (prevCur.Has(c.name) && prevCur[c.name] != "")
+                    ln .= "`n" DefaultEmoji(c.name) " " c.name ": " Compact(prevCur[c.name])
+            ln .= "`n`n🖥 CPU " CpuLoad() "%   ·   RAM " NumGet(ms, 4, "UInt") "%"
+            rram := RobloxMaxRamMB()
+            if (rram >= 0)
+                ln .= "`n🎮 Roblox: " (rram >= 1024 ? Round(rram / 1024, 2) " GB" : rram " MB")
+            SetIf(hudSideL, ln)
         }
         if (chkFrame.Value && col != hudFrameCol) {
             hudFrame.BackColor := col
@@ -6446,6 +6480,15 @@ HudTick(force := false) {
         DllCall("SetWindowRgn", "Ptr", hudPan.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
     } else
         try hudPan.Hide()
+    if (hudMode = 3) {
+        sw := Round(234 * k), sh := Round(326 * k)
+        MonitorGetWorkArea(MonitorGetPrimary(), , , &wr)
+        sx := (v[3] + sw <= wr) ? v[3] : v[3] - sw      ; à direita da janela; se não couber, por dentro
+        hudSide.Show(Format("NA x{} y{} w{} h{}", sx, v[2], sw, sh))
+        WinSetTransparent((sx < v[3]) ? 235 : "Off", hudSide.Hwnd)
+        DllCall("SetWindowRgn", "Ptr", hudSide.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", sw + 1, "Int", sh + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
+    } else
+        try hudSide.Hide()
     if chkFrame.Value {
         t := Max(2, Round(3 * k))
         hudFrame.Show(Format("NA x{} y{} w{} h{}", v[1], v[2], w, h))

@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.5.0
+- **Novo 3º tipo de HUD: painel lateral**. Gruda na direita da janela do Roblox e mostra tudo que vai pro webhook: status, tempo de sessão, reaberturas, quedas, tempo online hoje, cada moeda, CPU, RAM e a RAM do Roblox. Clique nele abre o programa.
+- Ele encosta do lado de fora da janela quando tem espaço; se não tiver, fica por cima da borda direita meio transparente, acompanhando o Roblox.
+- Troque entre os modos no mesmo botão da aba Janela › HUD (Desligado › Barra › Painel no canto › Painel lateral).
+
+
 ## v2.4.0
 - **Limite de RAM pro Roblox travado**: além de detectar o processo sem janela, agora o app também pega o Roblox fantasma pela RAM. Um jogo de verdade usa bem mais de 250MB; quando o processo fica abaixo do limite, o app entende que travou e **fecha todos e reabre**.
 - O limite vem em **250 MB** por padrão e dá pra ajustar na aba Jogo › Recuperação ("RAM mín. (MB)"). Coloque 0 pra desligar só essa checagem.
