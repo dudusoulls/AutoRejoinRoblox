@@ -27,21 +27,18 @@ jobs:
           "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Versão: $v"
 
-      - name: Instalar AutoHotkey v2 (inclui Ahk2Exe)
-        shell: pwsh
-        run: |
-          $url = "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.19/AutoHotkey_2.0.19_setup.exe"
-          Invoke-WebRequest -Uri $url -OutFile ahk_setup.exe -UseBasicParsing
-          Write-Host "Instalando AutoHotkey silenciosamente..."
-          Start-Process -FilePath .\ahk_setup.exe -ArgumentList "/silent" -Wait
-          Get-ChildItem -Recurse "$env:ProgramFiles\AutoHotkey" -Filter *.exe -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+      - name: Instalar AutoHotkey v2 + Ahk2Exe
+        uses: holy-tao/install-autohotkey@v1
+        with:
+          version: '2.0.19'
+          compiler: 'latest'
+          destination: ahk
 
       - name: Compilar .exe
         shell: pwsh
         run: |
-          $root    = "$env:ProgramFiles\AutoHotkey"
-          $ahk2exe = Get-ChildItem -Recurse $root -Filter Ahk2Exe.exe    | Select-Object -First 1 -ExpandProperty FullName
-          $base    = Get-ChildItem -Recurse $root -Filter AutoHotkey64.exe | Select-Object -First 1 -ExpandProperty FullName
+          $ahk2exe = Get-ChildItem -Recurse ahk -Filter Ahk2Exe.exe     | Select-Object -First 1 -ExpandProperty FullName
+          $base    = Get-ChildItem -Recurse ahk -Filter AutoHotkey64.exe | Select-Object -First 1 -ExpandProperty FullName
           if (-not $ahk2exe) { Write-Error "Ahk2Exe.exe nao encontrado"; exit 1 }
           if (-not $base)    { Write-Error "AutoHotkey64.exe nao encontrado"; exit 1 }
           Write-Host "Ahk2Exe: $ahk2exe"
