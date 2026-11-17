@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.0.1"
+VERSION     := "2.1.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -103,6 +103,8 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+hudBar := 0, hudPan := 0, hudFrame := 0, hudBarDot := 0, hudBarL := 0, hudBarR := 0, hudPanDot := 0, hudPanT := 0, hudPanL := 0
+hudLastPos := "", hudLastHw := 0, hudN := 0, hudUserHidden := false, hudShown := false, hudFrameCol := ""
 asyncReqs := []
 botBusy := 0
 cpuLast := 0
@@ -206,6 +208,9 @@ panelMsg      := IniRead(iniFile, "cfg", "panelMsg", "")
 savedStuck    := IniRead(iniFile, "cfg", "stuck", "1")
 savedStuckMin := IniRead(iniFile, "cfg", "stuckMin", "15")
 stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
+hudMode       := Integer(IniRead(iniFile, "cfg", "hudMode", "1"))      ; 0 desligado, 1 barra, 2 painel
+savedFrame    := IniRead(iniFile, "cfg", "frame", "1")
+savedHudComp  := IniRead(iniFile, "cfg", "hudCompact", "1")
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
 LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
@@ -630,7 +635,16 @@ I18N["pt"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Aparência",
     "pg_look_sub", "Escolha o tema do programa",
-    "sec_theme", "TEMA"
+    "sec_theme", "TEMA",
+    "sec_hud", "HUD NO ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Desligado",
+    "hud_bar", "Barra grudada embaixo",
+    "hud_overlay", "Painel no canto do jogo",
+    "sw_frame", "Moldura colorida em volta do Roblox",
+    "sw_frame_sub", "Verde no jogo, amarelo com desconexão, vermelho fechado",
+    "sw_hudcompact", "Modo compacto esconde o programa e deixa só o HUD",
+    "hud_hint", "Atalhos: Ctrl+Alt+H mostra/esconde o HUD · Ctrl+Alt+S inicia/para · Ctrl+Alt+R reinicia o Roblox · Ctrl+Alt+P manda o status. Clique na barra pra abrir o programa."
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1052,7 +1066,16 @@ I18N["en"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Appearance",
     "pg_look_sub", "Choose the app theme",
-    "sec_theme", "THEME"
+    "sec_theme", "THEME",
+    "sec_hud", "ROBLOX HUD",
+    "hud_mode", "HUD",
+    "hud_off", "Off",
+    "hud_bar", "Bar docked below",
+    "hud_overlay", "Panel in the game corner",
+    "sw_frame", "Colored frame around Roblox",
+    "sw_frame_sub", "Green in game, yellow on disconnect, red when closed",
+    "sw_hudcompact", "Compact mode hides the app and keeps only the HUD",
+    "hud_hint", "Shortcuts: Ctrl+Alt+H show/hide HUD · Ctrl+Alt+S start/stop · Ctrl+Alt+R restart Roblox · Ctrl+Alt+P send status. Click the bar to open the app."
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1474,7 +1497,16 @@ I18N["es"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Apariencia",
     "pg_look_sub", "Elige el tema del programa",
-    "sec_theme", "TEMA"
+    "sec_theme", "TEMA",
+    "sec_hud", "HUD EN ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Apagado",
+    "hud_bar", "Barra pegada abajo",
+    "hud_overlay", "Panel en la esquina del juego",
+    "sw_frame", "Marco de color alrededor de Roblox",
+    "sw_frame_sub", "Verde en el juego, amarillo con desconexión, rojo cerrado",
+    "sw_hudcompact", "El modo compacto oculta el programa y deja solo el HUD",
+    "hud_hint", "Atajos: Ctrl+Alt+H muestra/oculta el HUD · Ctrl+Alt+S inicia/detiene · Ctrl+Alt+R reinicia Roblox · Ctrl+Alt+P envía el estado. Clic en la barra para abrir el programa."
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1896,7 +1928,16 @@ I18N["fr"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Apparence",
     "pg_look_sub", "Choisissez le thème",
-    "sec_theme", "THÈME"
+    "sec_theme", "THÈME",
+    "sec_hud", "HUD SUR ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Désactivé",
+    "hud_bar", "Barre collée en bas",
+    "hud_overlay", "Panneau dans le coin du jeu",
+    "sw_frame", "Cadre coloré autour de Roblox",
+    "sw_frame_sub", "Vert en jeu, jaune en cas de déconnexion, rouge fermé",
+    "sw_hudcompact", "Le mode compact masque l'appli et garde seulement le HUD",
+    "hud_hint", "Raccourcis : Ctrl+Alt+H afficher/masquer le HUD · Ctrl+Alt+S démarrer/arrêter · Ctrl+Alt+R redémarrer Roblox · Ctrl+Alt+P envoyer le statut. Cliquez sur la barre pour ouvrir l'appli."
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2318,7 +2359,16 @@ I18N["de"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Darstellung",
     "pg_look_sub", "Wähle das Design",
-    "sec_theme", "DESIGN"
+    "sec_theme", "DESIGN",
+    "sec_hud", "HUD IN ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Aus",
+    "hud_bar", "Leiste unten angedockt",
+    "hud_overlay", "Panel in der Spielecke",
+    "sw_frame", "Farbiger Rahmen um Roblox",
+    "sw_frame_sub", "Grün im Spiel, gelb bei Abbruch, rot wenn geschlossen",
+    "sw_hudcompact", "Kompaktmodus blendet das Programm aus und lässt nur das HUD",
+    "hud_hint", "Kürzel: Strg+Alt+H HUD ein/aus · Strg+Alt+S Start/Stopp · Strg+Alt+R Roblox neu starten · Strg+Alt+P Status senden. Klick auf die Leiste öffnet das Programm."
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2740,7 +2790,16 @@ I18N["ru"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Оформление",
     "pg_look_sub", "Выберите тему",
-    "sec_theme", "ТЕМА"
+    "sec_theme", "ТЕМА",
+    "sec_hud", "HUD В ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Выключен",
+    "hud_bar", "Панель снизу окна",
+    "hud_overlay", "Панель в углу игры",
+    "sw_frame", "Цветная рамка вокруг Roblox",
+    "sw_frame_sub", "Зелёная в игре, жёлтая при отключении, красная если закрыт",
+    "sw_hudcompact", "Компактный режим прячет программу и оставляет только HUD",
+    "hud_hint", "Горячие клавиши: Ctrl+Alt+H HUD · Ctrl+Alt+S старт/стоп · Ctrl+Alt+R перезапуск Roblox · Ctrl+Alt+P отправить статус. Клик по панели открывает программу."
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3162,7 +3221,16 @@ I18N["tr"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Görünüm",
     "pg_look_sub", "Uygulama temasını seç",
-    "sec_theme", "TEMA"
+    "sec_theme", "TEMA",
+    "sec_hud", "ROBLOX HUD",
+    "hud_mode", "HUD",
+    "hud_off", "Kapalı",
+    "hud_bar", "Altta yapışık çubuk",
+    "hud_overlay", "Oyun köşesinde panel",
+    "sw_frame", "Roblox etrafında renkli çerçeve",
+    "sw_frame_sub", "Oyundayken yeşil, kopunca sarı, kapalıyken kırmızı",
+    "sw_hudcompact", "Kompakt mod programı gizler, sadece HUD kalır",
+    "hud_hint", "Kısayollar: Ctrl+Alt+H HUD aç/kapa · Ctrl+Alt+S başlat/durdur · Ctrl+Alt+R Roblox'u yeniden başlat · Ctrl+Alt+P durumu gönder. Programı açmak için çubuğa tıkla."
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3584,7 +3652,16 @@ I18N["id"] := Map(
     "nav_discord", "Discord",
     "nav_look", "Tampilan",
     "pg_look_sub", "Pilih tema aplikasi",
-    "sec_theme", "TEMA"
+    "sec_theme", "TEMA",
+    "sec_hud", "HUD DI ROBLOX",
+    "hud_mode", "HUD",
+    "hud_off", "Mati",
+    "hud_bar", "Bar menempel di bawah",
+    "hud_overlay", "Panel di pojok game",
+    "sw_frame", "Bingkai warna di sekitar Roblox",
+    "sw_frame_sub", "Hijau di game, kuning saat putus, merah saat tertutup",
+    "sw_hudcompact", "Mode ringkas menyembunyikan aplikasi dan hanya menyisakan HUD",
+    "hud_hint", "Pintasan: Ctrl+Alt+H tampil/sembunyi HUD · Ctrl+Alt+S mulai/berhenti · Ctrl+Alt+R mulai ulang Roblox · Ctrl+Alt+P kirim status. Klik bar untuk membuka aplikasi."
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -3788,6 +3865,16 @@ y := 246
 Card(CX, y, CW, 96)
 Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
 chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
+
+y := 354
+Card(CX, y, CW, 214)
+Lbl(CX + 20, y + 16, 300, TT("sec_hud"), "s7 w700", C_DIM)
+btnHud := Btn(CX + 20, y + 38, 260, 32, HudModeName(hudMode), (*) => 0)
+btnHud.OnEvent("Click", CycleHud.Bind(btnHud))
+chkFrame := ToggleSwitch(CX + 20, y + 84, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
+chkFrame.onChange := (*) => HudApply()
+chkHudComp := ToggleSwitch(CX + 20, y + 130, CW - 40, TT("sw_hudcompact"), savedHudComp)
+Lbl(CX + 20, y + 166, CW - 40, TT("hud_hint"), "s8", C_MUTED)
 
 ; ---------------- Página: Webhook ----------------
 BeginPage("Webhook", TT("nav_hook"), TT("pg_hook_sub"))
@@ -4084,6 +4171,11 @@ DayRoll()
 HotIf((*) => tourOn)
 Hotkey("Esc", (*) => EndTour())
 HotIf()
+; atalhos globais
+try Hotkey("^!h", HudToggleUser)
+try Hotkey("^!s", (*) => Toggle())
+try Hotkey("^!r", (*) => BotRestart())
+try Hotkey("^!p", (*) => SendStatusReport(true))
 OnMessage(0x201, OnLButtonDown)
 OnMessage(0x200, OnMouseMove)
 
@@ -4115,6 +4207,7 @@ StartApp() {
         FadeShow(g, Format("w{} h{}", W, H))
     SetTimer(PulseTick, 110)
     SetTimer(CpuSample, 2000)
+    HudApply()
     SetTimer(Cleanup, 2000)
     SetTimer(WatchError, 3000)
     SetTimer(UpdateStats, 1000)
@@ -5813,6 +5906,166 @@ PanelCreated(tok, ch, http) {
     }
 }
 
+; ==========================================================
+;  HUD grudado na janela do Roblox (barra embaixo ou painel no canto) + moldura de status
+;  Fica "dono" da janela do Roblox: anda junto, some quando ela minimiza e não fica por cima de outros apps.
+; ==========================================================
+HudToggleUser(*) {
+    global hudUserHidden
+    hudUserHidden := !hudUserHidden
+    HudTick(true)
+}
+
+HudModeName(m) {
+    return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay"][m + 1])
+}
+
+CycleHud(bt, *) {
+    global hudMode
+    hudMode := Mod(hudMode + 1, 3)
+    bt.Text := HudModeName(hudMode)
+    HudApply()
+}
+
+HudBuild() {
+    global hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, C_CARD, C_TEXT, C_MUTED, C_DIM
+    k := A_ScreenDPI / 96
+    ; barra (clicável: abre o programa)
+    hudBar := Gui("-Caption +ToolWindow -DPIScale +E0x08000000")
+    hudBar.BackColor := C_CARD
+    hudBar.MarginX := 0, hudBar.MarginY := 0
+    FontUI(hudBar, "s" Round(9) " w700")
+    hudBarDot := hudBar.Add("Text", Format("x{} y0 w{} h{} +0x200 c{} Background{}", Round(10 * k), Round(16 * k), Round(28 * k), C_DIM, C_CARD), "●")
+    FontUI(hudBar, "s9")
+    hudBarL := hudBar.Add("Text", Format("x{} y0 w{} h{} +0x200 c{} Background{}", Round(28 * k), Round(600 * k), Round(28 * k), C_TEXT, C_CARD), "")
+    hudBarR := hudBar.Add("Text", Format("x0 y0 w{} h{} +0x200 Right c{} Background{}", Round(150 * k), Round(28 * k), C_MUTED, C_CARD), "")
+    for c in [hudBarDot, hudBarL, hudBarR]
+        c.OnEvent("Click", (*) => ShowMain())
+    ; painel no canto (clique passa direto pro jogo)
+    hudPan := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +E0x20")
+    hudPan.BackColor := C_CARD
+    hudPan.MarginX := 0, hudPan.MarginY := 0
+    FontUI(hudPan, "s10")
+    hudPanDot := hudPan.Add("Text", Format("x{} y{} w{} c{} Background{}", Round(12 * k), Round(8 * k), Round(16 * k), C_DIM, C_CARD), "●")
+    FontUI(hudPan, "s10 w700")
+    hudPanT := hudPan.Add("Text", Format("x{} y{} w{} c{} Background{}", Round(30 * k), Round(8 * k), Round(200 * k), C_TEXT, C_CARD), "")
+    FontUI(hudPan, "s8")
+    hudPanL := hudPan.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(30 * k), Round(220 * k), Round(62 * k), C_MUTED, C_CARD), "")
+    ; moldura
+    hudFrame := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +E0x20")
+    hudFrame.BackColor := C_DIM
+}
+
+HudApply() {
+    global hudMode, chkFrame, hudBar
+    if !IsObject(hudBar)
+        HudBuild()
+    if (hudMode || chkFrame.Value)
+        SetTimer(HudTick, 250)
+    else
+        SetTimer(HudTick, 0)
+    HudTick(true)
+}
+
+HudHideAll() {
+    global hudBar, hudPan, hudFrame, hudShown
+    for w in [hudBar, hudPan, hudFrame]
+        try w.Hide()
+    hudShown := false
+}
+
+; dono = janela do Roblox (o HUD acompanha ela)
+HudOwn(gui, hw) {
+    DllCall("SetWindowLongPtr", "Ptr", gui.Hwnd, "Int", -8, "Ptr", hw)
+}
+
+HudTick(force := false) {
+    global hudMode, chkFrame, hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame
+    global hudLastPos, hudLastHw, hudN, hudUserHidden, hudShown, hudFrameCol
+    global curState, curStateCol, running, monStart, launches, discCount, prevCur, dashTitle
+    if !IsObject(hudBar)
+        return
+    hw := FindGameWindow()
+    if (hudUserHidden || !hw || DllCall("IsIconic", "Ptr", hw) || !DllCall("IsWindowVisible", "Ptr", hw)
+        || (!hudMode && !chkFrame.Value)) {
+        if hudShown
+            HudHideAll()
+        hudLastPos := ""
+        return
+    }
+    k := A_ScreenDPI / 96
+    v := VisibleRect(hw)
+    pos := v[1] "," v[2] "," v[3] "," v[4] "," hudMode "," chkFrame.Value
+    moved := force || pos != hudLastPos || hw != hudLastHw
+    if (hw != hudLastHw) {
+        for w in [hudBar, hudPan, hudFrame]
+            HudOwn(w, hw)
+        hudLastHw := hw
+    }
+    ; ---- texto (1x por segundo) ----
+    if (force || moved || Mod(++hudN, 4) = 0) {
+        col := curStateCol
+        stats := (running ? "⏱ " DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount
+        coins := ""
+        for c in CurrencySpec()
+            if (prevCur.Has(c.name) && prevCur[c.name] != "")
+                coins .= "   " DefaultEmoji(c.name) " " Compact(prevCur[c.name])
+        ms := Buffer(64, 0), NumPut("UInt", 64, ms), DllCall("GlobalMemoryStatusEx", "Ptr", ms)
+        pc := "CPU " CpuLoad() "%  ·  RAM " NumGet(ms, 4, "UInt") "%"
+        if (hudMode = 1) {
+            hudBarDot.SetFont("c" col)
+            SetIf(hudBarL, dashTitle.Value "   " stats coins)
+            SetIf(hudBarR, pc)
+        } else if (hudMode = 2) {
+            hudPanDot.SetFont("c" col)
+            SetIf(hudPanT, dashTitle.Value)
+            SetIf(hudPanL, stats (coins != "" ? "`n" LTrim(coins) : "") "`n" pc)
+        }
+        if (chkFrame.Value && col != hudFrameCol) {
+            hudFrame.BackColor := col
+            hudFrameCol := col
+        }
+    }
+    if !moved {
+        if !hudShown
+            moved := true
+        else
+            return
+    }
+    hudLastPos := pos
+    ; ---- posição ----
+    w := v[3] - v[1], h := v[4] - v[2]
+    if (hudMode = 1) {
+        bh := Round(28 * k)
+        MonitorGetWorkArea(MonitorGetPrimary(), , , , &wb)
+        by := (v[4] + bh <= wb) ? v[4] : v[4] - bh       ; embaixo da janela; se não couber, por dentro
+        hudBarL.Move(, , w - Round(190 * k))
+        hudBarR.Move(w - Round(160 * k), , Round(150 * k))
+        hudBar.Show(Format("NA x{} y{} w{} h{}", v[1], by, w, bh))
+        DllCall("SetWindowRgn", "Ptr", hudBar.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", w + 1, "Int", bh + 1, "Int", Round(10 * k), "Int", Round(10 * k), "Ptr"), "Int", 1)
+    } else
+        try hudBar.Hide()
+    if (hudMode = 2) {
+        WinGetClientPos(&cx, &cy, , , hw)
+        pw := Round(244 * k), ph := Round(98 * k)
+        hudPan.Show(Format("NA x{} y{} w{} h{}", cx + Round(12 * k), cy + Round(60 * k), pw, ph))
+        WinSetTransparent(225, hudPan.Hwnd)
+        DllCall("SetWindowRgn", "Ptr", hudPan.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
+    } else
+        try hudPan.Hide()
+    if chkFrame.Value {
+        t := Max(2, Round(3 * k))
+        hudFrame.Show(Format("NA x{} y{} w{} h{}", v[1], v[2], w, h))
+        outer := DllCall("CreateRectRgn", "Int", 0, "Int", 0, "Int", w, "Int", h, "Ptr")
+        inner := DllCall("CreateRectRgn", "Int", t, "Int", t, "Int", w - t, "Int", h - t, "Ptr")
+        DllCall("CombineRgn", "Ptr", outer, "Ptr", outer, "Ptr", inner, "Int", 4)
+        DllCall("DeleteObject", "Ptr", inner)
+        DllCall("SetWindowRgn", "Ptr", hudFrame.Hwnd, "Ptr", outer, "Int", 1)
+    } else
+        try hudFrame.Hide()
+    hudShown := true
+}
+
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
@@ -6081,8 +6334,14 @@ UpdateStats() {
 }
 
 SetCompact(on) {
-    global g, gm, miniShown, iniFile, winW, W, H
+    global g, gm, miniShown, iniFile, winW, W, H, hudMode, chkHudComp
     IniWrite(on ? 1 : 0, iniFile, "cfg", "compact")
+    if (on && hudMode && chkHudComp.Value) {   ; o HUD grudado no Roblox faz o papel do modo compacto
+        FadeHide(g)
+        FadeHide(gm)
+        HudApply()
+        return
+    }
     if on {
         FadeHide(g)
         if !miniShown {
@@ -6118,7 +6377,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -6159,6 +6418,9 @@ SaveConfig() {
     IniWrite(chkStuck.Value, iniFile, "cfg", "stuck")
     IniWrite(Trim(edStuckMin.Value), iniFile, "cfg", "stuckMin")
     IniWrite(stuckAct, iniFile, "cfg", "stuckAct")
+    IniWrite(hudMode, iniFile, "cfg", "hudMode")
+    IniWrite(chkFrame.Value, iniFile, "cfg", "frame")
+    IniWrite(chkHudComp.Value, iniFile, "cfg", "hudCompact")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }

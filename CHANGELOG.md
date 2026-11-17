@@ -1,5 +1,13 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.1.0
+- HUD grudado na janela do Roblox: barra fina embaixo da janela (ou painel transparente no canto), com status, tempo de sessão, reaberturas, quedas, moedas, CPU e RAM.
+- Moldura colorida em volta da janela do Roblox que muda de cor conforme o status (verde = farmando, amarelo = reconectando, vermelho = erro).
+- Modo compacto agora pode virar o HUD: o app some e só o HUD fica na tela.
+- Atalhos globais: Ctrl+Alt+H mostra/esconde o HUD, Ctrl+Alt+S inicia/para, Ctrl+Alt+R reinicia o Roblox, Ctrl+Alt+P manda status no Discord.
+- HUD leve: posição atualizada 4x/s, texto 1x/s, só redesenha quando algo muda.
+
+
 ## v2.0.1
 - Mais rápido: Discord, webhook e painel agora usam a internet em segundo plano (a janela não trava mais esperando)
 - Leitura de tela (OCR) mais leve: lembra o jeito que funciona no seu PC e checa a tela de erro com menos frequência
