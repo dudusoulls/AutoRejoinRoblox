@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.0"
+VERSION     := "2.6.1b"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -8289,6 +8289,8 @@ LaunchMethods(link) {
 
     list := []
     for d in deep
+        list.Push({kind: "newest", target: d})   ; abre a versão MAIS NOVA instalada (ignora o atalho velho)
+    for d in deep
         list.Push({kind: "exe", target: d})
     for d in deep
         list.Push({kind: "uri", target: d})
@@ -8313,6 +8315,20 @@ PlayerCommand() {
 }
 
 RunMethod(m) {
+    if (m.kind = "newest") {
+        exe := NewestRobloxExe()
+        if (exe = "")
+            throw Error("nenhuma instalacao do Roblox encontrada")
+        cmd := PlayerCommand()
+        if (cmd != "" && RegExMatch(cmd, 'i)^"[^"]+RobloxPlayerBeta\.exe"')) {
+            cmd := RegExReplace(cmd, 'i)^"[^"]+RobloxPlayerBeta\.exe"', '"' exe '"')   ; troca o exe velho pelo mais novo, mantendo os argumentos certos
+            cmd := StrReplace(cmd, '"%1"', '"' m.target '"')
+            cmd := StrReplace(cmd, "%1", '"' m.target '"')
+            Run(cmd)
+        } else
+            Run('"' exe '" "' m.target '"')
+        return
+    }
     if (m.kind = "exe") {
         cmd := PlayerCommand()
         if (cmd = "")
@@ -8325,7 +8341,33 @@ RunMethod(m) {
 }
 
 MethodName(m) {
+    if (m.kind = "newest")
+        return "Roblox (mais recente)"
     return TT(Map("exe", "m_exe", "uri", "m_uri", "web", "m_web")[m.kind])
+}
+
+; procura o RobloxPlayerBeta.exe da versão MAIS RECENTE instalada (pela data do arquivo)
+NewestRobloxExe() {
+    best := "", bestT := 0
+    roots := []
+    for v in ["LOCALAPPDATA", "ProgramFiles(x86)", "ProgramFiles"] {
+        base := EnvGet(v)
+        if (base != "")
+            roots.Push(base "\Roblox\Versions")
+    }
+    for root in roots {
+        if !DirExist(root)
+            continue
+        Loop Files, root "\*", "D" {
+            exe := A_LoopFilePath "\RobloxPlayerBeta.exe"
+            if FileExist(exe) {
+                t := Integer(FileGetTime(exe, "M"))
+                if (t > bestT)
+                    bestT := t, best := exe
+            }
+        }
+    }
+    return best
 }
 
 IsRobloxOpen() {

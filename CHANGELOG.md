@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.6.1b
+- **Abre a versão mais nova do Roblox**: o app seguia o "atalho" do Windows, que às vezes aponta pra uma versão antiga instalada (daí o "fecha antes de abrir", porque o servidor recusa cliente velho). Agora ele procura o RobloxPlayerBeta.exe da versão **mais recente** instalada e abre essa primeiro — os métodos antigos ficam de reserva, caso não ache.
+
+
 ## Atualizador agora também volta versão (17/11)
 - O botão/comando de atualizar passou a baixar a versão que está no GitHub sempre que ela for **diferente** da sua — antes só ia pra frente. Agora dá pra **voltar** pra uma versão anterior também: é só colocar a versão desejada no GitHub e mandar atualizar. (Base: código da v2.6.0.)
 
