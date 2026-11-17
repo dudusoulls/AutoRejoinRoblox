@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.3"
+VERSION     := "2.7.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -714,7 +714,8 @@ I18N["pt"] := Map(
     "pg_hud_sub", "Painel grudado na janela do Roblox com os stats",
     "btn_report_img", "Anexar imagem",
     "report_noimg", "Nenhuma imagem anexada",
-    "report_img_set", "Imagem: {1}"
+    "report_img_set", "Imagem: {1}",
+    "cmd_panel", "liga e manda o painel ao vivo fixado"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1194,7 +1195,8 @@ I18N["en"] := Map(
     "pg_hud_sub", "Panel docked to the Roblox window with stats",
     "btn_report_img", "Attach image",
     "report_noimg", "No image attached",
-    "report_img_set", "Image: {1}"
+    "report_img_set", "Image: {1}",
+    "cmd_panel", "turns on and posts the pinned live panel"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1674,7 +1676,8 @@ I18N["es"] := Map(
     "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats",
     "btn_report_img", "Adjuntar imagen",
     "report_noimg", "Sin imagen adjunta",
-    "report_img_set", "Imagen: {1}"
+    "report_img_set", "Imagen: {1}",
+    "cmd_panel", "activa y envía el panel en vivo fijado"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2154,7 +2157,8 @@ I18N["fr"] := Map(
     "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats",
     "btn_report_img", "Joindre une image",
     "report_noimg", "Aucune image jointe",
-    "report_img_set", "Image : {1}"
+    "report_img_set", "Image : {1}",
+    "cmd_panel", "active et envoie le panneau en direct épinglé"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2634,7 +2638,8 @@ I18N["de"] := Map(
     "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats",
     "btn_report_img", "Bild anhängen",
     "report_noimg", "Kein Bild angehängt",
-    "report_img_set", "Bild: {1}"
+    "report_img_set", "Bild: {1}",
+    "cmd_panel", "aktiviert und sendet das angepinnte Live-Panel"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3114,7 +3119,8 @@ I18N["ru"] := Map(
     "pg_hud_sub", "Панель у окна Roblox со статами",
     "btn_report_img", "Прикрепить изображение",
     "report_noimg", "Изображение не прикреплено",
-    "report_img_set", "Изображение: {1}"
+    "report_img_set", "Изображение: {1}",
+    "cmd_panel", "включает и отправляет закреплённую живую панель"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3594,7 +3600,8 @@ I18N["tr"] := Map(
     "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli",
     "btn_report_img", "Resim ekle",
     "report_noimg", "Resim eklenmedi",
-    "report_img_set", "Resim: {1}"
+    "report_img_set", "Resim: {1}",
+    "cmd_panel", "sabit canlı paneli açar ve gönderir"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4074,7 +4081,8 @@ I18N["id"] := Map(
     "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik",
     "btn_report_img", "Lampirkan gambar",
     "report_noimg", "Tidak ada gambar",
-    "report_img_set", "Gambar: {1}"
+    "report_img_set", "Gambar: {1}",
+    "cmd_panel", "menyalakan dan mengirim panel langsung yang disematkan"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -5794,7 +5802,7 @@ BotGotMessages(ch, tok, me, http) {
 }
 
 BotCommand(cmd, ch, mid, tok) {
-    global running, multiActive, monStart, botCtx, edLink, pendingUpd, pendingVer, restartReply
+    global running, multiActive, monStart, botCtx, edLink, pendingUpd, pendingVer, restartReply, chkPanel
     parts := StrSplit(Trim(cmd), " ", , 2)
     c := StrLower(parts[1]), arg := parts.Length > 1 ? Trim(parts[2]) : ""
     if (SubStr(c, 1, 1) != "!")
@@ -5834,6 +5842,11 @@ BotCommand(cmd, ch, mid, tok) {
                 BotHistory()
             case "!logs":
                 BotLogs()
+            case "!statsaovivo", "!painel", "!stats", "!live":
+                chkPanel.Value := 1
+                SaveConfig()
+                botCtx := 0
+                SetTimer(() => PanelUpdate(true), -600)
             case "!grafico", "!gráfico", "!chart":
                 BotChart()
             case "!gif", "!timelapse":
@@ -5941,7 +5954,7 @@ HelpFields() {
     return [[TT("grp_control"), "``!iniciar`` " TT("cmd_start") "`n``!parar`` " TT("cmd_stop") "`n``!reiniciar`` " TT("cmd_restart"), false]
         , [TT("grp_info"), "``!status`` " TT("cmd_status") "`n``!print`` " TT("cmd_print") "`n``!moedas`` " TT("cmd_coins")
             . "`n``!resumo`` " TT("cmd_summary") "`n``!historico`` " TT("cmd_hist") "`n``!pc`` " TT("cmd_pc")
-            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!grafico`` " TT("cmd_chart") "`n``!gif`` " TT("cmd_gif") "`n``!ping`` " TT("cmd_ping"), false]
+            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!statsaovivo`` " TT("cmd_panel") "`n``!grafico`` " TT("cmd_chart") "`n``!gif`` " TT("cmd_gif") "`n``!ping`` " TT("cmd_ping"), false]
         , [TT("grp_config"), "``!link`` " TT("cmd_link") "`n``!atualizar`` " TT("cmd_update")
             . "`n``!desligar`` " TT("cmd_shutdown") "`n``!cancelar`` " TT("cmd_cancel"), false]]
 }

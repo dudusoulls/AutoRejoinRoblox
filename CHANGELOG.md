@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.7.0
+- Novo comando **!statsaovivo** (ou !painel / !stats / !live): liga o painel ao vivo e manda ele fixado no canal na hora, direto pelo Discord — sem precisar mexer no app.
+
+
 ## v2.6.2
 - Painel ao vivo: agora **mostra o erro no Logs** quando não consegue enviar (antes falhava calado), e **se recria sozinho** se a mensagem fixada antiga tiver sumido ou travado.
 
