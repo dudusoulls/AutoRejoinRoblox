@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.0.0
+- 15 temas na nova aba Aparência (Obsidian, Medium, Pearl, Aurora, Ember, Silk, Nebula, Lava Lamp, Lagoon, Borealis, Glass, Classic, Midnight, Slate e Rose)
+- Barra lateral reorganizada em 8 itens, com sub-abas no topo (Jogo, Automação, Discord e Moedas)
+- Troca de aba com fade suave e risquinho deslizando embaixo da sub-aba
+
 ## v1.9.0
 - Painel ao vivo no Discord: uma mensagem fixa do bot com status, moedas, PC e print, que se atualiza sozinha
 - Farm travado: avisa (com print) se as moedas pararem de subir por X minutos, e pode reiniciar sozinho

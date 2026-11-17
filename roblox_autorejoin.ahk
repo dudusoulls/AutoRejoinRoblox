@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.9.0"
+VERSION     := "2.0.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -53,6 +53,31 @@ C_WARN  := "F5C542"
 
 ; ---------------- Estado ----------------
 iniFile  := A_ScriptDir "\config.ini"
+; temas (Aparência): troca as cores acima antes de montar a janela
+THEMES := [
+    {name: "Obsidian", BG: "0E0E11", SIDE: "09090B", CARD: "16161A", INPUT: "212127", TEXT: "EDEDF0", MUTED: "8B8B94", DIM: "55555D", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "25252C", BTNH: "303039", NAVA: "1A1A1F", NAVH: "131316", SWOFF: "2C2C33"},
+    {name: "Medium", BG: "151517", SIDE: "0F0F11", CARD: "1C1C20", INPUT: "26262C", TEXT: "EDEDF0", MUTED: "8E8E97", DIM: "5A5A62", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "2A2A31", BTNH: "35353D", NAVA: "222228", NAVH: "18181B", SWOFF: "32323A"},
+    {name: "Pearl", BG: "F4F4F6", SIDE: "E9E9EE", CARD: "FFFFFF", INPUT: "EFEFF3", TEXT: "18181C", MUTED: "5F5F68", DIM: "9A9AA3", ACC: "18181C", ACCH: "3A3A42", BTN: "E6E6EB", BTNH: "DADAE0", NAVA: "DCDCE3", NAVH: "E2E2E8", SWOFF: "D6D6DC"},
+    {name: "Aurora", BG: "0B1418", SIDE: "071013", CARD: "102027", INPUT: "173039", TEXT: "E6F6F4", MUTED: "86A9A6", DIM: "4F6E6C", ACC: "3DDCA8", ACCH: "2FB98C", BTN: "18323B", BTNH: "214350", NAVA: "15303A", NAVH: "0F2228", SWOFF: "21404A"},
+    {name: "Ember", BG: "140C08", SIDE: "0E0805", CARD: "1E130D", INPUT: "2A1B12", TEXT: "F7ECE4", MUTED: "B09382", DIM: "6E5546", ACC: "FF7A2E", ACCH: "E2611A", BTN: "33211A", BTNH: "402A20", NAVA: "2C1C14", NAVH: "1C120C", SWOFF: "3A271C"},
+    {name: "Silk", BG: "120F1A", SIDE: "0C0A12", CARD: "1B1726", INPUT: "251F33", TEXT: "F0ECF8", MUTED: "9E95B5", DIM: "625A78", ACC: "E9A8E0", ACCH: "D18BC7", BTN: "2B2440", BTNH: "362D4F", NAVA: "262036", NAVH: "1A1626", SWOFF: "342C48"},
+    {name: "Nebula", BG: "120A18", SIDE: "0C0611", CARD: "1D1026", INPUT: "2A1736", TEXT: "F5EAF8", MUTED: "AD8FBA", DIM: "6C5277", ACC: "FF5CA8", ACCH: "E2438E", BTN: "34203F", BTNH: "42294F", NAVA: "2E1B38", NAVH: "1E1127", SWOFF: "3C2648"},
+    {name: "Lava Lamp", BG: "160A0E", SIDE: "0F0609", CARD: "22101A", INPUT: "2F1622", TEXT: "FBEDEF", MUTED: "B98E98", DIM: "75525A", ACC: "FF9A3C", ACCH: "F07F1E", BTN: "3A1E28", BTNH: "482532", NAVA: "331A24", NAVH: "22111A", SWOFF: "44242E"},
+    {name: "Lagoon", BG: "081416", SIDE: "050E10", CARD: "0E2124", INPUT: "142D31", TEXT: "E3F7F7", MUTED: "7FAFAF", DIM: "4A6E6F", ACC: "2FD6C9", ACCH: "1FB8AC", BTN: "163639", BTNH: "1E4549", NAVA: "133034", NAVH: "0C2023", SWOFF: "1F3F43"},
+    {name: "Borealis", BG: "0D0F1C", SIDE: "080A14", CARD: "141830", INPUT: "1C2240", TEXT: "EAF2F0", MUTED: "8FA3B4", DIM: "56637A", ACC: "4CE38D", ACCH: "36C676", BTN: "1F2747", BTNH: "293258", NAVA: "1C2340", NAVH: "131830", SWOFF: "26304F"},
+    {name: "Glass", BG: "0B0E1A", SIDE: "080A13", CARD: "121729", INPUT: "1A2036", TEXT: "E8ECF7", MUTED: "8C95B2", DIM: "545C78", ACC: "8FB4FF", ACCH: "6F9BF5", BTN: "1D2440", BTNH: "262F50", NAVA: "1A2038", NAVH: "121729", SWOFF: "252D49"},
+    {name: "Classic", BG: "121212", SIDE: "0C0C0C", CARD: "1A1A1A", INPUT: "242424", TEXT: "EEEEEE", MUTED: "909090", DIM: "5C5C5C", ACC: "FFFFFF", ACCH: "DDDDDD", BTN: "2A2A2A", BTNH: "353535", NAVA: "222222", NAVH: "181818", SWOFF: "333333"},
+    {name: "Midnight", BG: "0B0F17", SIDE: "070A10", CARD: "111723", INPUT: "18202F", TEXT: "E6ECF5", MUTED: "8A96AA", DIM: "535E72", ACC: "3B82F6", ACCH: "2F6DD6", BTN: "1B2333", BTNH: "243044", NAVA: "182030", NAVH: "101622", SWOFF: "222C3E"},
+    {name: "Slate", BG: "1E232B", SIDE: "181C23", CARD: "262C36", INPUT: "2F3642", TEXT: "E8EDF3", MUTED: "98A3B3", DIM: "66707E", ACC: "7CC4D8", ACCH: "5FB0C6", BTN: "333B48", BTNH: "3D4656", NAVA: "2E3542", NAVH: "232932", SWOFF: "3A4250"},
+    {name: "Rose", BG: "141014", SIDE: "0E0B0E", CARD: "1D171D", INPUT: "282028", TEXT: "F6EDF0", MUTED: "A99AA2", DIM: "6A5D64", ACC: "F2B8C6", ACCH: "E29CAE", BTN: "2D242C", BTNH: "382D37", NAVA: "281F27", NAVH: "1B151B", SWOFF: "352B33"}
+]
+curTheme := IniRead(iniFile, "cfg", "theme", "Obsidian")
+for th in THEMES
+    if (th.name = curTheme) {
+        C_BG := th.BG, C_SIDE := th.SIDE, C_CARD := th.CARD, C_INPUT := th.INPUT, C_TEXT := th.TEXT
+        C_MUTED := th.MUTED, C_DIM := th.DIM, C_ACC := th.ACC, C_ACCH := th.ACCH, C_BTN := th.BTN
+        C_BTNH := th.BTNH, C_NAVA := th.NAVA, C_NAVH := th.NAVH, C_SWOFF := th.SWOFF
+    }
 running  := false
 lastLaunch := 0
 launches := 0
@@ -78,6 +103,8 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+curPage := ""
+cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
 panelLast := 0
 restartReply := 0
@@ -595,7 +622,11 @@ I18N["pt"] := Map(
     "d_stuck", "As moedas não mudam há {1} min.",
     "r_stuck", "farm parado (moedas sem mudar)",
     "log_stuck", "Farm parado há {1} min.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Aparência",
+    "pg_look_sub", "Escolha o tema do programa",
+    "sec_theme", "TEMA"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1013,7 +1044,11 @@ I18N["en"] := Map(
     "d_stuck", "The currency hasn't changed for {1} min.",
     "r_stuck", "farm stopped (currency not changing)",
     "log_stuck", "Farm stopped for {1} min.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Appearance",
+    "pg_look_sub", "Choose the app theme",
+    "sec_theme", "THEME"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1431,7 +1466,11 @@ I18N["es"] := Map(
     "d_stuck", "Las monedas no cambian desde hace {1} min.",
     "r_stuck", "farm detenido (monedas sin cambios)",
     "log_stuck", "Farm detenido hace {1} min.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Apariencia",
+    "pg_look_sub", "Elige el tema del programa",
+    "sec_theme", "TEMA"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1849,7 +1888,11 @@ I18N["fr"] := Map(
     "d_stuck", "Les monnaies n'ont pas changé depuis {1} min.",
     "r_stuck", "farm à l'arrêt (monnaies inchangées)",
     "log_stuck", "Farm à l'arrêt depuis {1} min.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Apparence",
+    "pg_look_sub", "Choisissez le thème",
+    "sec_theme", "THÈME"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2267,7 +2310,11 @@ I18N["de"] := Map(
     "d_stuck", "Die Währungen haben sich seit {1} Min. nicht verändert.",
     "r_stuck", "Farm steht (Währungen unverändert)",
     "log_stuck", "Farm steht seit {1} Min.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Darstellung",
+    "pg_look_sub", "Wähle das Design",
+    "sec_theme", "DESIGN"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2685,7 +2732,11 @@ I18N["ru"] := Map(
     "d_stuck", "Валюта не меняется уже {1} мин.",
     "r_stuck", "фарм остановился (валюта не меняется)",
     "log_stuck", "Фарм стоит уже {1} мин.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Оформление",
+    "pg_look_sub", "Выберите тему",
+    "sec_theme", "ТЕМА"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3103,7 +3154,11 @@ I18N["tr"] := Map(
     "d_stuck", "Paralar {1} dakikadır değişmiyor.",
     "r_stuck", "farm durdu (paralar değişmiyor)",
     "log_stuck", "Farm {1} dakikadır duruyor.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Görünüm",
+    "pg_look_sub", "Uygulama temasını seç",
+    "sec_theme", "TEMA"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3521,7 +3576,11 @@ I18N["id"] := Map(
     "d_stuck", "Mata uang tidak berubah selama {1} menit.",
     "r_stuck", "farm berhenti (mata uang tidak berubah)",
     "log_stuck", "Farm berhenti selama {1} menit.",
-    "f_state", "Roblox"
+    "f_state", "Roblox",
+    "nav_discord", "Discord",
+    "nav_look", "Tampilan",
+    "pg_look_sub", "Pilih tema aplikasi",
+    "sec_theme", "TEMA"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -3530,7 +3589,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -3616,19 +3675,23 @@ g.Add("Text", Format("x68 y24 w116 c{} Background{}", C_TEXT, C_SIDE), "Auto Rec
 FontUI(g, "s7 w700")
 g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
+; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
+GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
+    , "Discord", ["Webhook", "Bot"], "Moedas", ["Moedas", "Histórico"], "Aparência", ["Aparência"]
+    , "Logs", ["Logs"], "Sobre", ["Sobre"])
+GROUP_OF := Map()
+for gk, subs in GROUPS
+    for sb in subs
+        GROUP_OF[sb] := gk
 AddNav("Início",    Chr(0xE80F), 92)
-AddNav("Jogo",      Chr(0xE7FC), 128)
-AddNav("Contas",    Chr(0xE716), 164)
-AddNav("Janela",    Chr(0xE7F4), 200)
-AddNav("Automação", Chr(0xE916), 236)
-AddNav("Webhook",   Chr(0xE71B), 272)
-AddNav("Bot",       Chr(0xE8F2), 308)
-AddNav("Moedas",    Chr(0xE8C7), 344)
-AddNav("Histórico", Chr(0xE9D2), 380)
-AddNav("Opções",    Chr(0xE713), 416)
-AddNav("Logs",      Chr(0xE81C), 452)
-AddNav("Sobre",     Chr(0xE946), 488)
-navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 100, C_ACC))
+AddNav("Jogo",      Chr(0xE7FC), 134)
+AddNav("Automação", Chr(0xE916), 176)
+AddNav("Discord",   Chr(0xE8F2), 218)
+AddNav("Moedas",    Chr(0xE8C7), 260)
+AddNav("Aparência", Chr(0xE790), 302)
+AddNav("Logs",      Chr(0xE81C), 344)
+AddNav("Sobre",     Chr(0xE946), 386)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
@@ -3859,7 +3922,7 @@ histBars := [], histVals := [], histDays := []
 slotW := (CW - 40) // 14
 Loop 14 {
     bx := CX + 20 + (A_Index - 1) * slotW
-    histBars.Push(P(g.Add("Text", Format("x{} y{} w{} h2 Background{}", bx + (slotW - 20) // 2, histBase - 2, 20, A_Index = 14 ? C_ACC : "6B6B75"))))
+    histBars.Push(P(g.Add("Text", Format("x{} y{} w{} h2 Background{}", bx + (slotW - 20) // 2, histBase - 2, 20, A_Index = 14 ? C_ACC : C_DIM))))
     FontUI(g, "s7 w600")
     histVals.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase - 20, slotW, C_MUTED, C_CARD), "")))
     FontUI(g, "s7")
@@ -3918,13 +3981,22 @@ changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E
     , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
+; ---------------- Página: Aparência ----------------
+BeginPage("Aparência", TT("nav_look"), TT("pg_look_sub"))
+y := 92
+Card(CX, y, CW, 470)
+Lbl(CX + 20, y + 16, 300, TT("sec_theme"), "s7 w700", C_DIM)
+tw := (CW - 40 - 36) // 4, thh := 66
+for i, th in THEMES
+    ThemeTile(CX + 20 + Mod(i - 1, 4) * (tw + 12), y + 44 + ((i - 1) // 4) * (thh + 34), tw, thh, th)
+
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
 y := 92
 Card(CX, y, CW, 324)
 FontMono(g, "s9")
 logBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly -Wrap +Multi +VScroll -E0x200 c{} Background{}"
-    , CX + 16, y + 14, CW - 32, 296, "C9C9CF", C_CARD)))
+    , CX + 16, y + 14, CW - 32, 296, C_TEXT, C_CARD)))
 DllCall("uxtheme\SetWindowTheme", "Ptr", logBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 Btn(CX + CW - 110, y + 336, 110, 32, TT("btn_clear"), (*) => (logBox.Value := ""))
 
@@ -3973,6 +4045,30 @@ MakeBtn(gk, 296, 258, 92, 28, TT("btn_copy"), (*) => (A_Clipboard := GetHWID(), 
 if (BUY_URL != "")
     MakeBtn(gk, 32, 296, 120, 22, TT("btn_buy"), (*) => Run(BUY_URL), "ghost", false, "s8 w600", 0, C_CARD)
 gk.OnEvent("Close", (*) => KeyClose())
+
+; ---- sub-abas no topo das abas agrupadas ----
+segs := Map()
+FontUI(g, "s9 w600")
+for gk, subs in GROUPS {
+    if (subs.Length < 2)
+        continue
+    segs[gk] := []
+    sx := CX
+    for sb in subs {
+        sc := g.Add("Text", Format("x{} y60 h26 +0x200 Center Background{} c{}", sx, C_BG, C_MUTED), "  " TT(NAVK[sb]) "  ")
+        sc.GetPos(, , &sw)
+        sc.Move(, , sw + 16)
+        sc.OnEvent("Click", ShowPage.Bind(sb))
+        hoverMap[sc.Hwnd] := {ctrls: [sc], bg: C_BG, hov: C_NAVH}
+        roundQ.Push([sc, 8])
+        segs[gk].Push({ctrl: sc, sub: sb})
+        sc.Visible := false
+        sx += sw + 16 + 6
+    }
+}
+segLine := g.Add("Text", Format("x{} y88 w40 h2 Background{}", CX, C_ACC))
+segLine.Visible := false
+segFrom := [0, 0], segTo := [0, 0], segT0 := 0
 
 ; ---- acabamento ----
 FinishGui()
@@ -4140,41 +4236,142 @@ SetBtnStyle(b, style) {
 }
 
 AddNav(name, icon, y) {
-    global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK
+    global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK, GROUPS
     FontIcon(g, "s11")
-    ic := g.Add("Text", Format("x14 y{} w42 h34 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
+    ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h34 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
+    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, y: y}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
-        c.OnEvent("Click", (*) => ShowPage(name))
+        c.OnEvent("Click", (*) => ShowPage(GROUPS[name][1]))
     }
     navs[name] := o
 }
 
-ShowPage(name) {
+ShowPage(name, *) {
     global pages, pageInfo, navs, pageTitle, pageSub, C_NAVA, C_SIDE, C_NAVH, C_TEXT, C_MUTED, hoverCur
+    global GROUP_OF, segs, segLine, NAVK, appStarted, curPage
+    grp := GROUP_OF.Has(name) ? GROUP_OF[name] : name
+    first := (curPage = "")
+    changed := (curPage != name)
+    curPage := name
+    if (changed && !first && appStarted)
+        PageFade()
     for n, list in pages
         if (n != name)
             for c in list
                 c.Visible := false
     for c in pages[name]
         c.Visible := true
+    ; sub-abas do grupo
+    for gk, list in segs
+        for sg in list {
+            sg.ctrl.Visible := (gk = grp)
+            if (gk = grp)
+                sg.ctrl.SetFont("c" (sg.sub = name ? C_TEXT : C_MUTED))
+        }
+    if segs.Has(grp) {
+        for sg in segs[grp]
+            if (sg.sub = name) {
+                sg.ctrl.GetPos(&sx, , &sw)
+                SlideSeg(sx + 12, sw - 24, first)
+            }
+        segLine.Visible := true
+    } else
+        segLine.Visible := false
     for n, o in navs {
-        act := (n = name)
+        act := (n = grp)
         o.bg  := act ? C_NAVA : C_SIDE
         o.hov := act ? C_NAVA : C_NAVH
         for c in o.ctrls
             c.SetFont("c" (act ? C_TEXT : C_MUTED))
         AnimColor(o, hoverCur = o ? o.hov : o.bg, 180)
         if act
-            SlideNav(o.y + 8)
+            SlideNav(o.y + 10)
     }
     if (name = "Histórico")
         SetTimer(HistDraw, -50)
-    pageTitle.Value := pageInfo[name][1]
+    pageTitle.Value := TT(NAVK[grp])
     pageSub.Value := pageInfo[name][2]
+    pageSub.Visible := !segs.Has(grp)
+}
+
+; risquinho embaixo da sub-aba ativa deslizando
+SlideSeg(x, w, now := false) {
+    global segLine, segFrom, segTo, segT0
+    segLine.GetPos(&cx, , &cw)
+    segFrom := now ? [x, w] : [cx, cw], segTo := [x, w], segT0 := A_TickCount
+    SetTimer(SegTick, 15)
+}
+
+SegTick() {
+    global segLine, segFrom, segTo, segT0
+    pr := Min(1, (A_TickCount - segT0) / 220)
+    e := EaseOut(pr)
+    segLine.Move(Round(segFrom[1] + (segTo[1] - segFrom[1]) * e), , Round(segFrom[2] + (segTo[2] - segFrom[2]) * e))
+    segLine.Redraw()
+    if (pr >= 1)
+        SetTimer(SegTick, 0)
+}
+
+; troca de aba suave: cobre o conteúdo com a cor de fundo e vai sumindo
+PageFade() {
+    global g, cover, coverT0, SIDE, C_BG
+    if !DllCall("IsWindowVisible", "Ptr", g.Hwnd)
+        return
+    k := A_ScreenDPI / 96
+    WinGetClientPos(&cx, &cy, &cw, &ch, g.Hwnd)
+    if !IsObject(cover) {
+        cover := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +E0x20 +Owner" g.Hwnd)
+        cover.BackColor := C_BG
+    }
+    try WinSetTransparent(255, cover.Hwnd)
+    cover.Show(Format("NA x{} y{} w{} h{}", cx + Round(SIDE * k), cy + Round(44 * k), cw - Round(SIDE * k), ch - Round(44 * k)))
+    coverT0 := A_TickCount
+    SetTimer(CoverTick, 15)
+}
+
+CoverTick() {
+    global cover, coverT0
+    pr := Min(1, (A_TickCount - coverT0) / 200)
+    try WinSetTransparent(Round(255 * (1 - EaseOut(pr))), cover.Hwnd)
+    if (pr >= 1) {
+        SetTimer(CoverTick, 0)
+        cover.Hide()
+    }
+}
+
+; quadradinho de prévia de um tema
+ThemeTile(x, y, w, h, th) {
+    global g, curTheme, C_ACC, C_TEXT, C_MUTED, C_CARD
+    sel := (th.name = curTheme)
+    if sel {
+        ring := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x - 2, y - 2, w + 4, h + 4, C_ACC))
+        Bg(ring, 14), P(ring)
+    }
+    base := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x, y, w, h, th.CARD))
+    Bg(base, 12), P(base)
+    base.OnEvent("Click", SetTheme.Bind(th.name))
+    side := P(g.Add("Text", Format("x{} y{} w{} h{} Background{}", x + 7, y + 8, 10, h - 16, th.SIDE)))
+    roundQ.Push([side, 6])
+    P(g.Add("Text", Format("x{} y{} w{} h4 Background{}", x + 24, y + 12, 34, th.TEXT)))
+    P(g.Add("Text", Format("x{} y{} w{} h4 Background{}", x + 24, y + 22, w - 44, th.MUTED)))
+    P(g.Add("Text", Format("x{} y{} w{} h4 Background{}", x + 24, y + 32, w - 60, th.DIM)))
+    pill := P(g.Add("Text", Format("x{} y{} w26 h10 Background{}", x + w - 34, y + h - 18, th.ACC)))
+    roundQ.Push([pill, 10])
+    Lbl(x, y + h + 6, w, th.name (sel ? "  ✓" : ""), sel ? "s8 w700" : "s8", sel ? C_TEXT : C_MUTED)
+}
+
+SetTheme(name, *) {
+    global iniFile, running, curTheme
+    if (name = curTheme)
+        return
+    IniWrite(name, iniFile, "cfg", "theme")
+    SaveConfig()
+    if running
+        IniWrite(1, iniFile, "cfg", "resume")
+    Relaunch()
 }
 
 RoundCtrl(ctrl, radius) {
