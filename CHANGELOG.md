@@ -1,5 +1,15 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.0 (BETA)
+Recomeço da numeração: daqui pra frente as versões são mais pra melhorar do que adicionar. O app está marcado como BETA.
+- **Abre sempre a versão mais recente do Roblox**: procura o RobloxPlayerBeta.exe da versão instalada mais nova (pela data de instalação da pasta) e abre essa primeiro. Mostra no Logs qual escolheu ("Versão do Roblox escolhida: version-...").
+- **Mata o Roblox-fantasma antes de abrir** (processo preso sem janela), que era o que causava o "fecha antes da janela aparecer".
+- **Atualizador agora volta versão também**: troca pela versão que está no GitHub sempre que for diferente da sua (pra frente ou pra trás).
+- Selo **BETA** na lateral e na aba Sobre; versão reiniciada em 1.0.0.
+- Tudo que havia antes continua: aba Suporte (com anexar imagem), !statsaovivo, botão "Matar todos os Roblox", painel ao vivo leve, e as correções de abertura (sem o bloqueio de internet furado, sem matar o Roblox enquanto carrega).
+- Boas-vindas na primeira vez: o passo a passo já cumprimenta a pessoa pelo nome do Windows ao abrir pela primeira vez.
+
+
 ## v2.6.1c
 - A detecção da "versão mais nova" agora usa a **data de criação da pasta** (quando a versão foi instalada), não a data do arquivo (que mudava ao abrir uma versão antiga).
 - Agora ele **mostra no Logs qual pasta de versão escolheu** ("Versão do Roblox escolhida: version-..."), pra ajudar a confirmar se pegou a certa.
