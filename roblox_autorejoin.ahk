@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.0.0"
+VERSION     := "2.0.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -103,6 +103,10 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+asyncReqs := []
+botBusy := 0
+cpuLast := 0
+dayDate := ""
 curPage := ""
 cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
@@ -4109,7 +4113,8 @@ StartApp() {
         SetCompact(true)
     else
         FadeShow(g, Format("w{} h{}", W, H))
-    SetTimer(PulseTick, 70)
+    SetTimer(PulseTick, 110)
+    SetTimer(CpuSample, 2000)
     SetTimer(Cleanup, 2000)
     SetTimer(WatchError, 3000)
     SetTimer(UpdateStats, 1000)
@@ -4637,8 +4642,11 @@ KeyClose() {
 
 ; ---- contadores do dia (ficam no config.ini, seção [day]) ----
 DayRoll() {
-    global iniFile, dayOnline
+    global iniFile, dayOnline, dayDate
     today := FormatTime(, "yyyyMMdd")
+    if (today = dayDate)
+        return
+    dayDate := today
     old := IniRead(iniFile, "day", "date", "")
     if (old != today) {
         if (old != "")
@@ -4646,7 +4654,7 @@ DayRoll() {
         IniDelete(iniFile, "day")
         IniWrite(today, iniFile, "day", "date")
         dayOnline := 0
-    } else if !dayOnline
+    } else
         dayOnline := Integer(IniRead(iniFile, "day", "online", "0"))
 }
 
@@ -5200,7 +5208,7 @@ SnowGreater(a, b) {
 }
 
 BotTick() {
-    global chkBot, edToken, edChan, edDiscId, botLast, botStatus
+    global chkBot, edToken, edChan, edDiscId, botLast, botStatus, botBusy
     if !chkBot.Value {
         SetIf(botStatus, TT("bot_off"))
         return
@@ -5212,11 +5220,23 @@ BotTick() {
         SetIf(botStatus, TT("bot_need_id"))
         return
     }
+    if (botBusy && A_TickCount - botBusy < 30000)
+        return
+    botBusy := A_TickCount
+    url := "https://discord.com/api/v10/channels/" ch "/messages?limit=" (botLast = "" ? "1" : "10&after=" botLast)
+    try AsyncReq("GET", url, "", "", "Bot " tok, BotGotMessages.Bind(ch, tok, me))
+    catch as e {
+        botBusy := 0
+        SetIf(botStatus, TT("bot_err", e.Message))
+    }
+}
+
+BotGotMessages(ch, tok, me, http) {
+    global botLast, botStatus, botBusy
+    botBusy := 0
     try {
-        url := "https://discord.com/api/v10/channels/" ch "/messages?limit=" (botLast = "" ? "1" : "10&after=" botLast)
-        http := DiscordApi("GET", url, tok)
-        if (http.Status != 200)
-            throw Error("HTTP " http.Status)
+        if (HttpStatus(http) != 200)
+            throw Error("HTTP " HttpStatus(http))
         flat := JsFlatMessages(http.ResponseText)
     } catch as e {
         SetIf(botStatus, TT("bot_err", e.Message))
@@ -5317,7 +5337,7 @@ BotCommand(cmd, ch, mid, tok) {
         botCtx := 0
     if known {
         Log(TT("log_bot_cmd", c))
-        try DiscordApi("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", tok)
+        try AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", "", "", "Bot " tok)
     }
 }
 
@@ -5359,13 +5379,22 @@ PcFields() {
 
 ; uso de CPU (mede por meio segundo)
 CpuLoad() {
-    static ft(b) => NumGet(b, 0, "UInt64")
-    i1 := Buffer(8), k1 := Buffer(8), u1 := Buffer(8), i2 := Buffer(8), k2 := Buffer(8), u2 := Buffer(8)
-    DllCall("GetSystemTimes", "Ptr", i1, "Ptr", k1, "Ptr", u1)
-    Sleep(500)
-    DllCall("GetSystemTimes", "Ptr", i2, "Ptr", k2, "Ptr", u2)
-    idle := ft(i2) - ft(i1), sys := (ft(k2) - ft(k1)) + (ft(u2) - ft(u1))
-    return sys > 0 ? Round((sys - idle) / sys * 100) : 0
+    global cpuLast
+    return cpuLast
+}
+
+; mede a CPU a cada 2s comparando com a medida anterior
+CpuSample() {
+    global cpuLast
+    static pi := 0, pk := 0, pu := 0
+    i := Buffer(8), k := Buffer(8), u := Buffer(8)
+    DllCall("GetSystemTimes", "Ptr", i, "Ptr", k, "Ptr", u)
+    ci := NumGet(i, "UInt64"), ck := NumGet(k, "UInt64"), cu := NumGet(u, "UInt64")
+    if pk {
+        idle := ci - pi, sys := (ck - pk) + (cu - pu)
+        cpuLast := sys > 0 ? Round((sys - idle) / sys * 100) : 0
+    }
+    pi := ci, pk := ck, pu := cu
 }
 
 HelpFields() {
@@ -5753,21 +5782,34 @@ PanelUpdate(force := false) {
     base := "https://discord.com/api/v10/channels/" ch "/messages"
     try {
         body := MultipartBody(payload, shot, &ct)
-        http := 0
-        if (panelMsg != "") {
-            http := HttpReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok)
-            if (http.Status = 404)
-                panelMsg := "", http := 0
-        }
-        if !http {
-            body := MultipartBody(payload, shot, &ct)
-            http := HttpReq("POST", base, body, ct, "Bot " tok)
-            if (http.Status = 200) {
-                panelMsg := JsonPick(http.ResponseText, "a.id")
-                IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
-                try HttpReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
-            }
-        }
+        if (panelMsg != "")
+            AsyncReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok, PanelPatched.Bind(base, payload, shot, tok, ch))
+        else
+            PanelCreate(base, payload, shot, tok, ch)
+    }
+}
+
+PanelPatched(base, payload, shot, tok, ch, http) {
+    global panelMsg
+    if (HttpStatus(http) = 404) {             ; mensagem apagada: cria outra
+        panelMsg := ""
+        PanelCreate(base, payload, shot, tok, ch)
+    }
+}
+
+PanelCreate(base, payload, shot, tok, ch) {
+    body := MultipartBody(payload, shot, &ct)
+    AsyncReq("POST", base, body, ct, "Bot " tok, PanelCreated.Bind(tok, ch))
+}
+
+PanelCreated(tok, ch, http) {
+    global panelMsg, iniFile
+    if (HttpStatus(http) != 200)
+        return
+    try {
+        panelMsg := JsonPick(http.ResponseText, "a.id")
+        IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
+        AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
     }
 }
 
@@ -5935,8 +5977,11 @@ SlideTick() {
 
 ; bolinha de status "respirando" quando está online/carregando
 PulseTick() {
-    global curState, curStateCol, dashDot, sideDot, mDot, C_CARD, pulseLast
-    if (curState = "on" || curState = "wait") {
+    global curState, curStateCol, dashDot, sideDot, mDot, C_CARD, pulseLast, g, gm
+    vis := (DllCall("IsWindowVisible", "Ptr", g.Hwnd) && !DllCall("IsIconic", "Ptr", g.Hwnd)) || DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
+    if (!vis && pulseLast = curStateCol)
+        return
+    if (vis && (curState = "on" || curState = "wait")) {
         f := (Sin(Mod(A_TickCount, 1800) / 1800 * 6.28318) + 1) / 2
         c := LerpHex(curStateCol, C_CARD, f * 0.6)
     } else
@@ -6062,8 +6107,14 @@ OnQuit(*) {
 ; ==========================================================
 Log(msg) {
     global logBox
-    logBox.Value .= FormatTime(, "HH:mm:ss") "  " msg "`r`n"
-    SendMessage(0x115, 7, 0, logBox.Hwnd)
+    line := FormatTime(, "HH:mm:ss") "  " msg "`r`n"
+    n := DllCall("GetWindowTextLength", "Ptr", logBox.Hwnd)
+    if (n > 60000) {                          ; guarda só a parte mais recente
+        logBox.Value := SubStr(logBox.Value, -30000)
+        n := DllCall("GetWindowTextLength", "Ptr", logBox.Hwnd)
+    }
+    SendMessage(0xB1, n, n, logBox.Hwnd)                  ; EM_SETSEL no fim
+    SendMessage(0xC2, 0, StrPtr(line), logBox.Hwnd)       ; EM_REPLACESEL
 }
 
 SaveConfig() {
@@ -6605,17 +6656,57 @@ JsonEsc(s) {
     return out
 }
 
-HttpPost(url, body, contentType, auth := "") {
+; ---- rede em segundo plano: manda o pedido e continua; a resposta chega depois (cb) ----
+AsyncReq(method, url, body := "", ctype := "", auth := "", cb := 0) {
+    global asyncReqs
     http := ComObject("WinHttp.WinHttpRequest.5.1")
-    http.SetTimeouts(3000, 3000, 10000, 20000)
-    http.Open("POST", url, false)
-    http.SetRequestHeader("Content-Type", contentType)
+    http.SetTimeouts(5000, 5000, 15000, 25000)
+    http.Open(method, url, true)
+    if (ctype != "")
+        http.SetRequestHeader("Content-Type", ctype)
     if (auth != "") {
         http.SetRequestHeader("Authorization", auth)
         http.SetRequestHeader("User-Agent", "DiscordBot (https://github.com/dudusoulls/AutoRejoinRoblox, 1.0)")
     }
     http.Send(body)
-    return http.Status
+    asyncReqs.Push({h: http, cb: cb, t0: A_TickCount})
+    SetTimer(AsyncPump, 40)
+    return http
+}
+
+AsyncPump() {
+    global asyncReqs
+    i := asyncReqs.Length
+    while (i >= 1) {
+        r := asyncReqs[i]
+        done := false
+        try done := r.h.WaitForResponse(0)
+        catch
+            done := true
+        if (done || A_TickCount - r.t0 > 35000) {
+            asyncReqs.RemoveAt(i)
+            if r.cb
+                try r.cb.Call(r.h)
+        }
+        i--
+    }
+    if !asyncReqs.Length
+        SetTimer(AsyncPump, 0)
+}
+
+HttpStatus(h) {
+    try return h.Status
+    return 0
+}
+
+; callback padrão dos avisos: só registra no log se falhar (ou sempre, se feedback)
+HookCb(feedback := false, okMsg := "hook_sent") {
+    return (h) => (st := HttpStatus(h), (st >= 200 && st < 300) ? (feedback ? Log(TT(okMsg, st)) : 0) : Log(TT("hook_fail", "HTTP " st)))
+}
+
+HttpPost(url, body, contentType, auth := "", cb := 0) {
+    AsyncReq("POST", url, body, contentType, auth, cb ? cb : HookCb())
+    return "…"
 }
 
 ; [[nome, valor, inline], ...] -> "fields":[...],
@@ -6715,9 +6806,11 @@ SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb :
        . '"timestamp":"' ts '"'
        . '}]}'
     try {
-        st := (img != "" && FileExist(img)) ? SendWebhookImage(url, e, img, auth) : HttpPost(url, e, "application/json", auth)
-        if feedback
-            Log(TT("hook_sent", st))
+        cb := HookCb(feedback)
+        if (img != "" && FileExist(img))
+            SendWebhookImage(url, e, img, auth, cb)
+        else
+            HttpPost(url, e, "application/json", auth, cb)
     } catch as err {
         Log(TT("hook_fail", err.Message))
     }
@@ -6741,7 +6834,7 @@ SendWebhook(msg, feedback := false) {
     }
 }
 
-SendWebhookImage(url, payload, pngPath, auth := "") {
+SendWebhookImage(url, payload, pngPath, auth := "", cb := 0) {
     bnd := "----AHKRejoin" A_TickCount
     head := "--" bnd "`r`n"
         . 'Content-Disposition: form-data; name="payload_json"' "`r`n"
@@ -6765,7 +6858,7 @@ SendWebhookImage(url, payload, pngPath, auth := "") {
     DllCall("RtlMoveMemory", "Ptr", p + hn + img.Size, "Ptr", tb, "UPtr", tn)
     DllCall("oleaut32\SafeArrayUnaccessData", "Ptr", psa)
 
-    return HttpPost(url, arr, "multipart/form-data; boundary=" bnd, auth)
+    return HttpPost(url, arr, "multipart/form-data; boundary=" bnd, auth, cb)
 }
 
 ; ---------------- Print só da janela do Roblox ----------------
@@ -6882,8 +6975,13 @@ SendStatusReport(manual := false) {
        . '}]}'
 
     try {
-        st := shot ? SendWebhookImage(url, e, png, auth) : HttpPost(url, e, "application/json", auth)
-        Log(TT("log_status_sent", st) (shot ? "" : "  " TT("no_shot", why)))
+        cb := HookCb(true, "log_status_sent")
+        if shot
+            SendWebhookImage(url, e, png, auth, cb)
+        else
+            HttpPost(url, e, "application/json", auth, cb)
+        if !shot
+            Log(TT("no_shot", why))
     } catch as err {
         Log(TT("log_status_fail", err.Message))
     }
@@ -6920,11 +7018,23 @@ ReadCurrencies(hw) {
     ; tenta jeitos diferentes de capturar até achar pelo menos um nome
     ; mode 4 = PrintWindow (funciona com janela coberta), 0 = copia da tela
     lastOcrText := ""
-    for opt in [{scale: 3, mode: 0}, {scale: 3, mode: 4}, {scale: 3, mode: 0, grayscale: 1, invertcolors: 1}] {
-        words := OcrWords(hw, opt)
-        f := MatchCurrencies(labels, words)
-        if f.Count
+    ; começa pelo jeito que funcionou da última vez; os outros só de vez em quando
+    static opts := [{scale: 3, mode: 0}, {scale: 3, mode: 4}, {scale: 3, mode: 0, grayscale: 1, invertcolors: 1}]
+    static best := 1, lastFull := 0
+    f := MatchCurrencies(labels, OcrWords(hw, opts[best]))
+    if f.Count
+        return [labels, f]
+    if (A_TickCount - lastFull < 180000 && lastFull)
+        return [labels, Map()]
+    lastFull := A_TickCount
+    for i, opt in opts {
+        if (i = best)
+            continue
+        f := MatchCurrencies(labels, OcrWords(hw, opt))
+        if f.Count {
+            best := i
             return [labels, f]
+        }
     }
     return [labels, Map()]
 }
@@ -7497,6 +7607,17 @@ Cleanup() {
 
 ; ---------------- Detecção de erro ----------------
 LatestRobloxLog() {
+    global lastLaunch
+    static cache := "", t := 0
+    ; logo depois de abrir o Roblox procura sempre (log novo); no resto, a cada 20s
+    if (cache != "" && A_TickCount - t < ((lastLaunch && A_TickCount - lastLaunch < 120000) ? 2500 : 20000) && FileExist(cache))
+        return cache
+    t := A_TickCount
+    cache := LatestRobloxLogScan()
+    return cache
+}
+
+LatestRobloxLogScan() {
     pattern := EnvGet("LOCALAPPDATA") "\Roblox\logs\*_Player_*.log"
     best := ""
     bestT := 0
@@ -7581,16 +7702,19 @@ RecoverRoblox(reason) {
 ; Procura a tela "Disconnected / Error Code" na janela do Roblox (OCR).
 ; Retorna o código do erro, "?" se achou a tela sem código, ou "" se não achou.
 FindDisconnectDialog(hw) {
-    for opt in [{scale: 1, mode: 4}, {scale: 1, mode: 0}] {
-        try {
-            opt := opt.Clone(), opt.scale := OcrScale(hw, opt.scale)
-            t := OCR.FromWindow("ahk_id " hw, opt).Text
-        } catch
+    static mode := 4                           ; lembra o jeito de capturar que funciona nesse PC
+    Loop 2 {
+        t := ""
+        try t := OCR.FromWindow("ahk_id " hw, {scale: OcrScale(hw, 1), mode: mode}).Text
+        if (Trim(t) = "") {                    ; captura veio vazia/preta: troca o jeito e tenta 1x
+            mode := (mode = 4) ? 0 : 4
             continue
+        }
         if RegExMatch(t, "i)Error\s*Code\W*(\d{3})", &m)
             return m[1]
         if RegExMatch(t, "i)Disconnected|Reconnect was unsuccessful|You were kicked|Connection lost")
             return "?"
+        return ""
     }
     return ""
 }
@@ -7609,7 +7733,7 @@ WatchError() {
     h := FindGameWindow()
 
     ; 1) tela "Disconnected" na janela (checa a cada ~9s). Vista 2x seguidas -> reinicia.
-    if (h && WinGetMinMax(h) != -1 && Mod(++watchN, 3) = 0) {
+    if (h && WinGetMinMax(h) != -1 && Mod(++watchN, 5) = 0) {
         code := FindDisconnectDialog(h)
         if (code != "") {
             dlgSeen++

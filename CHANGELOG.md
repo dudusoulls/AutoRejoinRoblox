@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.0.1
+- Mais rápido: Discord, webhook e painel agora usam a internet em segundo plano (a janela não trava mais esperando)
+- Leitura de tela (OCR) mais leve: lembra o jeito que funciona no seu PC e checa a tela de erro com menos frequência
+- Log da janela não fica mais lento depois de horas aberto
+- Medição de CPU sem pausar o programa; menos leituras do config.ini
+
 ## v2.0.0
 - 15 temas na nova aba Aparência (Obsidian, Medium, Pearl, Aurora, Ember, Silk, Nebula, Lava Lamp, Lagoon, Borealis, Glass, Classic, Midnight, Slate e Rose)
 - Barra lateral reorganizada em 8 itens, com sub-abas no topo (Jogo, Automação, Discord e Moedas)
