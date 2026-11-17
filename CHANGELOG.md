@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.4 (BETA)
+- **Corrige erro ao compilar em 32-bit** ("Call to nonexistent function" no SetWindowLongPtr). Agora o código usa a função certa em 32 ou 64 bits, então o .exe funciona compilado de qualquer jeito (mesmo assim, 64-bit é o recomendado).
+
+
 ## v1.0.3 (BETA)
 - **Preparado pra virar .exe com auto-update**: quando rodar como .exe, o atualizador baixa o .exe novo da Release do GitHub e se troca sozinho (via um .bat ajudante), sem precisar de AutoHotkey instalado. Como .ahk, continua igual.
 

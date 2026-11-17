@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.0.3"
+VERSION     := "1.0.4"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6504,7 +6504,7 @@ HudHideAll() {
 
 ; dono = janela do Roblox (o HUD acompanha ela)
 HudOwn(gui, hw) {
-    DllCall("SetWindowLongPtr", "Ptr", gui.Hwnd, "Int", -8, "Ptr", hw)
+    DllCall(A_PtrSize = 8 ? "SetWindowLongPtr" : "SetWindowLong", "Ptr", gui.Hwnd, "Int", -8, "Ptr", hw)
 }
 
 HudTick(force := false) {
