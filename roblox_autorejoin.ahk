@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.2"
+VERSION     := "2.7.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -8907,20 +8907,6 @@ Check() {
             SetState("on", "Roblox ON", TT("st_on_sub"))
     } else {
         noWinSince := 0
-        if !InternetUp() {
-            if !netDown {
-                netDown := A_TickCount
-                Log(TT("log_net_down"))
-                SendEvent("neterr", [TT("d_net_wait")])
-            }
-            SetState("warn", TT("st_net"), TT("st_net_sub"))
-            return
-        }
-        if netDown {
-            SendEvent("netok", [TT("d_net_back", DurStr(A_TickCount - netDown))])
-            Log(TT("log_net_back"))
-            netDown := 0
-        }
         SetState("off", "Roblox OFF", TT("st_off_sub"))
         LaunchGame()
     }

@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.7.3
+- **Correção importante**: o app tinha parado de reabrir o Roblox em alguns PCs. A checagem de internet que eu tinha adicionado dava "sem internet" errado (a função do Windows é furada) e travava a reabertura. Removi esse bloqueio — o app volta a abrir o Roblox normalmente.
+
+
 ## v2.7.1
 - **Conserta o painel ao vivo**: ele travava ao enviar porque mandava o print junto (anexo) pelo bot. Agora manda só os stats em texto/embed (igual aos comandos, que sempre funcionaram). O painel passa a aparecer e se atualizar normal.
 - O painel mantém status, tempo de sessão, online hoje, RAM do Roblox, reaberturas, quedas, última queda e as moedas — só não leva mais o print (o print continua no !print e no status automático).
