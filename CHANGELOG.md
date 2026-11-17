@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.0.6 (BETA)
+- **Apoie o dev**: uma telinha com QR Pix aparece quando o app abre, com uma mensagem simpática. Tem botão "Não mostrar mais" e aparece no máximo 1x por dia (nunca na primeira vez de alguém, pra não atropelar o tutorial).
+- Dá pra ligar/desligar em Sobre › "Mostrar apoio ao dev".
+
+
 ## v1.0.5 (BETA)
 - **Logo nova** no app (lateral/ícone) e nos embeds do Discord.
 - **Webhook reformulado — menos spam**: nova aba **Discord › Notificações** com toggles do que é enviado ao webhook: Aberturas/reconexões, Quedas, Erros, Atualizações. As "reconexões" (que mais enchiam) vêm **desligadas** por padrão; o resto ligado. Respostas de comando no Discord continuam normais.
