@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.3.0"
+VERSION     := "2.4.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -187,6 +187,7 @@ savedMin      := IniRead(iniFile, "cfg", "minBrowser", "1")
 savedErr      := IniRead(iniFile, "cfg", "restartOnError", "1")
 savedErrSec   := IniRead(iniFile, "cfg", "errSec", "60")
 savedZombie   := IniRead(iniFile, "cfg", "killZombie", "1")
+savedRamMin   := IniRead(iniFile, "cfg", "ramMin", "250")
 noWinSince    := 0
 savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
@@ -702,7 +703,10 @@ I18N["pt"] := Map(
     "sw_zombie_sub", "O processo fica aberto mas o jogo some — comum em PC fraco",
     "st_zombie", "Roblox travado",
     "st_zombie_sub", "Processo aberto sem janela — fechando e reabrindo",
-    "r_zombie", "Roblox travado sem janela (processo fantasma)"
+    "r_zombie", "Roblox travado sem janela (processo fantasma)",
+    "lbl_rammin", "RAM mín. (MB)",
+    "st_zombie_ram", "RAM baixa — travado",
+    "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1173,7 +1177,10 @@ I18N["en"] := Map(
     "sw_zombie_sub", "The process stays open but the game is gone — common on weak PCs",
     "st_zombie", "Roblox stuck",
     "st_zombie_sub", "Process open with no window — closing and reopening",
-    "r_zombie", "Roblox stuck with no window (ghost process)"
+    "r_zombie", "Roblox stuck with no window (ghost process)",
+    "lbl_rammin", "Min RAM (MB)",
+    "st_zombie_ram", "Low RAM — stuck",
+    "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1644,7 +1651,10 @@ I18N["es"] := Map(
     "sw_zombie_sub", "El proceso queda abierto pero el juego desaparece — común en PC débil",
     "st_zombie", "Roblox atascado",
     "st_zombie_sub", "Proceso abierto sin ventana — cerrando y reabriendo",
-    "r_zombie", "Roblox atascado sin ventana (proceso fantasma)"
+    "r_zombie", "Roblox atascado sin ventana (proceso fantasma)",
+    "lbl_rammin", "RAM mín. (MB)",
+    "st_zombie_ram", "RAM baja — atascado",
+    "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2115,7 +2125,10 @@ I18N["fr"] := Map(
     "sw_zombie_sub", "Le processus reste ouvert mais le jeu a disparu — fréquent sur PC faible",
     "st_zombie", "Roblox bloqué",
     "st_zombie_sub", "Processus ouvert sans fenêtre — fermeture et réouverture",
-    "r_zombie", "Roblox bloqué sans fenêtre (processus fantôme)"
+    "r_zombie", "Roblox bloqué sans fenêtre (processus fantôme)",
+    "lbl_rammin", "RAM min (Mo)",
+    "st_zombie_ram", "RAM basse — bloqué",
+    "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2586,7 +2599,10 @@ I18N["de"] := Map(
     "sw_zombie_sub", "Der Prozess bleibt offen, aber das Spiel ist weg — häufig auf schwachen PCs",
     "st_zombie", "Roblox hängt",
     "st_zombie_sub", "Prozess offen ohne Fenster — schließen und neu öffnen",
-    "r_zombie", "Roblox hängt ohne Fenster (Geisterprozess)"
+    "r_zombie", "Roblox hängt ohne Fenster (Geisterprozess)",
+    "lbl_rammin", "Min. RAM (MB)",
+    "st_zombie_ram", "Wenig RAM — hängt",
+    "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3057,7 +3073,10 @@ I18N["ru"] := Map(
     "sw_zombie_sub", "Процесс остаётся, но игра пропала — часто на слабых ПК",
     "st_zombie", "Roblox завис",
     "st_zombie_sub", "Процесс без окна — закрываем и открываем",
-    "r_zombie", "Roblox завис без окна (процесс-призрак)"
+    "r_zombie", "Roblox завис без окна (процесс-призрак)",
+    "lbl_rammin", "Мин. ОЗУ (МБ)",
+    "st_zombie_ram", "Мало ОЗУ — завис",
+    "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3528,7 +3547,10 @@ I18N["tr"] := Map(
     "sw_zombie_sub", "İşlem açık kalır ama oyun kaybolur — zayıf PC'lerde yaygın",
     "st_zombie", "Roblox takıldı",
     "st_zombie_sub", "Penceresiz işlem — kapatılıp yeniden açılıyor",
-    "r_zombie", "Roblox penceresiz takıldı (hayalet işlem)"
+    "r_zombie", "Roblox penceresiz takıldı (hayalet işlem)",
+    "lbl_rammin", "Min RAM (MB)",
+    "st_zombie_ram", "Düşük RAM — takıldı",
+    "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3999,7 +4021,10 @@ I18N["id"] := Map(
     "sw_zombie_sub", "Prosesnya tetap terbuka tapi game hilang — umum di PC lemah",
     "st_zombie", "Roblox macet",
     "st_zombie_sub", "Proses tanpa jendela — menutup dan membuka ulang",
-    "r_zombie", "Roblox macet tanpa jendela (proses hantu)"
+    "r_zombie", "Roblox macet tanpa jendela (proses hantu)",
+    "lbl_rammin", "RAM min (MB)",
+    "st_zombie_ram", "RAM rendah — macet",
+    "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4183,8 +4208,10 @@ Card(CX, y, CW, 190)
 Lbl(CX + 20, y + 16, 300, TT("sec_recovery"), "s7 w700", C_DIM)
 chkErr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_err"), savedErr, TT("sw_err_sub"))
 chkZombie := ToggleSwitch(CX + 20, y + 96, CW - 40, TT("sw_zombie"), savedZombie, TT("sw_zombie_sub"))
-Lbl(CX + 20, y + 152, 200, TT("lbl_tol"), "s9", C_MUTED)
-edErrSec := Input(CX + 170, y + 145, 90, savedErrSec, "Number")
+Lbl(CX + 20, y + 152, 150, TT("lbl_tol"), "s9", C_MUTED)
+edErrSec := Input(CX + 150, y + 145, 70, savedErrSec, "Number")
+Lbl(CX + CW - 230, y + 152, 140, TT("lbl_rammin"), "s9", C_MUTED)
+edRamMin := Input(CX + CW - 90, y + 145, 70, savedRamMin, "Number")
 
 ; ---------------- Página: Janela ----------------
 BeginPage("Janela", TT("nav_window"), TT("pg_win_sub"))
@@ -6685,6 +6712,15 @@ SendWebhookImages(url, payload, paths, auth := "", cb := 0) {
     return HttpPost(url, arr, "multipart/form-data; boundary=" bnd, auth, cb)
 }
 
+RobloxMaxRamMB() {
+    mx := -1
+    try {
+        for pr in ComObjGet("winmgmts:").ExecQuery("Select WorkingSetSize from Win32_Process where Name='RobloxPlayerBeta.exe'")
+            mx := Max(mx, Round(pr.WorkingSetSize / 1048576))
+    }
+    return mx
+}
+
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
     k := A_ScreenDPI / 96
@@ -6995,7 +7031,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkZombie, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkZombie, edRamMin, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct, hudMode, chkFrame, chkHudComp
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -7005,6 +7041,7 @@ SaveConfig() {
     IniWrite(chkErr.Value, iniFile, "cfg", "restartOnError")
     IniWrite(edErrSec.Value, iniFile, "cfg", "errSec")
     IniWrite(chkZombie.Value, iniFile, "cfg", "killZombie")
+    IniWrite(Trim(edRamMin.Value), iniFile, "cfg", "ramMin")
     IniWrite(chkRep.Value, iniFile, "cfg", "report")
     IniWrite(edRepMin.Value, iniFile, "cfg", "reportMin")
     IniWrite(chkOcr.Value, iniFile, "cfg", "ocr")
@@ -8666,7 +8703,7 @@ WatchError() {
 }
 
 Check() {
-    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown, chkZombie, noWinSince
+    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown, chkZombie, noWinSince, edRamMin
     if !running
         return
     open := IsRobloxOpen()
@@ -8691,15 +8728,23 @@ Check() {
         return
     }
     if open {
-        if (chkZombie.Value && !FindGameWindow()) {        ; processo aberto mas sem janela = travado
+        gw := FindGameWindow()
+        lim := Integer(Trim(edRamMin.Value) || 0)
+        ramBad := false
+        if (chkZombie.Value && lim > 0 && gw) {            ; tem janela mas RAM baixíssima = fantasma
+            r := RobloxMaxRamMB()
+            if (r >= 0 && r < lim)
+                ramBad := true
+        }
+        if (chkZombie.Value && (!gw || ramBad)) {          ; sem janela OU RAM abaixo do limite = travado
             if !noWinSince
                 noWinSince := A_TickCount
-            else if (A_TickCount - noWinSince > 45000) {    ; 45s sem janela (além da espera) -> fantasma
+            else if (A_TickCount - noWinSince > 45000) {    ; 45s travado (além da espera) -> fecha e reabre
                 noWinSince := 0
-                RecoverRoblox(TT("r_zombie"))
+                RecoverRoblox(ramBad ? TT("r_zombie_ram", RobloxMaxRamMB()) : TT("r_zombie"))
                 return
             }
-            SetState("wait", TT("st_zombie"), TT("st_zombie_sub"))
+            SetState("wait", TT("st_zombie"), ramBad ? TT("st_zombie_ram") : TT("st_zombie_sub"))
             return
         }
         noWinSince := 0

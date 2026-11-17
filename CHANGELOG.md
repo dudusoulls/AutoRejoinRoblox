@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.4.0
+- **Limite de RAM pro Roblox travado**: além de detectar o processo sem janela, agora o app também pega o Roblox fantasma pela RAM. Um jogo de verdade usa bem mais de 250MB; quando o processo fica abaixo do limite, o app entende que travou e **fecha todos e reabre**.
+- O limite vem em **250 MB** por padrão e dá pra ajustar na aba Jogo › Recuperação ("RAM mín. (MB)"). Coloque 0 pra desligar só essa checagem.
+- Espera a mesma margem (abertura + 45s) antes de agir, pra não fechar um Roblox que só está carregando.
+
+
 ## v2.3.0
 - **Conserto do "Roblox fantasma"**: em PC fraco o Roblox às vezes trava e deixa o processo aberto sem janela nenhuma. O app achava que estava tudo certo e não reabria. Agora ele detecta o processo travado sem janela, **mata todos os Roblox e reabre sozinho** — ligado por padrão (aba Jogo › Recuperação).
 - Espera uma margem (a espera pós-abrir + 45s) antes de dar como travado, pra não fechar um Roblox que só está demorando a carregar no PC fraco.
