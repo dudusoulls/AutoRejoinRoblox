@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.7.2
+- Cada comando do Discord responde com um embed (como resposta à sua mensagem)
+- !status e !resumo respondem pelo próprio bot, mesmo sem webhook
+- !reiniciar abre direto pelo Roblox, igual ao botão "Abrir jogo agora"
+- Parar o monitoramento também avisa no Discord
+
 ## v1.7.1
 - Correção: erro ao mandar o segundo aviso seguido (ex: !reiniciar)
 - Manda o status com print no Discord assim que o programa abre

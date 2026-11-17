@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.7.1"
+VERSION     := "1.7.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,7 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+botCtx := 0
 schedPaused := false
 botLast := ""
 histMetric := "online", histCoinIdx := 1, histTarget := [], histT0 := 0
@@ -513,7 +514,16 @@ I18N["pt"] := Map(
     "log_sched_resume", "Dentro do horário, monitoramento retomado.",
     "log_maxh", "Tempo máximo atingido, parando.",
     "ev_sched", "Monitoramento encerrado",
-    "d_shutdown", "O PC vai desligar em 60 segundos."
+    "d_shutdown", "O PC vai desligar em 60 segundos.",
+    "ev_stop", "Monitoramento parado",
+    "ev_restart", "Reiniciando o Roblox",
+    "ev_already", "Já está monitorando",
+    "ev_notrunning", "O monitoramento já está parado",
+    "ev_unknown", "Comando desconhecido",
+    "d_unknown", "Use !ajuda pra ver os comandos.",
+    "d_restart_how", "Fechando e abrindo de novo direto pelo Roblox.",
+    "d_running_for", "Ativo há",
+    "d_cmd", "Comando"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -860,7 +870,16 @@ I18N["en"] := Map(
     "log_sched_resume", "Within scheduled hours, monitoring resumed.",
     "log_maxh", "Maximum time reached, stopping.",
     "ev_sched", "Monitoring finished",
-    "d_shutdown", "The PC will shut down in 60 seconds."
+    "d_shutdown", "The PC will shut down in 60 seconds.",
+    "ev_stop", "Monitoring stopped",
+    "ev_restart", "Restarting Roblox",
+    "ev_already", "Already monitoring",
+    "ev_notrunning", "Monitoring is already stopped",
+    "ev_unknown", "Unknown command",
+    "d_unknown", "Use !help to see the commands.",
+    "d_restart_how", "Closing and reopening directly through Roblox.",
+    "d_running_for", "Running for",
+    "d_cmd", "Command"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1207,7 +1226,16 @@ I18N["es"] := Map(
     "log_sched_resume", "Dentro del horario, monitoreo reanudado.",
     "log_maxh", "Tiempo máximo alcanzado, deteniendo.",
     "ev_sched", "Monitoreo terminado",
-    "d_shutdown", "La PC se apagará en 60 segundos."
+    "d_shutdown", "La PC se apagará en 60 segundos.",
+    "ev_stop", "Monitoreo detenido",
+    "ev_restart", "Reiniciando Roblox",
+    "ev_already", "Ya está monitoreando",
+    "ev_notrunning", "El monitoreo ya está detenido",
+    "ev_unknown", "Comando desconocido",
+    "d_unknown", "Usa !ajuda para ver los comandos.",
+    "d_restart_how", "Cerrando y abriendo de nuevo directo por Roblox.",
+    "d_running_for", "Activo desde hace",
+    "d_cmd", "Comando"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1554,7 +1582,16 @@ I18N["fr"] := Map(
     "log_sched_resume", "Dans les horaires, surveillance reprise.",
     "log_maxh", "Durée maximale atteinte, arrêt.",
     "ev_sched", "Surveillance terminée",
-    "d_shutdown", "Le PC va s'éteindre dans 60 secondes."
+    "d_shutdown", "Le PC va s'éteindre dans 60 secondes.",
+    "ev_stop", "Surveillance arrêtée",
+    "ev_restart", "Redémarrage de Roblox",
+    "ev_already", "Surveillance déjà en cours",
+    "ev_notrunning", "La surveillance est déjà arrêtée",
+    "ev_unknown", "Commande inconnue",
+    "d_unknown", "Utilisez !help pour voir les commandes.",
+    "d_restart_how", "Fermeture puis réouverture directement via Roblox.",
+    "d_running_for", "Actif depuis",
+    "d_cmd", "Commande"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -1901,7 +1938,16 @@ I18N["de"] := Map(
     "log_sched_resume", "Innerhalb der Zeit, Überwachung fortgesetzt.",
     "log_maxh", "Maximale Zeit erreicht, stoppe.",
     "ev_sched", "Überwachung beendet",
-    "d_shutdown", "Der PC fährt in 60 Sekunden herunter."
+    "d_shutdown", "Der PC fährt in 60 Sekunden herunter.",
+    "ev_stop", "Überwachung gestoppt",
+    "ev_restart", "Roblox wird neu gestartet",
+    "ev_already", "Überwachung läuft bereits",
+    "ev_notrunning", "Überwachung ist bereits gestoppt",
+    "ev_unknown", "Unbekannter Befehl",
+    "d_unknown", "Nutze !help, um die Befehle zu sehen.",
+    "d_restart_how", "Wird geschlossen und direkt über Roblox neu geöffnet.",
+    "d_running_for", "Läuft seit",
+    "d_cmd", "Befehl"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2248,7 +2294,16 @@ I18N["ru"] := Map(
     "log_sched_resume", "По расписанию, мониторинг возобновлён.",
     "log_maxh", "Достигнуто максимальное время, остановка.",
     "ev_sched", "Мониторинг завершён",
-    "d_shutdown", "ПК выключится через 60 секунд."
+    "d_shutdown", "ПК выключится через 60 секунд.",
+    "ev_stop", "Мониторинг остановлен",
+    "ev_restart", "Перезапуск Roblox",
+    "ev_already", "Мониторинг уже идёт",
+    "ev_notrunning", "Мониторинг уже остановлен",
+    "ev_unknown", "Неизвестная команда",
+    "d_unknown", "Напишите !help, чтобы увидеть команды.",
+    "d_restart_how", "Закрываю и снова открываю напрямую через Roblox.",
+    "d_running_for", "Работает уже",
+    "d_cmd", "Команда"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -2595,7 +2650,16 @@ I18N["tr"] := Map(
     "log_sched_resume", "Saat içinde, izleme devam ediyor.",
     "log_maxh", "Azami süreye ulaşıldı, duruluyor.",
     "ev_sched", "İzleme bitti",
-    "d_shutdown", "PC 60 saniye içinde kapanacak."
+    "d_shutdown", "PC 60 saniye içinde kapanacak.",
+    "ev_stop", "İzleme durduruldu",
+    "ev_restart", "Roblox yeniden başlatılıyor",
+    "ev_already", "Zaten izleniyor",
+    "ev_notrunning", "İzleme zaten durdurulmuş",
+    "ev_unknown", "Bilinmeyen komut",
+    "d_unknown", "Komutları görmek için !help yaz.",
+    "d_restart_how", "Kapatılıp doğrudan Roblox ile yeniden açılıyor.",
+    "d_running_for", "Çalışma süresi",
+    "d_cmd", "Komut"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -2942,7 +3006,16 @@ I18N["id"] := Map(
     "log_sched_resume", "Di dalam jam, pemantauan dilanjutkan.",
     "log_maxh", "Waktu maksimal tercapai, berhenti.",
     "ev_sched", "Pemantauan selesai",
-    "d_shutdown", "PC akan mati dalam 60 detik."
+    "d_shutdown", "PC akan mati dalam 60 detik.",
+    "ev_stop", "Pemantauan dihentikan",
+    "ev_restart", "Memulai ulang Roblox",
+    "ev_already", "Sudah memantau",
+    "ev_notrunning", "Pemantauan sudah berhenti",
+    "ev_unknown", "Perintah tidak dikenal",
+    "d_unknown", "Ketik !help untuk melihat perintah.",
+    "d_restart_how", "Menutup lalu membuka ulang langsung lewat Roblox.",
+    "d_running_for", "Aktif selama",
+    "d_cmd", "Perintah"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4446,43 +4519,57 @@ BotTick() {
 }
 
 BotCommand(cmd, ch, mid, tok) {
-    global running, multiActive
+    global running, multiActive, monStart, botCtx
     c := StrLower(StrSplit(cmd, " ")[1])
+    if (SubStr(c, 1, 1) != "!")
+        return
+    botCtx := {ch: ch, mid: mid, tok: tok}        ; respostas vão como resposta à mensagem do comando
     known := true
-    switch c {
-        case "!status", "!print":
-            SendStatusReport(true)
-        case "!iniciar", "!start":
-            if !running
-                Toggle()
-        case "!parar", "!stop":
-            if running
-                Toggle()
-        case "!reiniciar", "!restart":
-            if multiActive
-                KillRoblox()
-            else
-                RecoverRoblox("Discord")
-        case "!resumo", "!summary":
-            SendDailySummary(true)
-        case "!ajuda", "!help":
-            BotHelp(ch, tok)
-        default:
-            known := false
-    }
+    try {
+        switch c {
+            case "!status", "!print":
+                SendStatusReport(true)
+            case "!iniciar", "!start":
+                if running
+                    SendEvent("already", ["**" TT("d_running_for") ":** ``" DurStr(A_TickCount - monStart) "``"])
+                else
+                    Toggle()                      ; manda o embed "Monitoramento iniciado"
+            case "!parar", "!stop":
+                if running
+                    Toggle()                      ; manda o embed "Monitoramento parado"
+                else
+                    SendEvent("notrunning")
+            case "!reiniciar", "!restart":
+                SendEvent("restart", [TT("d_restart_how")])
+                botCtx := 0
+                BotRestart()
+            case "!resumo", "!summary":
+                SendDailySummary(true)
+            case "!ajuda", "!help":
+                SendEvent("help", ["``!status`` · " TT("cmd_status"), "``!iniciar`` · " TT("cmd_start"), "``!parar`` · " TT("cmd_stop")
+                    , "``!reiniciar`` · " TT("cmd_restart"), "``!resumo`` · " TT("cmd_summary"), "``!ajuda`` · " TT("cmd_help")])
+            default:
+                known := false
+                SendEvent("unknown", ["**" TT("d_cmd") ":** ``" c "``", TT("d_unknown")])
+        }
+    } finally
+        botCtx := 0
     if known {
         Log(TT("log_bot_cmd", c))
         try DiscordApi("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", tok)
     }
 }
 
-BotHelp(ch, tok) {
-    global APP_NAME
-    d := "``!status`` · " TT("cmd_status") "`n``!iniciar`` · " TT("cmd_start") "`n``!parar`` · " TT("cmd_stop")
-       . "`n``!reiniciar`` · " TT("cmd_restart") "`n``!resumo`` · " TT("cmd_summary") "`n``!ajuda`` · " TT("cmd_help")
-    body := '{"embeds":[{"title":"' JsonEsc(TT("sec_cmds")) '","description":"' JsonEsc(d) '","color":' 0x5B8CFF
-        . ',"footer":{"text":"' JsonEsc(APP_NAME) '"}}],"allowed_mentions":{"parse":[]}}'
-    try DiscordApi("POST", "https://discord.com/api/v10/channels/" ch "/messages", tok, body)
+; !reiniciar: fecha e abre do mesmo jeito do "Abrir jogo agora" (começa direto pelo Roblox)
+BotRestart() {
+    global multiActive, wasOpen, downTick
+    if multiActive
+        return KillRoblox()                       ; o modo de várias contas reabre sozinho
+    Log(TT("ev_restart"))
+    wasOpen := false, downTick := 0
+    KillRoblox()
+    Sleep(3000)
+    LaunchGame(true, 1)
 }
 
 ; ==========================================================
@@ -5423,13 +5510,31 @@ JsonEsc(s) {
     return out
 }
 
-HttpPost(url, body, contentType) {
+HttpPost(url, body, contentType, auth := "") {
     http := ComObject("WinHttp.WinHttpRequest.5.1")
     http.SetTimeouts(3000, 3000, 10000, 20000)
     http.Open("POST", url, false)
     http.SetRequestHeader("Content-Type", contentType)
+    if (auth != "") {
+        http.SetRequestHeader("Authorization", auth)
+        http.SetRequestHeader("User-Agent", "DiscordBot (https://github.com/dudusoulls/AutoRejoinRoblox, 1.0)")
+    }
     http.Send(body)
     return http.Status
+}
+
+; Pra onde vai a mensagem: resposta do bot (quando veio de um comando do Discord) ou o webhook
+DiscordDest(&url, &auth, &head) {
+    global botCtx, edHook, LOGO_URL
+    if IsObject(botCtx) {
+        url := "https://discord.com/api/v10/channels/" botCtx.ch "/messages"
+        auth := "Bot " botCtx.tok
+        head := '"message_reference":{"message_id":"' botCtx.mid '","fail_if_not_exists":false},'
+    } else {
+        url := Trim(edHook.Value), auth := ""
+        head := '"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
+    }
+    return url != ""
 }
 
 ; Avisos do webhook, sempre como embed: kind = tipo (emoji, título, cor), lines = linhas extras
@@ -5444,7 +5549,13 @@ EV := Map(
     "updated", ["✨", "ev_updated", 0xA78BFA],
     "test",    ["🔔", "ev_test",    0x5B8CFF],
     "daily",   ["📊", "ev_daily",   0x5B8CFF],
-    "sched",   ["⏹️", "ev_sched",   0x8B8B94])
+    "sched",   ["⏹️", "ev_sched",   0x8B8B94],
+    "stop",    ["⏹️", "ev_stop",    0x8B8B94],
+    "restart", ["🔄", "ev_restart", 0x5B8CFF],
+    "already", ["ℹ️", "ev_already", 0x5B8CFF],
+    "notrunning", ["ℹ️", "ev_notrunning", 0x8B8B94],
+    "unknown", ["❓", "ev_unknown", 0xF5C542],
+    "help",    ["📖", "sec_cmds",   0x5B8CFF])
 
 SendEvent(kind, lines := [], feedback := false, arg := "") {
     global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId
@@ -5456,8 +5567,7 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
             plain .= StrReplace(l, "**") "`n"
         Notify(TT(evt[2], arg), plain != "" ? RTrim(plain, "`n") : APP_NAME, kind = "back" ? "Iconi" : "Icon!")
     }
-    url := Trim(edHook.Value)
-    if (url = "") {
+    if !DiscordDest(&url, &auth, &head) {
         if feedback
             Log(TT("hook_need_url"))
         return
@@ -5471,7 +5581,7 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
         desc .= l "`n"
     desc .= "**" TT("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
-    e := '{"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
+    e := '{' head
        . (ping ? '"content":"<@' id '>","allowed_mentions":{"users":["' id '"]},' : '"allowed_mentions":{"parse":[]},')
        . '"embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
@@ -5482,7 +5592,7 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
        . '"timestamp":"' ts '"'
        . '}]}'
     try {
-        st := HttpPost(url, e, "application/json")
+        st := HttpPost(url, e, "application/json", auth)
         if feedback
             Log(TT("hook_sent", st))
     } catch as err {
@@ -5508,7 +5618,7 @@ SendWebhook(msg, feedback := false) {
     }
 }
 
-SendWebhookImage(url, payload, pngPath) {
+SendWebhookImage(url, payload, pngPath, auth := "") {
     bnd := "----AHKRejoin" A_TickCount
     head := "--" bnd "`r`n"
         . 'Content-Disposition: form-data; name="payload_json"' "`r`n"
@@ -5532,7 +5642,7 @@ SendWebhookImage(url, payload, pngPath) {
     DllCall("RtlMoveMemory", "Ptr", p + hn + img.Size, "Ptr", tb, "UPtr", tn)
     DllCall("oleaut32\SafeArrayUnaccessData", "Ptr", psa)
 
-    return HttpPost(url, arr, "multipart/form-data; boundary=" bnd)
+    return HttpPost(url, arr, "multipart/form-data; boundary=" bnd, auth)
 }
 
 ; ---------------- Print só da janela do Roblox ----------------
@@ -5591,8 +5701,7 @@ SaveHBitmapPng(hBM, file) {
 
 SendStatusReport(manual := false) {
     global edHook, running, launches, discCount, lastDisc, lastDiscUnix, monStart, discTick, chkOcr, chkRep, edRepMin, USER_NAME, APP_NAME, LOGO_URL
-    url := Trim(edHook.Value)
-    if (url = "") {
+    if !DiscordDest(&url, &auth, &head) {
         if manual
             Log(TT("hook_need_url"))
         return
@@ -5633,7 +5742,7 @@ SendStatusReport(manual := false) {
     if !shot
         foot .= "  •  " TT("no_shot", why)
 
-    e := '{"username":"Auto Reconnect","avatar_url":"' LOGO_URL '","embeds":[{'
+    e := '{' head '"allowed_mentions":{"parse":[]},"embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
        . '"title":"' JsonEsc(title) '",'
        . '"color":' color ','
@@ -5650,7 +5759,7 @@ SendStatusReport(manual := false) {
        . '}]}'
 
     try {
-        st := shot ? SendWebhookImage(url, e, png) : HttpPost(url, e, "application/json")
+        st := shot ? SendWebhookImage(url, e, png, auth) : HttpPost(url, e, "application/json", auth)
         Log(TT("log_status_sent", st) (shot ? "" : "  " TT("no_shot", why)))
     } catch as err {
         Log(TT("log_status_fail", err.Message))
@@ -6514,6 +6623,7 @@ Toggle(*) {
         }
         SetState("idle", TT("idle"), TT("click_start"))
         Log(TT("log_mon_stop"))
+        SendEvent("stop")
     }
 }
 
