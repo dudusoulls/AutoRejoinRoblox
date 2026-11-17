@@ -55,10 +55,13 @@ jobs:
           if (-not $base)    { Write-Error "AutoHotkey64.exe nao encontrado"; exit 1 }
           Write-Host "Ahk2Exe: $ahk2exe"
           Write-Host "Base:    $base"
-          $out = & $ahk2exe /in roblox_autorejoin.ahk /out AutoReconnectRoblox.exe /base $base /icon AutoReconnectRoblox.ico 2>&1
-          Write-Host "--- saida do Ahk2Exe (exit=$LASTEXITCODE) ---"
-          $out | ForEach-Object { Write-Host $_ }
-          Write-Host "--- fim ---"
+          $args = @('/in','roblox_autorejoin.ahk','/out','AutoReconnectRoblox.exe','/base',$base,'/icon','AutoReconnectRoblox.ico','/silent','verbose')
+          $p = Start-Process -FilePath $ahk2exe -ArgumentList $args -NoNewWindow -PassThru `
+                 -RedirectStandardOutput a2e_out.txt -RedirectStandardError a2e_err.txt
+          if (-not $p.WaitForExit(180000)) { $p.Kill(); Write-Error "Ahk2Exe travou (timeout)"; exit 1 }
+          Write-Host "--- Ahk2Exe exit=$($p.ExitCode) ---"
+          if (Test-Path a2e_out.txt) { Get-Content a2e_out.txt | ForEach-Object { Write-Host "OUT: $_" } }
+          if (Test-Path a2e_err.txt) { Get-Content a2e_err.txt | ForEach-Object { Write-Host "ERR: $_" } }
           if (!(Test-Path AutoReconnectRoblox.exe)) { Write-Error "Falhou ao gerar o .exe"; exit 1 }
           Write-Host "Gerado:" (Get-Item AutoReconnectRoblox.exe).Length "bytes"
 
