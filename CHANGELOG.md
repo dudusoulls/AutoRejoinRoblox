@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.6.0
+- **HUD virou sub-aba dentro de Aparência** (Aparência › HUD), separado dos temas — fica mais limpo que ter o HUD junto da aba Jogo.
+- Webhook de suporte já vem configurado e **escondido no código** (montado em tempo de execução, não aparece como link), pra não ser encontrado por bots que varrem o GitHub.
+
+
 ## v2.5.2
 - A aba **Suporte** agora aparece na barra lateral (o grupo tinha sido criado mas faltava o botão no menu).
 

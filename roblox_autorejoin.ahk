@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.5.2"
+VERSION     := "2.6.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -36,7 +36,7 @@ APP_NAME        := "Auto Reconnect Roblox"
 ; Cole AQUI o seu webhook escondido. O que o usuário mandar na aba "Suporte"
 ; (mensagem + print, se marcado) cai nesse webhook. Nunca vai IP nem dado pessoal.
 ; Dica: compile pra .exe pra esse link não ficar à vista no código.
-REPORT_WEBHOOK  := ""
+REPORT_WEBHOOK  := ReportUrl()   ; link montado em runtime (escondido) - veja ReportUrl()
 netDown         := 0
 reactReady      := false
 reactBusy       := 0
@@ -708,7 +708,9 @@ I18N["pt"] := Map(
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baixa — travado",
     "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado",
-    "hud_side", "Painel lateral no Roblox (stats)"
+    "hud_side", "Painel lateral no Roblox (stats)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Painel grudado na janela do Roblox com os stats"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1183,7 +1185,9 @@ I18N["en"] := Map(
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Low RAM — stuck",
     "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck",
-    "hud_side", "Side panel on Roblox (stats)"
+    "hud_side", "Side panel on Roblox (stats)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Panel docked to the Roblox window with stats"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1658,7 +1662,9 @@ I18N["es"] := Map(
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baja — atascado",
     "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado",
-    "hud_side", "Panel lateral en Roblox (stats)"
+    "hud_side", "Panel lateral en Roblox (stats)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2133,7 +2139,9 @@ I18N["fr"] := Map(
     "lbl_rammin", "RAM min (Mo)",
     "st_zombie_ram", "RAM basse — bloqué",
     "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué",
-    "hud_side", "Panneau latéral sur Roblox (stats)"
+    "hud_side", "Panneau latéral sur Roblox (stats)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2608,7 +2616,9 @@ I18N["de"] := Map(
     "lbl_rammin", "Min. RAM (MB)",
     "st_zombie_ram", "Wenig RAM — hängt",
     "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt",
-    "hud_side", "Seitenpanel an Roblox (Stats)"
+    "hud_side", "Seitenpanel an Roblox (Stats)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3083,7 +3093,9 @@ I18N["ru"] := Map(
     "lbl_rammin", "Мин. ОЗУ (МБ)",
     "st_zombie_ram", "Мало ОЗУ — завис",
     "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис",
-    "hud_side", "Боковая панель на Roblox (статы)"
+    "hud_side", "Боковая панель на Roblox (статы)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Панель у окна Roblox со статами"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3558,7 +3570,9 @@ I18N["tr"] := Map(
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Düşük RAM — takıldı",
     "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı",
-    "hud_side", "Roblox'ta yan panel (istatistik)"
+    "hud_side", "Roblox'ta yan panel (istatistik)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4033,7 +4047,9 @@ I18N["id"] := Map(
     "lbl_rammin", "RAM min (MB)",
     "st_zombie_ram", "RAM rendah — macet",
     "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet",
-    "hud_side", "Panel samping di Roblox (statistik)"
+    "hud_side", "Panel samping di Roblox (statistik)",
+    "nav_hud", "HUD",
+    "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4042,7 +4058,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look", "Suporte", "nav_report")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -4130,7 +4146,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
-    , "Discord", ["Webhook", "Bot"], "Moedas", ["Moedas", "Histórico"], "Aparência", ["Aparência"]
+    , "Discord", ["Webhook", "Bot"], "Moedas", ["Moedas", "Histórico"], "Aparência", ["Aparência", "HUD"]
     , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 GROUP_OF := Map()
 for gk, subs in GROUPS
@@ -4241,16 +4257,6 @@ y := 246
 Card(CX, y, CW, 96)
 Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
 chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
-
-y := 354
-Card(CX, y, CW, 214)
-Lbl(CX + 20, y + 16, 300, TT("sec_hud"), "s7 w700", C_DIM)
-btnHud := Btn(CX + 20, y + 38, 260, 32, HudModeName(hudMode), (*) => 0)
-btnHud.OnEvent("Click", CycleHud.Bind(btnHud))
-chkFrame := ToggleSwitch(CX + 20, y + 84, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
-chkFrame.onChange := (*) => HudApply()
-chkHudComp := ToggleSwitch(CX + 20, y + 130, CW - 40, TT("sw_hudcompact"), savedHudComp)
-Lbl(CX + 20, y + 166, CW - 40, TT("hud_hint"), "s8", C_MUTED)
 
 ; ---------------- Página: Webhook ----------------
 BeginPage("Webhook", TT("nav_hook"), TT("pg_hook_sub"))
@@ -4477,6 +4483,18 @@ Lbl(CX + 20, y + 16, 300, TT("sec_theme"), "s7 w700", C_DIM)
 tw := (CW - 40 - 36) // 4, thh := 66
 for i, th in THEMES
     ThemeTile(CX + 20 + Mod(i - 1, 4) * (tw + 12), y + 44 + ((i - 1) // 4) * (thh + 34), tw, thh, th)
+
+; ---------------- Página: HUD (sub-aba de Aparência) ----------------
+BeginPage("HUD", TT("nav_hud"), TT("pg_hud_sub"))
+y := 92
+Card(CX, y, CW, 214)
+Lbl(CX + 20, y + 16, 300, TT("sec_hud"), "s7 w700", C_DIM)
+btnHud := Btn(CX + 20, y + 38, 260, 32, HudModeName(hudMode), (*) => 0)
+btnHud.OnEvent("Click", CycleHud.Bind(btnHud))
+chkFrame := ToggleSwitch(CX + 20, y + 84, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
+chkFrame.onChange := (*) => HudApply()
+chkHudComp := ToggleSwitch(CX + 20, y + 130, CW - 40, TT("sw_hudcompact"), savedHudComp)
+Lbl(CX + 20, y + 166, CW - 40, TT("hud_hint"), "s8", C_MUTED)
 
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
@@ -6763,6 +6781,22 @@ RobloxMaxRamMB() {
             mx := Max(mx, Round(pr.WorkingSetSize / 1048576))
     }
     return mx
+}
+
+; webhook de suporte montado em runtime (não aparece como link no código)
+ReportUrl() {
+    a := [    104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46
+    , 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115
+    , 47, 49, 53, 55, 50, 48, 56, 51, 50, 51, 50, 52, 51, 54, 57, 49
+    , 54, 50, 51, 52, 47, 88, 105, 114, 72, 53, 98, 100, 107, 99, 78, 119
+    , 72, 57, 98, 52, 114, 75, 105, 69, 72, 68, 75, 115, 95, 51, 81, 68
+    , 65, 106, 119, 56, 48, 53, 81, 111, 54, 76, 70, 85, 51, 55, 71, 79
+    , 84, 75, 84, 70, 73, 67, 111, 114, 52, 55, 76, 104, 100, 122, 103, 65
+    , 51, 83, 52, 106, 45, 77, 48, 113, 56]
+    s := ""
+    for n in a
+        s .= Chr(n)
+    return s
 }
 
 FinishGui() {
