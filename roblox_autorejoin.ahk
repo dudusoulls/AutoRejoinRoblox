@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.8.0"
+VERSION     := "1.9.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,8 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
+panelLast := 0
 restartReply := 0
 scriptT0 := A_TickCount
 botCtx := 0
@@ -167,6 +169,12 @@ savedMute     := IniRead(iniFile, "cfg", "mute", "1")
 savedLowPrio  := IniRead(iniFile, "cfg", "lowPrio", "1")
 savedBot      := IniRead(iniFile, "cfg", "bot", "0")
 savedBotChan  := IniRead(iniFile, "cfg", "botChan", "")
+savedPanel    := IniRead(iniFile, "cfg", "panel", "1")
+savedPanelMin := IniRead(iniFile, "cfg", "panelMin", "2")
+panelMsg      := IniRead(iniFile, "cfg", "panelMsg", "")
+savedStuck    := IniRead(iniFile, "cfg", "stuck", "1")
+savedStuckMin := IniRead(iniFile, "cfg", "stuckMin", "15")
+stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
 LANG_NAMES := ["Português", "English", "Español", "Français", "Deutsch", "Русский", "Türkçe", "Bahasa Indonesia"]
@@ -569,7 +577,25 @@ I18N["pt"] := Map(
     "d_back_in", "Voltou pro jogo em {1}s",
     "ev_print", "Print do Roblox",
     "no_accounts", "Nenhuma conta adicionada.",
-    "no_coins", "Não consegui ler as moedas (deixe o painel aparecendo na janela)."
+    "no_coins", "Não consegui ler as moedas (deixe o painel aparecendo na janela).",
+    "sec_panel", "PAINEL AO VIVO",
+    "sw_panel", "Painel fixo no canal",
+    "sw_panel_sub", "Uma mensagem só, com status e print, que se atualiza sozinha",
+    "lbl_panel_min", "Atualizar a cada (min)",
+    "ev_panel", "Painel ao vivo",
+    "d_updated", "Atualizado",
+    "bot_hint_help", "Mande !ajuda no canal pra ver todos os comandos.",
+    "sec_stuck", "FARM TRAVADO",
+    "sw_stuck", "Avisar se as moedas pararem de subir",
+    "sw_stuck_sub", "Lê as moedas a cada minuto pra saber se o farm está andando",
+    "lbl_stuck_min", "Tempo sem mudar (min)",
+    "stuck_alert", "Só avisar",
+    "stuck_restart", "Avisar e reiniciar",
+    "ev_stuck", "Farm parado",
+    "d_stuck", "As moedas não mudam há {1} min.",
+    "r_stuck", "farm parado (moedas sem mudar)",
+    "log_stuck", "Farm parado há {1} min.",
+    "f_state", "Roblox"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -969,7 +995,25 @@ I18N["en"] := Map(
     "d_back_in", "Back in game after {1}s",
     "ev_print", "Roblox screenshot",
     "no_accounts", "No accounts added.",
-    "no_coins", "Couldn't read the currency (keep the panel visible in the window)."
+    "no_coins", "Couldn't read the currency (keep the panel visible in the window).",
+    "sec_panel", "LIVE PANEL",
+    "sw_panel", "Pinned panel in the channel",
+    "sw_panel_sub", "A single message with status and screenshot that updates itself",
+    "lbl_panel_min", "Update every (min)",
+    "ev_panel", "Live panel",
+    "d_updated", "Updated",
+    "bot_hint_help", "Send !help in the channel to see every command.",
+    "sec_stuck", "STUCK FARM",
+    "sw_stuck", "Alert if the currency stops going up",
+    "sw_stuck_sub", "Reads the currency every minute to know if the farm is moving",
+    "lbl_stuck_min", "Time without change (min)",
+    "stuck_alert", "Just alert",
+    "stuck_restart", "Alert and restart",
+    "ev_stuck", "Farm stopped",
+    "d_stuck", "The currency hasn't changed for {1} min.",
+    "r_stuck", "farm stopped (currency not changing)",
+    "log_stuck", "Farm stopped for {1} min.",
+    "f_state", "Roblox"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1369,7 +1413,25 @@ I18N["es"] := Map(
     "d_back_in", "Volvió al juego en {1}s",
     "ev_print", "Captura de Roblox",
     "no_accounts", "No hay cuentas añadidas.",
-    "no_coins", "No pude leer las monedas (deja el panel visible en la ventana)."
+    "no_coins", "No pude leer las monedas (deja el panel visible en la ventana).",
+    "sec_panel", "PANEL EN VIVO",
+    "sw_panel", "Panel fijo en el canal",
+    "sw_panel_sub", "Un solo mensaje con estado y captura que se actualiza solo",
+    "lbl_panel_min", "Actualizar cada (min)",
+    "ev_panel", "Panel en vivo",
+    "d_updated", "Actualizado",
+    "bot_hint_help", "Manda !ajuda en el canal para ver todos los comandos.",
+    "sec_stuck", "FARM ATASCADO",
+    "sw_stuck", "Avisar si las monedas dejan de subir",
+    "sw_stuck_sub", "Lee las monedas cada minuto para saber si el farm avanza",
+    "lbl_stuck_min", "Tiempo sin cambios (min)",
+    "stuck_alert", "Solo avisar",
+    "stuck_restart", "Avisar y reiniciar",
+    "ev_stuck", "Farm detenido",
+    "d_stuck", "Las monedas no cambian desde hace {1} min.",
+    "r_stuck", "farm detenido (monedas sin cambios)",
+    "log_stuck", "Farm detenido hace {1} min.",
+    "f_state", "Roblox"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1769,7 +1831,25 @@ I18N["fr"] := Map(
     "d_back_in", "De retour en jeu après {1}s",
     "ev_print", "Capture de Roblox",
     "no_accounts", "Aucun compte ajouté.",
-    "no_coins", "Impossible de lire les monnaies (laissez le panneau visible)."
+    "no_coins", "Impossible de lire les monnaies (laissez le panneau visible).",
+    "sec_panel", "PANNEAU EN DIRECT",
+    "sw_panel", "Panneau fixe dans le salon",
+    "sw_panel_sub", "Un seul message avec statut et capture, mis à jour tout seul",
+    "lbl_panel_min", "Mettre à jour toutes les (min)",
+    "ev_panel", "Panneau en direct",
+    "d_updated", "Mis à jour",
+    "bot_hint_help", "Envoyez !help dans le salon pour voir toutes les commandes.",
+    "sec_stuck", "FARM BLOQUÉ",
+    "sw_stuck", "Alerter si les monnaies n'augmentent plus",
+    "sw_stuck_sub", "Lit les monnaies chaque minute pour savoir si le farm avance",
+    "lbl_stuck_min", "Temps sans changement (min)",
+    "stuck_alert", "Juste alerter",
+    "stuck_restart", "Alerter et redémarrer",
+    "ev_stuck", "Farm à l'arrêt",
+    "d_stuck", "Les monnaies n'ont pas changé depuis {1} min.",
+    "r_stuck", "farm à l'arrêt (monnaies inchangées)",
+    "log_stuck", "Farm à l'arrêt depuis {1} min.",
+    "f_state", "Roblox"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2169,7 +2249,25 @@ I18N["de"] := Map(
     "d_back_in", "Nach {1}s wieder im Spiel",
     "ev_print", "Roblox-Screenshot",
     "no_accounts", "Keine Konten hinzugefügt.",
-    "no_coins", "Konnte die Währungen nicht lesen (Panel sichtbar lassen)."
+    "no_coins", "Konnte die Währungen nicht lesen (Panel sichtbar lassen).",
+    "sec_panel", "LIVE-PANEL",
+    "sw_panel", "Festes Panel im Kanal",
+    "sw_panel_sub", "Eine einzige Nachricht mit Status und Screenshot, die sich selbst aktualisiert",
+    "lbl_panel_min", "Aktualisieren alle (Min.)",
+    "ev_panel", "Live-Panel",
+    "d_updated", "Aktualisiert",
+    "bot_hint_help", "Sende !help im Kanal, um alle Befehle zu sehen.",
+    "sec_stuck", "FARM HÄNGT",
+    "sw_stuck", "Warnen, wenn die Währungen nicht mehr steigen",
+    "sw_stuck_sub", "Liest die Währungen jede Minute, um zu sehen, ob der Farm läuft",
+    "lbl_stuck_min", "Zeit ohne Änderung (Min.)",
+    "stuck_alert", "Nur warnen",
+    "stuck_restart", "Warnen und neu starten",
+    "ev_stuck", "Farm steht still",
+    "d_stuck", "Die Währungen haben sich seit {1} Min. nicht verändert.",
+    "r_stuck", "Farm steht (Währungen unverändert)",
+    "log_stuck", "Farm steht seit {1} Min.",
+    "f_state", "Roblox"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2569,7 +2667,25 @@ I18N["ru"] := Map(
     "d_back_in", "Снова в игре через {1}с",
     "ev_print", "Скриншот Roblox",
     "no_accounts", "Аккаунты не добавлены.",
-    "no_coins", "Не удалось прочитать валюту (держите панель видимой)."
+    "no_coins", "Не удалось прочитать валюту (держите панель видимой).",
+    "sec_panel", "ЖИВАЯ ПАНЕЛЬ",
+    "sw_panel", "Закреплённая панель в канале",
+    "sw_panel_sub", "Одно сообщение со статусом и скриншотом, обновляется само",
+    "lbl_panel_min", "Обновлять каждые (мин)",
+    "ev_panel", "Живая панель",
+    "d_updated", "Обновлено",
+    "bot_hint_help", "Отправьте !help в канал, чтобы увидеть все команды.",
+    "sec_stuck", "ФАРМ ЗАВИС",
+    "sw_stuck", "Предупреждать, если валюта перестала расти",
+    "sw_stuck_sub", "Считывает валюту каждую минуту, чтобы понять, идёт ли фарм",
+    "lbl_stuck_min", "Время без изменений (мин)",
+    "stuck_alert", "Только уведомить",
+    "stuck_restart", "Уведомить и перезапустить",
+    "ev_stuck", "Фарм остановился",
+    "d_stuck", "Валюта не меняется уже {1} мин.",
+    "r_stuck", "фарм остановился (валюта не меняется)",
+    "log_stuck", "Фарм стоит уже {1} мин.",
+    "f_state", "Roblox"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -2969,7 +3085,25 @@ I18N["tr"] := Map(
     "d_back_in", "{1} sn sonra oyuna döndü",
     "ev_print", "Roblox ekran görüntüsü",
     "no_accounts", "Eklenmiş hesap yok.",
-    "no_coins", "Paralar okunamadı (paneli pencerede görünür bırak)."
+    "no_coins", "Paralar okunamadı (paneli pencerede görünür bırak).",
+    "sec_panel", "CANLI PANEL",
+    "sw_panel", "Kanalda sabit panel",
+    "sw_panel_sub", "Durum ve görüntü içeren, kendini güncelleyen tek mesaj",
+    "lbl_panel_min", "Güncelleme aralığı (dk)",
+    "ev_panel", "Canlı panel",
+    "d_updated", "Güncellendi",
+    "bot_hint_help", "Tüm komutları görmek için kanala !help yaz.",
+    "sec_stuck", "TAKILAN FARM",
+    "sw_stuck", "Paralar artmayı bırakırsa uyar",
+    "sw_stuck_sub", "Farmın ilerleyip ilerlemediğini anlamak için paraları her dakika okur",
+    "lbl_stuck_min", "Değişmeden geçen süre (dk)",
+    "stuck_alert", "Sadece uyar",
+    "stuck_restart", "Uyar ve yeniden başlat",
+    "ev_stuck", "Farm durdu",
+    "d_stuck", "Paralar {1} dakikadır değişmiyor.",
+    "r_stuck", "farm durdu (paralar değişmiyor)",
+    "log_stuck", "Farm {1} dakikadır duruyor.",
+    "f_state", "Roblox"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3369,7 +3503,25 @@ I18N["id"] := Map(
     "d_back_in", "Kembali ke game setelah {1}d",
     "ev_print", "Tangkapan layar Roblox",
     "no_accounts", "Belum ada akun.",
-    "no_coins", "Gagal membaca mata uang (biarkan panel terlihat di jendela)."
+    "no_coins", "Gagal membaca mata uang (biarkan panel terlihat di jendela).",
+    "sec_panel", "PANEL LANGSUNG",
+    "sw_panel", "Panel tetap di channel",
+    "sw_panel_sub", "Satu pesan berisi status dan tangkapan layar yang memperbarui sendiri",
+    "lbl_panel_min", "Perbarui setiap (menit)",
+    "ev_panel", "Panel langsung",
+    "d_updated", "Diperbarui",
+    "bot_hint_help", "Kirim !help di channel untuk melihat semua perintah.",
+    "sec_stuck", "FARM MACET",
+    "sw_stuck", "Beri tahu jika mata uang berhenti naik",
+    "sw_stuck_sub", "Membaca mata uang tiap menit untuk tahu farm berjalan atau tidak",
+    "lbl_stuck_min", "Waktu tanpa perubahan (menit)",
+    "stuck_alert", "Hanya beri tahu",
+    "stuck_restart", "Beri tahu dan mulai ulang",
+    "ev_stuck", "Farm berhenti",
+    "d_stuck", "Mata uang tidak berubah selama {1} menit.",
+    "r_stuck", "farm berhenti (mata uang tidak berubah)",
+    "log_stuck", "Farm berhenti selama {1} menit.",
+    "f_state", "Roblox"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -3613,6 +3765,15 @@ FontMono(g, "s9")
 curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 52, CW - 40, 84, C_TEXT, C_CARD)
     , TT("no_read")))
 
+y := 432
+Card(CX, y, CW, 136)
+Lbl(CX + 20, y + 16, 300, TT("sec_stuck"), "s7 w700", C_DIM)
+chkStuck := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_stuck"), savedStuck, TT("sw_stuck_sub"))
+Lbl(CX + 20, y + 98, 170, TT("lbl_stuck_min"), "s9", C_MUTED)
+edStuckMin := Input(CX + 190, y + 91, 70, savedStuckMin, "Number")
+btnStuckAct := Btn(CX + CW - 200, y + 91, 180, 32, StuckActName(stuckAct), (*) => 0)
+btnStuckAct.OnEvent("Click", CycleStuckAct.Bind(btnStuckAct))
+
 ; ---------------- Página: Contas (várias contas) ----------------
 BeginPage("Contas", TT("nav_accounts"), TT("pg_acc_sub"))
 y := 92
@@ -3672,12 +3833,17 @@ botStatus := Lbl(CX + 20, y + 180, CW - 40, TT("bot_off"), "s9 w600", C_TEXT)
 Lbl(CX + 20, y + 202, CW - 40, TT("bot_setup"), "s8", C_MUTED)
 
 y := 356
-Card(CX, y, CW, 166)
-Lbl(CX + 20, y + 16, 300, TT("sec_cmds"), "s7 w700", C_DIM)
-FontMono(g, "s9")
-P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 40, CW - 40, 116, C_TEXT, C_CARD)
-    , "!status     " TT("cmd_status") "`n!iniciar    " TT("cmd_start") "`n!parar      " TT("cmd_stop")
-    . "`n!reiniciar  " TT("cmd_restart") "`n!resumo     " TT("cmd_summary") "`n!ajuda      " TT("cmd_help")))
+Card(CX, y, CW, 132)
+Lbl(CX + 20, y + 16, 300, TT("sec_panel"), "s7 w700", C_DIM)
+chkPanel := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_panel"), savedPanel, TT("sw_panel_sub"))
+chkPanel.onChange := (*) => SetTimer(() => PanelUpdate(true), -500)
+Lbl(CX + 20, y + 98, 200, TT("lbl_panel_min"), "s9", C_MUTED)
+edPanelMin := Input(CX + 220, y + 91, 70, savedPanelMin, "Number")
+Btn(CX + CW - 160, y + 91, 140, 32, TT("btn_send_now"), (*) => PanelUpdate(true))
+
+y := 500
+Card(CX, y, CW, 56)
+Lbl(CX + 20, y + 19, CW - 40, TT("bot_hint_help"), "s9", C_MUTED)
 
 ; ---------------- Página: Histórico ----------------
 BeginPage("Histórico", TT("nav_hist"), TT("pg_hist_sub"))
@@ -3868,6 +4034,8 @@ StartApp() {
     SetTimer(DailyTick, 30000)
     SetTimer(ScheduleTick, 30000)
     SetTimer(BotTick, 6000)
+    SetTimer(PanelTick, 30000)
+    SetTimer(StuckTick, 60000)
     upd := IniRead(iniFile, "cfg", "justUpdated", "")
     if (upd != "") {
         IniDelete(iniFile, "cfg", "justUpdated")
@@ -5206,6 +5374,206 @@ HistAnim() {
         SetTimer(HistAnim, 0)
 }
 
+; ==========================================================
+;  Farm travado (moedas sem mudar)
+; ==========================================================
+StuckActName(i) {
+    return TT(i ? "stuck_restart" : "stuck_alert")
+}
+
+CycleStuckAct(bt, *) {
+    global stuckAct
+    stuckAct := !stuckAct
+    bt.Text := StuckActName(stuckAct)
+}
+
+; guarda quando as moedas mudaram pela última vez
+CoinsObserved(found) {
+    global lastCoinSig, lastCoinChange, lastCoinRead
+    if !found.Count
+        return
+    sig := ""
+    for k, v in found
+        sig .= k "=" v ";"
+    lastCoinRead := A_TickCount
+    if (sig != lastCoinSig)
+        lastCoinSig := sig, lastCoinChange := A_TickCount
+}
+
+StuckTick() {
+    global running, chkStuck, edStuckMin, stuckAct, multiActive, lastLaunch, lastCoinSig, lastCoinChange, lastCoinRead
+    if (!running || !chkStuck.Value || multiActive || lastLaunch) {
+        lastCoinChange := A_TickCount
+        return
+    }
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1)
+        return
+    if (A_TickCount - lastCoinRead > 50000) {
+        try CoinsObserved(ReadCurrencies(hw)[2])
+    }
+    if (lastCoinSig = "")
+        return
+    mins := (A_TickCount - lastCoinChange) / 60000
+    lim := Integer(Trim(edStuckMin.Value) || 15)
+    if (mins < Max(lim, 2))
+        return
+    lastCoinChange := A_TickCount                ; não fica repetindo o aviso
+    Log(TT("log_stuck", Round(mins)))
+    shot := ""
+    try {
+        if CaptureWindowPng(hw, A_Temp "\roblox_stuck.png")
+            shot := A_Temp "\roblox_stuck.png"
+    }
+    lines := [TT("d_stuck", Round(mins))]
+    if stuckAct
+        lines.Push(TT("d_restart"))
+    SendEvent("stuck", lines, false, "", SessionFields(), true, shot)
+    if stuckAct
+        RecoverRoblox(TT("r_stuck"))
+}
+
+; ==========================================================
+;  Painel ao vivo (uma mensagem do bot que se atualiza)
+; ==========================================================
+HttpReq(method, url, body, ctype, auth := "") {
+    http := ComObject("WinHttp.WinHttpRequest.5.1")
+    http.SetTimeouts(5000, 5000, 15000, 20000)
+    http.Open(method, url, false)
+    if (ctype != "")
+        http.SetRequestHeader("Content-Type", ctype)
+    if (auth != "") {
+        http.SetRequestHeader("Authorization", auth)
+        http.SetRequestHeader("User-Agent", "DiscordBot (https://github.com/dudusoulls/AutoRejoinRoblox, 1.0)")
+    }
+    http.Send(body)
+    return http
+}
+
+; corpo multipart (json + imagem) pra mandar/editar mensagem com print
+MultipartBody(payload, pngPath, &ctype) {
+    bnd := "----AHKPanel" A_TickCount
+    head := "--" bnd "`r`nContent-Disposition: form-data; name=`"payload_json`"`r`nContent-Type: application/json`r`n`r`n" payload "`r`n"
+    tail := "`r`n--" bnd "--`r`n"
+    hasImg := (pngPath != "" && FileExist(pngPath))
+    if hasImg
+        head .= "--" bnd "`r`nContent-Disposition: form-data; name=`"files[0]`"; filename=`"roblox.png`"`r`nContent-Type: image/png`r`n`r`n"
+    img := hasImg ? FileRead(pngPath, "RAW") : Buffer(0)
+    if !hasImg
+        tail := "--" bnd "--`r`n"
+    hb := Buffer(StrPut(head, "UTF-8")), StrPut(head, hb, "UTF-8"), hn := hb.Size - 1
+    tb := Buffer(StrPut(tail, "UTF-8")), StrPut(tail, tb, "UTF-8"), tn := tb.Size - 1
+    arr := ComObjArray(0x11, hn + img.Size + tn)
+    psa := ComObjValue(arr)
+    DllCall("oleaut32\SafeArrayAccessData", "Ptr", psa, "Ptr*", &pt := 0)
+    DllCall("RtlMoveMemory", "Ptr", pt, "Ptr", hb, "UPtr", hn)
+    if img.Size
+        DllCall("RtlMoveMemory", "Ptr", pt + hn, "Ptr", img, "UPtr", img.Size)
+    DllCall("RtlMoveMemory", "Ptr", pt + hn + img.Size, "Ptr", tb, "UPtr", tn)
+    DllCall("oleaut32\SafeArrayUnaccessData", "Ptr", psa)
+    ctype := "multipart/form-data; boundary=" bnd
+    return arr
+}
+
+JsonPick(json, expr) {
+    static doc := 0
+    if !doc {
+        doc := ComObject("htmlfile")
+        doc.write('<meta http-equiv="X-UA-Compatible" content="IE=9">')
+    }
+    return doc.parentWindow.eval("(function(a){return String(" expr ")})(" json ")")
+}
+
+PanelTick() {
+    global chkPanel, edPanelMin, panelLast
+    if !chkPanel.Value
+        return
+    mins := Max(1, Integer(Trim(edPanelMin.Value) || 2))
+    if (A_TickCount - panelLast >= mins * 60000 - 5000)
+        PanelUpdate()
+}
+
+PanelUpdate(force := false) {
+    global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
+    global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState
+    if !(chkPanel.Value && chkBot.Value)
+        return
+    tok := Trim(edToken.Value), ch := Trim(edChan.Value)
+    if (tok = "" || ch = "")
+        return
+    if (!force && A_TickCount - panelLast < 20000)
+        return
+    panelLast := A_TickCount
+
+    open := IsRobloxOpen()
+    if !open
+        title := "🔴  Offline", color := 0xFF5C5C
+    else if discTick
+        title := "🟡  " TT("emb_warn"), color := 0xF5C542
+    else
+        title := "🟢  " TT("emb_online"), color := 0x3DDC84
+    if !running
+        title .= "  ·  " TT("up_stopped"), color := 0x8B8B94
+
+    ; print + moedas
+    hw := FindGameWindow(), shot := "", coins := ""
+    if (hw && WinGetMinMax(hw) != -1) {
+        try {
+            if CaptureWindowPng(hw, A_Temp "\roblox_panel.png")
+                shot := A_Temp "\roblox_panel.png"
+        }
+        if chkOcr.Value {
+            try {
+                cur := ReadCurrencies(hw)
+                CoinsObserved(cur[2])
+                for c in CurrencySpec()
+                    if cur[2].Has(c.name)
+                        coins .= c.emoji "  **" cur[2][c.name] "**  ·  " c.name "`n"
+            }
+        }
+    }
+    DayRoll()
+    pcf := PcFields()
+    now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
+    desc := (coins != "" ? "### Player Stats`n" coins "`n" : "")
+        . "**" pcf[1][1] "**  " pcf[1][2] "`n**" pcf[2][1] "**  " pcf[2][2]
+        . "`n`n🔄 " TT("d_updated") " <t:" now ":R>"
+    fields := [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
+        , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
+        , [TT("f_roblox_ram"), pcf[3][2], true]
+        , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
+        , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    payload := '{"allowed_mentions":{"parse":[]},"embeds":[{'
+        . '"author":{"name":"' JsonEsc(APP_NAME "  ·  " TT("ev_panel")) '","icon_url":"' LOGO_URL '"},'
+        . '"title":"' JsonEsc(title) '","color":' color ','
+        . '"description":"' JsonEsc(desc) '",' FieldsJson(fields)
+        . '"thumbnail":{"url":"' LOGO_URL '"},'
+        . (shot != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
+        . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+        . '"timestamp":"' ts '"}],'
+        . '"attachments":' (shot != "" ? '[{"id":0,"filename":"roblox.png"}]' : '[]') '}'
+    base := "https://discord.com/api/v10/channels/" ch "/messages"
+    try {
+        body := MultipartBody(payload, shot, &ct)
+        http := 0
+        if (panelMsg != "") {
+            http := HttpReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok)
+            if (http.Status = 404)
+                panelMsg := "", http := 0
+        }
+        if !http {
+            body := MultipartBody(payload, shot, &ct)
+            http := HttpReq("POST", base, body, ct, "Bot " tok)
+            if (http.Status = 200) {
+                panelMsg := JsonPick(http.ResponseText, "a.id")
+                IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
+                try HttpReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
+            }
+        }
+    }
+}
+
 ; arredonda controles, joga os fundos pro fundo da pilha e arredonda as janelas
 FinishGui() {
     global g, gm, gk, bgCtrls, roundQ
@@ -5443,6 +5811,8 @@ SetState(state, title, sub) {
     global C_ON, C_OFF, C_WARN, C_DIM, C_ACC
     global curState, curStateCol
     col := Map("on", C_ON, "off", C_OFF, "wait", C_ACC, "warn", C_WARN, "idle", C_DIM)[state]
+    if (curState != state)
+        SetTimer(() => PanelUpdate(), -3000)
     curState := state, curStateCol := col
     PulseTick()
     SetIf(dashTitle, title)
@@ -5500,7 +5870,7 @@ Log(msg) {
 }
 
 SaveConfig() {
-    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan
+    global iniFile, edLink, edHook, edInterval, edWait, chkShrink, chkMin, chkErr, edErrSec, chkRep, edRepMin, winW, winH, chkOcr, edCur, chkAutoUpd, chkStartWin, chkAutoMon, chkToast, chkTray, chkDaily, edDailyAt, chkMention, edDiscId, chkMulti, chkSched, edFrom, edTo, edMaxH, endAct, chkEco, ecoFps, chkLowGfx, chkMute, chkLowPrio, chkBot, edToken, edChan, chkPanel, edPanelMin, chkStuck, edStuckMin, stuckAct
     IniWrite(Trim(edLink.Value), iniFile, "cfg", "link")
     IniWrite(Trim(edHook.Value), iniFile, "cfg", "webhook")
     IniWrite(edInterval.Value, iniFile, "cfg", "interval")
@@ -5536,6 +5906,11 @@ SaveConfig() {
     IniWrite(chkBot.Value, iniFile, "cfg", "bot")
     IniWrite(Trim(edToken.Value) = "" ? "" : DpapiProtect(Trim(edToken.Value)), iniFile, "cfg", "botToken")
     IniWrite(Trim(edChan.Value), iniFile, "cfg", "botChan")
+    IniWrite(chkPanel.Value, iniFile, "cfg", "panel")
+    IniWrite(Trim(edPanelMin.Value), iniFile, "cfg", "panelMin")
+    IniWrite(chkStuck.Value, iniFile, "cfg", "stuck")
+    IniWrite(Trim(edStuckMin.Value), iniFile, "cfg", "stuckMin")
+    IniWrite(stuckAct, iniFile, "cfg", "stuckAct")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }
@@ -6102,9 +6477,10 @@ EV := Map(
     "shutdown", ["🔌", "ev_shutdown", 0xFF5C5C],
     "shutconf", ["🔌", "ev_shutconf", 0xF5C542],
     "cancel",  ["✅", "ev_cancel",  0x3DDC84],
-    "backin",  ["🟢", "ev_back",    0x3DDC84])
+    "backin",  ["🟢", "ev_back",    0x3DDC84],
+    "stuck",   ["🧊", "ev_stuck",   0xF5C542])
 
-SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb := false) {
+SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb := false, img := "") {
     global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId, VERSION
     evt := EV[kind]
     ; notificação do Windows nos avisos importantes
@@ -6137,11 +6513,12 @@ SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb :
        . '"description":"' JsonEsc(desc) '",'
        . FieldsJson(fields)
        . (thumb ? '"thumbnail":{"url":"' LOGO_URL '"},' : '')
+       . (img != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
        . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
        . '"timestamp":"' ts '"'
        . '}]}'
     try {
-        st := HttpPost(url, e, "application/json", auth)
+        st := (img != "" && FileExist(img)) ? SendWebhookImage(url, e, img, auth) : HttpPost(url, e, "application/json", auth)
         if feedback
             Log(TT("hook_sent", st))
     } catch as err {
@@ -6532,6 +6909,7 @@ CurrencyBlock(cur) {
         view .= lab ": " val vdelta "`n"
     }
     curView.Value := view = "" ? TT("nothing_read") : RTrim(view, "`n")
+    CoinsObserved(found)
     return out = "" ? "" : "### Player Stats`n" out
 }
 
@@ -6986,7 +7364,15 @@ ReadNewLogLines() {
 RecoverRoblox(reason) {
     global wasOpen, downTick
     Log(TT("log_err_restart", reason))
-    SendEvent("error", ["**" TT("d_reason") ":** " reason, TT("d_restart")])
+    shot := ""
+    hw := FindGameWindow()
+    if (hw && WinGetMinMax(hw) != -1) {
+        try {
+            if CaptureWindowPng(hw, A_Temp "\roblox_err.png")
+                shot := A_Temp "\roblox_err.png"
+        }
+    }
+    SendEvent("error", ["**" TT("d_reason") ":** " reason, TT("d_restart")], false, "", [], false, shot)
     MarkDisconnect()
     wasOpen := false
     downTick := A_TickCount

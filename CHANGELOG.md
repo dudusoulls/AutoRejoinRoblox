@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.9.0
+- Painel ao vivo no Discord: uma mensagem fixa do bot com status, moedas, PC e print, que se atualiza sozinha
+- Farm travado: avisa (com print) se as moedas pararem de subir por X minutos, e pode reiniciar sozinho
+- Aviso de erro agora vem com o print da tela do erro antes de fechar o Roblox
+
 ## v1.8.0
 - Respostas do bot mais completas: sessão, reaberturas, quedas, última queda e link em campos
 - Comandos novos: !print, !moedas, !pc, !contas, !historico, !logs, !ping, !link, !atualizar, !desligar e !cancelar
