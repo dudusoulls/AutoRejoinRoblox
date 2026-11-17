@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.1"
+VERSION     := "2.6.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6326,15 +6326,18 @@ PanelUpdate(force := false) {
             AsyncReq("PATCH", base "/" panelMsg, body, ct, "Bot " tok, PanelPatched.Bind(base, payload, shot, tok, ch))
         else
             PanelCreate(base, payload, shot, tok, ch)
-    }
+    } catch as e
+        Log("Painel · " TT("hook_fail", e.Message))
 }
 
 PanelPatched(base, payload, shot, tok, ch, http) {
     global panelMsg
-    if (HttpStatus(http) = 404) {             ; mensagem apagada: cria outra
-        panelMsg := ""
-        PanelCreate(base, payload, shot, tok, ch)
-    }
+    st := HttpStatus(http)
+    if (st >= 200 && st < 300)
+        return
+    panelMsg := ""                            ; qualquer falha (apagada/antiga): recria do zero
+    Log("Painel · " TT("hook_fail", "edit HTTP " st " → recriando"))
+    PanelCreate(base, payload, shot, tok, ch)
 }
 
 PanelCreate(base, payload, shot, tok, ch) {
@@ -6344,13 +6347,19 @@ PanelCreate(base, payload, shot, tok, ch) {
 
 PanelCreated(tok, ch, http) {
     global panelMsg, iniFile, reactReady
-    if (HttpStatus(http) != 200)
+    st := HttpStatus(http)
+    if (st < 200 || st >= 300) {
+        rt := ""
+        try rt := http.ResponseText
+        Log("Painel · " TT("hook_fail", "HTTP " st "  " SubStr(rt, 1, 150)))
         return
+    }
     try {
         panelMsg := JsonPick(http.ResponseText, "a.id")
         IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
         reactReady := false
         AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
+        Log("Painel · " TT("hook_sent", st))
     }
 }
 

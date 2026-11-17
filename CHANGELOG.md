@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.6.2
+- Painel ao vivo: agora **mostra o erro no Logs** quando não consegue enviar (antes falhava calado), e **se recria sozinho** se a mensagem fixada antiga tiver sumido ou travado.
+
+
 ## v2.6.1
 - Aba Suporte agora deixa **anexar uma imagem qualquer** (botão "Anexar imagem" — PNG, JPG ou GIF), não só o print do Roblox. Antes, se o Roblox estivesse fechado/minimizado, não ia imagem nenhuma.
 - A imagem escolhida tem prioridade; se não escolher nenhuma e o print do Roblox estiver ligado, vai o print como antes.
