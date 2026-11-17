@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.7.2"
+VERSION     := "1.8.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -78,6 +78,8 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+restartReply := 0
+scriptT0 := A_TickCount
 botCtx := 0
 schedPaused := false
 botLast := ""
@@ -523,7 +525,51 @@ I18N["pt"] := Map(
     "d_unknown", "Use !ajuda pra ver os comandos.",
     "d_restart_how", "Fechando e abrindo de novo direto pelo Roblox.",
     "d_running_for", "Ativo há",
-    "d_cmd", "Comando"
+    "d_cmd", "Comando",
+    "cmd_print", "manda só o print do Roblox",
+    "cmd_coins", "mostra suas moedas agora",
+    "cmd_pc", "uso de CPU e memória do PC",
+    "cmd_accounts", "status de cada conta",
+    "cmd_hist", "gráfico dos últimos 7 dias",
+    "cmd_logs", "últimas linhas do log",
+    "cmd_ping", "testa se o bot está respondendo",
+    "cmd_link", "troca o link do jogo",
+    "cmd_update", "procura e instala atualização",
+    "cmd_shutdown", "desliga o PC (!desligar confirmar)",
+    "cmd_cancel", "cancela o desligamento",
+    "grp_control", "Controle",
+    "grp_info", "Informações",
+    "grp_config", "Configuração",
+    "f_session", "Sessão",
+    "f_link", "Link",
+    "f_version", "Versão",
+    "f_cpu", "CPU",
+    "f_ram", "Memória",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC ligado há",
+    "f_script_up", "Script aberto há",
+    "f_latency", "Latência",
+    "f_windows", "Janelas do Roblox",
+    "ev_pong", "Pong!",
+    "ev_pc", "Saúde do PC",
+    "ev_coins", "Suas moedas",
+    "ev_accounts", "Contas",
+    "ev_hist", "Últimos 7 dias",
+    "ev_logs", "Últimos logs",
+    "ev_link", "Link alterado",
+    "d_link_next", "Vale na próxima abertura. Mande !reiniciar pra aplicar agora.",
+    "ev_linkbad", "Link inválido",
+    "d_link_usage", "Use: !link <link do jogo, do servidor ou Place ID>",
+    "ev_updnone", "Já está na versão mais nova",
+    "ev_updating", "Atualizando para v{1}",
+    "ev_shutdown", "Desligando o PC",
+    "ev_shutconf", "Confirme o desligamento",
+    "d_shutconf", "Mande !desligar confirmar pra desligar em 60 segundos.",
+    "ev_cancel", "Desligamento cancelado",
+    "d_back_in", "Voltou pro jogo em {1}s",
+    "ev_print", "Print do Roblox",
+    "no_accounts", "Nenhuma conta adicionada.",
+    "no_coins", "Não consegui ler as moedas (deixe o painel aparecendo na janela)."
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -879,7 +925,51 @@ I18N["en"] := Map(
     "d_unknown", "Use !help to see the commands.",
     "d_restart_how", "Closing and reopening directly through Roblox.",
     "d_running_for", "Running for",
-    "d_cmd", "Command"
+    "d_cmd", "Command",
+    "cmd_print", "sends just a Roblox screenshot",
+    "cmd_coins", "shows your currency right now",
+    "cmd_pc", "PC CPU and memory usage",
+    "cmd_accounts", "status of each account",
+    "cmd_hist", "chart of the last 7 days",
+    "cmd_logs", "latest log lines",
+    "cmd_ping", "checks that the bot is responding",
+    "cmd_link", "changes the game link",
+    "cmd_update", "checks for and installs updates",
+    "cmd_shutdown", "shuts down the PC (!shutdown confirm)",
+    "cmd_cancel", "cancels the shutdown",
+    "grp_control", "Control",
+    "grp_info", "Info",
+    "grp_config", "Settings",
+    "f_session", "Session",
+    "f_link", "Link",
+    "f_version", "Version",
+    "f_cpu", "CPU",
+    "f_ram", "Memory",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC on for",
+    "f_script_up", "Script open for",
+    "f_latency", "Latency",
+    "f_windows", "Roblox windows",
+    "ev_pong", "Pong!",
+    "ev_pc", "PC health",
+    "ev_coins", "Your currency",
+    "ev_accounts", "Accounts",
+    "ev_hist", "Last 7 days",
+    "ev_logs", "Latest logs",
+    "ev_link", "Link changed",
+    "d_link_next", "Applies on the next launch. Send !restart to apply now.",
+    "ev_linkbad", "Invalid link",
+    "d_link_usage", "Use: !link <game link, server link or Place ID>",
+    "ev_updnone", "Already on the latest version",
+    "ev_updating", "Updating to v{1}",
+    "ev_shutdown", "Shutting down the PC",
+    "ev_shutconf", "Confirm the shutdown",
+    "d_shutconf", "Send !shutdown confirm to shut down in 60 seconds.",
+    "ev_cancel", "Shutdown cancelled",
+    "d_back_in", "Back in game after {1}s",
+    "ev_print", "Roblox screenshot",
+    "no_accounts", "No accounts added.",
+    "no_coins", "Couldn't read the currency (keep the panel visible in the window)."
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1235,7 +1325,51 @@ I18N["es"] := Map(
     "d_unknown", "Usa !ajuda para ver los comandos.",
     "d_restart_how", "Cerrando y abriendo de nuevo directo por Roblox.",
     "d_running_for", "Activo desde hace",
-    "d_cmd", "Comando"
+    "d_cmd", "Comando",
+    "cmd_print", "envía solo la captura de Roblox",
+    "cmd_coins", "muestra tus monedas ahora",
+    "cmd_pc", "uso de CPU y memoria de la PC",
+    "cmd_accounts", "estado de cada cuenta",
+    "cmd_hist", "gráfico de los últimos 7 días",
+    "cmd_logs", "últimas líneas del registro",
+    "cmd_ping", "comprueba que el bot responde",
+    "cmd_link", "cambia el enlace del juego",
+    "cmd_update", "busca e instala actualizaciones",
+    "cmd_shutdown", "apaga la PC (!desligar confirmar)",
+    "cmd_cancel", "cancela el apagado",
+    "grp_control", "Control",
+    "grp_info", "Información",
+    "grp_config", "Configuración",
+    "f_session", "Sesión",
+    "f_link", "Enlace",
+    "f_version", "Versión",
+    "f_cpu", "CPU",
+    "f_ram", "Memoria",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC encendida hace",
+    "f_script_up", "Script abierto hace",
+    "f_latency", "Latencia",
+    "f_windows", "Ventanas de Roblox",
+    "ev_pong", "¡Pong!",
+    "ev_pc", "Estado de la PC",
+    "ev_coins", "Tus monedas",
+    "ev_accounts", "Cuentas",
+    "ev_hist", "Últimos 7 días",
+    "ev_logs", "Últimos registros",
+    "ev_link", "Enlace cambiado",
+    "d_link_next", "Se aplica en la próxima apertura. Manda !reiniciar para aplicarlo ya.",
+    "ev_linkbad", "Enlace inválido",
+    "d_link_usage", "Usa: !link <enlace del juego, del servidor o Place ID>",
+    "ev_updnone", "Ya tienes la versión más reciente",
+    "ev_updating", "Actualizando a v{1}",
+    "ev_shutdown", "Apagando la PC",
+    "ev_shutconf", "Confirma el apagado",
+    "d_shutconf", "Manda !desligar confirmar para apagar en 60 segundos.",
+    "ev_cancel", "Apagado cancelado",
+    "d_back_in", "Volvió al juego en {1}s",
+    "ev_print", "Captura de Roblox",
+    "no_accounts", "No hay cuentas añadidas.",
+    "no_coins", "No pude leer las monedas (deja el panel visible en la ventana)."
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -1591,7 +1725,51 @@ I18N["fr"] := Map(
     "d_unknown", "Utilisez !help pour voir les commandes.",
     "d_restart_how", "Fermeture puis réouverture directement via Roblox.",
     "d_running_for", "Actif depuis",
-    "d_cmd", "Commande"
+    "d_cmd", "Commande",
+    "cmd_print", "envoie juste une capture de Roblox",
+    "cmd_coins", "affiche vos monnaies maintenant",
+    "cmd_pc", "utilisation CPU et mémoire du PC",
+    "cmd_accounts", "statut de chaque compte",
+    "cmd_hist", "graphique des 7 derniers jours",
+    "cmd_logs", "dernières lignes du journal",
+    "cmd_ping", "vérifie que le bot répond",
+    "cmd_link", "change le lien du jeu",
+    "cmd_update", "cherche et installe les mises à jour",
+    "cmd_shutdown", "éteint le PC (!shutdown confirm)",
+    "cmd_cancel", "annule l'extinction",
+    "grp_control", "Contrôle",
+    "grp_info", "Infos",
+    "grp_config", "Réglages",
+    "f_session", "Session",
+    "f_link", "Lien",
+    "f_version", "Version",
+    "f_cpu", "CPU",
+    "f_ram", "Mémoire",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC allumé depuis",
+    "f_script_up", "Script ouvert depuis",
+    "f_latency", "Latence",
+    "f_windows", "Fenêtres Roblox",
+    "ev_pong", "Pong !",
+    "ev_pc", "Santé du PC",
+    "ev_coins", "Vos monnaies",
+    "ev_accounts", "Comptes",
+    "ev_hist", "7 derniers jours",
+    "ev_logs", "Derniers journaux",
+    "ev_link", "Lien modifié",
+    "d_link_next", "S'applique au prochain lancement. Envoyez !restart pour l'appliquer maintenant.",
+    "ev_linkbad", "Lien invalide",
+    "d_link_usage", "Utilisez : !link <lien du jeu, du serveur ou Place ID>",
+    "ev_updnone", "Déjà sur la dernière version",
+    "ev_updating", "Mise à jour vers v{1}",
+    "ev_shutdown", "Extinction du PC",
+    "ev_shutconf", "Confirmez l'extinction",
+    "d_shutconf", "Envoyez !shutdown confirm pour éteindre dans 60 secondes.",
+    "ev_cancel", "Extinction annulée",
+    "d_back_in", "De retour en jeu après {1}s",
+    "ev_print", "Capture de Roblox",
+    "no_accounts", "Aucun compte ajouté.",
+    "no_coins", "Impossible de lire les monnaies (laissez le panneau visible)."
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -1947,7 +2125,51 @@ I18N["de"] := Map(
     "d_unknown", "Nutze !help, um die Befehle zu sehen.",
     "d_restart_how", "Wird geschlossen und direkt über Roblox neu geöffnet.",
     "d_running_for", "Läuft seit",
-    "d_cmd", "Befehl"
+    "d_cmd", "Befehl",
+    "cmd_print", "sendet nur einen Roblox-Screenshot",
+    "cmd_coins", "zeigt deine Währungen jetzt",
+    "cmd_pc", "CPU- und RAM-Auslastung des PCs",
+    "cmd_accounts", "Status jedes Kontos",
+    "cmd_hist", "Diagramm der letzten 7 Tage",
+    "cmd_logs", "letzte Protokollzeilen",
+    "cmd_ping", "prüft, ob der Bot antwortet",
+    "cmd_link", "ändert den Spiel-Link",
+    "cmd_update", "sucht und installiert Updates",
+    "cmd_shutdown", "fährt den PC herunter (!shutdown confirm)",
+    "cmd_cancel", "bricht das Herunterfahren ab",
+    "grp_control", "Steuerung",
+    "grp_info", "Infos",
+    "grp_config", "Einstellungen",
+    "f_session", "Sitzung",
+    "f_link", "Link",
+    "f_version", "Version",
+    "f_cpu", "CPU",
+    "f_ram", "Arbeitsspeicher",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC an seit",
+    "f_script_up", "Skript offen seit",
+    "f_latency", "Latenz",
+    "f_windows", "Roblox-Fenster",
+    "ev_pong", "Pong!",
+    "ev_pc", "PC-Zustand",
+    "ev_coins", "Deine Währungen",
+    "ev_accounts", "Konten",
+    "ev_hist", "Letzte 7 Tage",
+    "ev_logs", "Letzte Logs",
+    "ev_link", "Link geändert",
+    "d_link_next", "Gilt beim nächsten Start. Sende !restart, um es sofort anzuwenden.",
+    "ev_linkbad", "Ungültiger Link",
+    "d_link_usage", "Nutze: !link <Spiel-Link, Server-Link oder Place-ID>",
+    "ev_updnone", "Bereits auf der neuesten Version",
+    "ev_updating", "Aktualisiere auf v{1}",
+    "ev_shutdown", "PC wird heruntergefahren",
+    "ev_shutconf", "Herunterfahren bestätigen",
+    "d_shutconf", "Sende !shutdown confirm, um in 60 Sekunden herunterzufahren.",
+    "ev_cancel", "Herunterfahren abgebrochen",
+    "d_back_in", "Nach {1}s wieder im Spiel",
+    "ev_print", "Roblox-Screenshot",
+    "no_accounts", "Keine Konten hinzugefügt.",
+    "no_coins", "Konnte die Währungen nicht lesen (Panel sichtbar lassen)."
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -2303,7 +2525,51 @@ I18N["ru"] := Map(
     "d_unknown", "Напишите !help, чтобы увидеть команды.",
     "d_restart_how", "Закрываю и снова открываю напрямую через Roblox.",
     "d_running_for", "Работает уже",
-    "d_cmd", "Команда"
+    "d_cmd", "Команда",
+    "cmd_print", "только скриншот Roblox",
+    "cmd_coins", "показывает валюту сейчас",
+    "cmd_pc", "загрузка CPU и памяти ПК",
+    "cmd_accounts", "статус каждого аккаунта",
+    "cmd_hist", "график за 7 дней",
+    "cmd_logs", "последние строки журнала",
+    "cmd_ping", "проверяет, отвечает ли бот",
+    "cmd_link", "меняет ссылку на игру",
+    "cmd_update", "ищет и ставит обновления",
+    "cmd_shutdown", "выключает ПК (!shutdown confirm)",
+    "cmd_cancel", "отменяет выключение",
+    "grp_control", "Управление",
+    "grp_info", "Информация",
+    "grp_config", "Настройки",
+    "f_session", "Сессия",
+    "f_link", "Ссылка",
+    "f_version", "Версия",
+    "f_cpu", "CPU",
+    "f_ram", "Память",
+    "f_roblox_ram", "Roblox (ОЗУ)",
+    "f_pc_up", "ПК включён",
+    "f_script_up", "Скрипт открыт",
+    "f_latency", "Задержка",
+    "f_windows", "Окна Roblox",
+    "ev_pong", "Понг!",
+    "ev_pc", "Состояние ПК",
+    "ev_coins", "Ваша валюта",
+    "ev_accounts", "Аккаунты",
+    "ev_hist", "Последние 7 дней",
+    "ev_logs", "Последние записи",
+    "ev_link", "Ссылка изменена",
+    "d_link_next", "Применится при следующем запуске. Отправьте !restart, чтобы применить сейчас.",
+    "ev_linkbad", "Неверная ссылка",
+    "d_link_usage", "Формат: !link <ссылка на игру, сервер или Place ID>",
+    "ev_updnone", "Уже последняя версия",
+    "ev_updating", "Обновление до v{1}",
+    "ev_shutdown", "Выключение ПК",
+    "ev_shutconf", "Подтвердите выключение",
+    "d_shutconf", "Отправьте !shutdown confirm, чтобы выключить через 60 секунд.",
+    "ev_cancel", "Выключение отменено",
+    "d_back_in", "Снова в игре через {1}с",
+    "ev_print", "Скриншот Roblox",
+    "no_accounts", "Аккаунты не добавлены.",
+    "no_coins", "Не удалось прочитать валюту (держите панель видимой)."
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -2659,7 +2925,51 @@ I18N["tr"] := Map(
     "d_unknown", "Komutları görmek için !help yaz.",
     "d_restart_how", "Kapatılıp doğrudan Roblox ile yeniden açılıyor.",
     "d_running_for", "Çalışma süresi",
-    "d_cmd", "Komut"
+    "d_cmd", "Komut",
+    "cmd_print", "sadece Roblox ekran görüntüsü",
+    "cmd_coins", "paralarını şimdi gösterir",
+    "cmd_pc", "PC'nin CPU ve bellek kullanımı",
+    "cmd_accounts", "her hesabın durumu",
+    "cmd_hist", "son 7 günün grafiği",
+    "cmd_logs", "son log satırları",
+    "cmd_ping", "botun yanıt verdiğini test eder",
+    "cmd_link", "oyun linkini değiştirir",
+    "cmd_update", "güncelleme arar ve kurar",
+    "cmd_shutdown", "PC'yi kapatır (!shutdown confirm)",
+    "cmd_cancel", "kapatmayı iptal eder",
+    "grp_control", "Kontrol",
+    "grp_info", "Bilgi",
+    "grp_config", "Ayarlar",
+    "f_session", "Oturum",
+    "f_link", "Link",
+    "f_version", "Sürüm",
+    "f_cpu", "CPU",
+    "f_ram", "Bellek",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC açık kalma süresi",
+    "f_script_up", "Betik açık kalma süresi",
+    "f_latency", "Gecikme",
+    "f_windows", "Roblox pencereleri",
+    "ev_pong", "Pong!",
+    "ev_pc", "PC durumu",
+    "ev_coins", "Paraların",
+    "ev_accounts", "Hesaplar",
+    "ev_hist", "Son 7 gün",
+    "ev_logs", "Son loglar",
+    "ev_link", "Link değiştirildi",
+    "d_link_next", "Bir sonraki açılışta geçerli. Hemen uygulamak için !restart gönder.",
+    "ev_linkbad", "Geçersiz link",
+    "d_link_usage", "Kullanım: !link <oyun linki, sunucu linki veya Place ID>",
+    "ev_updnone", "Zaten en yeni sürüm",
+    "ev_updating", "v{1} sürümüne güncelleniyor",
+    "ev_shutdown", "PC kapatılıyor",
+    "ev_shutconf", "Kapatmayı onayla",
+    "d_shutconf", "60 saniyede kapatmak için !shutdown confirm gönder.",
+    "ev_cancel", "Kapatma iptal edildi",
+    "d_back_in", "{1} sn sonra oyuna döndü",
+    "ev_print", "Roblox ekran görüntüsü",
+    "no_accounts", "Eklenmiş hesap yok.",
+    "no_coins", "Paralar okunamadı (paneli pencerede görünür bırak)."
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -3015,7 +3325,51 @@ I18N["id"] := Map(
     "d_unknown", "Ketik !help untuk melihat perintah.",
     "d_restart_how", "Menutup lalu membuka ulang langsung lewat Roblox.",
     "d_running_for", "Aktif selama",
-    "d_cmd", "Perintah"
+    "d_cmd", "Perintah",
+    "cmd_print", "kirim tangkapan layar Roblox saja",
+    "cmd_coins", "menampilkan mata uangmu sekarang",
+    "cmd_pc", "pemakaian CPU dan memori PC",
+    "cmd_accounts", "status setiap akun",
+    "cmd_hist", "grafik 7 hari terakhir",
+    "cmd_logs", "baris log terakhir",
+    "cmd_ping", "cek apakah bot merespons",
+    "cmd_link", "mengganti link game",
+    "cmd_update", "cek dan pasang pembaruan",
+    "cmd_shutdown", "mematikan PC (!shutdown confirm)",
+    "cmd_cancel", "membatalkan mematikan PC",
+    "grp_control", "Kontrol",
+    "grp_info", "Info",
+    "grp_config", "Pengaturan",
+    "f_session", "Sesi",
+    "f_link", "Link",
+    "f_version", "Versi",
+    "f_cpu", "CPU",
+    "f_ram", "Memori",
+    "f_roblox_ram", "Roblox (RAM)",
+    "f_pc_up", "PC menyala selama",
+    "f_script_up", "Skrip terbuka selama",
+    "f_latency", "Latensi",
+    "f_windows", "Jendela Roblox",
+    "ev_pong", "Pong!",
+    "ev_pc", "Kondisi PC",
+    "ev_coins", "Mata uangmu",
+    "ev_accounts", "Akun",
+    "ev_hist", "7 hari terakhir",
+    "ev_logs", "Log terakhir",
+    "ev_link", "Link diganti",
+    "d_link_next", "Berlaku di pembukaan berikutnya. Kirim !restart untuk menerapkan sekarang.",
+    "ev_linkbad", "Link tidak valid",
+    "d_link_usage", "Format: !link <link game, link server, atau Place ID>",
+    "ev_updnone", "Sudah versi terbaru",
+    "ev_updating", "Memperbarui ke v{1}",
+    "ev_shutdown", "Mematikan PC",
+    "ev_shutconf", "Konfirmasi mematikan PC",
+    "d_shutconf", "Kirim !shutdown confirm untuk mematikan dalam 60 detik.",
+    "ev_cancel", "Mematikan PC dibatalkan",
+    "d_back_in", "Kembali ke game setelah {1}d",
+    "ev_print", "Tangkapan layar Roblox",
+    "no_accounts", "Belum ada akun.",
+    "no_coins", "Gagal membaca mata uang (biarkan panel terlihat di jendela)."
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4519,38 +4873,80 @@ BotTick() {
 }
 
 BotCommand(cmd, ch, mid, tok) {
-    global running, multiActive, monStart, botCtx
-    c := StrLower(StrSplit(cmd, " ")[1])
+    global running, multiActive, monStart, botCtx, edLink, pendingUpd, pendingVer, restartReply
+    parts := StrSplit(Trim(cmd), " ", , 2)
+    c := StrLower(parts[1]), arg := parts.Length > 1 ? Trim(parts[2]) : ""
     if (SubStr(c, 1, 1) != "!")
         return
     botCtx := {ch: ch, mid: mid, tok: tok}        ; respostas vão como resposta à mensagem do comando
     known := true
     try {
         switch c {
-            case "!status", "!print":
+            case "!status":
                 SendStatusReport(true)
+            case "!print":
+                SendPrint()
             case "!iniciar", "!start":
                 if running
-                    SendEvent("already", ["**" TT("d_running_for") ":** ``" DurStr(A_TickCount - monStart) "``"])
+                    SendEvent("already", [], false, "", SessionFields(), true)
                 else
-                    Toggle()                      ; manda o embed "Monitoramento iniciado"
+                    Toggle()
             case "!parar", "!stop":
                 if running
-                    Toggle()                      ; manda o embed "Monitoramento parado"
+                    Toggle()
                 else
-                    SendEvent("notrunning")
+                    SendEvent("notrunning", [], false, "", SessionFields(), true)
             case "!reiniciar", "!restart":
-                SendEvent("restart", [TT("d_restart_how")])
+                SendEvent("restart", [TT("d_restart_how")], false, "", SessionFields(), true)
+                restartReply := {ch: ch, mid: mid, tok: tok, t0: A_TickCount}
                 botCtx := 0
                 BotRestart()
             case "!resumo", "!summary":
                 SendDailySummary(true)
+            case "!moedas", "!coins":
+                BotCoins()
+            case "!pc":
+                SendEvent("pc", [], false, "", PcFields(), true)
+            case "!contas", "!accounts":
+                BotAccounts()
+            case "!historico", "!histórico", "!history":
+                BotHistory()
+            case "!logs":
+                BotLogs()
+            case "!ping":
+                lat := DateDiff(A_NowUTC, "19700101000000", "Seconds") * 1000 + A_MSec - ((Integer(mid) >> 22) + 1420070400000)
+                SendEvent("pong", [], false, "", [[TT("f_latency"), Max(0, lat) " ms", true]
+                    , [TT("f_script_up"), DurStr(A_TickCount - scriptT0), true], [TT("f_version"), "v" VERSION, true]], true)
+            case "!link":
+                if (arg = "" || !(RegExMatch(arg, "^\d+$") || InStr(arg, "roblox")))
+                    SendEvent("linkbad", [TT("d_link_usage")], false, "", [], true)
+                else {
+                    edLink.Value := arg
+                    SaveConfig()
+                    SendEvent("link", ["``" SubStr(arg, 1, 90) "``", TT("d_link_next")], false, "", [], true)
+                }
+            case "!atualizar", "!update":
+                CheckUpdate(true)
+                if (pendingUpd != "") {
+                    SendEvent("updating", [], false, pendingVer, [], true)
+                    botCtx := 0
+                    ApplyUpdate()
+                } else
+                    SendEvent("updnone", [], false, "", [[TT("f_version"), "v" VERSION, true]], true)
+            case "!desligar", "!shutdown":
+                if (StrLower(arg) = "confirmar" || StrLower(arg) = "confirm") {
+                    SendEvent("shutdown", [TT("d_shutdown")], false, "", [], true)
+                    Run("shutdown /s /t 60", , "Hide")
+                } else
+                    SendEvent("shutconf", [TT("d_shutconf")], false, "", [], true)
+            case "!cancelar", "!cancel":
+                Run("shutdown /a", , "Hide")
+                SendEvent("cancel", [], false, "", [], true)
             case "!ajuda", "!help":
-                SendEvent("help", ["``!status`` · " TT("cmd_status"), "``!iniciar`` · " TT("cmd_start"), "``!parar`` · " TT("cmd_stop")
-                    , "``!reiniciar`` · " TT("cmd_restart"), "``!resumo`` · " TT("cmd_summary"), "``!ajuda`` · " TT("cmd_help")])
+                SendEvent("help", [], false, "", HelpFields(), true)
             default:
                 known := false
-                SendEvent("unknown", ["**" TT("d_cmd") ":** ``" c "``", TT("d_unknown")])
+                SendEvent("unknown", ["**" TT("d_cmd") ":** ``" c "``", TT("d_unknown")], false, "", [], true)
         }
     } finally
         botCtx := 0
@@ -4560,7 +4956,134 @@ BotCommand(cmd, ch, mid, tok) {
     }
 }
 
-; !reiniciar: fecha e abre do mesmo jeito do "Abrir jogo agora" (começa direto pelo Roblox)
+; ---- informações usadas nos embeds dos comandos ----
+SessionFields() {
+    global running, monStart, launches, discCount, lastDiscUnix, edLink
+    lk := Trim(edLink.Value)
+    return [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
+        , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
+        , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]
+        , [TT("f_link"), lk = "" ? "—" : "``" SubStr(lk, 1, 60) (StrLen(lk) > 60 ? "…" : "") "``", false]]
+}
+
+Bar(v, mx, n := 10) {
+    f := mx > 0 ? Round(v / mx * n) : 0
+    out := ""
+    Loop n
+        out .= A_Index <= f ? "█" : "░"
+    return out
+}
+
+PcFields() {
+    ms := Buffer(64, 0), NumPut("UInt", 64, ms)
+    DllCall("GlobalMemoryStatusEx", "Ptr", ms)
+    load := NumGet(ms, 4, "UInt"), total := NumGet(ms, 8, "Int64"), avail := NumGet(ms, 16, "Int64")
+    used := Round((total - avail) / 1073741824, 1), tot := Round(total / 1073741824, 1)
+    cpu := CpuLoad()
+    rram := 0, nwin := 0
+    try {
+        for pr in ComObjGet("winmgmts:").ExecQuery("Select WorkingSetSize from Win32_Process where Name='RobloxPlayerBeta.exe'")
+            rram += pr.WorkingSetSize, nwin++
+    }
+    return [[TT("f_cpu"), Bar(cpu, 100) "  " cpu "%", false]
+        , [TT("f_ram"), Bar(load, 100) "  " used " / " tot " GB", false]
+        , [TT("f_roblox_ram"), Round(rram / 1073741824, 2) " GB", true]
+        , [TT("f_windows"), nwin, true]
+        , [TT("f_pc_up"), DurStr(A_TickCount), true]]
+}
+
+; uso de CPU (mede por meio segundo)
+CpuLoad() {
+    static ft(b) => NumGet(b, 0, "UInt64")
+    i1 := Buffer(8), k1 := Buffer(8), u1 := Buffer(8), i2 := Buffer(8), k2 := Buffer(8), u2 := Buffer(8)
+    DllCall("GetSystemTimes", "Ptr", i1, "Ptr", k1, "Ptr", u1)
+    Sleep(500)
+    DllCall("GetSystemTimes", "Ptr", i2, "Ptr", k2, "Ptr", u2)
+    idle := ft(i2) - ft(i1), sys := (ft(k2) - ft(k1)) + (ft(u2) - ft(u1))
+    return sys > 0 ? Round((sys - idle) / sys * 100) : 0
+}
+
+HelpFields() {
+    return [[TT("grp_control"), "``!iniciar`` " TT("cmd_start") "`n``!parar`` " TT("cmd_stop") "`n``!reiniciar`` " TT("cmd_restart"), false]
+        , [TT("grp_info"), "``!status`` " TT("cmd_status") "`n``!print`` " TT("cmd_print") "`n``!moedas`` " TT("cmd_coins")
+            . "`n``!resumo`` " TT("cmd_summary") "`n``!historico`` " TT("cmd_hist") "`n``!pc`` " TT("cmd_pc")
+            . "`n``!contas`` " TT("cmd_accounts") "`n``!logs`` " TT("cmd_logs") "`n``!ping`` " TT("cmd_ping"), false]
+        , [TT("grp_config"), "``!link`` " TT("cmd_link") "`n``!atualizar`` " TT("cmd_update")
+            . "`n``!desligar`` " TT("cmd_shutdown") "`n``!cancelar`` " TT("cmd_cancel"), false]]
+}
+
+; só o print da janela do Roblox
+SendPrint() {
+    global APP_NAME, LOGO_URL, USER_NAME, VERSION
+    hw := FindGameWindow()
+    png := A_Temp "\roblox_status.png"
+    why := !hw ? TT("why_closed") : WinGetMinMax(hw) = -1 ? TT("why_min") : ""
+    if (why = "") {
+        try ok := CaptureWindowPng(hw, png)
+        if !(IsSet(ok) && ok)
+            why := TT("why_fail")
+    }
+    if (why != "")
+        return SendEvent("unknown", [TT("no_shot", why)], false, "", [], true)
+    if !DiscordDest(&url, &auth, &head)
+        return
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    e := '{' head '"allowed_mentions":{"parse":[]},"embeds":[{'
+       . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
+       . '"title":"' JsonEsc("📸  " TT("ev_print")) '","color":' 0x5B8CFF ','
+       . '"image":{"url":"attachment://roblox.png"},'
+       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+       . '"timestamp":"' ts '"}]}'
+    try SendWebhookImage(url, e, png, auth)
+}
+
+BotCoins() {
+    global prevCur
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1)
+        return SendEvent("coins", [TT("no_coins")], false, "", [], true)
+    try blk := CurrencyBlock(ReadCurrencies(hw))
+    if !(IsSet(blk) && blk != "")
+        return SendEvent("coins", [TT("no_coins")], false, "", [], true)
+    SendEvent("coins", [StrReplace(blk, "### Player Stats`n")], false, "", [], true)
+}
+
+BotAccounts() {
+    global ACCS
+    if !ACCS.Length
+        return SendEvent("accounts", [TT("no_accounts")], false, "", [], true)
+    lines := []
+    for a in ACCS
+        lines.Push((a.pid ? "🟢" : "⚫") "  **" a.name "**  ·  " a.status "  ·  " TT("f_reopens") ": " a.launches)
+    SendEvent("accounts", lines, false, "", [], true)
+}
+
+BotHistory() {
+    days := [], mx := 0
+    Loop 7 {
+        d := FormatTime(DateAdd(A_Now, -(7 - A_Index), "Days"), "yyyyMMdd")
+        r := HistGet(d)
+        days.Push([d, r])
+        mx := Max(mx, r.online)
+    }
+    out := ""
+    for x in days
+        out .= SubStr(x[1], 7, 2) "/" SubStr(x[1], 5, 2) "  " Bar(x[2].online, mx, 12) "  " Format("{:4.1f}", x[2].online / 3600) "h  ·  " x[2].drops "↓`n"
+    SendEvent("hist", ["``````" RTrim(out, "`n") "``````"], false, "", [], true)
+}
+
+BotLogs() {
+    global logBox
+    ls := StrSplit(RTrim(logBox.Value, "`r`n"), "`n", "`r")
+    out := ""
+    st := Max(1, ls.Length - 11)
+    Loop ls.Length - st + 1
+        out .= ls[st + A_Index - 1] "`n"
+    if (StrLen(out) > 1800)
+        out := SubStr(out, -1800)
+    SendEvent("logs", ["``````" (out = "" ? "-" : RTrim(out, "`n")) "``````"], false, "", [], true)
+}
+
 BotRestart() {
     global multiActive, wasOpen, downTick
     if multiActive
@@ -5523,6 +6046,16 @@ HttpPost(url, body, contentType, auth := "") {
     return http.Status
 }
 
+; [[nome, valor, inline], ...] -> "fields":[...],
+FieldsJson(fields) {
+    if !fields.Length
+        return ""
+    out := ""
+    for f in fields
+        out .= (out = "" ? "" : ",") '{"name":"' JsonEsc(f[1]) '","value":"' JsonEsc(f[2] = "" ? "—" : f[2]) '","inline":' (f.Length >= 3 && f[3] ? "true" : "false") '}'
+    return '"fields":[' out '],'
+}
+
 ; Pra onde vai a mensagem: resposta do bot (quando veio de um comando do Discord) ou o webhook
 DiscordDest(&url, &auth, &head) {
     global botCtx, edHook, LOGO_URL
@@ -5555,10 +6088,24 @@ EV := Map(
     "already", ["ℹ️", "ev_already", 0x5B8CFF],
     "notrunning", ["ℹ️", "ev_notrunning", 0x8B8B94],
     "unknown", ["❓", "ev_unknown", 0xF5C542],
-    "help",    ["📖", "sec_cmds",   0x5B8CFF])
+    "help",    ["📖", "sec_cmds",   0x5B8CFF],
+    "pong",    ["🏓", "ev_pong",    0x3DDC84],
+    "pc",      ["🖥️", "ev_pc",      0x5B8CFF],
+    "coins",   ["💰", "ev_coins",   0xF5C542],
+    "accounts", ["👥", "ev_accounts", 0x5B8CFF],
+    "hist",    ["📈", "ev_hist",    0xA78BFA],
+    "logs",    ["📜", "ev_logs",    0x8B8B94],
+    "link",    ["🔗", "ev_link",    0x3DDC84],
+    "linkbad", ["⚠️", "ev_linkbad", 0xF5C542],
+    "updnone", ["✨", "ev_updnone", 0x3DDC84],
+    "updating", ["✨", "ev_updating", 0xA78BFA],
+    "shutdown", ["🔌", "ev_shutdown", 0xFF5C5C],
+    "shutconf", ["🔌", "ev_shutconf", 0xF5C542],
+    "cancel",  ["✅", "ev_cancel",  0x3DDC84],
+    "backin",  ["🟢", "ev_back",    0x3DDC84])
 
-SendEvent(kind, lines := [], feedback := false, arg := "") {
-    global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId
+SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb := false) {
+    global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId, VERSION
     evt := EV[kind]
     ; notificação do Windows nos avisos importantes
     if (kind = "down" || kind = "back" || kind = "error" || kind = "fail" || kind = "lic") {
@@ -5588,7 +6135,9 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
        . '"title":"' JsonEsc(evt[1] "  " TT(evt[2], arg)) '",'
        . '"color":' evt[3] ','
        . '"description":"' JsonEsc(desc) '",'
-       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName) '"},'
+       . FieldsJson(fields)
+       . (thumb ? '"thumbnail":{"url":"' LOGO_URL '"},' : '')
+       . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
        . '"timestamp":"' ts '"'
        . '}]}'
     try {
@@ -6159,7 +6708,7 @@ LaunchGame(manual := false, idx := 0, tries := 0) {
 ; Roda a cada 1s logo depois de abrir: avisa quando o processo abriu e quando entrou no jogo,
 ; sem esperar o tempo fixo de "Esperar após abrir".
 LaunchPoll() {
-    global lastLaunch, joinedTick, openedTick, edWait
+    global lastLaunch, joinedTick, openedTick, edWait, restartReply, botCtx
     if !lastLaunch {
         SetTimer(LaunchPoll, 0)
         return
@@ -6177,6 +6726,11 @@ LaunchPoll() {
     }
     if (openedTick && joinedTick && FindGameWindow()) {
         Log(TT("log_joined", Round((A_TickCount - lastLaunch) / 1000)))
+        if IsObject(restartReply) {
+            botCtx := restartReply
+            try SendEvent("backin", [TT("d_back_in", Round((A_TickCount - restartReply.t0) / 1000))], false, "", [], true)
+            botCtx := 0, restartReply := 0
+        }
         lastLaunch := 0
         SetTimer(LaunchPoll, 0)
         Check()
@@ -6591,7 +7145,7 @@ Toggle(*) {
         downTick := 0
         monStart := A_TickCount
         running := true
-        SendEvent("start", ["**" TT("d_interval") ":** " iv "s"])
+        SendEvent("start", ["**" TT("d_interval") ":** " iv "s"], false, "", SessionFields(), true)
         for b in [btnStart, mBtn] {
             b.Text := TT("btn_stop")
             SetBtnStyle(b, "sec")
@@ -6623,7 +7177,7 @@ Toggle(*) {
         }
         SetState("idle", TT("idle"), TT("click_start"))
         Log(TT("log_mon_stop"))
-        SendEvent("stop")
+        SendEvent("stop", [], false, "", SessionFields(), true)
     }
 }
 

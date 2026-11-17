@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.8.0
+- Respostas do bot mais completas: sessão, reaberturas, quedas, última queda e link em campos
+- Comandos novos: !print, !moedas, !pc, !contas, !historico, !logs, !ping, !link, !atualizar, !desligar e !cancelar
+- !reiniciar avisa quando o Roblox voltou pro jogo e quanto tempo levou
+- !ajuda organizado por categoria
+
 ## v1.7.2
 - Cada comando do Discord responde com um embed (como resposta à sua mensagem)
 - !status e !resumo respondem pelo próprio bot, mesmo sem webhook
