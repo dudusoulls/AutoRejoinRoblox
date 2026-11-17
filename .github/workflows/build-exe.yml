@@ -30,9 +30,16 @@ jobs:
       - name: Baixar AutoHotkey v2 (com Ahk2Exe)
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri "https://www.autohotkey.com/download/ahk-v2.zip" -OutFile ahk.zip
+          $url = "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.19/AutoHotkey_2.0.19.zip"
+          Invoke-WebRequest -Uri $url -OutFile ahk.zip -UseBasicParsing
           Expand-Archive -Path ahk.zip -DestinationPath ahk -Force
-          Get-ChildItem -Recurse ahk | Where-Object { $_.Name -in @('Ahk2Exe.exe','AutoHotkey64.exe') } | ForEach-Object { Write-Host $_.FullName }
+          $hasCompiler = Get-ChildItem -Recurse ahk -Filter Ahk2Exe.exe
+          if (-not $hasCompiler) {
+            Write-Host "Zip sem Ahk2Exe; baixando o compilador separado..."
+            Invoke-WebRequest -Uri "https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.02b/Ahk2Exe.zip" -OutFile a2e.zip -UseBasicParsing
+            Expand-Archive -Path a2e.zip -DestinationPath ahk\Compiler -Force
+          }
+          Get-ChildItem -Recurse ahk -Filter *.exe | ForEach-Object { Write-Host $_.FullName }
 
       - name: Compilar .exe
         shell: pwsh
