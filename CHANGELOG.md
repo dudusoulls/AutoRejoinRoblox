@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.6.1
+- Aba Suporte agora deixa **anexar uma imagem qualquer** (botão "Anexar imagem" — PNG, JPG ou GIF), não só o print do Roblox. Antes, se o Roblox estivesse fechado/minimizado, não ia imagem nenhuma.
+- A imagem escolhida tem prioridade; se não escolher nenhuma e o print do Roblox estiver ligado, vai o print como antes.
+
+
 ## v2.6.0
 - **HUD virou sub-aba dentro de Aparência** (Aparência › HUD), separado dos temas — fica mais limpo que ter o HUD junto da aba Jogo.
 - Webhook de suporte já vem configurado e **escondido no código** (montado em tempo de execução, não aparece como link), pra não ser encontrado por bots que varrem o GitHub.

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.6.0"
+VERSION     := "2.6.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -38,6 +38,7 @@ APP_NAME        := "Auto Reconnect Roblox"
 ; Dica: compile pra .exe pra esse link não ficar à vista no código.
 REPORT_WEBHOOK  := ReportUrl()   ; link montado em runtime (escondido) - veja ReportUrl()
 netDown         := 0
+reportImg       := ""
 reactReady      := false
 reactBusy       := 0
 PANEL_EMO       := [["%E2%96%B6%EF%B8%8F", "play"], ["%E2%8F%B9%EF%B8%8F", "stop"], ["%F0%9F%94%84", "restart"], ["%F0%9F%93%B8", "print"]]
@@ -710,7 +711,10 @@ I18N["pt"] := Map(
     "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado",
     "hud_side", "Painel lateral no Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Painel grudado na janela do Roblox com os stats"
+    "pg_hud_sub", "Painel grudado na janela do Roblox com os stats",
+    "btn_report_img", "Anexar imagem",
+    "report_noimg", "Nenhuma imagem anexada",
+    "report_img_set", "Imagem: {1}"
 )
 I18N["en"] := Map(
     "nav_home", "Home",
@@ -1187,7 +1191,10 @@ I18N["en"] := Map(
     "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck",
     "hud_side", "Side panel on Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel docked to the Roblox window with stats"
+    "pg_hud_sub", "Panel docked to the Roblox window with stats",
+    "btn_report_img", "Attach image",
+    "report_noimg", "No image attached",
+    "report_img_set", "Image: {1}"
 )
 I18N["es"] := Map(
     "nav_home", "Inicio",
@@ -1664,7 +1671,10 @@ I18N["es"] := Map(
     "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado",
     "hud_side", "Panel lateral en Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats"
+    "pg_hud_sub", "Panel pegado a la ventana de Roblox con stats",
+    "btn_report_img", "Adjuntar imagen",
+    "report_noimg", "Sin imagen adjunta",
+    "report_img_set", "Imagen: {1}"
 )
 I18N["fr"] := Map(
     "nav_home", "Accueil",
@@ -2141,7 +2151,10 @@ I18N["fr"] := Map(
     "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué",
     "hud_side", "Panneau latéral sur Roblox (stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats"
+    "pg_hud_sub", "Panneau collé à la fenêtre Roblox avec les stats",
+    "btn_report_img", "Joindre une image",
+    "report_noimg", "Aucune image jointe",
+    "report_img_set", "Image : {1}"
 )
 I18N["de"] := Map(
     "nav_home", "Start",
@@ -2618,7 +2631,10 @@ I18N["de"] := Map(
     "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt",
     "hud_side", "Seitenpanel an Roblox (Stats)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats"
+    "pg_hud_sub", "An das Roblox-Fenster angedocktes Panel mit Stats",
+    "btn_report_img", "Bild anhängen",
+    "report_noimg", "Kein Bild angehängt",
+    "report_img_set", "Bild: {1}"
 )
 I18N["ru"] := Map(
     "nav_home", "Главная",
@@ -3095,7 +3111,10 @@ I18N["ru"] := Map(
     "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис",
     "hud_side", "Боковая панель на Roblox (статы)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Панель у окна Roblox со статами"
+    "pg_hud_sub", "Панель у окна Roblox со статами",
+    "btn_report_img", "Прикрепить изображение",
+    "report_noimg", "Изображение не прикреплено",
+    "report_img_set", "Изображение: {1}"
 )
 I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
@@ -3572,7 +3591,10 @@ I18N["tr"] := Map(
     "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı",
     "hud_side", "Roblox'ta yan panel (istatistik)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli"
+    "pg_hud_sub", "Roblox penceresine yapışık istatistik paneli",
+    "btn_report_img", "Resim ekle",
+    "report_noimg", "Resim eklenmedi",
+    "report_img_set", "Resim: {1}"
 )
 I18N["id"] := Map(
     "nav_home", "Beranda",
@@ -4049,7 +4071,10 @@ I18N["id"] := Map(
     "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet",
     "hud_side", "Panel samping di Roblox (statistik)",
     "nav_hud", "HUD",
-    "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik"
+    "pg_hud_sub", "Panel menempel di jendela Roblox dengan statistik",
+    "btn_report_img", "Lampirkan gambar",
+    "report_noimg", "Tidak ada gambar",
+    "report_img_set", "Gambar: {1}"
 )
 LANG := SystemLang()
 for c in LANG_CODES
@@ -4465,9 +4490,11 @@ Bg(rbox, 10)
 P(rbox)
 FontUI(g, "s10")
 edReport := P(g.Add("Edit", Format("x{} y{} w{} h106 -E0x200 +Multi +Wrap c{} Background{}", CX + 30, y + 70, CW - 60, C_TEXT, C_INPUT)))
-chkReportShot := ToggleSwitch(CX + 20, y + 192, CW - 40, TT("sw_report_shot"), "1")
-repStatus := Lbl(CX + 20, y + 248, CW - 220, "", "s9 w600", C_TEXT)
-btnReport := Btn(CX + CW - 180, y + 240, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
+chkReportShot := ToggleSwitch(CX + 20, y + 178, CW - 40, TT("sw_report_shot"), "1")
+btnPickImg := Btn(CX + 20, y + 216, 150, 30, TT("btn_report_img"), PickReportImg)
+repImgLbl := Lbl(CX + 180, y + 223, CW - 360, TT("report_noimg"), "s9", C_MUTED)
+repStatus := Lbl(CX + 20, y + 262, CW - 220, "", "s9 w600", C_TEXT)
+btnReport := Btn(CX + CW - 180, y + 256, 160, 40, TT("btn_report_send"), (*) => SendReport(), "primary")
 
 y := 404
 Card(CX, y, CW, 100)
@@ -6526,7 +6553,7 @@ HudTick(force := false) {
 ;  Suporte: relatório de erro -> webhook secreto (sem IP, sem dado pessoal)
 ; ==========================================================
 SendReport() {
-    global edReport, chkReportShot, repStatus, REPORT_WEBHOOK, APP_NAME, USER_NAME, VERSION, LOGO_URL, iniFile, ANON_ID, LANG
+    global edReport, chkReportShot, repStatus, REPORT_WEBHOOK, APP_NAME, USER_NAME, VERSION, LOGO_URL, iniFile, ANON_ID, LANG, reportImg
     txt := Trim(edReport.Value)
     if (txt = "") {
         repStatus.Value := TT("report_need_text")
@@ -6537,8 +6564,12 @@ SendReport() {
         return
     }
     repStatus.Value := TT("report_sending")
-    shot := ""
-    if chkReportShot.Value {
+    shot := "", fname := "roblox.png"
+    if (reportImg != "" && FileExist(reportImg)) {        ; imagem escolhida pelo usuário tem prioridade
+        shot := reportImg
+        SplitPath(reportImg, , , &ext)
+        fname := "report." StrLower(ext)
+    } else if chkReportShot.Value {
         hw := FindGameWindow()
         if (hw && WinGetMinMax(hw) != -1) {
             try if CaptureWindowPng(hw, A_Temp "\roblox_report.png")
@@ -6559,12 +6590,12 @@ SendReport() {
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
        . '"title":"' JsonEsc("🐞  " TT("ev_report")) '","color":' 0xF5A142 ','
        . '"description":"' JsonEsc(txt) '",' FieldsJson(fields)
-       . (shot != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
+       . (shot != "" ? '"image":{"url":"attachment://' fname '"},' : '')
        . '"footer":{"text":"' JsonEsc(APP_NAME "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
        . '"timestamp":"' ts '"}]}'
     try {
         if (shot != "" && FileExist(shot))
-            SendWebhookImage(REPORT_WEBHOOK, e, shot, "", ReportCb)
+            SendWebhookImage(REPORT_WEBHOOK, e, shot, "", ReportCb, fname)
         else
             HttpPost(REPORT_WEBHOOK, e, "application/json", "", ReportCb)
     } catch as err {
@@ -6573,13 +6604,25 @@ SendReport() {
 }
 
 ReportCb(h) {
-    global repStatus, edReport
+    global repStatus, edReport, reportImg, repImgLbl
     st := HttpStatus(h)
     if (st >= 200 && st < 300) {
         repStatus.Value := TT("report_sent")
         edReport.Value := ""
+        reportImg := ""
+        try repImgLbl.Value := TT("report_noimg")
     } else
         repStatus.Value := TT("report_fail", "HTTP " st)
+}
+
+PickReportImg(*) {
+    global reportImg, repImgLbl
+    f := FileSelect(3, , TT("btn_report_img"), "Imagens (*.png; *.jpg; *.jpeg; *.gif)")
+    if (f = "")
+        return
+    reportImg := f
+    SplitPath(f, &nm)
+    repImgLbl.Value := TT("report_img_set", nm)
 }
 
 ; ==========================================================
@@ -7834,15 +7877,20 @@ SendWebhook(msg, feedback := false) {
     }
 }
 
-SendWebhookImage(url, payload, pngPath, auth := "", cb := 0) {
+SendWebhookImage(url, payload, pngPath, auth := "", cb := 0, fname := "roblox.png") {
+    ct := "image/png"
+    if RegExMatch(fname, "i)\.jpe?g$")
+        ct := "image/jpeg"
+    else if RegExMatch(fname, "i)\.gif$")
+        ct := "image/gif"
     bnd := "----AHKRejoin" A_TickCount
     head := "--" bnd "`r`n"
         . 'Content-Disposition: form-data; name="payload_json"' "`r`n"
         . "Content-Type: application/json`r`n`r`n"
         . payload "`r`n"
         . "--" bnd "`r`n"
-        . 'Content-Disposition: form-data; name="files[0]"; filename="roblox.png"' "`r`n"
-        . "Content-Type: image/png`r`n`r`n"
+        . 'Content-Disposition: form-data; name="files[0]"; filename="' fname '"' "`r`n"
+        . "Content-Type: " ct "`r`n`r`n"
     tail := "`r`n--" bnd "--`r`n"
 
     img := FileRead(pngPath, "RAW")
