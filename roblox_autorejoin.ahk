@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.7.0"
+VERSION     := "1.7.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -3437,6 +3437,7 @@ StartApp() {
         SetTimer(StartTour, -800)    ; primeira vez abrindo: mostra o passo a passo
     else if (chkAutoMon.Value && !running)
         SetTimer(() => (running ? 0 : Toggle()), -2500)
+    SetTimer(() => SendStatusReport(), -7000)   ; manda o status com print assim que abre
     SetTimer(DailyTick, 30000)
     SetTimer(ScheduleTick, 30000)
     SetTimer(BotTick, 6000)
@@ -5447,13 +5448,13 @@ EV := Map(
 
 SendEvent(kind, lines := [], feedback := false, arg := "") {
     global edHook, EV, APP_NAME, USER_NAME, LOGO_URL, chkMention, edDiscId
-    ev := EV[kind]
+    evt := EV[kind]
     ; notificação do Windows nos avisos importantes
     if (kind = "down" || kind = "back" || kind = "error" || kind = "fail" || kind = "lic") {
         plain := ""
         for l in lines
             plain .= StrReplace(l, "**") "`n"
-        Notify(TT(ev[2], arg), plain != "" ? RTrim(plain, "`n") : APP_NAME, kind = "back" ? "Iconi" : "Icon!")
+        Notify(TT(evt[2], arg), plain != "" ? RTrim(plain, "`n") : APP_NAME, kind = "back" ? "Iconi" : "Icon!")
     }
     url := Trim(edHook.Value)
     if (url = "") {
@@ -5474,8 +5475,8 @@ SendEvent(kind, lines := [], feedback := false, arg := "") {
        . (ping ? '"content":"<@' id '>","allowed_mentions":{"users":["' id '"]},' : '"allowed_mentions":{"parse":[]},')
        . '"embeds":[{'
        . '"author":{"name":"' JsonEsc(APP_NAME) '","icon_url":"' LOGO_URL '"},'
-       . '"title":"' JsonEsc(ev[1] "  " TT(ev[2], arg)) '",'
-       . '"color":' ev[3] ','
+       . '"title":"' JsonEsc(evt[1] "  " TT(evt[2], arg)) '",'
+       . '"color":' evt[3] ','
        . '"description":"' JsonEsc(desc) '",'
        . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName) '"},'
        . '"timestamp":"' ts '"'

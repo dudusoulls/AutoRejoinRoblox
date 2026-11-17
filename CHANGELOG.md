@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.7.1
+- Correção: erro ao mandar o segundo aviso seguido (ex: !reiniciar)
+- Manda o status com print no Discord assim que o programa abre
+
 ## v1.7.0
 - Bot do Discord: comandos !status, !iniciar, !parar, !reiniciar, !resumo e !ajuda (só obedece o seu ID)
 - Link diferente pra cada conta no modo de várias contas (duplo clique na conta)
