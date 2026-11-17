@@ -27,12 +27,24 @@ jobs:
           "version=$v" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Versão: $v"
 
-      - name: Instalar AutoHotkey v2 + Ahk2Exe
-        uses: holy-tao/install-autohotkey@v1
-        with:
-          version: '2.0.19'
-          compiler: 'latest'
-          destination: ahk
+      - name: Baixar AutoHotkey v2 + Ahk2Exe
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force -Path ahk | Out-Null
+          # Base (AutoHotkey64.exe) direto do release oficial no GitHub
+          Invoke-WebRequest -Uri "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.19/AutoHotkey_2.0.19.zip" -OutFile ahk\base.zip -UseBasicParsing
+          Expand-Archive -Path ahk\base.zip -DestinationPath ahk\base -Force
+          # Ahk2Exe: descobre o link do zip pela API do GitHub (sem Cloudflare aqui no runner)
+          $rel = gh api repos/AutoHotkey/Ahk2Exe/releases/latest | ConvertFrom-Json
+          Write-Host "Ahk2Exe release: $($rel.tag_name)"
+          $asset = $rel.assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1
+          if (-not $asset) { Write-Error "Nenhum .zip no release do Ahk2Exe"; exit 1 }
+          Write-Host "Baixando: $($asset.browser_download_url)"
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ahk\a2e.zip -UseBasicParsing
+          Expand-Archive -Path ahk\a2e.zip -DestinationPath ahk\compiler -Force
+          Get-ChildItem -Recurse ahk -Filter *.exe | ForEach-Object { Write-Host $_.FullName }
 
       - name: Compilar .exe
         shell: pwsh
