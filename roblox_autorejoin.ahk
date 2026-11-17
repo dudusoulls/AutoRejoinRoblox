@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.7.3"
+VERSION     := "2.7.4"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -6274,7 +6274,7 @@ PanelTick() {
 
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
-    global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState
+    global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
     if !(chkPanel.Value && chkBot.Value) {
         if force
             Log("Painel · " (!chkBot.Value ? "ligue o toggle 'Controlar pelo Discord' (Bot)" : "ligue o toggle 'Painel ao vivo'"))
@@ -6303,26 +6303,20 @@ PanelUpdate(force := false) {
     if !running
         title .= "  ·  " TT("up_stopped"), color := 0x8B8B94
 
-    ; moedas (sem print: o painel ao vivo manda só os stats por JSON, que é confiável)
-    hw := FindGameWindow(), shot := "", coins := ""
-    if (hw && WinGetMinMax(hw) != -1 && chkOcr.Value) {
-        try {
-            cur := ReadCurrencies(hw)
-            CoinsObserved(cur[2])
-            for c in CurrencySpec()
-                if cur[2].Has(c.name)
-                    coins .= c.emoji "  **" cur[2][c.name] "**  ·  " c.name "`n"
-        }
-    }
+    ; painel leve: usa as moedas já lidas (prevCur) e dados rápidos — nada de OCR/WMI que trava
+    shot := "", coins := ""
+    for c in CurrencySpec()
+        if (prevCur.Has(c.name) && prevCur[c.name] != "")
+            coins .= c.emoji "  **" prevCur[c.name] "**  ·  " c.name "`n"
     DayRoll()
-    pcf := PcFields()
+    ms := Buffer(64, 0), NumPut("UInt", 64, ms), DllCall("GlobalMemoryStatusEx", "Ptr", ms)
+    cpu := CpuLoad(), ramPct := NumGet(ms, 4, "UInt")
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     desc := (coins != "" ? "### Player Stats`n" coins "`n" : "")
-        . "**" pcf[1][1] "**  " pcf[1][2] "`n**" pcf[2][1] "**  " pcf[2][2]
+        . "**" TT("f_cpu") "**  " cpu "%`n**" TT("f_ram") "**  " ramPct "%"
         . "`n`n🔄 " TT("d_updated") " <t:" now ":R>"
     fields := [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
         , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
-        , [TT("f_roblox_ram"), pcf[3][2], true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
         , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"

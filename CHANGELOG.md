@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.7.4
+- **Conserto do travamento**: o painel ao vivo fazia leituras pesadas (WMI/OCR) que podiam congelar o app inteiro — e app congelado não fecha nem reabre o Roblox. Agora o painel usa só dados leves (moedas já lidas, CPU/RAM rápidos), sem nada que trave.
+- Junto com a v2.7.3 (que tirou o bloqueio de internet), o app volta a abrir o Roblox normal e a janela responde de novo.
+
+
 ## v2.7.3
 - **Correção importante**: o app tinha parado de reabrir o Roblox em alguns PCs. A checagem de internet que eu tinha adicionado dava "sem internet" errado (a função do Windows é furada) e travava a reabertura. Removi esse bloqueio — o app volta a abrir o Roblox normalmente.
 
