@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "2.5.1"
+VERSION     := "2.5.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 
@@ -4144,6 +4144,7 @@ AddNav("Moedas",    Chr(0xE8C7), 260)
 AddNav("Aparência", Chr(0xE790), 302)
 AddNav("Logs",      Chr(0xE81C), 344)
 AddNav("Sobre",     Chr(0xE946), 386)
+AddNav("Suporte",   Chr(0xE897), 428)
 navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
 
 FontUI(g, "s10")

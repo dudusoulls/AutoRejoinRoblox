@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v2.5.2
+- A aba **Suporte** agora aparece na barra lateral (o grupo tinha sido criado mas faltava o botão no menu).
+
+
 ## v2.5.1
 - Corrige erro ao abrir com o painel lateral ("value of type Integer has no property named Hwnd"): faltava declarar as variáveis do painel lateral dentro da função que monta o HUD.
 
