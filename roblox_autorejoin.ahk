@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.9"
+VERSION     := "1.3.10"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -138,7 +138,7 @@ curPage := ""
 cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
 panelLast := 0
-botBad := false, farmMode := "", farmWave := "", farmMiss := 0, farmPearls := "", farmPrev := "", farmModeCol := "", farmPearlCol := "", farmDbgT := 0, farmBest := 1, hudColCache := Map()
+botBad := false, farmMode := "", farmWave := "", farmMiss := 0, farmPearls := "", farmPrev := "", farmModeCol := "", farmPearlCol := "", farmDbgT := 0, farmGuild := "", farmBest := 1, hudColCache := Map()
 restartReply := 0
 scriptT0 := A_TickCount
 botCtx := 0
@@ -684,6 +684,7 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "f_guild", "Rank da guilda",
     "sec_hud_show", "O QUE MOSTRAR NO PAINEL",
     "f_reading", "Lendo o modo…",
     "f_prevround", "Rodada anterior",
@@ -1205,6 +1206,7 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "f_guild", "Guild rank",
     "sec_hud_show", "WHAT TO SHOW IN THE PANEL",
     "f_reading", "Reading the mode…",
     "f_prevround", "Previous round",
@@ -1726,6 +1728,7 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "f_guild", "Rango del gremio",
     "sec_hud_show", "QUÉ MOSTRAR EN EL PANEL",
     "f_reading", "Leyendo el modo…",
     "f_prevround", "Ronda anterior",
@@ -2247,6 +2250,7 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "f_guild", "Rang de guilde",
     "sec_hud_show", "CE QUE LE PANNEAU AFFICHE",
     "f_reading", "Lecture du mode…",
     "f_prevround", "Manche précédente",
@@ -2768,6 +2772,7 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "f_guild", "Gilden-Rang",
     "sec_hud_show", "WAS DAS PANEL ZEIGT",
     "f_reading", "Modus wird gelesen…",
     "f_prevround", "Vorherige Runde",
@@ -3289,6 +3294,7 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "f_guild", "Ранг гильдии",
     "sec_hud_show", "ЧТО ПОКАЗЫВАТЬ В ПАНЕЛИ",
     "f_reading", "Чтение режима…",
     "f_prevround", "Прошлый раунд",
@@ -3810,6 +3816,7 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "f_guild", "Lonca sırası",
     "sec_hud_show", "PANELDE NELER GÖSTERİLSİN",
     "f_reading", "Mod okunuyor…",
     "f_prevround", "Önceki tur",
@@ -4331,6 +4338,7 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "f_guild", "Peringkat guild",
     "sec_hud_show", "YANG DITAMPILKAN DI PANEL",
     "f_reading", "Membaca mode…",
     "f_prevround", "Ronde sebelumnya",
@@ -6975,9 +6983,34 @@ LineRect(line) {
     return [x1, y1, x2 - x1, y2 - y1]
 }
 
+; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
+ReadGuildRank(hw) {
+    global farmBest
+    static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
+    try {
+        WinGetClientPos(, , &cw, &chh, hw)
+        ox := Round(cw * 0.36), oy := Round(chh * 0.10), ow := Round(cw * 0.28), oh := Round(chh * 0.28)
+        lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
+        sc := Max(0.5, Min(4, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        Loop 3 {
+            v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
+            o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
+            if v.HasOwnProp("gray")
+                o.grayscale := 1, o.invertcolors := 1
+            res := ""
+            try res := OCR.FromWindow("ahk_id " hw, o)
+            catch
+                continue
+            if RegExMatch(RegExReplace(res.Text, "\s+", " "), "#\s*(\d{1,6})", &m)
+                return m[1]
+        }
+    }
+    return ""
+}
+
 ; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
 FarmModeTick() {
-    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest
+    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild
     if !(hudMode = 4 || chkPanel.Value)
         return
     hw := FindGameWindow()
@@ -7066,6 +7099,9 @@ FarmModeTick() {
         }
     }
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
+    gr := ReadGuildRank(hw)
+    if (gr != "")
+        farmGuild := gr
 }
 
 PanelTick() {
@@ -7080,7 +7116,7 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev
+    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev, farmGuild
     if !chkPanel.Value {
         if force
             Log("Painel · ligue o toggle 'Painel fixo no canal'")
@@ -7132,6 +7168,8 @@ PanelUpdate(force := false) {
         fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
     if (farmMode != "" && farmPearls != "")
         fields.Push(["🦪 Pearls", "+" farmPearls, true])
+    if (farmGuild != "")
+        fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
         fields.Push([TT("f_prevround"), "+" farmPrev, true])
     for f in [[TT("f_session"), AfkStr(), true]
@@ -7409,7 +7447,7 @@ HudCol(nm, col) {
 
 HudPanelText() {
     global hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
-    global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED
+    global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED, farmGuild
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
     HudCol("dot", curStateCol)
     SetIf(hudPnlW["stT"], dashTitle.Value)
@@ -7417,7 +7455,7 @@ HudPanelText() {
     if (farmMode != "") {
         SetIf(hudPnlW["mdN"], farmMode)
         HudCol("mdN", farmModeCol != "" ? farmModeCol : C_TEXT)
-        SetIf(hudPnlW["mdW"], farmWave != "" ? "Wave " farmWave : "")
+        SetIf(hudPnlW["mdW"], (farmWave != "" ? "Wave " farmWave : "") (farmGuild != "" ? (farmWave != "" ? "   ·   " : "") "🛡 " TT("f_guild") " #" farmGuild : ""))
         SetIf(hudPnlW["mdP"], farmPearls != "" ? "🦪 +" farmPearls : "")
         HudCol("mdP", farmPearlCol != "" ? farmPearlCol : C_TEXT)
         SetIf(hudPnlW["mdA"], farmPrev != "" ? TT("f_prevround") ": +" farmPrev : "")

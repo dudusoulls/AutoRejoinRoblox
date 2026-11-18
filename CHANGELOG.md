@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.10
+- Lê o rank da guilda (o #número logo abaixo da foto da guilda) e mostra no HUD e na embed do Discord
+
 ## v1.3.9
 - Aba HUD: escolha o que aparece no painel (Status, Modo de farm, Moedas, Logs); o painel encolhe sozinho se tirar os Logs
 - Desligar "Moedas" também tira as moedas dos outros modos de HUD
