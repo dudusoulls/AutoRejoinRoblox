@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.2"
+VERSION     := "1.3.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -138,6 +138,7 @@ curPage := ""
 cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
 panelLast := 0
+botBad := false, farmMode := "", farmWave := "", farmMiss := 0
 restartReply := 0
 scriptT0 := A_TickCount
 botCtx := 0
@@ -240,6 +241,7 @@ savedBotChan  := IniRead(iniFile, "cfg", "botChan", "")
 savedPanel    := IniRead(iniFile, "cfg", "panel", "1")
 savedPanelMin := IniRead(iniFile, "cfg", "panelMin", "2")
 panelMsg      := IniRead(iniFile, "cfg", "panelMsg", "")
+panelVia      := IniRead(iniFile, "cfg", "panelVia", "bot")
 savedStuck    := IniRead(iniFile, "cfg", "stuck", "1")
 savedStuckMin := IniRead(iniFile, "cfg", "stuckMin", "15")
 stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
@@ -678,6 +680,8 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
+    "f_mode", "Modo de farm",
     "sw_fastupd", "Procurar atualização a cada 30 segundos",
     "sw_fastupd_sub", "Checagem leve: só lê o começo do arquivo",
     "ph_search", "Buscar",
@@ -1194,6 +1198,8 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
+    "f_mode", "Farm mode",
     "sw_fastupd", "Check for updates every 30 seconds",
     "sw_fastupd_sub", "Lightweight check: reads only the start of the file",
     "ph_search", "Search",
@@ -1710,6 +1716,8 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
+    "f_mode", "Modo de farmeo",
     "sw_fastupd", "Buscar actualizaciones cada 30 segundos",
     "sw_fastupd_sub", "Chequeo ligero: solo lee el inicio del archivo",
     "ph_search", "Buscar",
@@ -2226,6 +2234,8 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
+    "f_mode", "Mode de farm",
     "sw_fastupd", "Chercher une mise à jour toutes les 30 secondes",
     "sw_fastupd_sub", "Vérification légère : lit seulement le début du fichier",
     "ph_search", "Rechercher",
@@ -2742,6 +2752,8 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
+    "f_mode", "Farm-Modus",
     "sw_fastupd", "Alle 30 Sekunden nach Updates suchen",
     "sw_fastupd_sub", "Leichte Prüfung: liest nur den Dateianfang",
     "ph_search", "Suchen",
@@ -3258,6 +3270,8 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
+    "f_mode", "Режим фарма",
     "sw_fastupd", "Проверять обновления каждые 30 секунд",
     "sw_fastupd_sub", "Лёгкая проверка: читает только начало файла",
     "ph_search", "Поиск",
@@ -3774,6 +3788,8 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
+    "f_mode", "Farm modu",
     "sw_fastupd", "30 saniyede bir güncelleme ara",
     "sw_fastupd_sub", "Hafif kontrol: dosyanın sadece başını okur",
     "ph_search", "Ara",
@@ -4290,6 +4306,8 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
+    "f_mode", "Mode farm",
     "sw_fastupd", "Cek pembaruan setiap 30 detik",
     "sw_fastupd_sub", "Cek ringan: hanya membaca awal file",
     "ph_search", "Cari",
@@ -5098,6 +5116,7 @@ StartApp() {
     SetTimer(UpdateStats, 1000)
     SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
+    SetTimer(FarmModeTick, 15000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
@@ -6328,13 +6347,24 @@ SnowGreater(a, b) {
     return StrLen(a) != StrLen(b) ? StrLen(a) > StrLen(b) : StrCompare(a, b) > 0
 }
 
+TokClean() {
+    global edToken, botBad
+    static lastTok := ""
+    t := Trim(edToken.Value)
+    t := RegExReplace(t, "i)^Bot\s+", "")
+    t := Trim(t, ' "`t`r`n' "'")
+    if (t != lastTok)
+        lastTok := t, botBad := false
+    return t
+}
+
 BotTick() {
     global chkBot, edToken, edChan, edDiscId, botLast, botStatus, botBusy
     if !chkBot.Value {
         SetIf(botStatus, TT("bot_off"))
         return
     }
-    tok := Trim(edToken.Value), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
+    tok := TokClean(), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
     if (tok = "" || ch = "")
         return
     if (me = "") {
@@ -6353,9 +6383,14 @@ BotTick() {
 }
 
 BotGotMessages(ch, tok, me, http) {
-    global botLast, botStatus, botBusy
+    global botLast, botStatus, botBusy, botBad
     botBusy := 0
     try {
+        if (HttpStatus(http) = 401) {
+            botBad := true
+            SetIf(botStatus, TT("bot_401"))
+            return
+        }
         if (HttpStatus(http) != 200)
             throw Error("HTTP " HttpStatus(http))
         flat := JsFlatMessages(http.ResponseText)
@@ -6363,6 +6398,7 @@ BotGotMessages(ch, tok, me, http) {
         SetIf(botStatus, TT("bot_err", e.Message))
         return
     }
+    botBad := false
     SetIf(botStatus, TT("bot_ok"))
     first := (botLast = "")
     msgs := (flat = "") ? [] : StrSplit(flat, Chr(2))
@@ -6840,6 +6876,44 @@ JsonPick(json, expr) {
     return doc.parentWindow.eval("(function(a){return String(" expr ")})(" json ")")
 }
 
+; lê (só olhando a tela) o nome do modo/mapa que fica em cima da barra de vida da base
+FarmModeTick() {
+    global farmMode, farmWave, farmMiss, hudMode, chkPanel
+    if !(hudMode = 4 || chkPanel.Value)
+        return
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
+        farmMode := "", farmWave := ""
+        return
+    }
+    mode := "", wave := ""
+    try {
+        WinGetClientPos(, , &cw, &chh, hw)
+        ox := Round(cw * 0.18), oy := Round(chh * 0.01), ow := Round(cw * 0.64), oh := Round(chh * 0.17)
+        lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
+        sc := Max(0.5, Min(3, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        for md in [0, 4] {
+            res := OCR.FromWindow("ahk_id " hw, {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: md})
+            if (Trim(res.Text) != "")
+                break
+        }
+        for line in res.Lines {
+            t := Trim(RegExReplace(line.Text, "\s+", " "))
+            if RegExMatch(t, "i)wave\s*(\d+)", &m) {
+                wave := m[1]
+                continue
+            }
+            if (mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
+                mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
+        }
+    } catch
+        return
+    if (mode != "") {
+        farmMode := SubStr(mode, 1, 50), farmWave := wave, farmMiss := 0
+    } else if (++farmMiss >= 3)
+        farmMode := "", farmWave := ""
+}
+
 PanelTick() {
     global chkPanel, edPanelMin, panelLast
     if !chkPanel.Value
@@ -6852,16 +6926,23 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    if !(chkPanel.Value && chkBot.Value) {
+    global botBad, edHook, panelVia, farmMode, farmWave
+    if !chkPanel.Value {
         if force
-            Log("Painel · " (!chkBot.Value ? "ligue o toggle 'Controlar pelo Discord' (Bot)" : "ligue o toggle 'Painel ao vivo'"))
+            Log("Painel · ligue o toggle 'Painel fixo no canal'")
         return
     }
-    tok := Trim(edToken.Value), ch := Trim(edChan.Value)
-    if (tok = "" || ch = "") {
+    tok := TokClean(), ch := Trim(edChan.Value), hook := RegExReplace(Trim(edHook.Value), "\?.*$")
+    useBot := chkBot.Value && tok != "" && ch != "" && !botBad
+    if (!useBot && hook = "") {
         if force
-            Log("Painel · token ou ID do canal vazio")
+            Log("Painel · configure o Bot (token + canal) ou o link do Webhook")
         return
+    }
+    via := useBot ? "bot" : "hook"
+    if (via != panelVia) {                    ; trocou de bot pra webhook (ou o contrário): recria a mensagem
+        panelMsg := "", panelVia := via
+        IniWrite(via, iniFile, "cfg", "panelVia")
     }
     if (!force && A_TickCount - panelLast < 20000)
         return
@@ -6892,12 +6973,16 @@ PanelUpdate(force := false) {
     desc := (coins != "" ? "### Player Stats`n" coins "`n" : "")
         . "**" TT("f_cpu") "**  " cpu "%`n**" TT("f_ram") "**  " ramPct "%"
         . "`n`n🔄 " TT("d_updated") " <t:" now ":R>"
-    fields := [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
+    fields := []
+    if (farmMode != "")
+        fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
+    for f in [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
         , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
         , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
+        fields.Push(f)
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
-    payload := '{"allowed_mentions":{"parse":[]},"embeds":[{'
+    pbody := '"embeds":[{'
         . '"author":{"name":"' JsonEsc(APP_NAME "  ·  " TT("ev_panel")) '","icon_url":"' LOGO_URL '"},'
         . '"title":"' JsonEsc(title) '","color":' color ','
         . '"description":"' JsonEsc(desc) '",' FieldsJson(fields)
@@ -6906,9 +6991,21 @@ PanelUpdate(force := false) {
         . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
         . '"timestamp":"' ts '"}],'
         . '"attachments":' (shot != "" ? '[{"id":0,"filename":"roblox.png"}]' : '[]') '}'
+    payload := '{"allowed_mentions":{"parse":[]},' pbody
     base := "https://discord.com/api/v10/channels/" ch "/messages"
     if force
         Log("Painel · enviando ao Discord…")
+    if !useBot {
+        payloadC := '{"username":"Auto Reconnect","avatar_url":"' LOGO_URL '","allowed_mentions":{"parse":[]},' pbody
+        try {
+            if (panelMsg != "")
+                AsyncReq("PATCH", hook "/messages/" panelMsg, payload, "application/json", "", PanelPatchedH.Bind(hook, payloadC))
+            else
+                AsyncReq("POST", hook "?wait=true", payloadC, "application/json", "", PanelCreatedH)
+        } catch as e
+            Log("Painel · " TT("hook_fail", e.Message))
+        return
+    }
     try {
         if (panelMsg != "")
             AsyncReq("PATCH", base "/" panelMsg, payload, "application/json", "Bot " tok, PanelPatched.Bind(base, payload, "", tok, ch))
@@ -6918,6 +7015,32 @@ PanelUpdate(force := false) {
         Log("Painel · " TT("hook_fail", e.Message))
     } catch as e2
         Log("Painel · ERRO montando: " e2.Message " [linha " e2.Line "]")
+}
+
+PanelPatchedH(hook, payloadC, http) {
+    global panelMsg
+    st := HttpStatus(http)
+    if (st >= 200 && st < 300)
+        return
+    panelMsg := ""
+    Log("Painel · " TT("hook_fail", "edit HTTP " st " → recriando"))
+    AsyncReq("POST", hook "?wait=true", payloadC, "application/json", "", PanelCreatedH)
+}
+
+PanelCreatedH(http) {
+    global panelMsg, iniFile
+    st := HttpStatus(http)
+    if (st < 200 || st >= 300) {
+        rt := ""
+        try rt := http.ResponseText
+        Log("Painel · " TT("hook_fail", "HTTP " st "  " SubStr(rt, 1, 150)))
+        return
+    }
+    try {
+        panelMsg := JsonPick(http.ResponseText, "a.id")
+        IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
+        Log("Painel · " TT("hook_sent", st))
+    }
 }
 
 PanelPatched(base, payload, shot, tok, ch, http) {
@@ -6946,6 +7069,7 @@ PanelCreated(tok, ch, http) {
     try {
         panelMsg := JsonPick(http.ResponseText, "a.id")
         IniWrite(panelMsg, iniFile, "cfg", "panelMsg")
+        IniWrite("bot", iniFile, "cfg", "panelVia")
         reactReady := false
         AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/pins/" panelMsg, "", "", "Bot " tok)
         Log("Painel · " TT("hook_sent", st))
@@ -7057,7 +7181,7 @@ HudPanelLayout(pw, ph, k) {
     global hudPnlW, hudPnlLogN
     m := Round(10 * k), bw := pw - 2 * m
     hudPnlW["hello"].Move(m, Round(10 * k), bw)
-    y1 := Round(42 * k), h1 := Round(78 * k)
+    y1 := Round(42 * k), h1 := Round(92 * k)
     y2 := y1 + h1 + Round(18 * k), h2 := Round(96 * k)
     y3 := y2 + h2 + Round(18 * k), h3 := Max(Round(60 * k), ph - y3 - Round(44 * k))
     HudBox("st", m, y1, bw, h1, k)
@@ -7069,9 +7193,10 @@ HudPanelLayout(pw, ph, k) {
 }
 
 HudPanelText() {
-    global hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
+    global farmMode, farmWave, hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
-    SetIf(hudPnlW["stT"], dashTitle.Value "`n⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount)
+    SetIf(hudPnlW["stT"], dashTitle.Value "`n⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount
+        . (farmMode != "" ? "`n🎯 " farmMode (farmWave != "" ? "  ·  W" farmWave : "") : ""))
     co := ""
     for c in CurrencySpec()
         if (prevCur.Has(c.name) && prevCur[c.name] != "")
@@ -7331,7 +7456,7 @@ ReactTick() {
     global chkBot, chkPanel, panelMsg, edToken, edChan, edDiscId, PANEL_EMO, reactReady, reactBusy
     if !(chkBot.Value && chkPanel.Value) || panelMsg = ""
         return
-    tok := Trim(edToken.Value), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
+    tok := TokClean(), ch := Trim(edChan.Value), me := Trim(edDiscId.Value)
     if (tok = "" || ch = "" || me = "")
         return
     base := "https://discord.com/api/v10/channels/" ch "/messages/" panelMsg

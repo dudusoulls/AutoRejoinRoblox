@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.3
+- O programa lê o nome do modo/mapa que aparece em cima da vida da base no Roblox e mostra no HUD (Painel de farm) e no embed do Discord
+- "Painel fixo no canal" agora funciona só com o Webhook: uma única mensagem que se atualiza sozinha, sem floodar e sem precisar do Bot
+- Se o Bot der erro de token (HTTP 401), o painel passa a usar o Webhook sozinho e o aviso explica como gerar outro token
+- O token do Bot aceita colar com "Bot " na frente, aspas ou espaços
+
 ## v1.3.2
 - Aba HUD: agora os 5 modos aparecem numa lista, é só clicar no que quiser (inclui o novo Painel de farm)
 
