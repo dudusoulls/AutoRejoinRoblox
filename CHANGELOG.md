@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.12
+- Rank da guilda só muda quando a mesma leitura se repete 2 vezes seguidas (menos erro de OCR)
+
 ## v1.3.11
 - Rank da guilda: leitura focada no lugar onde a tag aparece em cima do personagem, bem mais ampliada, e com aviso nos Logs se não achar
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.11"
+VERSION     := "1.3.12"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7106,9 +7106,17 @@ FarmModeTick() {
         }
     }
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
+    ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
+    static pendG := ""
     gr := ReadGuildRank(hw)
-    if (gr != "")
-        farmGuild := gr
+    if (gr != "") {
+        if (gr = farmGuild)
+            pendG := ""
+        else if (gr = pendG)
+            farmGuild := gr, pendG := ""
+        else
+            pendG := gr
+    }
 }
 
 PanelTick() {
