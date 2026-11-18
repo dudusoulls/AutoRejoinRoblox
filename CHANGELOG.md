@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.9
+- Aba HUD: escolha o que aparece no painel (Status, Modo de farm, Moedas, Logs); o painel encolhe sozinho se tirar os Logs
+- Desligar "Moedas" também tira as moedas dos outros modos de HUD
+
 ## v1.3.8
 - Leitura de Wave e Pearls mais tolerante (aceita o ícone colado no número, wave na mesma linha) e tenta outros modos de captura quando falta algo
 - Se faltar wave ou pearls, escreve nos Logs o que o OCR enxergou

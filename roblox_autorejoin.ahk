@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.8"
+VERSION     := "1.3.9"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -249,6 +249,9 @@ stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
 hudMode       := Integer(IniRead(iniFile, "cfg", "hudMode", "1"))      ; 0 desligado, 1 barra, 2 painel
 savedFrame    := IniRead(iniFile, "cfg", "frame", "1")
 savedHudComp  := IniRead(iniFile, "cfg", "hudCompact", "1")
+savedHudSt := IniRead(iniFile, "cfg", "hudShowSt", "1"), savedHudMd := IniRead(iniFile, "cfg", "hudShowMd", "1")
+savedHudCo := IniRead(iniFile, "cfg", "hudShowCo", "1"), savedHudLg := IniRead(iniFile, "cfg", "hudShowLg", "1")
+hudPnlKey := ""
 ANON_ID := IniRead(iniFile, "cfg", "anonId", "")
 if (ANON_ID = "") {
     Loop 8
@@ -681,6 +684,7 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "sec_hud_show", "O QUE MOSTRAR NO PAINEL",
     "f_reading", "Lendo o modo…",
     "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
@@ -1201,6 +1205,7 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "sec_hud_show", "WHAT TO SHOW IN THE PANEL",
     "f_reading", "Reading the mode…",
     "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
@@ -1721,6 +1726,7 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "sec_hud_show", "QUÉ MOSTRAR EN EL PANEL",
     "f_reading", "Leyendo el modo…",
     "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
@@ -2241,6 +2247,7 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "sec_hud_show", "CE QUE LE PANNEAU AFFICHE",
     "f_reading", "Lecture du mode…",
     "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
@@ -2761,6 +2768,7 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "sec_hud_show", "WAS DAS PANEL ZEIGT",
     "f_reading", "Modus wird gelesen…",
     "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
@@ -3281,6 +3289,7 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "sec_hud_show", "ЧТО ПОКАЗЫВАТЬ В ПАНЕЛИ",
     "f_reading", "Чтение режима…",
     "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
@@ -3801,6 +3810,7 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "sec_hud_show", "PANELDE NELER GÖSTERİLSİN",
     "f_reading", "Mod okunuyor…",
     "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
@@ -4321,6 +4331,7 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "sec_hud_show", "YANG DITAMPILKAN DI PANEL",
     "f_reading", "Membaca mode…",
     "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
@@ -4961,17 +4972,27 @@ for i, th in THEMES
 ; ---------------- Página: HUD (sub-aba de Aparência) ----------------
 BeginPage("HUD", TT("nav_hud"), TT("pg_hud_sub"))
 y := 92
-Card(CX, y, CW, 232)
-Lbl(CX + 20, y + 16, 300, TT("sec_hud"), "s7 w700", C_DIM)
+Card(CX, y, CW, 206)
+Lbl(CX + 20, y + 14, 300, TT("sec_hud"), "s7 w700", C_DIM)
 hudBtns := []
 for hi, hk in ["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"]
-    hudBtns.Push(Btn(CX + 20, y + 38 + (hi - 1) * 36, CW - 40, 30, TT(hk), SetHudMode.Bind(hi - 1), (hi - 1 = hudMode) ? "primary" : "sec"))
-y += 244
-Card(CX, y, CW, 180)
-chkFrame := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
+    hudBtns.Push(Btn(CX + 20, y + 34 + (hi - 1) * 33, CW - 40, 29, TT(hk), SetHudMode.Bind(hi - 1), (hi - 1 = hudMode) ? "primary" : "sec"))
+y += 218
+Card(CX, y, CW, 140)
+chkFrame := ToggleSwitch(CX + 20, y + 14, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
 chkFrame.onChange := (*) => HudApply()
-chkHudComp := ToggleSwitch(CX + 20, y + 62, CW - 40, TT("sw_hudcompact"), savedHudComp)
-Lbl(CX + 20, y + 108, CW - 40, TT("hud_hint"), "s8", C_MUTED)
+chkHudComp := ToggleSwitch(CX + 20, y + 58, CW - 40, TT("sw_hudcompact"), savedHudComp)
+Lbl(CX + 20, y + 100, CW - 40, TT("hud_hint"), "s8", C_MUTED)
+y += 152
+Card(CX, y, CW, 92)
+Lbl(CX + 20, y + 12, 400, TT("sec_hud_show"), "s7 w700", C_DIM)
+hw2 := (CW - 40 - 16) // 2
+chkHudSt := ToggleSwitch(CX + 20, y + 30, hw2, TT("hud_box_status"), savedHudSt)
+chkHudMd := ToggleSwitch(CX + 20 + hw2 + 16, y + 30, hw2, TT("f_mode"), savedHudMd)
+chkHudCo := ToggleSwitch(CX + 20, y + 58, hw2, TT("nav_coins"), savedHudCo)
+chkHudLg := ToggleSwitch(CX + 20 + hw2 + 16, y + 58, hw2, TT("nav_logs"), savedHudLg)
+for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg]
+    ck.onChange := (*) => HudRelayout()
 
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
@@ -7227,6 +7248,12 @@ HudModeName(m) {
     return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"][m + 1])
 }
 
+HudRelayout() {
+    global hudPnlKey
+    hudPnlKey := ""
+    HudTick(true)
+}
+
 SetHudMode(m, *) {
     global hudMode, hudBtns
     hudMode := m
@@ -7322,33 +7349,53 @@ HudBox(n, x, y, w, h, k) {
 }
 
 HudPanelLayout(pw, ph, k) {
-    global hudPnlW, hudPnlLogN
+    global hudPnlW, hudPnlLogN, chkHudSt, chkHudMd, chkHudCo, chkHudLg
     m := Round(10 * k), bw := pw - 2 * m, pad := Round(12 * k), tw := bw - 2 * pad
     hudPnlW["title"].Move(Round(14 * k), Round(11 * k), pw - Round(60 * k), Round(20 * k))
     hudPnlW["dot"].Move(pw - Round(40 * k), Round(11 * k), Round(26 * k), Round(20 * k))
     hudPnlW["hello"].Move(Round(14 * k), Round(31 * k), pw - Round(28 * k), Round(16 * k))
+    cards := Map("st", [chkHudSt.Value, ["stT", "stS"]], "md", [chkHudMd.Value, ["mdN", "mdW", "mdP", "mdA"]]
+        , "co", [chkHudCo.Value, ["coT"]], "lg", [chkHudLg.Value, ["lgT"]])
+    for n, cd in cards {                       ; some tudo de quem está desligado
+        for sfx in ["F", "I", "H"]
+            hudPnlW[n sfx].Visible := !!cd[1]
+        for t in cd[2]
+            hudPnlW[t].Visible := !!cd[1]
+    }
     y := Round(62 * k)
-    h := Round(62 * k)
-    HudBox("st", m, y, bw, h, k)
-    hudPnlW["stT"].Move(m + pad, y + Round(14 * k), tw, Round(20 * k))
-    hudPnlW["stS"].Move(m + pad, y + Round(36 * k), tw, Round(18 * k))
-    y += h + Round(18 * k), h := Round(116 * k)
-    HudBox("md", m, y, bw, h, k)
-    hudPnlW["mdN"].Move(m + pad, y + Round(14 * k), tw, Round(36 * k))
-    hudPnlW["mdW"].Move(m + pad, y + Round(52 * k), tw, Round(16 * k))
-    hudPnlW["mdP"].Move(m + pad, y + Round(68 * k), tw, Round(28 * k))
-    hudPnlW["mdA"].Move(m + pad, y + Round(96 * k), tw, Round(16 * k))
-    y += h + Round(18 * k), h := Round(70 * k)
-    HudBox("co", m, y, bw, h, k)
-    hudPnlW["coT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
-    y += h + Round(18 * k)
-    h := Max(Round(70 * k), ph - y - Round(40 * k))
-    HudBox("lg", m, y, bw, h, k)
-    hudPnlW["lgT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
-    hudPnlLogN := Max(3, (h - Round(22 * k)) // Round(15 * k))
+    if chkHudSt.Value {
+        h := Round(62 * k)
+        HudBox("st", m, y, bw, h, k)
+        hudPnlW["stT"].Move(m + pad, y + Round(14 * k), tw, Round(20 * k))
+        hudPnlW["stS"].Move(m + pad, y + Round(36 * k), tw, Round(18 * k))
+        y += h + Round(18 * k)
+    }
+    if chkHudMd.Value {
+        h := Round(116 * k)
+        HudBox("md", m, y, bw, h, k)
+        hudPnlW["mdN"].Move(m + pad, y + Round(14 * k), tw, Round(36 * k))
+        hudPnlW["mdW"].Move(m + pad, y + Round(52 * k), tw, Round(16 * k))
+        hudPnlW["mdP"].Move(m + pad, y + Round(68 * k), tw, Round(28 * k))
+        hudPnlW["mdA"].Move(m + pad, y + Round(96 * k), tw, Round(16 * k))
+        y += h + Round(18 * k)
+    }
+    if chkHudCo.Value {
+        h := Round(70 * k)
+        HudBox("co", m, y, bw, h, k)
+        hudPnlW["coT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
+        y += h + Round(18 * k)
+    }
+    if chkHudLg.Value {
+        h := Max(Round(70 * k), ph - y - Round(40 * k))
+        HudBox("lg", m, y, bw, h, k)
+        hudPnlW["lgT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
+        hudPnlLogN := Max(3, (h - Round(22 * k)) // Round(15 * k))
+    } else
+        ph := Max(Round(110 * k), y + Round(24 * k))     ; sem Logs o painel encolhe
     hudPnlW["role"].Move(m + Round(4 * k), ph - Round(28 * k), Round(120 * k), Round(20 * k))
     hudPnlW["upd"].Move(pw - m - Round(150 * k), ph - Round(30 * k), Round(150 * k), Round(22 * k))
     RoundCtrl(hudPnlW["upd"], 11)
+    return ph
 }
 
 ; troca a cor de um controle só quando mudou (evita piscar)
@@ -7397,21 +7444,20 @@ HudPanelText() {
 }
 
 HudPanelPos(v, k, h) {
-    global hudMode, hudPnl
-    static lastKey := ""
+    global hudMode, hudPnl, hudPnlKey
     if (hudMode != 4) {
         try hudPnl.Hide()
-        lastKey := ""
+        hudPnlKey := ""
         return
     }
     pw := Round(244 * k), ph := Max(Round(470 * k), h)
     MonitorGetWorkArea(MonitorGetPrimary(), &wl)
     px := (v[1] - pw >= wl) ? v[1] - pw : v[1]
     key := px "," v[2] "," pw "," ph
-    if (key = lastKey && DllCall("IsWindowVisible", "Ptr", hudPnl.Hwnd))
+    if (key = hudPnlKey && DllCall("IsWindowVisible", "Ptr", hudPnl.Hwnd))
         return
-    lastKey := key
-    HudPanelLayout(pw, ph, k)
+    hudPnlKey := key
+    ph := HudPanelLayout(pw, ph, k)
     hudPnl.Show(Format("NA x{} y{} w{} h{}", px, v[2], pw, ph))
     try WinSetTransparent((px < v[1]) ? "Off" : 235, hudPnl.Hwnd)
     DllCall("SetWindowRgn", "Ptr", hudPnl.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(16 * k), "Int", Round(16 * k), "Ptr"), "Int", 1)
@@ -7443,7 +7489,7 @@ HudOwn(gui, hw) {
 HudTick(force := false) {
     global hudPnl
     global hudMode, chkFrame, hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, hudSide, hudSideDot, hudSideT, hudSideL
-    global hudLastPos, hudLastHw, hudN, hudUserHidden, hudShown, hudFrameCol
+    global hudLastPos, hudLastHw, hudN, hudUserHidden, hudShown, hudFrameCol, chkHudCo
     global curState, curStateCol, running, monStart, launches, discCount, prevCur, dashTitle, dayOnline
     if !IsObject(hudBar)
         return
@@ -7470,7 +7516,7 @@ HudTick(force := false) {
         stats := (running ? "⏱ " DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount
         coins := ""
         for c in CurrencySpec()
-            if (prevCur.Has(c.name) && prevCur[c.name] != "")
+            if (chkHudCo.Value && prevCur.Has(c.name) && prevCur[c.name] != "")
                 coins .= "   " DefaultEmoji(c.name) " " Compact(prevCur[c.name])
         ms := Buffer(64, 0), NumPut("UInt", 64, ms), DllCall("GlobalMemoryStatusEx", "Ptr", ms)
         pc := "CPU " CpuLoad() "%  ·  RAM " NumGet(ms, 4, "UInt") "%"
@@ -7489,7 +7535,7 @@ HudTick(force := false) {
             ln .= "`n🔁 " TT("f_reopens") ": " launches "    📉 " TT("f_drops") ": " discCount
             ln .= "`n🟢 " TT("f_online_today") ": " DurStr(dayOnline * 1000)
             for c in CurrencySpec()
-                if (prevCur.Has(c.name) && prevCur[c.name] != "")
+                if (chkHudCo.Value && prevCur.Has(c.name) && prevCur[c.name] != "")
                     ln .= "`n" DefaultEmoji(c.name) " " c.name ": " Compact(prevCur[c.name])
             ln .= "`n`n🖥 CPU " CpuLoad() "%   ·   RAM " NumGet(ms, 4, "UInt") "%"
             rram := RobloxMaxRamMB()
@@ -8275,6 +8321,10 @@ SaveConfig() {
     IniWrite(hudMode, iniFile, "cfg", "hudMode")
     IniWrite(chkFrame.Value, iniFile, "cfg", "frame")
     IniWrite(chkHudComp.Value, iniFile, "cfg", "hudCompact")
+    IniWrite(chkHudSt.Value, iniFile, "cfg", "hudShowSt")
+    IniWrite(chkHudMd.Value, iniFile, "cfg", "hudShowMd")
+    IniWrite(chkHudCo.Value, iniFile, "cfg", "hudShowCo")
+    IniWrite(chkHudLg.Value, iniFile, "cfg", "hudShowLg")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }
