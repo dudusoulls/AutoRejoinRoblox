@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.1"
+VERSION     := "1.3.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -4926,14 +4926,17 @@ for i, th in THEMES
 ; ---------------- Página: HUD (sub-aba de Aparência) ----------------
 BeginPage("HUD", TT("nav_hud"), TT("pg_hud_sub"))
 y := 92
-Card(CX, y, CW, 214)
+Card(CX, y, CW, 232)
 Lbl(CX + 20, y + 16, 300, TT("sec_hud"), "s7 w700", C_DIM)
-btnHud := Btn(CX + 20, y + 38, 260, 32, HudModeName(hudMode), (*) => 0)
-btnHud.OnEvent("Click", CycleHud.Bind(btnHud))
-chkFrame := ToggleSwitch(CX + 20, y + 84, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
+hudBtns := []
+for hi, hk in ["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"]
+    hudBtns.Push(Btn(CX + 20, y + 38 + (hi - 1) * 36, CW - 40, 30, TT(hk), SetHudMode.Bind(hi - 1), (hi - 1 = hudMode) ? "primary" : "sec"))
+y += 244
+Card(CX, y, CW, 180)
+chkFrame := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
 chkFrame.onChange := (*) => HudApply()
-chkHudComp := ToggleSwitch(CX + 20, y + 130, CW - 40, TT("sw_hudcompact"), savedHudComp)
-Lbl(CX + 20, y + 166, CW - 40, TT("hud_hint"), "s8", C_MUTED)
+chkHudComp := ToggleSwitch(CX + 20, y + 62, CW - 40, TT("sw_hudcompact"), savedHudComp)
+Lbl(CX + 20, y + 108, CW - 40, TT("hud_hint"), "s8", C_MUTED)
 
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
@@ -6963,10 +6966,11 @@ HudModeName(m) {
     return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"][m + 1])
 }
 
-CycleHud(bt, *) {
-    global hudMode
-    hudMode := Mod(hudMode + 1, 5)
-    bt.Text := HudModeName(hudMode)
+SetHudMode(m, *) {
+    global hudMode, hudBtns
+    hudMode := m
+    for i, bt in hudBtns
+        SetBtnStyle(bt, (i - 1 = m) ? "primary" : "sec")
     HudApply()
 }
 

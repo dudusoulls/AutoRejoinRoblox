@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.2
+- Aba HUD: agora os 5 modos aparecem numa lista, é só clicar no que quiser (inclui o novo Painel de farm)
+
 ## v1.3.1
 - O programa agora sempre abre no modo completo (nunca no compacto)
 
