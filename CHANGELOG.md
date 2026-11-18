@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.5
+- HUD Painel de farm redesenhado: cantos arredondados, faixa de cor do status, cartão de Modo de farm, número de Pearls grande
+- O nome do modo e as Pearls aparecem na mesma cor que têm no jogo
+- Leitura do modo mais robusta (tenta mais jeitos de ler a tela) e, se falhar, escreve nos Logs o que enxergou
+- O painel não pisca mais e o clique nele abre o programa
+
 ## v1.3.4
 - Lê também o contador de Pearls que sobe durante o modo (HUD Painel de farm e embed do Discord) e guarda o total da rodada anterior
 

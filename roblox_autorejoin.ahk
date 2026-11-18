@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.4"
+VERSION     := "1.3.5"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -138,7 +138,7 @@ curPage := ""
 cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
 panelLast := 0
-botBad := false, farmMode := "", farmWave := "", farmMiss := 0, farmPearls := "", farmPrev := ""
+botBad := false, farmMode := "", farmWave := "", farmMiss := 0, farmPearls := "", farmPrev := "", farmModeCol := "", farmPearlCol := "", farmDbgT := 0, farmBest := 1, hudColCache := Map()
 restartReply := 0
 scriptT0 := A_TickCount
 botCtx := 0
@@ -680,6 +680,7 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "f_reading", "Lendo o modo…",
     "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
     "f_mode", "Modo de farm",
@@ -1199,6 +1200,7 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "f_reading", "Reading the mode…",
     "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
     "f_mode", "Farm mode",
@@ -1718,6 +1720,7 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "f_reading", "Leyendo el modo…",
     "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
     "f_mode", "Modo de farmeo",
@@ -2237,6 +2240,7 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "f_reading", "Lecture du mode…",
     "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
     "f_mode", "Mode de farm",
@@ -2756,6 +2760,7 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "f_reading", "Modus wird gelesen…",
     "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
     "f_mode", "Farm-Modus",
@@ -3275,6 +3280,7 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "f_reading", "Чтение режима…",
     "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
     "f_mode", "Режим фарма",
@@ -3794,6 +3800,7 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "f_reading", "Mod okunuyor…",
     "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
     "f_mode", "Farm modu",
@@ -4313,6 +4320,7 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "f_reading", "Membaca mode…",
     "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
     "f_mode", "Mode farm",
@@ -5125,6 +5133,7 @@ StartApp() {
     SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
     SetTimer(FarmModeTick, 15000)
+    SetTimer(() => FarmModeTick(), -6000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
@@ -6884,9 +6893,69 @@ JsonPick(json, expr) {
     return doc.parentWindow.eval("(function(a){return String(" expr ")})(" json ")")
 }
 
-; lê (só olhando a tela) o nome do modo/mapa que fica em cima da barra de vida da base
+; log de diagnóstico da leitura do modo (no máximo 1x a cada 2 min)
+FarmDbg(msg) {
+    global farmDbgT
+    if (A_TickCount - farmDbgT < 120000)
+        return
+    farmDbgT := A_TickCount
+    Log("Modo · " msg)
+}
+
+; cor "de verdade" do texto na tela: pega a cor viva mais comum dentro do retângulo (coords do cliente do Roblox)
+SampleTextColor(hw, rx, ry, rw, rh) {
+    pt := Buffer(8, 0)
+    NumPut("Int", rx, pt, 0), NumPut("Int", ry, pt, 4)
+    DllCall("ClientToScreen", "Ptr", hw, "Ptr", pt)
+    sx := NumGet(pt, 0, "Int"), sy := NumGet(pt, 4, "Int")
+    dc := DllCall("GetDC", "Ptr", 0, "Ptr")
+    if !dc
+        return ""
+    cnt := Map(), sum := Map()
+    sxp := Max(1, rw // 50), syp := Max(1, rh // 10)
+    yy := 0
+    while (yy < rh) {
+        xx := 0
+        while (xx < rw) {
+            c := DllCall("GetPixel", "Ptr", dc, "Int", sx + xx, "Int", sy + yy, "UInt")
+            if (c != 0xFFFFFFFF) {
+                r := c & 0xFF, g := (c >> 8) & 0xFF, b := (c >> 16) & 0xFF
+                mx := Max(r, g, b), mn := Min(r, g, b)
+                if (mx >= 140 && mx - mn >= 60) {
+                    key := (r // 40) "," (g // 40) "," (b // 40)
+                    if !cnt.Has(key)
+                        cnt[key] := 0, sum[key] := [0, 0, 0]
+                    cnt[key]++
+                    sum[key][1] += r, sum[key][2] += g, sum[key][3] += b
+                }
+            }
+            xx += sxp
+        }
+        yy += syp
+    }
+    DllCall("ReleaseDC", "Ptr", 0, "Ptr", dc)
+    bk := "", bn := 0
+    for key, n in cnt
+        if (n > bn)
+            bn := n, bk := key
+    if (bk = "" || bn < 3)
+        return ""
+    sm := sum[bk]
+    return Format("{:02X}{:02X}{:02X}", sm[1] // bn, sm[2] // bn, sm[3] // bn)
+}
+
+LineRect(line) {
+    x1 := 99999, y1 := 99999, x2 := 0, y2 := 0
+    for wd in line.Words {
+        x1 := Min(x1, wd.x), y1 := Min(y1, wd.y)
+        x2 := Max(x2, wd.x + wd.w), y2 := Max(y2, wd.y + wd.h)
+    }
+    return [x1, y1, x2 - x1, y2 - y1]
+}
+
+; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
 FarmModeTick() {
-    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev
+    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest
     if !(hudMode = 4 || chkPanel.Value)
         return
     hw := FindGameWindow()
@@ -6894,40 +6963,77 @@ FarmModeTick() {
         farmMode := "", farmWave := ""
         return
     }
-    mode := "", wave := "", pearls := ""
+    static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
+    mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := "", err := ""
     try {
         WinGetClientPos(, , &cw, &chh, hw)
         ox := Round(cw * 0.08), oy := Round(chh * 0.01), ow := Round(cw * 0.72), oh := Round(chh * 0.22)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(3, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
-        for md in [0, 4] {
-            res := OCR.FromWindow("ahk_id " hw, {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: md})
-            if (Trim(res.Text) != "")
+        Loop variants.Length {
+            vi := Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1
+            v := variants[vi]
+            o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
+            if v.HasOwnProp("gray")
+                o.grayscale := 1, o.invertcolors := 1
+            res := ""
+            try res := OCR.FromWindow("ahk_id " hw, o)
+            catch as e1 {
+                err := e1.Message
+                continue
+            }
+            seen := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 110)
+            mode := "", wave := "", pearls := "", mRect := 0, pRect := 0
+            for line in res.Lines {
+                t := Trim(RegExReplace(line.Text, "\s+", " "))
+                if RegExMatch(t, "i)wave\s*(\d+)", &m) {
+                    wave := m[1]
+                    continue
+                }
+                if (pearls = "" && RegExMatch(t, "^\+\s*(\d[\d.,]*[kKmMbB]?)\s*\S{0,3}$", &pm)) {
+                    pearls := pm[1], pRect := LineRect(line)
+                    continue
+                }
+                if (mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) {
+                    mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
+                    mRect := LineRect(line)
+                }
+            }
+            if (mode != "" || wave != "") {
+                farmBest := vi
                 break
-        }
-        for line in res.Lines {
-            t := Trim(RegExReplace(line.Text, "\s+", " "))
-            if RegExMatch(t, "i)wave\s*(\d+)", &m) {
-                wave := m[1]
-                continue
             }
-            if (pearls = "" && RegExMatch(t, "^\+\s*(\d[\d.,]*[kKmMbB]?)\s*\S{0,3}$", &pm)) {
-                pearls := pm[1]
-                continue
-            }
-            if (mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
-                mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
         }
-    } catch
+    } catch as e {
+        FarmDbg("erro na leitura: " e.Message)
         return
+    }
+    if (mode = "" && wave = "") {
+        FarmDbg("OCR não achou o modo. Leu: [" seen "]" (err != "" ? " erro: " err : ""))
+        if (++farmMiss >= 3)
+            farmMode := "", farmWave := ""
+        return
+    }
     if (mode != "") {
-        ; rodada nova (modo mudou ou o contador zerou): guarda o total final da anterior
-        if (farmPearls != "" && (SubStr(mode, 1, 50) != farmMode || (pearls != "" && ParseNum(pearls) != "" && ParseNum(farmPearls) != "" && ParseNum(pearls) < ParseNum(farmPearls) * 0.5)))
+        mode := SubStr(mode, 1, 50)
+        if (farmPearls != "" && (mode != farmMode || (pearls != "" && ParseNum(pearls) != "" && ParseNum(farmPearls) != "" && ParseNum(pearls) < ParseNum(farmPearls) * 0.5)))
             farmPrev := farmPearls
-        farmPearls := pearls != "" ? pearls : farmPearls
-        farmMode := SubStr(mode, 1, 50), farmWave := wave, farmMiss := 0
-    } else if (++farmMiss >= 3)
-        farmMode := "", farmWave := ""
+        farmMode := mode
+        if IsObject(mRect) {
+            cc := SampleTextColor(hw, mRect[1], mRect[2], mRect[3], mRect[4])
+            if (cc != "")
+                farmModeCol := cc
+        }
+    }
+    if (pearls != "") {
+        farmPearls := pearls
+        if IsObject(pRect) {
+            cc := SampleTextColor(hw, pRect[1], pRect[2], pRect[3], pRect[4])
+            if (cc != "")
+                farmPearlCol := cc
+        }
+    }
+    farmWave := wave, farmMiss := 0
 }
 
 PanelTick() {
@@ -7113,6 +7219,8 @@ HudModeName(m) {
 SetHudMode(m, *) {
     global hudMode, hudBtns
     hudMode := m
+    if (m = 4)
+        SetTimer(() => FarmModeTick(), -400)
     for i, bt in hudBtns
         SetBtnStyle(bt, (i - 1 = m) ? "primary" : "sec")
     HudApply()
@@ -7159,30 +7267,35 @@ HudBuild() {
     HudBuildPanel()
 }
 
-; painel de farm: fica do lado esquerdo do Roblox, com caixas de Status, Moedas e Logs
+; painel de farm: fica do lado esquerdo do Roblox (Status, Modo de farm, Moedas e Logs)
 HudBuildPanel() {
-    global hudPnl, hudPnlW, hudPnlLogN, VERSION, C_BG, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC
-    k := A_ScreenDPI / 96
+    global hudPnl, hudPnlW, hudPnlLogN, VERSION, C_BG, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC, C_NAVA
     hudPnlLogN := 6
     hudPnl := Gui("-Caption +ToolWindow -DPIScale +E0x08000000")
     hudPnl.BackColor := C_BG
     hudPnl.MarginX := 0, hudPnl.MarginY := 0
     hudPnlW := Map()
-    FontUI(hudPnl, "s9 w700")
-    hudPnlW["hello"] := hudPnl.Add("Text", Format("x0 y0 w{} c{} Background{}", Round(200 * k), C_TEXT, C_BG), "")
-    for n in ["st", "co", "lg"] {
-        hudPnlW[n "F"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Background{}", Round(20 * k), Round(20 * k), C_DIM))
-        hudPnlW[n "I"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Background{}", Round(20 * k), Round(20 * k), C_CARD))
-        FontUI(hudPnl, "s8")
-        hudPnlW[n "T"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} c{} Background{}", Round(100 * k), Round(40 * k), C_MUTED, C_CARD), "")
-        FontUI(hudPnl, "s8 w700")
-        hudPnlW[n "H"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Center +0x200 c{} Background{}", Round(80 * k), Round(18 * k), C_TEXT, C_BG)
-            , TT(n = "st" ? "hud_box_status" : n = "co" ? "nav_coins" : "nav_logs"))
+    hudPnlW["strip"] := hudPnl.Add("Text", "x0 y0 w10 h3 +0x100 Background" C_ACC)
+    AddT := (nm, fnt, fg, bg, opt, txt := "") => (FontUI(hudPnl, fnt), hudPnlW[nm] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 " opt " c" fg " Background" bg, txt))
+    AddT("title", "s10 w700", C_TEXT, C_BG, "+0x200", "Auto Reconnect")
+    AddT("dot", "s10", C_DIM, C_BG, "+0x200 Right", "●")
+    AddT("hello", "s8", C_MUTED, C_BG, "+0x200")
+    for n in ["st", "md", "co", "lg"] {
+        hudPnlW[n "F"] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 Background" C_NAVA)
+        hudPnlW[n "I"] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 Background" C_CARD)
     }
-    FontUI(hudPnl, "s8")
-    hudPnlW["role"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} +0x200 c{} Background{}", Round(120 * k), Round(20 * k), C_DIM, C_BG), "BETA  ·  v" VERSION)
-    FontUI(hudPnl, "s8 w700")
-    hudPnlW["upd"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Center +0x200 c{} Background{}", Round(150 * k), Round(24 * k), C_BG, C_ACC), TT("hud_newupd"))
+    AddT("stT", "s9 w700", C_TEXT, C_CARD, "+0x200")
+    AddT("stS", "s8", C_MUTED, C_CARD, "+0x200")
+    AddT("mdN", "s10 w700", C_TEXT, C_CARD, "")
+    AddT("mdW", "s8", C_MUTED, C_CARD, "+0x200")
+    AddT("mdP", "s14 w700", C_TEXT, C_CARD, "+0x200")
+    AddT("mdA", "s8", C_DIM, C_CARD, "+0x200")
+    AddT("coT", "s8", C_TEXT, C_CARD, "")
+    AddT("lgT", "s8", C_MUTED, C_CARD, "")
+    for n, ky in Map("st", "hud_box_status", "md", "f_mode", "co", "nav_coins", "lg", "nav_logs")
+        AddT(n "H", "s7 w700", C_ACC, C_BG, "+0x200 Center", StrUpper(TT(ky)))
+    AddT("role", "s8", C_DIM, C_BG, "+0x200", "BETA  ·  v" VERSION)
+    AddT("upd", "s8 w700", C_BG, C_ACC, "+0x200 Center", TT("hud_newupd"))
     hudPnlW["upd"].Visible := false
     for n, c in hudPnlW
         c.OnEvent("Click", (*) => ShowMain())
@@ -7192,32 +7305,78 @@ HudBox(n, x, y, w, h, k) {
     global hudPnlW
     hudPnlW[n "F"].Move(x, y, w, h)
     hudPnlW[n "I"].Move(x + 1, y + 1, w - 2, h - 2)
-    tw := Round(86 * k)
-    hudPnlW[n "H"].Move(x + (w - tw) // 2, y - Round(9 * k), tw, Round(18 * k))
-    hudPnlW[n "T"].Move(x + Round(10 * k), y + Round(14 * k), w - Round(20 * k), h - Round(20 * k))
+    RoundCtrl(hudPnlW[n "F"], 10)
+    RoundCtrl(hudPnlW[n "I"], 9)
+    tw := Round(90 * k)
+    hudPnlW[n "H"].Move(x + Round(12 * k), y - Round(8 * k), tw, Round(16 * k))
 }
 
 HudPanelLayout(pw, ph, k) {
     global hudPnlW, hudPnlLogN
-    m := Round(10 * k), bw := pw - 2 * m
-    hudPnlW["hello"].Move(m, Round(10 * k), bw)
-    y1 := Round(42 * k), h1 := Round(108 * k)
-    y2 := y1 + h1 + Round(18 * k), h2 := Round(96 * k)
-    y3 := y2 + h2 + Round(18 * k), h3 := Max(Round(60 * k), ph - y3 - Round(44 * k))
-    HudBox("st", m, y1, bw, h1, k)
-    HudBox("co", m, y2, bw, h2, k)
-    HudBox("lg", m, y3, bw, h3, k)
-    hudPnlLogN := Max(3, (h3 - Round(26 * k)) // Round(16 * k))
-    hudPnlW["role"].Move(m, ph - Round(28 * k))
-    hudPnlW["upd"].Move(pw - m - Round(150 * k), ph - Round(32 * k))
+    m := Round(10 * k), bw := pw - 2 * m, pad := Round(12 * k), tw := bw - 2 * pad
+    hudPnlW["strip"].Move(0, 0, pw, Max(3, Round(3 * k)))
+    hudPnlW["title"].Move(Round(14 * k), Round(11 * k), pw - Round(60 * k), Round(20 * k))
+    hudPnlW["dot"].Move(pw - Round(40 * k), Round(11 * k), Round(26 * k), Round(20 * k))
+    hudPnlW["hello"].Move(Round(14 * k), Round(31 * k), pw - Round(28 * k), Round(16 * k))
+    y := Round(62 * k)
+    h := Round(62 * k)
+    HudBox("st", m, y, bw, h, k)
+    hudPnlW["stT"].Move(m + pad, y + Round(14 * k), tw, Round(20 * k))
+    hudPnlW["stS"].Move(m + pad, y + Round(36 * k), tw, Round(18 * k))
+    y += h + Round(18 * k), h := Round(116 * k)
+    HudBox("md", m, y, bw, h, k)
+    hudPnlW["mdN"].Move(m + pad, y + Round(14 * k), tw, Round(36 * k))
+    hudPnlW["mdW"].Move(m + pad, y + Round(52 * k), tw, Round(16 * k))
+    hudPnlW["mdP"].Move(m + pad, y + Round(68 * k), tw, Round(28 * k))
+    hudPnlW["mdA"].Move(m + pad, y + Round(96 * k), tw, Round(16 * k))
+    y += h + Round(18 * k), h := Round(70 * k)
+    HudBox("co", m, y, bw, h, k)
+    hudPnlW["coT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
+    y += h + Round(18 * k)
+    h := Max(Round(70 * k), ph - y - Round(40 * k))
+    HudBox("lg", m, y, bw, h, k)
+    hudPnlW["lgT"].Move(m + pad, y + Round(14 * k), tw, h - Round(18 * k))
+    hudPnlLogN := Max(3, (h - Round(22 * k)) // Round(15 * k))
+    hudPnlW["role"].Move(m + Round(4 * k), ph - Round(28 * k), Round(120 * k), Round(20 * k))
+    hudPnlW["upd"].Move(pw - m - Round(150 * k), ph - Round(30 * k), Round(150 * k), Round(22 * k))
+    RoundCtrl(hudPnlW["upd"], 11)
+}
+
+; troca a cor de um controle só quando mudou (evita piscar)
+HudCol(nm, col) {
+    global hudPnlW, hudColCache
+    if (col = "" || (hudColCache.Has(nm) && hudColCache[nm] = col))
+        return
+    hudColCache[nm] := col
+    hudPnlW[nm].SetFont("c" col)
 }
 
 HudPanelText() {
-    global farmMode, farmWave, farmPearls, farmPrev, hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
+    global hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
+    global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
-    SetIf(hudPnlW["stT"], dashTitle.Value "`n⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount
-        . (farmMode != "" ? "`n🎯 " farmMode (farmWave != "" ? "  ·  W" farmWave : "") : "")
-        . (farmMode != "" && farmPearls != "" ? "`n🦪 +" farmPearls (farmPrev != "" ? "  (ant. +" farmPrev ")" : "") : ""))
+    HudCol("dot", curStateCol)
+    if (curStateCol != "" && (!hudColCache.Has("strip") || hudColCache["strip"] != curStateCol)) {
+        hudColCache["strip"] := curStateCol
+        hudPnlW["strip"].Opt("Background" curStateCol)
+        hudPnlW["strip"].Redraw()
+    }
+    SetIf(hudPnlW["stT"], dashTitle.Value)
+    SetIf(hudPnlW["stS"], "⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "    🔁 " launches "    📉 " discCount)
+    if (farmMode != "") {
+        SetIf(hudPnlW["mdN"], farmMode)
+        HudCol("mdN", farmModeCol != "" ? farmModeCol : C_TEXT)
+        SetIf(hudPnlW["mdW"], farmWave != "" ? "Wave " farmWave : "")
+        SetIf(hudPnlW["mdP"], farmPearls != "" ? "🦪 +" farmPearls : "")
+        HudCol("mdP", farmPearlCol != "" ? farmPearlCol : C_TEXT)
+        SetIf(hudPnlW["mdA"], farmPrev != "" ? TT("f_prevround") ": +" farmPrev : "")
+    } else {
+        SetIf(hudPnlW["mdN"], TT("f_reading"))
+        HudCol("mdN", C_MUTED)
+        SetIf(hudPnlW["mdW"], "")
+        SetIf(hudPnlW["mdP"], "")
+        SetIf(hudPnlW["mdA"], "")
+    }
     co := ""
     for c in CurrencySpec()
         if (prevCur.Has(c.name) && prevCur[c.name] != "")
@@ -7235,17 +7394,23 @@ HudPanelText() {
 
 HudPanelPos(v, k, h) {
     global hudMode, hudPnl
+    static lastKey := ""
     if (hudMode != 4) {
         try hudPnl.Hide()
+        lastKey := ""
         return
     }
-    pw := Round(232 * k), ph := Max(Round(430 * k), h)
+    pw := Round(244 * k), ph := Max(Round(470 * k), h)
     MonitorGetWorkArea(MonitorGetPrimary(), &wl)
     px := (v[1] - pw >= wl) ? v[1] - pw : v[1]
+    key := px "," v[2] "," pw "," ph
+    if (key = lastKey && DllCall("IsWindowVisible", "Ptr", hudPnl.Hwnd))
+        return
+    lastKey := key
     HudPanelLayout(pw, ph, k)
     hudPnl.Show(Format("NA x{} y{} w{} h{}", px, v[2], pw, ph))
     try WinSetTransparent((px < v[1]) ? "Off" : 235, hudPnl.Hwnd)
-    DllCall("SetWindowRgn", "Ptr", hudPnl.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
+    DllCall("SetWindowRgn", "Ptr", hudPnl.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(16 * k), "Int", Round(16 * k), "Ptr"), "Int", 1)
 }
 
 HudApply() {
