@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.2.0"
+VERSION     := "1.3.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -186,7 +186,8 @@ pageInfo := Map()
 navs     := Map()
 curBuild := ""
 hoverMap := Map()
-sliderHit := Map()
+sliderList := [], sliderAct := 0, sliderWas := false
+hudLogs := []
 hoverCur := 0
 bgCtrls  := []
 roundQ   := []
@@ -209,6 +210,7 @@ savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
+savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "1")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
 savedStartWin := IniRead(iniFile, "cfg", "startWin", "0")
 savedAutoMon  := IniRead(iniFile, "cfg", "autoMon", "0")
@@ -261,7 +263,7 @@ I18N["pt"] := Map(
     "nav_hook", "Conexão",
     "nav_coins", "Moedas",
     "nav_logs", "Logs",
-    "nav_about", "Sobre",
+    "nav_about", "Configurações",
     "pg_home_sub", "Olá, {1}! Visão geral do monitoramento",
     "pg_game_sub", "Servidor, intervalo de checagem e recuperação de erros",
     "pg_win_sub", "Posição da janela do Roblox e guia do navegador",
@@ -676,6 +678,13 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "sw_fastupd", "Procurar atualização a cada 30 segundos",
+    "sw_fastupd_sub", "Checagem leve: só lê o começo do arquivo",
+    "ph_search", "Buscar",
+    "hud_panel", "Painel de farm (Status, Moedas e Logs)",
+    "hud_welcome", "Bem-vindo, {1}",
+    "hud_box_status", "Status",
+    "hud_newupd", "Nova atualização disponível",
     "pg_livepanel_sub", "Mensagem que se atualiza sozinha no Discord",
     "pg_statusrep_sub", "Resumo periódico com print da tela",
     "pg_stuck_sub", "Avisa ou reinicia quando as moedas param de mudar",
@@ -770,7 +779,7 @@ I18N["en"] := Map(
     "nav_hook", "Connection",
     "nav_coins", "Currency",
     "nav_logs", "Logs",
-    "nav_about", "About",
+    "nav_about", "Settings",
     "pg_home_sub", "Hi, {1}! Monitoring overview",
     "pg_game_sub", "Server, check interval and error recovery",
     "pg_win_sub", "Roblox window position and browser tab",
@@ -1185,6 +1194,13 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "sw_fastupd", "Check for updates every 30 seconds",
+    "sw_fastupd_sub", "Lightweight check: reads only the start of the file",
+    "ph_search", "Search",
+    "hud_panel", "Farm panel (Status, Coins and Logs)",
+    "hud_welcome", "Welcome {1}",
+    "hud_box_status", "Status",
+    "hud_newupd", "New update available",
     "pg_livepanel_sub", "A message that updates itself on Discord",
     "pg_statusrep_sub", "Periodic summary with a screenshot",
     "pg_stuck_sub", "Alerts or restarts when your coins stop changing",
@@ -1279,7 +1295,7 @@ I18N["es"] := Map(
     "nav_hook", "Conexión",
     "nav_coins", "Monedas",
     "nav_logs", "Registros",
-    "nav_about", "Acerca de",
+    "nav_about", "Ajustes",
     "pg_home_sub", "¡Hola, {1}! Resumen del monitoreo",
     "pg_game_sub", "Servidor, intervalo de revisión y recuperación de errores",
     "pg_win_sub", "Posición de la ventana de Roblox y pestaña del navegador",
@@ -1694,6 +1710,13 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "sw_fastupd", "Buscar actualizaciones cada 30 segundos",
+    "sw_fastupd_sub", "Chequeo ligero: solo lee el inicio del archivo",
+    "ph_search", "Buscar",
+    "hud_panel", "Panel de farmeo (Estado, Monedas y Logs)",
+    "hud_welcome", "Bienvenido, {1}",
+    "hud_box_status", "Estado",
+    "hud_newupd", "Nueva actualización disponible",
     "pg_livepanel_sub", "Un mensaje que se actualiza solo en Discord",
     "pg_statusrep_sub", "Resumen periódico con captura",
     "pg_stuck_sub", "Avisa o reinicia cuando las monedas dejan de cambiar",
@@ -1788,7 +1811,7 @@ I18N["fr"] := Map(
     "nav_hook", "Connexion",
     "nav_coins", "Monnaies",
     "nav_logs", "Journal",
-    "nav_about", "À propos",
+    "nav_about", "Paramètres",
     "pg_home_sub", "Salut, {1} ! Vue d'ensemble de la surveillance",
     "pg_game_sub", "Serveur, intervalle de vérification et récupération d'erreurs",
     "pg_win_sub", "Position de la fenêtre Roblox et onglet du navigateur",
@@ -2203,6 +2226,13 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "sw_fastupd", "Chercher une mise à jour toutes les 30 secondes",
+    "sw_fastupd_sub", "Vérification légère : lit seulement le début du fichier",
+    "ph_search", "Rechercher",
+    "hud_panel", "Panneau de farm (Statut, Pièces et Logs)",
+    "hud_welcome", "Bienvenue, {1}",
+    "hud_box_status", "Statut",
+    "hud_newupd", "Nouvelle mise à jour disponible",
     "pg_livepanel_sub", "Un message qui se met à jour seul sur Discord",
     "pg_statusrep_sub", "Résumé périodique avec capture",
     "pg_stuck_sub", "Alerte ou redémarre quand les pièces ne bougent plus",
@@ -2297,7 +2327,7 @@ I18N["de"] := Map(
     "nav_hook", "Verbindung",
     "nav_coins", "Währungen",
     "nav_logs", "Protokoll",
-    "nav_about", "Info",
+    "nav_about", "Einstellungen",
     "pg_home_sub", "Hallo, {1}! Überwachungsübersicht",
     "pg_game_sub", "Server, Prüfintervall und Fehlerbehebung",
     "pg_win_sub", "Position des Roblox-Fensters und Browser-Tab",
@@ -2712,6 +2742,13 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "sw_fastupd", "Alle 30 Sekunden nach Updates suchen",
+    "sw_fastupd_sub", "Leichte Prüfung: liest nur den Dateianfang",
+    "ph_search", "Suchen",
+    "hud_panel", "Farm-Panel (Status, Münzen und Logs)",
+    "hud_welcome", "Willkommen, {1}",
+    "hud_box_status", "Status",
+    "hud_newupd", "Neues Update verfügbar",
     "pg_livepanel_sub", "Eine Nachricht, die sich selbst auf Discord aktualisiert",
     "pg_statusrep_sub", "Regelmäßige Zusammenfassung mit Screenshot",
     "pg_stuck_sub", "Warnt oder startet neu, wenn sich die Münzen nicht mehr ändern",
@@ -2806,7 +2843,7 @@ I18N["ru"] := Map(
     "nav_hook", "Подключение",
     "nav_coins", "Валюта",
     "nav_logs", "Журнал",
-    "nav_about", "О программе",
+    "nav_about", "Настройки",
     "pg_home_sub", "Привет, {1}! Обзор мониторинга",
     "pg_game_sub", "Сервер, интервал проверки и восстановление после ошибок",
     "pg_win_sub", "Положение окна Roblox и вкладка браузера",
@@ -3221,6 +3258,13 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "sw_fastupd", "Проверять обновления каждые 30 секунд",
+    "sw_fastupd_sub", "Лёгкая проверка: читает только начало файла",
+    "ph_search", "Поиск",
+    "hud_panel", "Панель фарма (статус, монеты, логи)",
+    "hud_welcome", "Привет, {1}",
+    "hud_box_status", "Статус",
+    "hud_newupd", "Доступно обновление",
     "pg_livepanel_sub", "Сообщение в Discord, которое обновляется само",
     "pg_statusrep_sub", "Периодическая сводка со скриншотом",
     "pg_stuck_sub", "Предупреждает или перезапускает, когда монеты не меняются",
@@ -3315,7 +3359,7 @@ I18N["tr"] := Map(
     "nav_hook", "Bağlantı",
     "nav_coins", "Paralar",
     "nav_logs", "Kayıtlar",
-    "nav_about", "Hakkında",
+    "nav_about", "Ayarlar",
     "pg_home_sub", "Merhaba, {1}! İzleme özeti",
     "pg_game_sub", "Sunucu, kontrol aralığı ve hata kurtarma",
     "pg_win_sub", "Roblox pencere konumu ve tarayıcı sekmesi",
@@ -3730,6 +3774,13 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "sw_fastupd", "30 saniyede bir güncelleme ara",
+    "sw_fastupd_sub", "Hafif kontrol: dosyanın sadece başını okur",
+    "ph_search", "Ara",
+    "hud_panel", "Farm paneli (Durum, Paralar, Loglar)",
+    "hud_welcome", "Hoş geldin, {1}",
+    "hud_box_status", "Durum",
+    "hud_newupd", "Yeni güncelleme mevcut",
     "pg_livepanel_sub", "Discord'da kendini güncelleyen bir mesaj",
     "pg_statusrep_sub", "Ekran görüntülü periyodik özet",
     "pg_stuck_sub", "Paralar değişmeyince uyarır veya yeniden başlatır",
@@ -3824,7 +3875,7 @@ I18N["id"] := Map(
     "nav_hook", "Koneksi",
     "nav_coins", "Mata Uang",
     "nav_logs", "Log",
-    "nav_about", "Tentang",
+    "nav_about", "Pengaturan",
     "pg_home_sub", "Halo, {1}! Ringkasan pemantauan",
     "pg_game_sub", "Server, interval pengecekan dan pemulihan error",
     "pg_win_sub", "Posisi jendela Roblox dan tab browser",
@@ -4239,6 +4290,13 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "sw_fastupd", "Cek pembaruan setiap 30 detik",
+    "sw_fastupd_sub", "Cek ringan: hanya membaca awal file",
+    "ph_search", "Cari",
+    "hud_panel", "Panel farm (Status, Koin, Log)",
+    "hud_welcome", "Selamat datang, {1}",
+    "hud_box_status", "Status",
+    "hud_newupd", "Pembaruan baru tersedia",
     "pg_livepanel_sub", "Pesan yang memperbarui diri sendiri di Discord",
     "pg_statusrep_sub", "Ringkasan berkala dengan tangkapan layar",
     "pg_stuck_sub", "Peringatkan atau mulai ulang saat koin berhenti berubah",
@@ -4477,7 +4535,7 @@ AddNav("Discord",   Chr(0xE8F2), 218)
 AddNav("QoL",       Chr(0xE8C7), 260)
 AddNav("Aparência", Chr(0xE790), 302)
 AddNav("Logs",      Chr(0xE81C), 344)
-AddNav("Sobre",     Chr(0xE946), 386)
+AddNav("Sobre",     Chr(0xE713), 386)
 AddNav("Suporte",   Chr(0xE897), 428)
 navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
 
@@ -4505,6 +4563,19 @@ FontUI(g, "s17 w700")
 pageTitle := g.Add("Text", Format("x{} y26 w190 c{} Background{}", CX, C_TEXT, C_BG), "")
 FontUI(g, "s9")
 pageSub := g.Add("Text", Format("x{} y+2 w{} c{} Background{}", CX, CW, C_MUTED, C_BG), "")
+FontUI(g, "s14 w700")
+pageTitleV := g.Add("Text", Format("x{} y26 w{} c{} Background{}", CX + SUBW + 16, CW - SUBW - 16, C_TEXT, C_BG), "")
+FontUI(g, "s9")
+pageSubV := g.Add("Text", Format("x{} y+2 w{} c{} Background{}", CX + SUBW + 16, CW - SUBW - 16, C_MUTED, C_BG), "")
+
+; ---- barra de status embaixo ----
+sbBg := g.Add("Text", Format("x{} y{} w{} h28 +0x4000000 Background{}", SIDE, H - 28, W - SIDE, C_SIDE))
+Bg(sbBg)
+sbLine := g.Add("Text", Format("x{} y{} w{} h1 Background{}", SIDE, H - 28, W - SIDE, C_NAVA))
+FontUI(g, "s9")
+sbDot := g.Add("Text", Format("x{} y{} w16 h28 +0x200 c{} Background{}", CX, H - 28, C_DIM, C_SIDE), "●")
+FontUI(g, "s8")
+sbTxt := g.Add("Text", Format("x{} y{} w{} h28 +0x200 c{} Background{}", CX + 20, H - 28, 460, C_MUTED, C_SIDE), TT("idle") "  ·  v" VERSION "  ·  BETA")
 
 ; ---------------- Página: Início ----------------
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
@@ -4810,6 +4881,10 @@ changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E
     , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
+y := 484
+Card(CX, y, CW, 70)
+chkFastUpd := ToggleSwitch(CX + 20, y + 22, CW - 40, TT("sw_fastupd"), savedFastUpd, TT("sw_fastupd_sub"))
+
 
 ; ---------------- Página: Apoie + Suporte ----------------
 BeginPage("Suporte", TT("nav_report"), TT("pg_report_sub"))
@@ -4918,19 +4993,32 @@ gk.OnEvent("Close", (*) => KeyClose())
 
 ; ---- sub-abas no topo das abas agrupadas ----
 vsegs := Map()
-FontUI(g, "s10 w600")
+vsearch := Map()
 for vgk, vsubs in GROUPS {
     if !VGROUPS.Has(vgk)
         continue
     vsegs[vgk] := []
+    sbox := g.Add("Text", Format("x{} y96 w{} h32 +0x4000000 Background{}", CX, SUBW, C_INPUT))
+    Bg(sbox, 10)
+    FontUI(g, "s9")
+    sed := g.Add("Edit", Format("x{} y104 w{} h18 -E0x200 c{} Background{}", CX + 12, SUBW - 24, C_TEXT, C_INPUT))
+    DllCall("SendMessage", "Ptr", sed.Hwnd, "UInt", 0x1501, "Ptr", 1, "Str", TT("ph_search"))
+    sbox.Visible := false, sed.Visible := false
+    sed.OnEvent("Change", VFilter.Bind(vgk))
+    vsearch[vgk] := {box: sbox, edit: sed}
     for vi, vsb in vsubs {
-        vc := g.Add("Text", Format("x{} y{} w{} h32 +0x200 Background{} c{}", CX, 96 + (vi - 1) * 36, SUBW, C_BG, C_MUTED), "   " TT(NAVK[vsb]))
+        FontUI(g, "s10 w600")
+        vc := g.Add("Text", Format("x{} y{} w{} h32 +0x200 Background{} c{}", CX, 140 + (vi - 1) * 36, SUBW, C_BG, C_MUTED), "   " TT(NAVK[vsb]))
+        FontUI(g, "s8")
+        vd := g.Add("Text", Format("x{} y{} w14 h14 +0x200 Center c{} Background{}", CX + SUBW - 22, 140 + (vi - 1) * 36 + 9, C_DIM, C_BG), "●")
+        vo := {ctrls: [vc, vd], bg: C_BG, hov: C_NAVH}
         vc.OnEvent("Click", ShowPage.Bind(vsb))
-        vo := {ctrls: [vc], bg: C_BG, hov: C_NAVH}
+        vd.OnEvent("Click", ShowPage.Bind(vsb))
         hoverMap[vc.Hwnd] := vo
+        hoverMap[vd.Hwnd] := vo
         roundQ.Push([vc, 9])
-        vsegs[vgk].Push({ctrl: vc, sub: vsb, o: vo})
-        vc.Visible := false
+        vsegs[vgk].Push({ctrl: vc, dot: vd, sub: vsb, o: vo, hid: false})
+        vc.Visible := false, vd.Visible := false
     }
 }
 segs := Map()
@@ -4972,7 +5060,7 @@ try Hotkey("^!s", (*) => Toggle())
 try Hotkey("^!r", (*) => BotRestart())
 try Hotkey("^!p", (*) => SendStatusReport(true))
 OnMessage(0x201, OnLButtonDown)
-OnMessage(0x201, SliderDown)
+SetTimer(SliderPoll, 20)
 OnMessage(0x200, OnMouseMove)
 
 ShowPage("Início")
@@ -5000,7 +5088,7 @@ StartApp() {
     if (savedCompact = "1")
         SetCompact(true)
     else
-        FadeShow(g, Format("w{} h{}", W, H))
+        IntroShow(g, Format("w{} h{}", W, H))
     SetTimer(PulseTick, 110)
     SetTimer(CpuSample, 2000)
     HudApply()
@@ -5009,6 +5097,7 @@ StartApp() {
     SetTimer(UpdateStats, 1000)
     SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
+    SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
     ; voltou de uma atualização automática com o monitoramento ligado -> liga de novo
@@ -5106,18 +5195,16 @@ Divider(x, y, w) {
 ; barra deslizante ligada a um campo numérico (o campo continua sendo a fonte do valor)
 class SliderBar {
     __New(x, y, w, edit, lo, hi) {
-        global g, C_SWOFF, C_ACC, roundQ, sliderHit
-        this.x := x, this.w := w, this.edit := edit, this.lo := lo, this.hi := hi
+        global g, C_SWOFF, C_ACC, roundQ, sliderList
+        this.x := x, this.y := y, this.w := w, this.edit := edit, this.lo := lo, this.hi := hi
         this.track := P(g.Add("Text", Format("x{} y{} w{} h10 +0x100 Background{}", x, y + 6, w, C_SWOFF)))
         this.fill  := P(g.Add("Text", Format("x{} y{} w10 h10 +0x100 Background{}", x, y + 6, C_ACC)))
         this.knob  := P(g.Add("Text", Format("x{} y{} w16 h16 +0x100 Background{}", x, y + 3, C_ACC)))
         roundQ.Push([this.track, 10])
         roundQ.Push([this.fill, 10])
         roundQ.Push([this.knob, 16])
-        for c in [this.track, this.fill, this.knob]
-            sliderHit[c.Hwnd] := this
+        sliderList.Push(this)
         edit.OnEvent("Change", (*) => this.Sync())
-        this.tick := this.Drag.Bind(this)
         this.Sync()
     }
     Cur() {
@@ -5136,16 +5223,8 @@ class SliderBar {
         this.fill.Redraw()
         this.knob.Redraw()
     }
-    Grab() {
-        SetTimer(this.tick, 15)
-        this.Drag()
-    }
     Drag() {
         global g
-        if !GetKeyState("LButton", "P") {
-            SetTimer(this.tick, 0)
-            return
-        }
         pt := Buffer(8)
         DllCall("GetCursorPos", "Ptr", pt)
         DllCall("ScreenToClient", "Ptr", g.Hwnd, "Ptr", pt)
@@ -5157,10 +5236,31 @@ class SliderBar {
     }
 }
 
-SliderDown(wParam, lParam, msg, hwnd) {
-    global sliderHit
-    if sliderHit.Has(hwnd)
-        sliderHit[hwnd].Grab()
+; vigia o mouse: clicou em cima de uma barra visível = arrasta até soltar
+SliderPoll() {
+    global g, sliderList, sliderAct, sliderWas
+    down := GetKeyState("LButton", "P")
+    if (down && !sliderWas) {
+        sliderAct := 0
+        MouseGetPos(, , &win)
+        if (win = g.Hwnd) {
+            pt := Buffer(8)
+            DllCall("GetCursorPos", "Ptr", pt)
+            DllCall("ScreenToClient", "Ptr", g.Hwnd, "Ptr", pt)
+            k := A_ScreenDPI / 96
+            mx := NumGet(pt, 0, "Int") / k, my := NumGet(pt, 4, "Int") / k
+            for sl in sliderList
+                if (sl.track.Visible && mx >= sl.x - 8 && mx <= sl.x + sl.w + 8 && my >= sl.y - 6 && my <= sl.y + 28) {
+                    sliderAct := sl
+                    break
+                }
+        }
+    }
+    if (down && IsObject(sliderAct))
+        sliderAct.Drag()
+    if !down
+        sliderAct := 0
+    sliderWas := down
 }
 
 BtnColors(style, base) {
@@ -5215,7 +5315,7 @@ AddNav(name, icon, y) {
 
 ShowPage(name, *) {
     global pages, pageInfo, navs, pageTitle, pageSub, C_NAVA, C_SIDE, C_NAVH, C_TEXT, C_MUTED, hoverCur
-    global GROUP_OF, segs, segLine, NAVK, appStarted, curPage, vsegs, C_BG
+    global GROUP_OF, segs, segLine, NAVK, appStarted, curPage, vsegs, vsearch, pageTitleV, pageSubV, C_BG
     grp := GROUP_OF.Has(name) ? GROUP_OF[name] : name
     first := (curPage = "")
     changed := (curPage != name)
@@ -5244,17 +5344,24 @@ ShowPage(name, *) {
         segLine.Visible := true
     } else
         segLine.Visible := false
-    for vgk, vlist in vsegs
+    inV := vsegs.Has(grp)
+    for vgk, vlist in vsegs {
+        von := (vgk = grp)
+        vsearch[vgk].box.Visible := von
+        vsearch[vgk].edit.Visible := von
         for sg in vlist {
-            sg.ctrl.Visible := (vgk = grp)
-            if (vgk = grp) {
+            sg.ctrl.Visible := von && !sg.hid
+            sg.dot.Visible := von && !sg.hid
+            if von {
                 vact := (sg.sub = name)
                 sg.o.bg  := vact ? C_NAVA : C_BG
                 sg.o.hov := vact ? C_NAVA : C_NAVH
                 sg.ctrl.SetFont("c" (vact ? C_TEXT : C_MUTED))
+                sg.dot.SetFont("c" (vact ? C_TEXT : C_DIM))
                 AnimColor(sg.o, hoverCur = sg.o ? sg.o.hov : sg.o.bg, 150)
             }
         }
+    }
     for n, o in navs {
         act := (n = grp)
         o.bg  := act ? C_NAVA : C_SIDE
@@ -5269,7 +5376,45 @@ ShowPage(name, *) {
         SetTimer(HistDraw, -50)
     pageTitle.Value := TT(NAVK[grp])
     pageSub.Value := pageInfo[name][2]
-    pageSub.Visible := !segs.Has(grp)
+    pageSub.Visible := !segs.Has(grp) && !inV
+    pageTitleV.Visible := inV
+    pageSubV.Visible := inV
+    if inV {
+        pageTitleV.Value := TT(NAVK[name])
+        pageSubV.Value := pageInfo[name][2]
+    }
+}
+
+; busca na lista lateral: mostra só as seções que têm o texto digitado
+VFilter(vgk, *) {
+    global vsegs, vsearch, pages
+    q := Trim(vsearch[vgk].edit.Value)
+    row := 0
+    for sg in vsegs[vgk] {
+        ok := (q = "")
+        if !ok {
+            if InStr(TT(NAVK[sg.sub]), q)
+                ok := true
+            else
+                for c in pages[sg.sub] {
+                    try {
+                        if (c.Type = "Text" && c.Text != "" && InStr(c.Text, q)) {
+                            ok := true
+                            break
+                        }
+                    }
+                }
+        }
+        sg.hid := !ok
+        sg.ctrl.Visible := ok
+        sg.dot.Visible := ok
+        if ok {
+            ty := 140 + row * 36
+            sg.ctrl.Move(, ty)
+            sg.dot.Move(, ty + 9)
+            row++
+        }
+    }
 }
 
 ; risquinho embaixo da sub-aba ativa deslizando
@@ -6817,12 +6962,12 @@ HudToggleUser(*) {
 }
 
 HudModeName(m) {
-    return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay", "hud_side"][m + 1])
+    return TT("hud_mode") ": " TT(["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"][m + 1])
 }
 
 CycleHud(bt, *) {
     global hudMode
-    hudMode := Mod(hudMode + 1, 4)
+    hudMode := Mod(hudMode + 1, 5)
     bt.Text := HudModeName(hudMode)
     HudApply()
 }
@@ -6865,6 +7010,94 @@ HudBuild() {
     ; moldura
     hudFrame := Gui("-Caption +ToolWindow -DPIScale +E0x08000000 +E0x20")
     hudFrame.BackColor := C_DIM
+    HudBuildPanel()
+}
+
+; painel de farm: fica do lado esquerdo do Roblox, com caixas de Status, Moedas e Logs
+HudBuildPanel() {
+    global hudPnl, hudPnlW, hudPnlLogN, VERSION, C_BG, C_CARD, C_TEXT, C_MUTED, C_DIM, C_ACC
+    k := A_ScreenDPI / 96
+    hudPnlLogN := 6
+    hudPnl := Gui("-Caption +ToolWindow -DPIScale +E0x08000000")
+    hudPnl.BackColor := C_BG
+    hudPnl.MarginX := 0, hudPnl.MarginY := 0
+    hudPnlW := Map()
+    FontUI(hudPnl, "s9 w700")
+    hudPnlW["hello"] := hudPnl.Add("Text", Format("x0 y0 w{} c{} Background{}", Round(200 * k), C_TEXT, C_BG), "")
+    for n in ["st", "co", "lg"] {
+        hudPnlW[n "F"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Background{}", Round(20 * k), Round(20 * k), C_DIM))
+        hudPnlW[n "I"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Background{}", Round(20 * k), Round(20 * k), C_CARD))
+        FontUI(hudPnl, "s8")
+        hudPnlW[n "T"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} c{} Background{}", Round(100 * k), Round(40 * k), C_MUTED, C_CARD), "")
+        FontUI(hudPnl, "s8 w700")
+        hudPnlW[n "H"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Center +0x200 c{} Background{}", Round(80 * k), Round(18 * k), C_TEXT, C_BG)
+            , TT(n = "st" ? "hud_box_status" : n = "co" ? "nav_coins" : "nav_logs"))
+    }
+    FontUI(hudPnl, "s8")
+    hudPnlW["role"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} +0x200 c{} Background{}", Round(120 * k), Round(20 * k), C_DIM, C_BG), "BETA  ·  v" VERSION)
+    FontUI(hudPnl, "s8 w700")
+    hudPnlW["upd"] := hudPnl.Add("Text", Format("x0 y0 w{} h{} Center +0x200 c{} Background{}", Round(150 * k), Round(24 * k), C_BG, C_ACC), TT("hud_newupd"))
+    hudPnlW["upd"].Visible := false
+    for n, c in hudPnlW
+        c.OnEvent("Click", (*) => ShowMain())
+}
+
+HudBox(n, x, y, w, h, k) {
+    global hudPnlW
+    hudPnlW[n "F"].Move(x, y, w, h)
+    hudPnlW[n "I"].Move(x + 1, y + 1, w - 2, h - 2)
+    tw := Round(86 * k)
+    hudPnlW[n "H"].Move(x + (w - tw) // 2, y - Round(9 * k), tw, Round(18 * k))
+    hudPnlW[n "T"].Move(x + Round(10 * k), y + Round(14 * k), w - Round(20 * k), h - Round(20 * k))
+}
+
+HudPanelLayout(pw, ph, k) {
+    global hudPnlW, hudPnlLogN
+    m := Round(10 * k), bw := pw - 2 * m
+    hudPnlW["hello"].Move(m, Round(10 * k), bw)
+    y1 := Round(42 * k), h1 := Round(78 * k)
+    y2 := y1 + h1 + Round(18 * k), h2 := Round(96 * k)
+    y3 := y2 + h2 + Round(18 * k), h3 := Max(Round(60 * k), ph - y3 - Round(44 * k))
+    HudBox("st", m, y1, bw, h1, k)
+    HudBox("co", m, y2, bw, h2, k)
+    HudBox("lg", m, y3, bw, h3, k)
+    hudPnlLogN := Max(3, (h3 - Round(26 * k)) // Round(16 * k))
+    hudPnlW["role"].Move(m, ph - Round(28 * k))
+    hudPnlW["upd"].Move(pw - m - Round(150 * k), ph - Round(32 * k))
+}
+
+HudPanelText() {
+    global hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
+    SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
+    SetIf(hudPnlW["stT"], dashTitle.Value "`n⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount)
+    co := ""
+    for c in CurrencySpec()
+        if (prevCur.Has(c.name) && prevCur[c.name] != "")
+            co .= DefaultEmoji(c.name) " " c.name ": " Compact(prevCur[c.name]) "`n"
+    SetIf(hudPnlW["coT"], co = "" ? "—" : RTrim(co, "`n"))
+    lg := ""
+    i := Max(1, hudLogs.Length - hudPnlLogN + 1)
+    while (i <= hudLogs.Length) {
+        lg .= hudLogs[i] "`n"
+        i++
+    }
+    SetIf(hudPnlW["lgT"], RTrim(lg, "`n"))
+    hudPnlW["upd"].Visible := (pendingUpd != "")
+}
+
+HudPanelPos(v, k, h) {
+    global hudMode, hudPnl
+    if (hudMode != 4) {
+        try hudPnl.Hide()
+        return
+    }
+    pw := Round(232 * k), ph := Max(Round(430 * k), h)
+    MonitorGetWorkArea(MonitorGetPrimary(), &wl)
+    px := (v[1] - pw >= wl) ? v[1] - pw : v[1]
+    HudPanelLayout(pw, ph, k)
+    hudPnl.Show(Format("NA x{} y{} w{} h{}", px, v[2], pw, ph))
+    try WinSetTransparent((px < v[1]) ? "Off" : 235, hudPnl.Hwnd)
+    DllCall("SetWindowRgn", "Ptr", hudPnl.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", pw + 1, "Int", ph + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
 }
 
 HudApply() {
@@ -6879,8 +7112,8 @@ HudApply() {
 }
 
 HudHideAll() {
-    global hudBar, hudPan, hudFrame, hudSide, hudShown
-    for w in [hudBar, hudPan, hudFrame, hudSide]
+    global hudBar, hudPan, hudFrame, hudSide, hudShown, hudPnl
+    for w in [hudBar, hudPan, hudFrame, hudSide, hudPnl]
         try w.Hide()
     hudShown := false
 }
@@ -6891,6 +7124,7 @@ HudOwn(gui, hw) {
 }
 
 HudTick(force := false) {
+    global hudPnl
     global hudMode, chkFrame, hudBar, hudBarDot, hudBarL, hudBarR, hudPan, hudPanDot, hudPanT, hudPanL, hudFrame, hudSide, hudSideDot, hudSideT, hudSideL
     global hudLastPos, hudLastHw, hudN, hudUserHidden, hudShown, hudFrameCol
     global curState, curStateCol, running, monStart, launches, discCount, prevCur, dashTitle, dayOnline
@@ -6909,7 +7143,7 @@ HudTick(force := false) {
     pos := v[1] "," v[2] "," v[3] "," v[4] "," hudMode "," chkFrame.Value
     moved := force || pos != hudLastPos || hw != hudLastHw
     if (hw != hudLastHw) {
-        for w in [hudBar, hudPan, hudFrame, hudSide]
+        for w in [hudBar, hudPan, hudFrame, hudSide, hudPnl]
             HudOwn(w, hw)
         hudLastHw := hw
     }
@@ -6945,7 +7179,8 @@ HudTick(force := false) {
             if (rram >= 0)
                 ln .= "`n🎮 Roblox: " (rram >= 1024 ? Round(rram / 1024, 2) " GB" : rram " MB")
             SetIf(hudSideL, ln)
-        }
+        } else if (hudMode = 4)
+            HudPanelText()
         if (chkFrame.Value && col != hudFrameCol) {
             hudFrame.BackColor := col
             hudFrameCol := col
@@ -6987,6 +7222,7 @@ HudTick(force := false) {
         DllCall("SetWindowRgn", "Ptr", hudSide.Hwnd, "Ptr", DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", sw + 1, "Int", sh + 1, "Int", Round(14 * k), "Int", Round(14 * k), "Ptr"), "Int", 1)
     } else
         try hudSide.Hide()
+    HudPanelPos(v, k, h)
     if chkFrame.Value {
         t := Max(2, Round(3 * k))
         hudFrame.Show(Format("NA x{} y{} w{} h{}", v[1], v[2], w, h))
@@ -7445,6 +7681,25 @@ SetColorNow(o, c) {
 }
 
 ; janela aparecendo/sumindo suave
+; entrada da janela: aparece subindo uns pixels com fade
+IntroShow(gui, opts := "") {
+    try WinSetTransparent(0, gui.Hwnd)
+    gui.Show(opts)
+    WinGetPos(&x, &y, , , gui.Hwnd)
+    t0 := A_TickCount
+    Loop {
+        pr := Min(1, (A_TickCount - t0) / 380)
+        e := EaseOut(pr)
+        try WinSetTransparent(Round(255 * e), gui.Hwnd)
+        try WinMove(x, y + Round(28 * (1 - e)), , , gui.Hwnd)
+        if (pr >= 1)
+            break
+        Sleep(10)
+    }
+    try WinMove(x, y, , , gui.Hwnd)
+    try WinSetTransparent("Off", gui.Hwnd)
+}
+
 FadeShow(gui, opts := "") {
     try WinSetTransparent(0, gui.Hwnd)
     gui.Show(opts)
@@ -7569,7 +7824,7 @@ SetIf(ctrl, v) {
 
 ; estado visual: on / off / wait / warn / idle
 SetState(state, title, sub) {
-    global dashDot, dashTitle, dashSub, sideDot, sideStat, mDot, mStat
+    global dashDot, dashTitle, dashSub, sideDot, sideStat, mDot, mStat, sbDot, sbTxt, VERSION
     global C_ON, C_OFF, C_WARN, C_DIM, C_ACC
     global curState, curStateCol
     col := Map("on", C_ON, "off", C_OFF, "wait", C_ACC, "warn", C_WARN, "idle", C_DIM)[state]
@@ -7581,6 +7836,8 @@ SetState(state, title, sub) {
     SetIf(dashSub, sub)
     SetIf(sideStat, title)
     SetIf(mStat, title)
+    try sbDot.SetFont("c" col)
+    SetIf(sbTxt, title "  ·  v" VERSION "  ·  BETA")
 }
 
 UpdateStats() {
@@ -7632,8 +7889,11 @@ OnQuit(*) {
 ;  Funções gerais
 ; ==========================================================
 Log(msg) {
-    global logBox
+    global logBox, hudLogs
     line := FormatTime(, "HH:mm:ss") "  " msg "`r`n"
+    hudLogs.Push(FormatTime(, "HH:mm") "  " SubStr(RegExReplace(msg, "\s+", " "), 1, 38))
+    if (hudLogs.Length > 60)
+        hudLogs.RemoveAt(1)
     n := DllCall("GetWindowTextLength", "Ptr", logBox.Hwnd)
     if (n > 60000) {                          ; guarda só a parte mais recente
         logBox.Value := SubStr(logBox.Value, -30000)
@@ -7660,6 +7920,7 @@ SaveConfig() {
     IniWrite(chkOcr.Value, iniFile, "cfg", "ocr")
     IniWrite(Trim(edCur.Value), iniFile, "cfg", "currencies")
     IniWrite(chkAutoUpd.Value, iniFile, "cfg", "autoUpdate")
+    IniWrite(FastUpdOn(), iniFile, "cfg", "updFast")
     IniWrite(chkStartWin.Value, iniFile, "cfg", "startWin")
     IniWrite(chkAutoMon.Value, iniFile, "cfg", "autoMon")
     IniWrite(chkToast.Value, iniFile, "cfg", "toast")
@@ -8036,6 +8297,34 @@ UpdBaseNow() {
             return "https://raw.githubusercontent.com/" GITHUB_REPO "/" m[1] "/"
     }
     return updBase
+}
+
+FastUpdOn() {
+    global chkFastUpd
+    return chkFastUpd.Value
+}
+
+; lê só o começo do script no GitHub (uns 6 KB) e compara a versão
+QuickVersion() {
+    try {
+        http := ComObject("WinHttp.WinHttpRequest.5.1")
+        http.SetTimeouts(4000, 4000, 6000, 8000)
+        http.Open("GET", UpdBaseNow() "roblox_autorejoin.ahk?t=" A_TickCount, false)
+        http.SetRequestHeader("Range", "bytes=0-6143")
+        http.Send()
+        if RegExMatch(http.ResponseText, 'm)^VERSION\s*:=\s*"([^"]+)"', &m)
+            return m[1]
+    }
+    return ""
+}
+
+UpdPoll() {
+    global VERSION, pendingUpd, chkFastUpd, updBase
+    if (!chkFastUpd.Value || pendingUpd != "" || updBase = "" || KaEnabled())
+        return
+    v := QuickVersion()
+    if (v != "" && v != VERSION)
+        CheckUpdate(false)
 }
 
 CheckUpdate(manual := false) {

@@ -1,5 +1,14 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.0
+- Barras deslizantes corrigidas: agora é só clicar e arrastar
+- Animação de entrada ao abrir o programa
+- Visual novo nas abas com lista lateral: busca, bolinhas e título da seção
+- Barra de status embaixo da janela
+- Novo HUD: painel de farm do lado do Roblox (Status, Moedas e Logs)
+- Opção de procurar atualização a cada 30 segundos
+- Aba "Sobre" agora se chama "Configurações"
+
 ## v1.2.0 (BETA)
 - **Visual novo** inspirado em executores: lista de seções ao lado e linhas com divisória em vez de caixas soltas.
 - A aba **Discord** virou **Webhook**, com tudo junto: Conexão, O que enviar, Painel ao vivo, Bot e comandos e Relatório.
