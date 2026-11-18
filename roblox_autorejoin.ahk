@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.1.0"
+VERSION     := "1.1.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -670,7 +670,7 @@ I18N["pt"] := Map(
     "r_stuck", "farm parado (moedas sem mudar)",
     "log_stuck", "Farm parado há {1} min.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Aparência",
     "pg_look_sub", "Escolha o tema do programa",
     "sec_theme", "TEMA",
@@ -1172,7 +1172,7 @@ I18N["en"] := Map(
     "r_stuck", "farm stopped (currency not changing)",
     "log_stuck", "Farm stopped for {1} min.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Appearance",
     "pg_look_sub", "Choose the app theme",
     "sec_theme", "THEME",
@@ -1674,7 +1674,7 @@ I18N["es"] := Map(
     "r_stuck", "farm detenido (monedas sin cambios)",
     "log_stuck", "Farm detenido hace {1} min.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Apariencia",
     "pg_look_sub", "Elige el tema del programa",
     "sec_theme", "TEMA",
@@ -2176,7 +2176,7 @@ I18N["fr"] := Map(
     "r_stuck", "farm à l'arrêt (monnaies inchangées)",
     "log_stuck", "Farm à l'arrêt depuis {1} min.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Apparence",
     "pg_look_sub", "Choisissez le thème",
     "sec_theme", "THÈME",
@@ -2678,7 +2678,7 @@ I18N["de"] := Map(
     "r_stuck", "Farm steht (Währungen unverändert)",
     "log_stuck", "Farm steht seit {1} Min.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Darstellung",
     "pg_look_sub", "Wähle das Design",
     "sec_theme", "DESIGN",
@@ -3180,7 +3180,7 @@ I18N["ru"] := Map(
     "r_stuck", "фарм остановился (валюта не меняется)",
     "log_stuck", "Фарм стоит уже {1} мин.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Оформление",
     "pg_look_sub", "Выберите тему",
     "sec_theme", "ТЕМА",
@@ -3682,7 +3682,7 @@ I18N["tr"] := Map(
     "r_stuck", "farm durdu (paralar değişmiyor)",
     "log_stuck", "Farm {1} dakikadır duruyor.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Görünüm",
     "pg_look_sub", "Uygulama temasını seç",
     "sec_theme", "TEMA",
@@ -4184,7 +4184,7 @@ I18N["id"] := Map(
     "r_stuck", "farm berhenti (mata uang tidak berubah)",
     "log_stuck", "Farm berhenti selama {1} menit.",
     "f_state", "Roblox",
-    "nav_discord", "Discord",
+    "nav_discord", "Webhook",
     "nav_look", "Tampilan",
     "pg_look_sub", "Pilih tema aplikasi",
     "sec_theme", "TEMA",
