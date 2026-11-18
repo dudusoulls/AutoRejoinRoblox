@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.15
+- Aba Leitura: agora cada coisa tem a sua própria área (Modo, Wave, Pearls do evento, Moedas e Rank da guilda)
+- Corrigido: depois de mover a área, os botões Salvar/Padrão/Cancelar ficavam inclicáveis
+
 ## v1.3.14
 - Nova aba Aparência > Leitura: você escolhe onde o programa lê na tela, igual ao recorte de tela do Windows (desenha a área, move e puxa as bordas)
 - Áreas separadas para Modo/Wave/Pearls e para o Rank da guilda, com botão Padrão e botão Testar leitura

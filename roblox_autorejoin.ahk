@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.14"
+VERSION     := "1.3.15"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -157,7 +157,9 @@ slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
 areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
-areaDef := Map("mode", [0.08, 0.01, 0.72, 0.22], "guild", [0.38, 0.25, 0.24, 0.17])
+areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
+    , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
+areaKey := Map("mode", "area_mode", "wave", "area_wave", "pearls", "area_pearls", "coins", "area_coins", "guild", "f_guild")
 tourIdx := 0
 tourWins := []
 tourPos := ""
@@ -688,11 +690,14 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Pearls do evento (Summer)",
+    "area_coins", "Moedas",
     "nav_readarea", "Leitura",
     "pg_readarea_sub", "Escolha onde o programa lê as informações na tela",
     "sec_readarea", "ÁREAS DE LEITURA",
     "area_help", "Clique em Ajustar: arraste na tela para desenhar a área (do canto de lá pro de cá), arraste dentro dela para mover e puxe as bordas ou cantos para redimensionar. Enter salva, Esc cancela. Quanto menor e mais justa a área, menos erro.",
-    "area_mode", "Modo, Wave e Pearls",
+    "area_mode", "Modo (nome do mapa)",
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Padrão",
     "btn_area_test", "Testar leitura agora",
@@ -1231,11 +1236,14 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Event pearls (Summer)",
+    "area_coins", "Coins",
     "nav_readarea", "Reading",
     "pg_readarea_sub", "Choose where the app reads info on screen",
     "sec_readarea", "READING AREAS",
     "area_help", "Click Adjust: drag on screen to draw the area, drag inside it to move it and pull the edges or corners to resize. Enter saves, Esc cancels. The smaller and tighter the area, the fewer errors.",
-    "area_mode", "Mode, Wave and Pearls",
+    "area_mode", "Mode (map name)",
     "btn_area_adj", "Adjust area",
     "btn_area_def", "Default",
     "btn_area_test", "Test reading now",
@@ -1774,11 +1782,14 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Pearls del evento (Summer)",
+    "area_coins", "Monedas",
     "nav_readarea", "Lectura",
     "pg_readarea_sub", "Elige dónde lee la app la información en pantalla",
     "sec_readarea", "ÁREAS DE LECTURA",
     "area_help", "Pulsa Ajustar: arrastra en pantalla para dibujar el área, arrastra dentro para moverla y tira de los bordes o esquinas para cambiar el tamaño. Enter guarda, Esc cancela. Cuanto más pequeña y ajustada, menos errores.",
-    "area_mode", "Modo, Wave y Pearls",
+    "area_mode", "Modo (nombre del mapa)",
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Predeterm.",
     "btn_area_test", "Probar lectura ahora",
@@ -2317,11 +2328,14 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Pearls de l'événement (Summer)",
+    "area_coins", "Pièces",
     "nav_readarea", "Lecture",
     "pg_readarea_sub", "Choisis où l'appli lit les infos à l'écran",
     "sec_readarea", "ZONES DE LECTURE",
     "area_help", "Clique sur Ajuster : glisse à l'écran pour tracer la zone, glisse dedans pour la déplacer et tire sur les bords ou coins pour la redimensionner. Entrée enregistre, Échap annule. Plus la zone est petite et précise, moins d'erreurs.",
-    "area_mode", "Mode, Wave et Pearls",
+    "area_mode", "Mode (nom de la carte)",
     "btn_area_adj", "Ajuster",
     "btn_area_def", "Défaut",
     "btn_area_test", "Tester la lecture",
@@ -2860,11 +2874,14 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Event-Pearls (Summer)",
+    "area_coins", "Münzen",
     "nav_readarea", "Lesen",
     "pg_readarea_sub", "Wähle, wo die App Infos vom Bildschirm liest",
     "sec_readarea", "LESEBEREICHE",
     "area_help", "Auf Anpassen klicken: Bereich auf dem Bildschirm aufziehen, darin ziehen zum Verschieben, an Rändern oder Ecken ziehen zum Ändern der Größe. Enter speichert, Esc bricht ab. Je kleiner und enger der Bereich, desto weniger Fehler.",
-    "area_mode", "Modus, Wave und Pearls",
+    "area_mode", "Modus (Kartenname)",
     "btn_area_adj", "Anpassen",
     "btn_area_def", "Standard",
     "btn_area_test", "Lesen jetzt testen",
@@ -3403,11 +3420,14 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Pearls события (Summer)",
+    "area_coins", "Монеты",
     "nav_readarea", "Чтение",
     "pg_readarea_sub", "Выберите, где программа считывает данные с экрана",
     "sec_readarea", "ОБЛАСТИ ЧТЕНИЯ",
     "area_help", "Нажмите «Настроить»: протяните область на экране, перетаскивайте внутри для перемещения, тяните края или углы для изменения размера. Enter сохраняет, Esc отменяет. Чем меньше и точнее область, тем меньше ошибок.",
-    "area_mode", "Режим, Wave и Pearls",
+    "area_mode", "Режим (название карты)",
     "btn_area_adj", "Настроить",
     "btn_area_def", "По умолч.",
     "btn_area_test", "Проверить чтение",
@@ -3946,11 +3966,14 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Etkinlik pearls (Summer)",
+    "area_coins", "Paralar",
     "nav_readarea", "Okuma",
     "pg_readarea_sub", "Uygulamanın ekranda nereyi okuyacağını seç",
     "sec_readarea", "OKUMA ALANLARI",
     "area_help", "Ayarla'ya tıkla: alanı ekranda sürükleyerek çiz, içinden sürükleyip taşı, kenar veya köşelerden çekip boyutlandır. Enter kaydeder, Esc iptal eder. Alan ne kadar küçük ve dar olursa hata o kadar azalır.",
-    "area_mode", "Mod, Wave ve Pearls",
+    "area_mode", "Mod (harita adı)",
     "btn_area_adj", "Ayarla",
     "btn_area_def", "Varsayılan",
     "btn_area_test", "Okumayı test et",
@@ -4489,11 +4512,14 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "area_wave", "Wave",
+    "area_pearls", "Pearls event (Summer)",
+    "area_coins", "Koin",
     "nav_readarea", "Baca",
     "pg_readarea_sub", "Pilih di mana app membaca info di layar",
     "sec_readarea", "AREA BACA",
     "area_help", "Klik Atur: seret di layar untuk menggambar area, seret di dalamnya untuk memindah dan tarik tepi atau sudut untuk ubah ukuran. Enter simpan, Esc batal. Makin kecil dan pas areanya, makin sedikit salah.",
-    "area_mode", "Mode, Wave dan Pearls",
+    "area_mode", "Mode (nama peta)",
     "btn_area_adj", "Atur",
     "btn_area_def", "Default",
     "btn_area_test", "Tes baca sekarang",
@@ -5180,18 +5206,18 @@ for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd]
 ; ---------------- Página: Leitura (onde o programa lê na tela) ----------------
 BeginPage("Leitura", TT("nav_readarea"), TT("pg_readarea_sub"))
 y := 92
-Card(CX, y, CW, 330)
-Lbl(CX + 20, y + 16, 400, TT("sec_readarea"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 38, CW - 40, TT("area_help"), "s9", C_MUTED)
-Lbl(CX + 20, y + 112, CW - 250, TT("area_mode"), "s10")
-Btn(CX + CW - 20 - 220, y + 106, 120, 32, TT("btn_area_adj"), (*) => AreaEdit("mode"))
-Btn(CX + CW - 20 - 90, y + 106, 90, 32, TT("btn_area_def"), (*) => AreaReset("mode"))
-Lbl(CX + 20, y + 158, CW - 250, TT("f_guild"), "s10")
-Btn(CX + CW - 20 - 220, y + 152, 120, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
-Btn(CX + CW - 20 - 90, y + 152, 90, 32, TT("btn_area_def"), (*) => AreaReset("guild"))
-Divider(CX + 20, y + 204, CW - 40)
-Btn(CX + 20, y + 218, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
-areaRes := Lbl(CX + 20, y + 262, CW - 40, "", "s9", C_MUTED)
+Card(CX, y, CW, 432)
+Lbl(CX + 20, y + 14, 400, TT("sec_readarea"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 34, CW - 40, TT("area_help"), "s9", C_MUTED)
+for ai, an in ["mode", "wave", "pearls", "coins", "guild"] {
+    ry := y + 104 + (ai - 1) * 42
+    Lbl(CX + 20, ry + 5, CW - 250, TT(areaKey[an]), "s10")
+    Btn(CX + CW - 20 - 220, ry, 120, 32, TT("btn_area_adj"), AreaEdit.Bind(an))
+    Btn(CX + CW - 20 - 90, ry, 90, 32, TT("btn_area_def"), AreaReset.Bind(an))
+}
+Divider(CX + 20, y + 318, CW - 40)
+Btn(CX + 20, y + 330, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
+areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
@@ -7190,6 +7216,11 @@ AreaGet(name) {
     return r
 }
 
+AreaIsSet(name) {
+    global iniFile
+    return IniRead(iniFile, "area", name "_x", "") != ""
+}
+
 AreaReset(name) {
     global iniFile, areaRes
     for k in ["x", "y", "w", "h"]
@@ -7212,7 +7243,7 @@ AreaDraw(u) {
 
 ; abre o "recortar tela": arraste pra desenhar, arraste dentro pra mover, puxe bordas/cantos pra ajustar (Enter salva, Esc cancela)
 AreaEdit(name) {
-    global areaOn, areaUi, C_BG, C_TEXT, C_MUTED, areaRes
+    global areaOn, areaUi, C_BG, C_TEXT, C_MUTED, areaRes, areaKey
     if areaOn
         return
     hw := FindGameWindow()
@@ -7227,15 +7258,15 @@ AreaEdit(name) {
     u := {name: name, cx: cx, cy: cy, cw: cw, ch: ch, mode: "", was: false, ax: 0, ay: 0, ox: 0, oy: 0, fl: [0, 0]}
     u.x := cx + Round(ar[1] * cw), u.y := cy + Round(ar[2] * ch)
     u.w := Max(Round(20 * k), Round(ar[3] * cw)), u.h := Max(Round(16 * k), Round(ar[4] * ch))
-    u.ov := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale")
+    u.ov := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x08000000")
     u.ov.BackColor := "000000"
     u.ov.Show(Format("NA x{} y{} w{} h{}", cx, cy, cw, ch))
     WinSetTransparent(120, u.ov.Hwnd)
-    u.fill := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20")
+    u.fill := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20 +E0x08000000")
     u.fill.BackColor := "5B8CFF"
     u.fill.Show(Format("NA x{} y{} w{} h{}", u.x, u.y, u.w, u.h))
     WinSetTransparent(90, u.fill.Hwnd)
-    u.frm := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20")
+    u.frm := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20 +E0x08000000")
     u.frm.BackColor := "FFFFFF"
     u.frm.Show(Format("NA x{} y{} w{} h{}", u.x, u.y, u.w, u.h))
     u.tb := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +Border")
@@ -7244,7 +7275,7 @@ AreaEdit(name) {
     FontUI(u.tb, "s10 w700")
     tbw := Round(520 * k)
     u.tb.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(8 * k), tbw - Round(24 * k), Round(22 * k), C_TEXT, C_BG)
-        , TT("area_tb_title", TT(name = "mode" ? "area_mode" : "f_guild")))
+        , TT("area_tb_title", TT(areaKey[name])))
     FontUI(u.tb, "s8")
     u.tb.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(30 * k), tbw - Round(24 * k), Round(18 * k), C_MUTED, C_BG), TT("area_tb_hint"))
     FontUI(u.tb, "s9")
@@ -7276,6 +7307,11 @@ AreaPoll() {
         return
     }
     u := areaUi
+    static tk := 0
+    if (Mod(++tk, 8) = 0) {                 ; mantém a barra de botões sempre por cima da sombra
+        for w in [u.fill, u.frm, u.tb]
+            DllCall("SetWindowPos", "Ptr", w.Hwnd, "Ptr", -1, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)
+    }
     pt := Buffer(8, 0)
     DllCall("GetCursorPos", "Ptr", pt)
     mx := NumGet(pt, 0, "Int"), my := NumGet(pt, 4, "Int")
@@ -7367,10 +7403,12 @@ AreaTest() {
     gr := ReadGuildRank(hw)
     lr := IsObject(farmLast) ? farmLast : {mode: "", wave: "", pearls: "", seen: ""}
     ok := (v) => v != "" ? "✔ " : "✖ "
-    msg := ok(lr.mode) TT("f_mode") ": " (lr.mode != "" ? lr.mode : "—") "`n"
+    nco := -1
+    try nco := ReadCurrencies(hw)[2].Count
+    msg := ok(lr.mode) TT("area_mode") ": " (lr.mode != "" ? lr.mode : "—") "`n"
         . ok(lr.wave) "Wave: " (lr.wave != "" ? lr.wave : "—") "     " ok(lr.pearls) "Pearls: " (lr.pearls != "" ? "+" lr.pearls : "—")
-        . "     " ok(gr) TT("f_guild") ": " (gr != "" ? "#" gr : "—")
-    if (lr.mode = "" && lr.wave = "" && lr.seen != "")
+        . "`n" ok(nco > 0 ? "x" : "") TT("area_coins") ": " (nco >= 0 ? nco : "—") "     " ok(gr) TT("f_guild") ": " (gr != "" ? "#" gr : "—")
+    if (lr.mode = "" && lr.wave = "" && lr.pearls = "" && lr.seen != "")
         msg .= "`n" TT("area_saw") " [" lr.seen "]"
     if IsObject(areaRes)
         areaRes.Value := msg
@@ -7409,6 +7447,43 @@ ReadGuildRank(hw) {
 }
 
 ; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
+; OCR de uma área escolhida pelo usuário; tenta jeitos de captura até o teste "ok" passar
+OcrAreaRead(hw, name, ok) {
+    global farmBest
+    static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
+    out := {res: 0, text: "", vi: 0, ok: false, err: ""}
+    try {
+        WinGetClientPos(, , &cw, &chh, hw)
+        ar := AreaGet(name)
+        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
+        lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
+        sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        Loop variants.Length {
+            vi := Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1
+            v := variants[vi]
+            o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
+            if v.HasOwnProp("gray")
+                o.grayscale := 1, o.invertcolors := 1
+            res := ""
+            try res := OCR.FromWindow("ahk_id " hw, o)
+            catch as e1 {
+                out.err := e1.Message
+                continue
+            }
+            out.res := res, out.vi := vi
+            out.text := Trim(RegExReplace(res.Text, "\s+", " "))
+            if ok(out.text) {
+                out.ok := true
+                break
+            }
+        }
+    } catch as e {
+        out.err := e.Message
+    }
+    return out
+}
+
+; lê (só olhando a tela) o nome do modo, a wave e as pearls, cada um na sua área, e as cores deles
 FarmModeTick(test := false) {
     global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd
     if (!test && !(hudMode = 4 || chkPanel.Value))
@@ -7419,69 +7494,59 @@ FarmModeTick(test := false) {
         farmMode := "", farmWave := ""
         return
     }
-    static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
-    mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := "", err := ""
-    try {
-        WinGetClientPos(, , &cw, &chh, hw)
-        ar := AreaGet("mode")
-        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
-        lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
-        sc := Max(0.5, Min(3, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
-        Loop variants.Length {
-            vi := Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1
-            v := variants[vi]
-            o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
-            if v.HasOwnProp("gray")
-                o.grayscale := 1, o.invertcolors := 1
-            res := ""
-            try res := OCR.FromWindow("ahk_id " hw, o)
-            catch as e1 {
-                err := e1.Message
-                continue
-            }
-            seen := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 110)
-            for line in res.Lines {
-                t := Trim(RegExReplace(line.Text, "\s+", " "))
-                hasW := false, hasP := false
-                if RegExMatch(t, "i)wave\s*([0-9OolI]{1,4})", &m) {
-                    hasW := true
-                    if (wave = "")
-                        wave := StrReplace(StrReplace(StrReplace(m[1], "O", "0"), "o", "0"), "l", "1")
-                    wave := StrReplace(wave, "I", "1")
-                }
-                if RegExMatch(t, "\+\s*(\d[\d.,]*[kKmMbB]?)", &pm) {
-                    hasP := true
-                    if (pearls = "") {
-                        pearls := pm[1], pRect := LineRect(line)
-                        for wd in line.Words
-                            if InStr(wd.Text, pm[1]) {
-                                pRect := [wd.x, wd.y, wd.w, wd.h]
-                                break
-                            }
-                    }
-                }
-                if (!hasW && !hasP && mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) {
-                    mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
-                    mRect := LineRect(line)
-                    farmBest := vi
-                }
-            }
-            if (mode != "" && wave != "" && pearls != "")
+    mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := ""
+    ; --- modo (nome do mapa) ---
+    r := OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
+    seen := r.text
+    if (r.ok) {
+        farmBest := r.vi
+        for line in r.res.Lines {
+            t := Trim(RegExReplace(line.Text, "\s+", " "))
+            if (RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}") && !RegExMatch(t, "i)^wave\b")) {
+                mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
+                mRect := LineRect(line)
                 break
+            }
         }
-    } catch as e {
-        FarmDbg("erro na leitura: " e.Message)
-        return
     }
-    farmLast := {mode: mode, wave: wave, pearls: pearls, seen: seen}
-    if (mode = "" && wave = "") {
-        FarmDbg("OCR não achou o modo. Leu: [" seen "]" (err != "" ? " erro: " err : ""))
+    ; --- wave ---
+    r := OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d"))
+    if (r.text != "")
+        seen .= " | " r.text
+    if r.ok {
+        if RegExMatch(r.text, "i)wave\s*([0-9OolI]{1,4})", &m)
+            wave := m[1]
+        else if RegExMatch(r.text, "([0-9OolI]{1,4})\s*$", &m)
+            wave := m[1]
+        wave := StrReplace(StrReplace(StrReplace(StrReplace(wave, "O", "0"), "o", "0"), "l", "1"), "I", "1")
+    }
+    ; --- pearls ---
+    r := OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d"))
+    if (r.text != "")
+        seen .= " | " r.text
+    if r.ok {
+        for line in r.res.Lines {
+            t := Trim(RegExReplace(line.Text, "\s+", " "))
+            if RegExMatch(t, "\+?\s*(\d[\d.,]*[kKmMbB]?)", &pm) {
+                pearls := pm[1], pRect := LineRect(line)
+                for wd in line.Words
+                    if InStr(wd.Text, pm[1]) {
+                        pRect := [wd.x, wd.y, wd.w, wd.h]
+                        break
+                    }
+                break
+            }
+        }
+    }
+    farmLast := {mode: mode, wave: wave, pearls: pearls, seen: SubStr(seen, 1, 140)}
+    if (mode = "" && wave = "" && pearls = "") {
+        FarmDbg("não achei nada nas áreas de leitura. Leu: [" SubStr(seen, 1, 110) "]")
         if (++farmMiss >= 3)
             farmMode := "", farmWave := ""
         return
     }
-    if (wave = "" || pearls = "")
-        FarmDbg("modo lido, mas faltou " (wave = "" ? "wave " : "") (pearls = "" ? "pearls " : "") ". Leu: [" seen "]")
+    if (mode = "")
+        FarmDbg("não li o nome do modo. Leu: [" SubStr(seen, 1, 110) "]")
     if (mode != "") {
         mode := SubStr(mode, 1, 50)
         if (farmPearls != "" && (mode != farmMode || (pearls != "" && ParseNum(pearls) != "" && ParseNum(farmPearls) != "" && ParseNum(pearls) < ParseNum(farmPearls) * 0.5)))
@@ -9830,6 +9895,13 @@ OcrWords(hw, opt) {
     words := []
     opt := opt.Clone()
     opt.scale := OcrScale(hw, opt.scale)
+    if AreaIsSet("coins") {                   ; o usuário marcou onde ficam as moedas
+        try {
+            WinGetClientPos(, , &cw, &chh, hw)
+            ar := AreaGet("coins")
+            opt.x := Round(cw * ar[1]), opt.y := Round(chh * ar[2]), opt.w := Max(24, Round(cw * ar[3])), opt.h := Max(16, Round(chh * ar[4]))
+        }
+    }
     try {
         res := OCR.FromWindow("ahk_id " hw, opt)
     } catch as e {
