@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.7"
+VERSION     := "1.3.8"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6984,26 +6984,34 @@ FarmModeTick() {
                 continue
             }
             seen := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 110)
-            mode := "", wave := "", pearls := "", mRect := 0, pRect := 0
             for line in res.Lines {
                 t := Trim(RegExReplace(line.Text, "\s+", " "))
-                if RegExMatch(t, "i)wave\s*(\d+)", &m) {
-                    wave := m[1]
-                    continue
+                hasW := false, hasP := false
+                if RegExMatch(t, "i)wave\s*([0-9OolI]{1,4})", &m) {
+                    hasW := true
+                    if (wave = "")
+                        wave := StrReplace(StrReplace(StrReplace(m[1], "O", "0"), "o", "0"), "l", "1")
+                    wave := StrReplace(wave, "I", "1")
                 }
-                if (pearls = "" && RegExMatch(t, "^\+\s*(\d[\d.,]*[kKmMbB]?)\s*\S{0,3}$", &pm)) {
-                    pearls := pm[1], pRect := LineRect(line)
-                    continue
+                if RegExMatch(t, "\+\s*(\d[\d.,]*[kKmMbB]?)", &pm) {
+                    hasP := true
+                    if (pearls = "") {
+                        pearls := pm[1], pRect := LineRect(line)
+                        for wd in line.Words
+                            if InStr(wd.Text, pm[1]) {
+                                pRect := [wd.x, wd.y, wd.w, wd.h]
+                                break
+                            }
+                    }
                 }
-                if (mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) {
+                if (!hasW && !hasP && mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) {
                     mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
                     mRect := LineRect(line)
+                    farmBest := vi
                 }
             }
-            if (mode != "" || wave != "") {
-                farmBest := vi
+            if (mode != "" && wave != "" && pearls != "")
                 break
-            }
         }
     } catch as e {
         FarmDbg("erro na leitura: " e.Message)
@@ -7015,6 +7023,8 @@ FarmModeTick() {
             farmMode := "", farmWave := ""
         return
     }
+    if (wave = "" || pearls = "")
+        FarmDbg("modo lido, mas faltou " (wave = "" ? "wave " : "") (pearls = "" ? "pearls " : "") ". Leu: [" seen "]")
     if (mode != "") {
         mode := SubStr(mode, 1, 50)
         if (farmPearls != "" && (mode != farmMode || (pearls != "" && ParseNum(pearls) != "" && ParseNum(farmPearls) != "" && ParseNum(pearls) < ParseNum(farmPearls) * 0.5)))
@@ -7034,7 +7044,7 @@ FarmModeTick() {
                 farmPearlCol := cc
         }
     }
-    farmWave := wave, farmMiss := 0
+    farmWave := wave != "" ? wave : farmWave, farmMiss := 0
 }
 
 PanelTick() {
