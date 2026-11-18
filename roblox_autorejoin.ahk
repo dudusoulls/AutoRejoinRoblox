@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.3"
+VERSION     := "1.3.4"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -138,7 +138,7 @@ curPage := ""
 cover := 0, coverT0 := 0
 lastCoinSig := "", lastCoinChange := 0, lastCoinRead := 0
 panelLast := 0
-botBad := false, farmMode := "", farmWave := "", farmMiss := 0
+botBad := false, farmMode := "", farmWave := "", farmMiss := 0, farmPearls := "", farmPrev := ""
 restartReply := 0
 scriptT0 := A_TickCount
 botCtx := 0
@@ -680,6 +680,7 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
     "f_mode", "Modo de farm",
     "sw_fastupd", "Procurar atualização a cada 30 segundos",
@@ -1198,6 +1199,7 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
     "f_mode", "Farm mode",
     "sw_fastupd", "Check for updates every 30 seconds",
@@ -1716,6 +1718,7 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
     "f_mode", "Modo de farmeo",
     "sw_fastupd", "Buscar actualizaciones cada 30 segundos",
@@ -2234,6 +2237,7 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
     "f_mode", "Mode de farm",
     "sw_fastupd", "Chercher une mise à jour toutes les 30 secondes",
@@ -2752,6 +2756,7 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
     "f_mode", "Farm-Modus",
     "sw_fastupd", "Alle 30 Sekunden nach Updates suchen",
@@ -3270,6 +3275,7 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
     "f_mode", "Режим фарма",
     "sw_fastupd", "Проверять обновления каждые 30 секунд",
@@ -3788,6 +3794,7 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
     "f_mode", "Farm modu",
     "sw_fastupd", "30 saniyede bir güncelleme ara",
@@ -4306,6 +4313,7 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
     "f_mode", "Mode farm",
     "sw_fastupd", "Cek pembaruan setiap 30 detik",
@@ -6878,7 +6886,7 @@ JsonPick(json, expr) {
 
 ; lê (só olhando a tela) o nome do modo/mapa que fica em cima da barra de vida da base
 FarmModeTick() {
-    global farmMode, farmWave, farmMiss, hudMode, chkPanel
+    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev
     if !(hudMode = 4 || chkPanel.Value)
         return
     hw := FindGameWindow()
@@ -6886,10 +6894,10 @@ FarmModeTick() {
         farmMode := "", farmWave := ""
         return
     }
-    mode := "", wave := ""
+    mode := "", wave := "", pearls := ""
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ox := Round(cw * 0.18), oy := Round(chh * 0.01), ow := Round(cw * 0.64), oh := Round(chh * 0.17)
+        ox := Round(cw * 0.08), oy := Round(chh * 0.01), ow := Round(cw * 0.72), oh := Round(chh * 0.22)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(3, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         for md in [0, 4] {
@@ -6903,12 +6911,20 @@ FarmModeTick() {
                 wave := m[1]
                 continue
             }
+            if (pearls = "" && RegExMatch(t, "^\+\s*(\d[\d.,]*[kKmMbB]?)\s*\S{0,3}$", &pm)) {
+                pearls := pm[1]
+                continue
+            }
             if (mode = "" && RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
                 mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
         }
     } catch
         return
     if (mode != "") {
+        ; rodada nova (modo mudou ou o contador zerou): guarda o total final da anterior
+        if (farmPearls != "" && (SubStr(mode, 1, 50) != farmMode || (pearls != "" && ParseNum(pearls) != "" && ParseNum(farmPearls) != "" && ParseNum(pearls) < ParseNum(farmPearls) * 0.5)))
+            farmPrev := farmPearls
+        farmPearls := pearls != "" ? pearls : farmPearls
         farmMode := SubStr(mode, 1, 50), farmWave := wave, farmMiss := 0
     } else if (++farmMiss >= 3)
         farmMode := "", farmWave := ""
@@ -6926,7 +6942,7 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    global botBad, edHook, panelVia, farmMode, farmWave
+    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev
     if !chkPanel.Value {
         if force
             Log("Painel · ligue o toggle 'Painel fixo no canal'")
@@ -6976,6 +6992,10 @@ PanelUpdate(force := false) {
     fields := []
     if (farmMode != "")
         fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
+    if (farmMode != "" && farmPearls != "")
+        fields.Push(["🦪 Pearls", "+" farmPearls, true])
+    if (farmPrev != "")
+        fields.Push([TT("f_prevround"), "+" farmPrev, true])
     for f in [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
         , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
@@ -7181,7 +7201,7 @@ HudPanelLayout(pw, ph, k) {
     global hudPnlW, hudPnlLogN
     m := Round(10 * k), bw := pw - 2 * m
     hudPnlW["hello"].Move(m, Round(10 * k), bw)
-    y1 := Round(42 * k), h1 := Round(92 * k)
+    y1 := Round(42 * k), h1 := Round(108 * k)
     y2 := y1 + h1 + Round(18 * k), h2 := Round(96 * k)
     y3 := y2 + h2 + Round(18 * k), h3 := Max(Round(60 * k), ph - y3 - Round(44 * k))
     HudBox("st", m, y1, bw, h1, k)
@@ -7193,10 +7213,11 @@ HudPanelLayout(pw, ph, k) {
 }
 
 HudPanelText() {
-    global farmMode, farmWave, hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
+    global farmMode, farmWave, farmPearls, farmPrev, hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
     SetIf(hudPnlW["stT"], dashTitle.Value "`n⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "   🔁 " launches "   📉 " discCount
-        . (farmMode != "" ? "`n🎯 " farmMode (farmWave != "" ? "  ·  W" farmWave : "") : ""))
+        . (farmMode != "" ? "`n🎯 " farmMode (farmWave != "" ? "  ·  W" farmWave : "") : "")
+        . (farmMode != "" && farmPearls != "" ? "`n🦪 +" farmPearls (farmPrev != "" ? "  (ant. +" farmPrev ")" : "") : ""))
     co := ""
     for c in CurrencySpec()
         if (prevCur.Has(c.name) && prevCur[c.name] != "")

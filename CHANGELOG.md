@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.4
+- Lê também o contador de Pearls que sobe durante o modo (HUD Painel de farm e embed do Discord) e guarda o total da rodada anterior
+
 ## v1.3.3
 - O programa lê o nome do modo/mapa que aparece em cima da vida da base no Roblox e mostra no HUD (Painel de farm) e no embed do Discord
 - "Painel fixo no canal" agora funciona só com o Webhook: uma única mensagem que se atualiza sozinha, sem floodar e sem precisar do Bot
