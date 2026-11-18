@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.10"
+VERSION     := "1.3.11"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6989,10 +6989,11 @@ ReadGuildRank(hw) {
     static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ox := Round(cw * 0.36), oy := Round(chh * 0.10), ow := Round(cw * 0.28), oh := Round(chh * 0.28)
+        ox := Round(cw * 0.38), oy := Round(chh * 0.25), ow := Round(cw * 0.24), oh := Round(chh * 0.17)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
-        sc := Max(0.5, Min(4, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
-        Loop 3 {
+        sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        seen := ""
+        Loop 4 {
             v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
             o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
             if v.HasOwnProp("gray")
@@ -7001,8 +7002,14 @@ ReadGuildRank(hw) {
             try res := OCR.FromWindow("ahk_id " hw, o)
             catch
                 continue
-            if RegExMatch(RegExReplace(res.Text, "\s+", " "), "#\s*(\d{1,6})", &m)
+            seen := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 80)
+            if RegExMatch(seen, "#\s*(\d{1,6})", &m)
                 return m[1]
+        }
+        static lastDbg := 0
+        if (A_TickCount - lastDbg > 120000) {
+            lastDbg := A_TickCount
+            Log("Guilda · não achei o #rank. Leu: [" seen "]")
         }
     }
     return ""

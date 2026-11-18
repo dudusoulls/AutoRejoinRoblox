@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.11
+- Rank da guilda: leitura focada no lugar onde a tag aparece em cima do personagem, bem mais ampliada, e com aviso nos Logs se não achar
+
 ## v1.3.10
 - Lê o rank da guilda (o #número logo abaixo da foto da guilda) e mostra no HUD e na embed do Discord
 
