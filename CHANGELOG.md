@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.6
+- Removida a linha colorida do topo do painel lateral (a cor de status fica só na moldura do Roblox)
+
 ## v1.3.5
 - HUD Painel de farm redesenhado: cantos arredondados, faixa de cor do status, cartão de Modo de farm, número de Pearls grande
 - O nome do modo e as Pearls aparecem na mesma cor que têm no jogo

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.5"
+VERSION     := "1.3.6"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7275,7 +7275,6 @@ HudBuildPanel() {
     hudPnl.BackColor := C_BG
     hudPnl.MarginX := 0, hudPnl.MarginY := 0
     hudPnlW := Map()
-    hudPnlW["strip"] := hudPnl.Add("Text", "x0 y0 w10 h3 +0x100 Background" C_ACC)
     AddT := (nm, fnt, fg, bg, opt, txt := "") => (FontUI(hudPnl, fnt), hudPnlW[nm] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 " opt " c" fg " Background" bg, txt))
     AddT("title", "s10 w700", C_TEXT, C_BG, "+0x200", "Auto Reconnect")
     AddT("dot", "s10", C_DIM, C_BG, "+0x200 Right", "●")
@@ -7314,7 +7313,6 @@ HudBox(n, x, y, w, h, k) {
 HudPanelLayout(pw, ph, k) {
     global hudPnlW, hudPnlLogN
     m := Round(10 * k), bw := pw - 2 * m, pad := Round(12 * k), tw := bw - 2 * pad
-    hudPnlW["strip"].Move(0, 0, pw, Max(3, Round(3 * k)))
     hudPnlW["title"].Move(Round(14 * k), Round(11 * k), pw - Round(60 * k), Round(20 * k))
     hudPnlW["dot"].Move(pw - Round(40 * k), Round(11 * k), Round(26 * k), Round(20 * k))
     hudPnlW["hello"].Move(Round(14 * k), Round(31 * k), pw - Round(28 * k), Round(16 * k))
@@ -7356,11 +7354,6 @@ HudPanelText() {
     global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
     HudCol("dot", curStateCol)
-    if (curStateCol != "" && (!hudColCache.Has("strip") || hudColCache["strip"] != curStateCol)) {
-        hudColCache["strip"] := curStateCol
-        hudPnlW["strip"].Opt("Background" curStateCol)
-        hudPnlW["strip"].Redraw()
-    }
     SetIf(hudPnlW["stT"], dashTitle.Value)
     SetIf(hudPnlW["stS"], "⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "    🔁 " launches "    📉 " discCount)
     if (farmMode != "") {
