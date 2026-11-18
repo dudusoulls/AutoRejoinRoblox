@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.1.1"
+VERSION     := "1.2.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -186,6 +186,7 @@ pageInfo := Map()
 navs     := Map()
 curBuild := ""
 hoverMap := Map()
+sliderHit := Map()
 hoverCur := 0
 bgCtrls  := []
 roundQ   := []
@@ -257,7 +258,7 @@ I18N["pt"] := Map(
     "nav_home", "Início",
     "nav_game", "Jogo",
     "nav_window", "Janela",
-    "nav_hook", "Webhook",
+    "nav_hook", "Conexão",
     "nav_coins", "Moedas",
     "nav_logs", "Logs",
     "nav_about", "Sobre",
@@ -544,7 +545,7 @@ I18N["pt"] := Map(
     "f_reopens_today", "Reaberturas hoje",
     "d_earned", "Ganhos de hoje",
     "nav_auto", "Automação",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot e comandos",
     "nav_hist", "Histórico",
     "pg_auto_sub", "Horários e modo econômico",
     "pg_bot_sub", "Controle o script pelo Discord",
@@ -671,6 +672,13 @@ I18N["pt"] := Map(
     "log_stuck", "Farm parado há {1} min.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Painel ao vivo",
+    "nav_statusrep", "Relatório",
+    "nav_stuck", "Travamento",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Mensagem que se atualiza sozinha no Discord",
+    "pg_statusrep_sub", "Resumo periódico com print da tela",
+    "pg_stuck_sub", "Avisa ou reinicia quando as moedas param de mudar",
     "nav_look", "Aparência",
     "pg_look_sub", "Escolha o tema do programa",
     "sec_theme", "TEMA",
@@ -737,7 +745,7 @@ I18N["pt"] := Map(
     "log_killed", "Roblox fechado(s) à força.",
     "lbl_rbxver", "Fixar versão do Roblox (vazio = mais nova)",
     "btn_rbxlist", "Ver versões",
-    "nav_notif", "Notificações",
+    "nav_notif", "O que enviar",
     "pg_notif_sub", "Escolha o que chega no seu webhook",
     "sec_whevents", "O QUE ENVIAR AO WEBHOOK",
     "sw_wh_reopen", "Aberturas e reconexões",
@@ -759,7 +767,7 @@ I18N["en"] := Map(
     "nav_home", "Home",
     "nav_game", "Game",
     "nav_window", "Window",
-    "nav_hook", "Webhook",
+    "nav_hook", "Connection",
     "nav_coins", "Currency",
     "nav_logs", "Logs",
     "nav_about", "About",
@@ -1046,7 +1054,7 @@ I18N["en"] := Map(
     "f_reopens_today", "Reopens today",
     "d_earned", "Earned today",
     "nav_auto", "Automation",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot and commands",
     "nav_hist", "History",
     "pg_auto_sub", "Schedule and eco mode",
     "pg_bot_sub", "Control the script from Discord",
@@ -1173,6 +1181,13 @@ I18N["en"] := Map(
     "log_stuck", "Farm stopped for {1} min.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Live panel",
+    "nav_statusrep", "Report",
+    "nav_stuck", "Stuck check",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "A message that updates itself on Discord",
+    "pg_statusrep_sub", "Periodic summary with a screenshot",
+    "pg_stuck_sub", "Alerts or restarts when your coins stop changing",
     "nav_look", "Appearance",
     "pg_look_sub", "Choose the app theme",
     "sec_theme", "THEME",
@@ -1239,7 +1254,7 @@ I18N["en"] := Map(
     "log_killed", "Roblox force-closed.",
     "lbl_rbxver", "Pin Roblox version (empty = newest)",
     "btn_rbxlist", "List versions",
-    "nav_notif", "Notifications",
+    "nav_notif", "What to send",
     "pg_notif_sub", "Choose what reaches your webhook",
     "sec_whevents", "WHAT TO SEND TO THE WEBHOOK",
     "sw_wh_reopen", "Starts and reconnects",
@@ -1261,7 +1276,7 @@ I18N["es"] := Map(
     "nav_home", "Inicio",
     "nav_game", "Juego",
     "nav_window", "Ventana",
-    "nav_hook", "Webhook",
+    "nav_hook", "Conexión",
     "nav_coins", "Monedas",
     "nav_logs", "Registros",
     "nav_about", "Acerca de",
@@ -1548,7 +1563,7 @@ I18N["es"] := Map(
     "f_reopens_today", "Reaperturas hoy",
     "d_earned", "Ganado hoy",
     "nav_auto", "Automatización",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot y comandos",
     "nav_hist", "Historial",
     "pg_auto_sub", "Horarios y modo económico",
     "pg_bot_sub", "Controla el script desde Discord",
@@ -1675,6 +1690,13 @@ I18N["es"] := Map(
     "log_stuck", "Farm detenido hace {1} min.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Panel en vivo",
+    "nav_statusrep", "Informe",
+    "nav_stuck", "Detección de bloqueo",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Un mensaje que se actualiza solo en Discord",
+    "pg_statusrep_sub", "Resumen periódico con captura",
+    "pg_stuck_sub", "Avisa o reinicia cuando las monedas dejan de cambiar",
     "nav_look", "Apariencia",
     "pg_look_sub", "Elige el tema del programa",
     "sec_theme", "TEMA",
@@ -1741,7 +1763,7 @@ I18N["es"] := Map(
     "log_killed", "Roblox cerrado(s) a la fuerza.",
     "lbl_rbxver", "Fijar versión de Roblox (vacío = más nueva)",
     "btn_rbxlist", "Ver versiones",
-    "nav_notif", "Notificaciones",
+    "nav_notif", "Qué enviar",
     "pg_notif_sub", "Elige qué llega a tu webhook",
     "sec_whevents", "QUÉ ENVIAR AL WEBHOOK",
     "sw_wh_reopen", "Aperturas y reconexiones",
@@ -1763,7 +1785,7 @@ I18N["fr"] := Map(
     "nav_home", "Accueil",
     "nav_game", "Jeu",
     "nav_window", "Fenêtre",
-    "nav_hook", "Webhook",
+    "nav_hook", "Connexion",
     "nav_coins", "Monnaies",
     "nav_logs", "Journal",
     "nav_about", "À propos",
@@ -2050,7 +2072,7 @@ I18N["fr"] := Map(
     "f_reopens_today", "Réouvertures aujourd'hui",
     "d_earned", "Gagné aujourd'hui",
     "nav_auto", "Automatisation",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot et commandes",
     "nav_hist", "Historique",
     "pg_auto_sub", "Horaires et mode éco",
     "pg_bot_sub", "Contrôlez le script depuis Discord",
@@ -2177,6 +2199,13 @@ I18N["fr"] := Map(
     "log_stuck", "Farm à l'arrêt depuis {1} min.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Panneau en direct",
+    "nav_statusrep", "Rapport",
+    "nav_stuck", "Blocage",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Un message qui se met à jour seul sur Discord",
+    "pg_statusrep_sub", "Résumé périodique avec capture",
+    "pg_stuck_sub", "Alerte ou redémarre quand les pièces ne bougent plus",
     "nav_look", "Apparence",
     "pg_look_sub", "Choisissez le thème",
     "sec_theme", "THÈME",
@@ -2243,7 +2272,7 @@ I18N["fr"] := Map(
     "log_killed", "Roblox fermé(s) de force.",
     "lbl_rbxver", "Fixer la version Roblox (vide = la plus récente)",
     "btn_rbxlist", "Voir les versions",
-    "nav_notif", "Notifications",
+    "nav_notif", "Quoi envoyer",
     "pg_notif_sub", "Choisissez ce qui arrive sur votre webhook",
     "sec_whevents", "QUOI ENVOYER AU WEBHOOK",
     "sw_wh_reopen", "Démarrages et reconnexions",
@@ -2265,7 +2294,7 @@ I18N["de"] := Map(
     "nav_home", "Start",
     "nav_game", "Spiel",
     "nav_window", "Fenster",
-    "nav_hook", "Webhook",
+    "nav_hook", "Verbindung",
     "nav_coins", "Währungen",
     "nav_logs", "Protokoll",
     "nav_about", "Info",
@@ -2552,7 +2581,7 @@ I18N["de"] := Map(
     "f_reopens_today", "Neustarts heute",
     "d_earned", "Heute verdient",
     "nav_auto", "Automatisierung",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot und Befehle",
     "nav_hist", "Verlauf",
     "pg_auto_sub", "Zeitplan und Sparmodus",
     "pg_bot_sub", "Steuere das Skript über Discord",
@@ -2679,6 +2708,13 @@ I18N["de"] := Map(
     "log_stuck", "Farm steht seit {1} Min.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Live-Panel",
+    "nav_statusrep", "Bericht",
+    "nav_stuck", "Hänger",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Eine Nachricht, die sich selbst auf Discord aktualisiert",
+    "pg_statusrep_sub", "Regelmäßige Zusammenfassung mit Screenshot",
+    "pg_stuck_sub", "Warnt oder startet neu, wenn sich die Münzen nicht mehr ändern",
     "nav_look", "Darstellung",
     "pg_look_sub", "Wähle das Design",
     "sec_theme", "DESIGN",
@@ -2745,7 +2781,7 @@ I18N["de"] := Map(
     "log_killed", "Roblox zwangsweise geschlossen.",
     "lbl_rbxver", "Roblox-Version festlegen (leer = neueste)",
     "btn_rbxlist", "Versionen anzeigen",
-    "nav_notif", "Benachrichtigungen",
+    "nav_notif", "Was senden",
     "pg_notif_sub", "Wähle, was deinen Webhook erreicht",
     "sec_whevents", "WAS AN DEN WEBHOOK SENDEN",
     "sw_wh_reopen", "Starts und Reconnects",
@@ -2767,7 +2803,7 @@ I18N["ru"] := Map(
     "nav_home", "Главная",
     "nav_game", "Игра",
     "nav_window", "Окно",
-    "nav_hook", "Вебхук",
+    "nav_hook", "Подключение",
     "nav_coins", "Валюта",
     "nav_logs", "Журнал",
     "nav_about", "О программе",
@@ -3054,7 +3090,7 @@ I18N["ru"] := Map(
     "f_reopens_today", "Перезапусков сегодня",
     "d_earned", "Заработано сегодня",
     "nav_auto", "Автоматизация",
-    "nav_bot", "Бот",
+    "nav_bot", "Бот и команды",
     "nav_hist", "История",
     "pg_auto_sub", "Расписание и эко-режим",
     "pg_bot_sub", "Управляйте скриптом из Discord",
@@ -3181,6 +3217,13 @@ I18N["ru"] := Map(
     "log_stuck", "Фарм стоит уже {1} мин.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Живая панель",
+    "nav_statusrep", "Отчёт",
+    "nav_stuck", "Зависание",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Сообщение в Discord, которое обновляется само",
+    "pg_statusrep_sub", "Периодическая сводка со скриншотом",
+    "pg_stuck_sub", "Предупреждает или перезапускает, когда монеты не меняются",
     "nav_look", "Оформление",
     "pg_look_sub", "Выберите тему",
     "sec_theme", "ТЕМА",
@@ -3247,7 +3290,7 @@ I18N["ru"] := Map(
     "log_killed", "Roblox принудительно закрыт.",
     "lbl_rbxver", "Закрепить версию Roblox (пусто = новейшая)",
     "btn_rbxlist", "Список версий",
-    "nav_notif", "Уведомления",
+    "nav_notif", "Что отправлять",
     "pg_notif_sub", "Выберите, что приходит в вебхук",
     "sec_whevents", "ЧТО ОТПРАВЛЯТЬ В ВЕБХУК",
     "sw_wh_reopen", "Запуски и переподключения",
@@ -3269,7 +3312,7 @@ I18N["tr"] := Map(
     "nav_home", "Ana Sayfa",
     "nav_game", "Oyun",
     "nav_window", "Pencere",
-    "nav_hook", "Webhook",
+    "nav_hook", "Bağlantı",
     "nav_coins", "Paralar",
     "nav_logs", "Kayıtlar",
     "nav_about", "Hakkında",
@@ -3556,7 +3599,7 @@ I18N["tr"] := Map(
     "f_reopens_today", "Bugünkü yeniden açmalar",
     "d_earned", "Bugün kazanılan",
     "nav_auto", "Otomasyon",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot ve komutlar",
     "nav_hist", "Geçmiş",
     "pg_auto_sub", "Zamanlama ve tasarruf modu",
     "pg_bot_sub", "Betiği Discord'dan kontrol et",
@@ -3683,6 +3726,13 @@ I18N["tr"] := Map(
     "log_stuck", "Farm {1} dakikadır duruyor.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Canlı panel",
+    "nav_statusrep", "Rapor",
+    "nav_stuck", "Takılma",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Discord'da kendini güncelleyen bir mesaj",
+    "pg_statusrep_sub", "Ekran görüntülü periyodik özet",
+    "pg_stuck_sub", "Paralar değişmeyince uyarır veya yeniden başlatır",
     "nav_look", "Görünüm",
     "pg_look_sub", "Uygulama temasını seç",
     "sec_theme", "TEMA",
@@ -3749,7 +3799,7 @@ I18N["tr"] := Map(
     "log_killed", "Roblox zorla kapatıldı.",
     "lbl_rbxver", "Roblox sürümünü sabitle (boş = en yeni)",
     "btn_rbxlist", "Sürümleri gör",
-    "nav_notif", "Bildirimler",
+    "nav_notif", "Ne gönderilsin",
     "pg_notif_sub", "Webhook'una ne geleceğini seç",
     "sec_whevents", "WEBHOOK'A NE GÖNDERİLSİN",
     "sw_wh_reopen", "Başlatma ve yeniden bağlanma",
@@ -3771,7 +3821,7 @@ I18N["id"] := Map(
     "nav_home", "Beranda",
     "nav_game", "Game",
     "nav_window", "Jendela",
-    "nav_hook", "Webhook",
+    "nav_hook", "Koneksi",
     "nav_coins", "Mata Uang",
     "nav_logs", "Log",
     "nav_about", "Tentang",
@@ -4058,7 +4108,7 @@ I18N["id"] := Map(
     "f_reopens_today", "Buka ulang hari ini",
     "d_earned", "Didapat hari ini",
     "nav_auto", "Otomasi",
-    "nav_bot", "Bot",
+    "nav_bot", "Bot dan perintah",
     "nav_hist", "Riwayat",
     "pg_auto_sub", "Jadwal dan mode hemat",
     "pg_bot_sub", "Kendalikan skrip dari Discord",
@@ -4185,6 +4235,13 @@ I18N["id"] := Map(
     "log_stuck", "Farm berhenti selama {1} menit.",
     "f_state", "Roblox",
     "nav_discord", "Webhook",
+    "nav_livepanel", "Panel langsung",
+    "nav_statusrep", "Laporan",
+    "nav_stuck", "Macet",
+    "nav_qol", "QoL",
+    "pg_livepanel_sub", "Pesan yang memperbarui diri sendiri di Discord",
+    "pg_statusrep_sub", "Ringkasan berkala dengan tangkapan layar",
+    "pg_stuck_sub", "Peringatkan atau mulai ulang saat koin berhenti berubah",
     "nav_look", "Tampilan",
     "pg_look_sub", "Pilih tema aplikasi",
     "sec_theme", "TEMA",
@@ -4251,7 +4308,7 @@ I18N["id"] := Map(
     "log_killed", "Roblox ditutup paksa.",
     "lbl_rbxver", "Kunci versi Roblox (kosong = terbaru)",
     "btn_rbxlist", "Lihat versi",
-    "nav_notif", "Notifikasi",
+    "nav_notif", "Apa yang dikirim",
     "pg_notif_sub", "Pilih apa yang masuk ke webhook-mu",
     "sec_whevents", "APA YANG DIKIRIM KE WEBHOOK",
     "sw_wh_reopen", "Pembukaan dan sambung ulang",
@@ -4276,7 +4333,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -4292,7 +4349,7 @@ winH := Integer(IniRead(iniFile, "cfg", "winH", "630"))
 ; ==========================================================
 ;  GUI principal
 ; ==========================================================
-W := 760, H := 600, SIDE := 184
+W := 760, H := 600, SIDE := 184, SUBW := 140
 CX := SIDE + 28          ; x do conteúdo
 CW := W - CX - 28        ; largura do conteúdo
 
@@ -4406,8 +4463,9 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
-    , "Discord", ["Webhook", "Bot", "Notif"], "Moedas", ["Moedas", "Histórico"], "Aparência", ["Aparência", "HUD"]
+    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD"]
     , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
+VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
 for gk, subs in GROUPS
     for sb in subs
@@ -4416,7 +4474,7 @@ AddNav("Início",    Chr(0xE80F), 92)
 AddNav("Jogo",      Chr(0xE7FC), 134)
 AddNav("Automação", Chr(0xE916), 176)
 AddNav("Discord",   Chr(0xE8F2), 218)
-AddNav("Moedas",    Chr(0xE8C7), 260)
+AddNav("QoL",       Chr(0xE8C7), 260)
 AddNav("Aparência", Chr(0xE790), 302)
 AddNav("Logs",      Chr(0xE81C), 344)
 AddNav("Sobre",     Chr(0xE946), 386)
@@ -4521,66 +4579,142 @@ Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
 chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
 
 ; ---------------- Página: Webhook ----------------
+; ---- grupos com lista lateral (Webhook e QoL): o conteúdo começa depois da lista ----
+CX0 := CX, CW0 := CW
+CX := CX0 + SUBW + 16, CW := CW0 - SUBW - 16
+
+; ---------------- Webhook: Conexão ----------------
 BeginPage("Webhook", TT("nav_hook"), TT("pg_hook_sub"))
 y := 92
-Card(CX, y, CW, 100)
-Lbl(CX + 20, y + 16, 300, "DISCORD", "s7 w700", C_DIM)
-edHook := Input(CX + 20, y + 38, CW - 40 - 132, savedHook)
-btnHookTest := Btn(CX + CW - 140, y + 38, 120, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
-Lbl(CX + 20, y + 76, CW - 40, TT("hint_hook"), "s8", C_MUTED)
+Card(CX, y, CW, 164)
+Lbl(CX + 20, y + 16, 300, "WEBHOOK", "s7 w700", C_DIM)
+edHook := Input(CX + 20, y + 38, CW - 40, savedHook)
+Lbl(CX + 20, y + 80, CW - 40, TT("hint_hook"), "s8", C_MUTED)
+btnHookTest := Btn(CX + 20, y + 120, 130, 32, TT("btn_test"), (*) => SendEvent("test", [TT("d_test")], true))
 
-y := 204
-Card(CX, y, CW, 126)
+y := 268
+Card(CX, y, CW, 184)
 Lbl(CX + 20, y + 16, 300, TT("sec_mention"), "s7 w700", C_DIM)
 chkMention := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_mention"), savedMention, TT("sw_mention_sub"))
-Lbl(CX + 20, y + 94, 150, TT("lbl_discord_id"), "s9", C_MUTED)
-edDiscId := Input(CX + 170, y + 87, 210, savedDiscId, "Number")
-Btn(CX + CW - 130, y + 87, 110, 32, TT("btn_how"), (*) => (ToolTip(TT("hint_discord_id")), SetTimer(() => ToolTip(), -9000)))
+Divider(CX + 20, y + 100, CW - 40)
+Lbl(CX + 20, y + 114, CW - 40, TT("lbl_discord_id"), "s9", C_MUTED)
+edDiscId := Input(CX + 20, y + 136, CW - 40 - 118, savedDiscId, "Number")
+Btn(CX + CW - 128, y + 136, 108, 32, TT("btn_how"), (*) => (ToolTip(TT("hint_discord_id")), SetTimer(() => ToolTip(), -9000)))
 
-y := 342
-Card(CX, y, CW, 140)
+; ---------------- Webhook: O que enviar ----------------
+BeginPage("Notif", TT("nav_notif"), TT("pg_notif_sub"))
+y := 92
+Card(CX, y, CW, 300)
+Lbl(CX + 20, y + 16, 300, TT("sec_whevents"), "s7 w700", C_DIM)
+chkWhReopen := ToggleSwitch(CX + 20, y + 44, CW - 40, TT("sw_wh_reopen"), savedWhReopen, TT("sw_wh_reopen_sub"))
+Divider(CX + 20, y + 104, CW - 40)
+chkWhDrop := ToggleSwitch(CX + 20, y + 118, CW - 40, TT("sw_wh_drop"), savedWhDrop, TT("sw_wh_drop_sub"))
+Divider(CX + 20, y + 178, CW - 40)
+chkWhError := ToggleSwitch(CX + 20, y + 192, CW - 40, TT("sw_wh_error"), savedWhError, TT("sw_wh_error_sub"))
+Divider(CX + 20, y + 252, CW - 40)
+chkWhUpdate := ToggleSwitch(CX + 20, y + 266, CW - 40, TT("sw_wh_update"), savedWhUpdate)
+
+; ---------------- Webhook: Painel ao vivo ----------------
+BeginPage("Painel", TT("nav_livepanel"), TT("pg_livepanel_sub"))
+y := 92
+Card(CX, y, CW, 236)
+Lbl(CX + 20, y + 16, 300, TT("sec_panel"), "s7 w700", C_DIM)
+chkPanel := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_panel"), savedPanel, TT("sw_panel_sub"))
+chkPanel.onChange := (*) => SetTimer(() => PanelUpdate(true), -500)
+Divider(CX + 20, y + 106, CW - 40)
+Lbl(CX + 20, y + 120, CW - 40, TT("lbl_panel_min"), "s9", C_MUTED)
+edPanelMin := Input(CX + CW - 20 - 64, y + 142, 64, savedPanelMin, "Number")
+SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edPanelMin, 1, 30)
+Btn(CX + 20, y + 188, 150, 32, TT("btn_send_now"), (*) => PanelUpdate(true))
+
+; ---------------- Webhook: Bot e comandos ----------------
+BeginPage("Bot", TT("nav_bot"), TT("pg_bot_sub"))
+y := 92
+Card(CX, y, CW, 336)
+Lbl(CX + 20, y + 16, 300, TT("sec_bot"), "s7 w700", C_DIM)
+chkBot := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_bot"), savedBot, TT("sw_bot_sub"))
+Divider(CX + 20, y + 100, CW - 40)
+Lbl(CX + 20, y + 114, CW - 40, TT("lbl_token"), "s9", C_MUTED)
+edToken := Input(CX + 20, y + 134, CW - 40, DpapiUnprotect(IniRead(iniFile, "cfg", "botToken", "")), "Password")
+Lbl(CX + 20, y + 178, CW - 40, TT("lbl_channel"), "s9", C_MUTED)
+edChan := Input(CX + 20, y + 198, CW - 40, savedBotChan, "Number")
+botStatus := Lbl(CX + 20, y + 246, CW - 40, TT("bot_off"), "s9 w600", C_TEXT)
+Lbl(CX + 20, y + 268, CW - 40, TT("bot_setup"), "s8", C_MUTED)
+
+y := 440
+Card(CX, y, CW, 84)
+Lbl(CX + 20, y + 14, CW - 40, TT("bot_hint_help"), "s9", C_MUTED)
+
+; ---------------- Webhook: Relatório ----------------
+BeginPage("Relat", TT("nav_statusrep"), TT("pg_statusrep_sub"))
+y := 92
+Card(CX, y, CW, 236)
 Lbl(CX + 20, y + 16, 300, TT("sec_status"), "s7 w700", C_DIM)
 chkRep := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_rep"), savedRep, TT("sw_rep_sub"))
 chkRep.onChange := ApplyReportTimer
-Lbl(CX + 20, y + 98, 120, TT("lbl_interval"), "s9", C_MUTED)
-edRepMin := Input(CX + 150, y + 91, 80, savedRepMin, "Number")
-Btn(CX + CW - 160, y + 91, 140, 32, TT("btn_send_now"), (*) => SendStatusReport(true))
+Divider(CX + 20, y + 106, CW - 40)
+Lbl(CX + 20, y + 120, CW - 40, TT("lbl_interval"), "s9", C_MUTED)
+edRepMin := Input(CX + CW - 20 - 64, y + 142, 64, savedRepMin, "Number")
+SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edRepMin, 5, 240)
+Btn(CX + 20, y + 188, 160, 32, TT("btn_send_now"), (*) => SendStatusReport(true))
 
-; ---------------- Página: Notificações (sub-aba de Discord) ----------------
-BeginPage("Notif", TT("nav_notif"), TT("pg_notif_sub"))
-y := 92
-Card(CX, y, CW, 250)
-Lbl(CX + 20, y + 16, 300, TT("sec_whevents"), "s7 w700", C_DIM)
-chkWhReopen := ToggleSwitch(CX + 20, y + 44, CW - 40, TT("sw_wh_reopen"), savedWhReopen, TT("sw_wh_reopen_sub"))
-chkWhDrop := ToggleSwitch(CX + 20, y + 100, CW - 40, TT("sw_wh_drop"), savedWhDrop, TT("sw_wh_drop_sub"))
-chkWhError := ToggleSwitch(CX + 20, y + 156, CW - 40, TT("sw_wh_error"), savedWhError, TT("sw_wh_error_sub"))
-chkWhUpdate := ToggleSwitch(CX + 20, y + 206, CW - 40, TT("sw_wh_update"), savedWhUpdate)
-
-; ---------------- Página: Moedas ----------------
+; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
 y := 92
-Card(CX, y, CW, 166)
+Card(CX, y, CW, 196)
 Lbl(CX + 20, y + 16, 300, TT("sec_ocr"), "s7 w700", C_DIM)
 chkOcr := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_ocr"), savedOcr, TT("sw_ocr_sub"))
-Lbl(CX + 20, y + 94, CW - 40, TT("lbl_coins"), "s9", C_MUTED)
-edCur := Input(CX + 20, y + 116, CW - 40, savedCur)
+Divider(CX + 20, y + 100, CW - 40)
+Lbl(CX + 20, y + 112, CW - 40, TT("lbl_coins"), "s9", C_MUTED)
+edCur := Input(CX + 20, y + 148, CW - 40, savedCur)
 
-y := 270
-Card(CX, y, CW, 150)
-Lbl(CX + 20, y + 16, 300, TT("sec_lastread"), "s7 w700", C_DIM)
-Btn(CX + CW - 160, y + 12, 140, 32, TT("btn_testread"), (*) => TestCurrencies())
+y := 300
+Card(CX, y, CW, 186)
+Lbl(CX + 20, y + 20, 160, TT("sec_lastread"), "s7 w700", C_DIM)
+Btn(CX + CW - 150, y + 12, 130, 32, TT("btn_testread"), (*) => TestCurrencies())
 FontMono(g, "s9")
-curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 52, CW - 40, 84, C_TEXT, C_CARD)
+curView := P(g.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", CX + 20, y + 56, CW - 40, 114, C_TEXT, C_CARD)
     , TT("no_read")))
 
-y := 432
-Card(CX, y, CW, 136)
+; ---------------- QoL: Travamento ----------------
+BeginPage("Travou", TT("nav_stuck"), TT("pg_stuck_sub"))
+y := 92
+Card(CX, y, CW, 268)
 Lbl(CX + 20, y + 16, 300, TT("sec_stuck"), "s7 w700", C_DIM)
 chkStuck := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_stuck"), savedStuck, TT("sw_stuck_sub"))
-Lbl(CX + 20, y + 98, 170, TT("lbl_stuck_min"), "s9", C_MUTED)
-edStuckMin := Input(CX + 190, y + 91, 70, savedStuckMin, "Number")
-btnStuckAct := Btn(CX + CW - 200, y + 91, 180, 32, StuckActName(stuckAct), (*) => 0)
+Divider(CX + 20, y + 112, CW - 40)
+Lbl(CX + 20, y + 126, CW - 40, TT("lbl_stuck_min"), "s9", C_MUTED)
+edStuckMin := Input(CX + CW - 20 - 64, y + 148, 64, savedStuckMin, "Number")
+SliderBar(CX + 20, y + 153, CW - 40 - 64 - 16, edStuckMin, 3, 120)
+Divider(CX + 20, y + 200, CW - 40)
+btnStuckAct := Btn(CX + 20, y + 216, CW - 40, 34, StuckActName(stuckAct), (*) => 0)
 btnStuckAct.OnEvent("Click", CycleStuckAct.Bind(btnStuckAct))
+
+; ---------------- QoL: Histórico ----------------
+BeginPage("Histórico", TT("nav_hist"), TT("pg_hist_sub"))
+y := 92
+Card(CX, y, CW, 430)
+histBtns := Map()
+hbw := (CW - 40 - 8) // 2
+histBtns["online"]  := Btn(CX + 20, y + 16, hbw, 30, TT("hist_online"), SetHistMetric.Bind("online"), "primary")
+histBtns["drops"]   := Btn(CX + 28 + hbw, y + 16, hbw, 30, TT("f_drops"), SetHistMetric.Bind("drops"))
+histBtns["reopens"] := Btn(CX + 20, y + 54, hbw, 30, TT("f_reopens"), SetHistMetric.Bind("reopens"))
+histBtns["coin"]    := Btn(CX + 28 + hbw, y + 54, hbw, 30, TT("hist_coin", "…"), SetHistMetric.Bind("coin"))
+histBase := y + 390
+histBars := [], histVals := [], histDays := []
+slotW := (CW - 40) // 14
+Loop 14 {
+    bx := CX + 20 + (A_Index - 1) * slotW
+    histBars.Push(P(g.Add("Text", Format("x{} y{} w{} h2 Background{}", bx + (slotW - 20) // 2, histBase - 2, 20, A_Index = 14 ? C_ACC : C_DIM))))
+    FontUI(g, "s7 w600")
+    histVals.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase - 20, slotW, C_MUTED, C_CARD), "")))
+    FontUI(g, "s7")
+    histDays.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase + 8, slotW, C_DIM, C_CARD), "")))
+}
+histEmpty := Lbl(CX + 20, y + 200, CW - 40, TT("hist_empty"), "s9", C_MUTED)
+histEmpty.Opt("+Center")
+
+CX := CX0, CW := CW0
 
 ; ---------------- Página: Contas (várias contas) ----------------
 BeginPage("Contas", TT("nav_accounts"), TT("pg_acc_sub"))
@@ -4626,54 +4760,6 @@ chkMute := ToggleSwitch(CX + 20, y + 122, CW - 40, TT("sw_mute"), savedMute)
 chkLowPrio := ToggleSwitch(CX + 20, y + 152, CW - 40, TT("sw_lowprio"), savedLowPrio)
 
 ; ---------------- Página: Bot do Discord ----------------
-BeginPage("Bot", TT("nav_bot"), TT("pg_bot_sub"))
-y := 92
-Card(CX, y, CW, 252)
-Lbl(CX + 20, y + 16, 300, TT("sec_bot"), "s7 w700", C_DIM)
-chkBot := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_bot"), savedBot, TT("sw_bot_sub"))
-Lbl(CX + 20, y + 96, 120, TT("lbl_token"), "s9", C_MUTED)
-edToken := Input(CX + 140, y + 89, CW - 160, DpapiUnprotect(IniRead(iniFile, "cfg", "botToken", "")), "Password")
-Lbl(CX + 20, y + 140, 120, TT("lbl_channel"), "s9", C_MUTED)
-edChan := Input(CX + 140, y + 133, 220, savedBotChan, "Number")
-botStatus := Lbl(CX + 20, y + 180, CW - 40, TT("bot_off"), "s9 w600", C_TEXT)
-Lbl(CX + 20, y + 202, CW - 40, TT("bot_setup"), "s8", C_MUTED)
-
-y := 356
-Card(CX, y, CW, 132)
-Lbl(CX + 20, y + 16, 300, TT("sec_panel"), "s7 w700", C_DIM)
-chkPanel := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_panel"), savedPanel, TT("sw_panel_sub"))
-chkPanel.onChange := (*) => SetTimer(() => PanelUpdate(true), -500)
-Lbl(CX + 20, y + 98, 200, TT("lbl_panel_min"), "s9", C_MUTED)
-edPanelMin := Input(CX + 220, y + 91, 70, savedPanelMin, "Number")
-Btn(CX + CW - 160, y + 91, 140, 32, TT("btn_send_now"), (*) => PanelUpdate(true))
-
-y := 500
-Card(CX, y, CW, 56)
-Lbl(CX + 20, y + 19, CW - 40, TT("bot_hint_help"), "s9", C_MUTED)
-
-; ---------------- Página: Histórico ----------------
-BeginPage("Histórico", TT("nav_hist"), TT("pg_hist_sub"))
-y := 92
-Card(CX, y, CW, 430)
-histBtns := Map()
-histBtns["online"]  := Btn(CX + 20, y + 16, 120, 32, TT("hist_online"), SetHistMetric.Bind("online"), "primary")
-histBtns["drops"]   := Btn(CX + 148, y + 16, 100, 32, TT("f_drops"), SetHistMetric.Bind("drops"))
-histBtns["reopens"] := Btn(CX + 256, y + 16, 110, 32, TT("f_reopens"), SetHistMetric.Bind("reopens"))
-histBtns["coin"]    := Btn(CX + 374, y + 16, CW - 394, 32, TT("hist_coin", "…"), SetHistMetric.Bind("coin"))
-histBase := y + 390
-histBars := [], histVals := [], histDays := []
-slotW := (CW - 40) // 14
-Loop 14 {
-    bx := CX + 20 + (A_Index - 1) * slotW
-    histBars.Push(P(g.Add("Text", Format("x{} y{} w{} h2 Background{}", bx + (slotW - 20) // 2, histBase - 2, 20, A_Index = 14 ? C_ACC : C_DIM))))
-    FontUI(g, "s7 w600")
-    histVals.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase - 20, slotW, C_MUTED, C_CARD), "")))
-    FontUI(g, "s7")
-    histDays.Push(P(g.Add("Text", Format("x{} y{} w{} Center c{} Background{}", bx, histBase + 8, slotW, C_DIM, C_CARD), "")))
-}
-histEmpty := Lbl(CX + 20, y + 200, CW - 40, TT("hist_empty"), "s9", C_MUTED)
-histEmpty.Opt("+Center")
-
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
 y := 92
@@ -4831,10 +4917,26 @@ if (BUY_URL != "")
 gk.OnEvent("Close", (*) => KeyClose())
 
 ; ---- sub-abas no topo das abas agrupadas ----
+vsegs := Map()
+FontUI(g, "s10 w600")
+for vgk, vsubs in GROUPS {
+    if !VGROUPS.Has(vgk)
+        continue
+    vsegs[vgk] := []
+    for vi, vsb in vsubs {
+        vc := g.Add("Text", Format("x{} y{} w{} h32 +0x200 Background{} c{}", CX, 96 + (vi - 1) * 36, SUBW, C_BG, C_MUTED), "   " TT(NAVK[vsb]))
+        vc.OnEvent("Click", ShowPage.Bind(vsb))
+        vo := {ctrls: [vc], bg: C_BG, hov: C_NAVH}
+        hoverMap[vc.Hwnd] := vo
+        roundQ.Push([vc, 9])
+        vsegs[vgk].Push({ctrl: vc, sub: vsb, o: vo})
+        vc.Visible := false
+    }
+}
 segs := Map()
 FontUI(g, "s9 w600")
 for gk, subs in GROUPS {
-    if (subs.Length < 2)
+    if (subs.Length < 2 || VGROUPS.Has(gk))
         continue
     segs[gk] := []
     sx := CX
@@ -4870,6 +4972,7 @@ try Hotkey("^!s", (*) => Toggle())
 try Hotkey("^!r", (*) => BotRestart())
 try Hotkey("^!p", (*) => SendStatusReport(true))
 OnMessage(0x201, OnLButtonDown)
+OnMessage(0x201, SliderDown)
 OnMessage(0x200, OnMouseMove)
 
 ShowPage("Início")
@@ -4995,6 +5098,71 @@ Input(x, y, w, val, extra := "") {
     return P(g.Add("Edit", Format("x{} y{} w{} h20 -E0x200 c{} Background{} {}", x + 10, y + 7, w - 20, C_TEXT, C_INPUT, extra), val))
 }
 
+Divider(x, y, w) {
+    global g
+    return P(g.Add("Text", Format("x{} y{} w{} h1 Background{}", x, y, w, "26262D")))
+}
+
+; barra deslizante ligada a um campo numérico (o campo continua sendo a fonte do valor)
+class SliderBar {
+    __New(x, y, w, edit, lo, hi) {
+        global g, C_SWOFF, C_ACC, roundQ, sliderHit
+        this.x := x, this.w := w, this.edit := edit, this.lo := lo, this.hi := hi
+        this.track := P(g.Add("Text", Format("x{} y{} w{} h10 +0x100 Background{}", x, y + 6, w, C_SWOFF)))
+        this.fill  := P(g.Add("Text", Format("x{} y{} w10 h10 +0x100 Background{}", x, y + 6, C_ACC)))
+        this.knob  := P(g.Add("Text", Format("x{} y{} w16 h16 +0x100 Background{}", x, y + 3, C_ACC)))
+        roundQ.Push([this.track, 10])
+        roundQ.Push([this.fill, 10])
+        roundQ.Push([this.knob, 16])
+        for c in [this.track, this.fill, this.knob]
+            sliderHit[c.Hwnd] := this
+        edit.OnEvent("Change", (*) => this.Sync())
+        this.tick := this.Drag.Bind(this)
+        this.Sync()
+    }
+    Cur() {
+        v := Trim(this.edit.Value)
+        return v = "" ? this.lo : Integer(v)
+    }
+    Sync() {
+        this.Draw(this.Cur())
+    }
+    Draw(v) {
+        v := Max(this.lo, Min(this.hi, v))
+        px := Round((v - this.lo) / (this.hi - this.lo) * this.w)
+        this.fill.Move(, , Max(10, px))
+        this.knob.Move(this.x + Max(0, Min(this.w - 16, px - 8)))
+        try RoundCtrl(this.fill, 10)
+        this.fill.Redraw()
+        this.knob.Redraw()
+    }
+    Grab() {
+        SetTimer(this.tick, 15)
+        this.Drag()
+    }
+    Drag() {
+        global g
+        if !GetKeyState("LButton", "P") {
+            SetTimer(this.tick, 0)
+            return
+        }
+        pt := Buffer(8)
+        DllCall("GetCursorPos", "Ptr", pt)
+        DllCall("ScreenToClient", "Ptr", g.Hwnd, "Ptr", pt)
+        mx := NumGet(pt, 0, "Int") / (A_ScreenDPI / 96)
+        f := Max(0, Min(1, (mx - this.x) / this.w))
+        v := this.lo + Round(f * (this.hi - this.lo))
+        if (v != this.Cur())
+            this.edit.Value := v
+    }
+}
+
+SliderDown(wParam, lParam, msg, hwnd) {
+    global sliderHit
+    if sliderHit.Has(hwnd)
+        sliderHit[hwnd].Grab()
+}
+
 BtnColors(style, base) {
     global C_ACC, C_ACCH, C_BG, C_BTN, C_BTNH, C_TEXT, C_MUTED
     switch style {
@@ -5047,7 +5215,7 @@ AddNav(name, icon, y) {
 
 ShowPage(name, *) {
     global pages, pageInfo, navs, pageTitle, pageSub, C_NAVA, C_SIDE, C_NAVH, C_TEXT, C_MUTED, hoverCur
-    global GROUP_OF, segs, segLine, NAVK, appStarted, curPage
+    global GROUP_OF, segs, segLine, NAVK, appStarted, curPage, vsegs, C_BG
     grp := GROUP_OF.Has(name) ? GROUP_OF[name] : name
     first := (curPage = "")
     changed := (curPage != name)
@@ -5076,6 +5244,17 @@ ShowPage(name, *) {
         segLine.Visible := true
     } else
         segLine.Visible := false
+    for vgk, vlist in vsegs
+        for sg in vlist {
+            sg.ctrl.Visible := (vgk = grp)
+            if (vgk = grp) {
+                vact := (sg.sub = name)
+                sg.o.bg  := vact ? C_NAVA : C_BG
+                sg.o.hov := vact ? C_NAVA : C_NAVH
+                sg.ctrl.SetFont("c" (vact ? C_TEXT : C_MUTED))
+                AnimColor(sg.o, hoverCur = sg.o ? sg.o.hov : sg.o.bg, 150)
+            }
+        }
     for n, o in navs {
         act := (n = grp)
         o.bg  := act ? C_NAVA : C_SIDE

@@ -1,5 +1,11 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.2.0 (BETA)
+- **Visual novo** inspirado em executores: lista de seções ao lado e linhas com divisória em vez de caixas soltas.
+- A aba **Discord** virou **Webhook**, com tudo junto: Conexão, O que enviar, Painel ao vivo, Bot e comandos e Relatório.
+- Nova aba **QoL**: Moedas, Travamento e Histórico (só leitura da tela, nada de script).
+- **Barras deslizantes** nos campos de minutos (relatório, painel ao vivo e detecção de travamento).
+
 ## v1.0.7 (BETA)
 - A telinha de apoio agora aparece **antes do tutorial**. Na primeira vez, o tutorial começa assim que a pessoa fecha o apoio.
 
