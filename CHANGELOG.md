@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.13
+- Depois de atualizar, abre uma janelinha com as novidades da versão (dá pra desligar em Configurações, e tem o botão "Ver agora")
+- Aba HUD: nova opção para mostrar ou esconder o Rank da guilda (desligado também não gasta leitura de tela)
+
 ## v1.3.12
 - Rank da guilda só muda quando a mesma leitura se repete 2 vezes seguidas (menos erro de OCR)
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.12"
+VERSION     := "1.3.13"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -212,6 +212,8 @@ savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
 savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "1")
+savedWhatsNew := IniRead(iniFile, "cfg", "whatsNew", "1")
+savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
 savedStartWin := IniRead(iniFile, "cfg", "startWin", "0")
 savedAutoMon  := IniRead(iniFile, "cfg", "autoMon", "0")
@@ -684,6 +686,11 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Mostrar as novidades depois de atualizar",
+    "btn_wn_now", "Ver agora",
+    "wn_title", "Novidades da v{1}",
+    "wn_dont", "Não mostrar mais isso",
+    "wn_none", "Sem informações de novidades para esta versão.",
     "f_guild", "Rank da guilda",
     "sec_hud_show", "O QUE MOSTRAR NO PAINEL",
     "f_reading", "Lendo o modo…",
@@ -1206,6 +1213,11 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Show what's new after updating",
+    "btn_wn_now", "View now",
+    "wn_title", "What's new in v{1}",
+    "wn_dont", "Don't show this again",
+    "wn_none", "No release notes for this version.",
     "f_guild", "Guild rank",
     "sec_hud_show", "WHAT TO SHOW IN THE PANEL",
     "f_reading", "Reading the mode…",
@@ -1728,6 +1740,11 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Mostrar las novedades tras actualizar",
+    "btn_wn_now", "Ver ahora",
+    "wn_title", "Novedades de v{1}",
+    "wn_dont", "No mostrar más esto",
+    "wn_none", "Sin notas de versión para esta versión.",
     "f_guild", "Rango del gremio",
     "sec_hud_show", "QUÉ MOSTRAR EN EL PANEL",
     "f_reading", "Leyendo el modo…",
@@ -2250,6 +2267,11 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Afficher les nouveautés après la mise à jour",
+    "btn_wn_now", "Voir",
+    "wn_title", "Nouveautés de la v{1}",
+    "wn_dont", "Ne plus afficher",
+    "wn_none", "Pas de notes pour cette version.",
     "f_guild", "Rang de guilde",
     "sec_hud_show", "CE QUE LE PANNEAU AFFICHE",
     "f_reading", "Lecture du mode…",
@@ -2772,6 +2794,11 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Neuigkeiten nach dem Update anzeigen",
+    "btn_wn_now", "Jetzt ansehen",
+    "wn_title", "Neu in v{1}",
+    "wn_dont", "Nicht mehr anzeigen",
+    "wn_none", "Keine Hinweise zu dieser Version.",
     "f_guild", "Gilden-Rang",
     "sec_hud_show", "WAS DAS PANEL ZEIGT",
     "f_reading", "Modus wird gelesen…",
@@ -3294,6 +3321,11 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Показывать новости после обновления",
+    "btn_wn_now", "Показать",
+    "wn_title", "Что нового в v{1}",
+    "wn_dont", "Больше не показывать",
+    "wn_none", "Нет описания для этой версии.",
     "f_guild", "Ранг гильдии",
     "sec_hud_show", "ЧТО ПОКАЗЫВАТЬ В ПАНЕЛИ",
     "f_reading", "Чтение режима…",
@@ -3816,6 +3848,11 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Güncellemeden sonra yenilikleri göster",
+    "btn_wn_now", "Şimdi gör",
+    "wn_title", "v{1} yenilikleri",
+    "wn_dont", "Bunu bir daha gösterme",
+    "wn_none", "Bu sürüm için not yok.",
     "f_guild", "Lonca sırası",
     "sec_hud_show", "PANELDE NELER GÖSTERİLSİN",
     "f_reading", "Mod okunuyor…",
@@ -4338,6 +4375,11 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "sw_whatsnew", "Tampilkan yang baru setelah update",
+    "btn_wn_now", "Lihat",
+    "wn_title", "Yang baru di v{1}",
+    "wn_dont", "Jangan tampilkan lagi",
+    "wn_none", "Tidak ada catatan untuk versi ini.",
     "f_guild", "Peringkat guild",
     "sec_hud_show", "YANG DITAMPILKAN DI PANEL",
     "f_reading", "Membaca mode…",
@@ -4935,9 +4977,11 @@ changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E
     , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 
-y := 484
-Card(CX, y, CW, 70)
-chkFastUpd := ToggleSwitch(CX + 20, y + 22, CW - 40, TT("sw_fastupd"), savedFastUpd, TT("sw_fastupd_sub"))
+y := 480
+Card(CX, y, CW, 84)
+chkFastUpd := ToggleSwitch(CX + 20, y + 8, CW - 40, TT("sw_fastupd"), savedFastUpd, TT("sw_fastupd_sub"))
+chkWhatsNew := ToggleSwitch(CX + 20, y + 52, CW - 40 - 136, TT("sw_whatsnew"), savedWhatsNew)
+Btn(CX + CW - 20 - 120, y + 52, 120, 28, TT("btn_wn_now"), (*) => ShowWhatsNew(true))
 
 
 ; ---------------- Página: Apoie + Suporte ----------------
@@ -4980,26 +5024,27 @@ for i, th in THEMES
 ; ---------------- Página: HUD (sub-aba de Aparência) ----------------
 BeginPage("HUD", TT("nav_hud"), TT("pg_hud_sub"))
 y := 92
-Card(CX, y, CW, 206)
-Lbl(CX + 20, y + 14, 300, TT("sec_hud"), "s7 w700", C_DIM)
+Card(CX, y, CW, 192)
+Lbl(CX + 20, y + 12, 300, TT("sec_hud"), "s7 w700", C_DIM)
 hudBtns := []
 for hi, hk in ["hud_off", "hud_bar", "hud_overlay", "hud_side", "hud_panel"]
-    hudBtns.Push(Btn(CX + 20, y + 34 + (hi - 1) * 33, CW - 40, 29, TT(hk), SetHudMode.Bind(hi - 1), (hi - 1 = hudMode) ? "primary" : "sec"))
-y += 218
-Card(CX, y, CW, 140)
+    hudBtns.Push(Btn(CX + 20, y + 30 + (hi - 1) * 31, CW - 40, 27, TT(hk), SetHudMode.Bind(hi - 1), (hi - 1 = hudMode) ? "primary" : "sec"))
+y += 204
+Card(CX, y, CW, 128)
 chkFrame := ToggleSwitch(CX + 20, y + 14, CW - 40, TT("sw_frame"), savedFrame, TT("sw_frame_sub"))
 chkFrame.onChange := (*) => HudApply()
-chkHudComp := ToggleSwitch(CX + 20, y + 58, CW - 40, TT("sw_hudcompact"), savedHudComp)
-Lbl(CX + 20, y + 100, CW - 40, TT("hud_hint"), "s8", C_MUTED)
-y += 152
-Card(CX, y, CW, 92)
+chkHudComp := ToggleSwitch(CX + 20, y + 54, CW - 40, TT("sw_hudcompact"), savedHudComp)
+Lbl(CX + 20, y + 90, CW - 40, TT("hud_hint"), "s8", C_MUTED)
+y += 140
+Card(CX, y, CW, 122)
 Lbl(CX + 20, y + 12, 400, TT("sec_hud_show"), "s7 w700", C_DIM)
 hw2 := (CW - 40 - 16) // 2
 chkHudSt := ToggleSwitch(CX + 20, y + 30, hw2, TT("hud_box_status"), savedHudSt)
 chkHudMd := ToggleSwitch(CX + 20 + hw2 + 16, y + 30, hw2, TT("f_mode"), savedHudMd)
 chkHudCo := ToggleSwitch(CX + 20, y + 58, hw2, TT("nav_coins"), savedHudCo)
 chkHudLg := ToggleSwitch(CX + 20 + hw2 + 16, y + 58, hw2, TT("nav_logs"), savedHudLg)
-for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg]
+chkHudGd := ToggleSwitch(CX + 20, y + 86, hw2, TT("f_guild"), savedHudGd)
+for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd]
     ck.onChange := (*) => HudRelayout()
 
 ; ---------------- Página: Logs ----------------
@@ -5162,6 +5207,7 @@ StartApp() {
     SetTimer(UpdateStats, 1000)
     SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
+    SetTimer(WhatsNewCheck, -12000)
     SetTimer(FarmModeTick, 15000)
     SetTimer(() => FarmModeTick(), -6000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
@@ -7017,7 +7063,7 @@ ReadGuildRank(hw) {
 
 ; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
 FarmModeTick() {
-    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild
+    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd
     if !(hudMode = 4 || chkPanel.Value)
         return
     hw := FindGameWindow()
@@ -7108,7 +7154,7 @@ FarmModeTick() {
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
     ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
     static pendG := ""
-    gr := ReadGuildRank(hw)
+    gr := chkHudGd.Value ? ReadGuildRank(hw) : ""
     if (gr != "") {
         if (gr = farmGuild)
             pendG := ""
@@ -7183,7 +7229,7 @@ PanelUpdate(force := false) {
         fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
     if (farmMode != "" && farmPearls != "")
         fields.Push(["🦪 Pearls", "+" farmPearls, true])
-    if (farmGuild != "")
+    if (farmGuild != "" && chkHudGd.Value)
         fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
         fields.Push([TT("f_prevround"), "+" farmPrev, true])
@@ -7470,7 +7516,7 @@ HudPanelText() {
     if (farmMode != "") {
         SetIf(hudPnlW["mdN"], farmMode)
         HudCol("mdN", farmModeCol != "" ? farmModeCol : C_TEXT)
-        SetIf(hudPnlW["mdW"], (farmWave != "" ? "Wave " farmWave : "") (farmGuild != "" ? (farmWave != "" ? "   ·   " : "") "🛡 " TT("f_guild") " #" farmGuild : ""))
+        SetIf(hudPnlW["mdW"], (farmWave != "" ? "Wave " farmWave : "") (farmGuild != "" && chkHudGd.Value ? (farmWave != "" ? "   ·   " : "") "🛡 " TT("f_guild") " #" farmGuild : ""))
         SetIf(hudPnlW["mdP"], farmPearls != "" ? "🦪 +" farmPearls : "")
         HudCol("mdP", farmPearlCol != "" ? farmPearlCol : C_TEXT)
         SetIf(hudPnlW["mdA"], farmPrev != "" ? TT("f_prevround") ": +" farmPrev : "")
@@ -8378,6 +8424,8 @@ SaveConfig() {
     IniWrite(chkHudMd.Value, iniFile, "cfg", "hudShowMd")
     IniWrite(chkHudCo.Value, iniFile, "cfg", "hudShowCo")
     IniWrite(chkHudLg.Value, iniFile, "cfg", "hudShowLg")
+    IniWrite(chkHudGd.Value, iniFile, "cfg", "hudShowGd")
+    IniWrite(chkWhatsNew.Value, iniFile, "cfg", "whatsNew")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
 }
@@ -8831,6 +8879,62 @@ LoadChangelog(base) {
     t := RegExReplace(t, "m)^\s*[-*]\s+", "    • ")
     t := StrReplace(StrReplace(t, "`r`n", "`n"), "`n", "`r`n")
     changeBox.Value := Trim(SubStr(t, 1, 6000), "`r`n ")
+}
+
+; janela "O que veio na atualização": mostra o changelog da versão atual (dá pra desligar em Configurações)
+ShowWhatsNew(force := false) {
+    global VERSION, changelogTxt, chkWhatsNew, iniFile, APP_NAME, C_BG, C_CARD, C_TEXT, C_MUTED
+    static wn := 0
+    if IsObject(wn) {
+        try wn.Destroy()
+        wn := 0
+    }
+    txt := ""
+    Loop 2 {
+        if RegExMatch(changelogTxt, "s)##\s*v?\Q" VERSION "\E\s*\R(.*?)(?=\R##\s|$)", &m)
+            txt := Trim(m[1], "`r`n ")
+        if (txt != "")
+            break
+        try LoadChangelog(UpdBaseNow())
+    }
+    if (txt = "") {
+        if !force
+            return false
+        txt := TT("wn_none")
+    }
+    txt := RegExReplace(txt, "m)^\s*[-*]\s+", "• ")
+    txt := StrReplace(StrReplace(txt, "`r`n", "`n"), "`n", "`r`n")
+    wn := Gui("+AlwaysOnTop -MinimizeBox -MaximizeBox", APP_NAME)
+    wn.BackColor := C_BG
+    wn.MarginX := 20, wn.MarginY := 16
+    FontUI(wn, "s13 w700")
+    wn.Add("Text", "x20 y16 w420 c" C_TEXT, TT("wn_title", VERSION))
+    FontUI(wn, "s10")
+    ed := wn.Add("Edit", "x20 y54 w420 h200 ReadOnly -E0x200 +Multi +VScroll c" C_TEXT " Background" C_CARD, txt)
+    DllCall("uxtheme\SetWindowTheme", "Ptr", ed.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
+    chk := wn.Add("CheckBox", "x20 y268 w290 c" C_MUTED, TT("wn_dont"))
+    chk.Value := chkWhatsNew.Value ? 0 : 1
+    chk.OnEvent("Click", (*) => (chkWhatsNew.Value := !chk.Value, IniWrite(chkWhatsNew.Value, iniFile, "cfg", "whatsNew")))
+    ok := wn.Add("Button", "x340 y262 w100 h32 Default", "OK")
+    ok.OnEvent("Click", (*) => wn.Hide())
+    wn.OnEvent("Close", (*) => wn.Hide())
+    try DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", wn.Hwnd, "Int", 20, "Int*", 1, "Int", 4)
+    wn.Show("w460 h312")
+    return true
+}
+
+; depois de uma atualização: mostra as novidades uma vez (se estiver ligado)
+WhatsNewCheck() {
+    global VERSION, iniFile, chkWhatsNew
+    last := IniRead(iniFile, "cfg", "lastVer", "")
+    if (last = VERSION)
+        return
+    if (last = "" || !chkWhatsNew.Value) {
+        IniWrite(VERSION, iniFile, "cfg", "lastVer")
+        return
+    }
+    if ShowWhatsNew()
+        IniWrite(VERSION, iniFile, "cfg", "lastVer")
 }
 
 ; novidades de uma versão específica (pro aviso no Discord)
