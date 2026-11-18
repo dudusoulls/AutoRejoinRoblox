@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.7
+- O tempo AFK agora é salvo: fechar o programa ou parar o monitoramento não zera; só zera quando detecta que o Roblox caiu
+
 ## v1.3.6
 - Removida a linha colorida do topo do painel lateral (a cor de status fica só na moldura do Roblox)
 

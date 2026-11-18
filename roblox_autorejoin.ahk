@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.6"
+VERSION     := "1.3.7"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -242,6 +242,7 @@ savedPanel    := IniRead(iniFile, "cfg", "panel", "1")
 savedPanelMin := IniRead(iniFile, "cfg", "panelMin", "2")
 panelMsg      := IniRead(iniFile, "cfg", "panelMsg", "")
 panelVia      := IniRead(iniFile, "cfg", "panelVia", "bot")
+afkAccum      := Integer(IniRead(iniFile, "afk", "ms", "0"))   ; tempo AFK guardado (só zera quando cai)
 savedStuck    := IniRead(iniFile, "cfg", "stuck", "1")
 savedStuckMin := IniRead(iniFile, "cfg", "stuckMin", "15")
 stuckAct      := Integer(IniRead(iniFile, "cfg", "stuckAct", "0"))
@@ -6528,7 +6529,7 @@ BotCommand(cmd, ch, mid, tok) {
 SessionFields() {
     global running, monStart, launches, discCount, lastDiscUnix, edLink
     lk := Trim(edLink.Value)
-    return [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
+    return [[TT("f_session"), AfkStr(), true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
         , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]
         , [TT("f_link"), lk = "" ? "—" : "``" SubStr(lk, 1, 60) (StrLen(lk) > 60 ? "…" : "") "``", false]]
@@ -7102,7 +7103,7 @@ PanelUpdate(force := false) {
         fields.Push(["🦪 Pearls", "+" farmPearls, true])
     if (farmPrev != "")
         fields.Push([TT("f_prevround"), "+" farmPrev, true])
-    for f in [[TT("f_session"), running ? DurStr(A_TickCount - monStart) : TT("up_stopped"), true]
+    for f in [[TT("f_session"), AfkStr(), true]
         , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
         , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
         , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
@@ -7355,7 +7356,7 @@ HudPanelText() {
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
     HudCol("dot", curStateCol)
     SetIf(hudPnlW["stT"], dashTitle.Value)
-    SetIf(hudPnlW["stS"], "⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped")) "    🔁 " launches "    📉 " discCount)
+    SetIf(hudPnlW["stS"], "⏱ " (AfkStr()) "    🔁 " launches "    📉 " discCount)
     if (farmMode != "") {
         SetIf(hudPnlW["mdN"], farmMode)
         HudCol("mdN", farmModeCol != "" ? farmModeCol : C_TEXT)
@@ -7474,7 +7475,7 @@ HudTick(force := false) {
         } else if (hudMode = 3) {
             hudSideDot.SetFont("c" col)
             SetIf(hudSideT, dashTitle.Value)
-            ln := "⏱ " (running ? DurStr(A_TickCount - monStart) : TT("up_stopped"))
+            ln := "⏱ " (AfkStr())
             ln .= "`n🔁 " TT("f_reopens") ": " launches "    📉 " TT("f_drops") ": " discCount
             ln .= "`n🟢 " TT("f_online_today") ": " DurStr(dayOnline * 1000)
             for c in CurrencySpec()
@@ -8148,7 +8149,10 @@ SetState(state, title, sub) {
 
 UpdateStats() {
     global stVals, mSub, running, monStart, launches, discCount, lastDiscShort, dayOnline, iniFile
-    SetIf(stVals[1], running ? DurStr(A_TickCount - monStart) : "—")
+    SetIf(stVals[1], AfkStr("—"))
+    static sv := 0
+    if (running && Mod(++sv, 30) = 0)
+        AfkSave()
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
@@ -8187,6 +8191,7 @@ SetCompact(on) {
 }
 
 OnQuit(*) {
+    try AfkSave()
     try SaveConfig()
     try FileDelete(A_Temp "\roblox_status.png")
 }
@@ -8275,8 +8280,30 @@ DurStr(ms) {
     return (secs // 60) "m " Mod(secs, 60) "s"
 }
 
+; tempo AFK: soma o que já foi guardado + a sessão atual; só zera quando detecta queda
+AfkMs() {
+    global afkAccum, running, monStart
+    return afkAccum + (running ? A_TickCount - monStart : 0)
+}
+
+AfkStr(dflt := "") {
+    global afkAccum, running
+    if running
+        return DurStr(AfkMs())
+    if (afkAccum > 0)
+        return DurStr(afkAccum) " ⏸"
+    return dflt != "" ? dflt : TT("up_stopped")
+}
+
+AfkSave() {
+    global iniFile
+    IniWrite(AfkMs(), iniFile, "afk", "ms")
+}
+
 MarkDisconnect() {
-    global discCount, lastDisc, lastDiscShort, lastDiscUnix
+    global discCount, lastDisc, lastDiscShort, lastDiscUnix, afkAccum, monStart
+    afkAccum := 0, monStart := A_TickCount
+    IniWrite(0, iniFile, "afk", "ms")
     lastDiscUnix := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     discCount++
     DayAdd("drops")
@@ -9133,7 +9160,7 @@ SendStatusReport(manual := false) {
     else
         title := "🟢  " TT("emb_online"), color := 0x3DDC84
 
-    up := running ? DurStr(A_TickCount - monStart) : TT("up_stopped")
+    up := AfkStr()
     queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : TT("none")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     foot := USER_NAME "  •  " A_ComputerName (running && chkRep.Value ? "  •  " TT("next_status", Integer(edRepMin.Value || 60)) : "")
@@ -10109,7 +10136,7 @@ Check() {
 }
 
 Toggle(*) {
-    global running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed, chkMulti, ACCS, multiActive
+    global afkAccum, running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed, chkMulti, ACCS, multiActive
     if (!running && KaEnabled() && !licensed) {
         ShowKeyScreen(TT("activate_to_use"))
         return
@@ -10162,6 +10189,8 @@ Toggle(*) {
         }
         ApplyReportTimer()
     } else {
+        afkAccum += A_TickCount - monStart
+        AfkSave()
         running := false
         SetTimer(Check, 0)
         if multiActive {
