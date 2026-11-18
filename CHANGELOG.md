@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.1
+- O programa agora sempre abre no modo completo (nunca no compacto)
+
 ## v1.3.0
 - Barras deslizantes corrigidas: agora é só clicar e arrastar
 - Animação de entrada ao abrir o programa
