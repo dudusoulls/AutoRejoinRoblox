@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.3.14
+- Nova aba Aparência > Leitura: você escolhe onde o programa lê na tela, igual ao recorte de tela do Windows (desenha a área, move e puxa as bordas)
+- Áreas separadas para Modo/Wave/Pearls e para o Rank da guilda, com botão Padrão e botão Testar leitura
+
 ## v1.3.13
 - Depois de atualizar, abre uma janelinha com as novidades da versão (dá pra desligar em Configurações, e tem o botão "Ver agora")
 - Aba HUD: nova opção para mostrar ou esconder o Rank da guilda (desligado também não gasta leitura de tela)

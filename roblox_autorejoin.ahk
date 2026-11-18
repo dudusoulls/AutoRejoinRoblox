@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.13"
+VERSION     := "1.3.14"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -156,6 +156,8 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
+areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+areaDef := Map("mode", [0.08, 0.01, 0.72, 0.22], "guild", [0.38, 0.25, 0.24, 0.17])
 tourIdx := 0
 tourWins := []
 tourPos := ""
@@ -686,6 +688,22 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "nav_readarea", "Leitura",
+    "pg_readarea_sub", "Escolha onde o programa lê as informações na tela",
+    "sec_readarea", "ÁREAS DE LEITURA",
+    "area_help", "Clique em Ajustar: arraste na tela para desenhar a área (do canto de lá pro de cá), arraste dentro dela para mover e puxe as bordas ou cantos para redimensionar. Enter salva, Esc cancela. Quanto menor e mais justa a área, menos erro.",
+    "area_mode", "Modo, Wave e Pearls",
+    "btn_area_adj", "Ajustar área",
+    "btn_area_def", "Padrão",
+    "btn_area_test", "Testar leitura agora",
+    "area_need_roblox", "Abra o Roblox primeiro.",
+    "area_testing", "Lendo…",
+    "area_reset_ok", "Área voltou ao padrão.",
+    "area_tb_title", "Ajustando: {1}",
+    "area_tb_hint", "Desenhe, mova ou puxe as bordas · Enter salva · Esc cancela",
+    "area_save", "Salvar",
+    "area_cancel", "Cancelar",
+    "area_saw", "Leu:",
     "sw_whatsnew", "Mostrar as novidades depois de atualizar",
     "btn_wn_now", "Ver agora",
     "wn_title", "Novidades da v{1}",
@@ -1213,6 +1231,22 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "nav_readarea", "Reading",
+    "pg_readarea_sub", "Choose where the app reads info on screen",
+    "sec_readarea", "READING AREAS",
+    "area_help", "Click Adjust: drag on screen to draw the area, drag inside it to move it and pull the edges or corners to resize. Enter saves, Esc cancels. The smaller and tighter the area, the fewer errors.",
+    "area_mode", "Mode, Wave and Pearls",
+    "btn_area_adj", "Adjust area",
+    "btn_area_def", "Default",
+    "btn_area_test", "Test reading now",
+    "area_need_roblox", "Open Roblox first.",
+    "area_testing", "Reading…",
+    "area_reset_ok", "Area reset to default.",
+    "area_tb_title", "Adjusting: {1}",
+    "area_tb_hint", "Draw, move or pull edges · Enter saves · Esc cancels",
+    "area_save", "Save",
+    "area_cancel", "Cancel",
+    "area_saw", "Saw:",
     "sw_whatsnew", "Show what's new after updating",
     "btn_wn_now", "View now",
     "wn_title", "What's new in v{1}",
@@ -1740,6 +1774,22 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "nav_readarea", "Lectura",
+    "pg_readarea_sub", "Elige dónde lee la app la información en pantalla",
+    "sec_readarea", "ÁREAS DE LECTURA",
+    "area_help", "Pulsa Ajustar: arrastra en pantalla para dibujar el área, arrastra dentro para moverla y tira de los bordes o esquinas para cambiar el tamaño. Enter guarda, Esc cancela. Cuanto más pequeña y ajustada, menos errores.",
+    "area_mode", "Modo, Wave y Pearls",
+    "btn_area_adj", "Ajustar área",
+    "btn_area_def", "Predeterm.",
+    "btn_area_test", "Probar lectura ahora",
+    "area_need_roblox", "Abre Roblox primero.",
+    "area_testing", "Leyendo…",
+    "area_reset_ok", "Área restablecida.",
+    "area_tb_title", "Ajustando: {1}",
+    "area_tb_hint", "Dibuja, mueve o tira de los bordes · Enter guarda · Esc cancela",
+    "area_save", "Guardar",
+    "area_cancel", "Cancelar",
+    "area_saw", "Leyó:",
     "sw_whatsnew", "Mostrar las novedades tras actualizar",
     "btn_wn_now", "Ver ahora",
     "wn_title", "Novedades de v{1}",
@@ -2267,6 +2317,22 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "nav_readarea", "Lecture",
+    "pg_readarea_sub", "Choisis où l'appli lit les infos à l'écran",
+    "sec_readarea", "ZONES DE LECTURE",
+    "area_help", "Clique sur Ajuster : glisse à l'écran pour tracer la zone, glisse dedans pour la déplacer et tire sur les bords ou coins pour la redimensionner. Entrée enregistre, Échap annule. Plus la zone est petite et précise, moins d'erreurs.",
+    "area_mode", "Mode, Wave et Pearls",
+    "btn_area_adj", "Ajuster",
+    "btn_area_def", "Défaut",
+    "btn_area_test", "Tester la lecture",
+    "area_need_roblox", "Ouvre Roblox d'abord.",
+    "area_testing", "Lecture…",
+    "area_reset_ok", "Zone réinitialisée.",
+    "area_tb_title", "Réglage : {1}",
+    "area_tb_hint", "Trace, déplace ou tire les bords · Entrée enregistre · Échap annule",
+    "area_save", "Enregistrer",
+    "area_cancel", "Annuler",
+    "area_saw", "Lu :",
     "sw_whatsnew", "Afficher les nouveautés après la mise à jour",
     "btn_wn_now", "Voir",
     "wn_title", "Nouveautés de la v{1}",
@@ -2794,6 +2860,22 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "nav_readarea", "Lesen",
+    "pg_readarea_sub", "Wähle, wo die App Infos vom Bildschirm liest",
+    "sec_readarea", "LESEBEREICHE",
+    "area_help", "Auf Anpassen klicken: Bereich auf dem Bildschirm aufziehen, darin ziehen zum Verschieben, an Rändern oder Ecken ziehen zum Ändern der Größe. Enter speichert, Esc bricht ab. Je kleiner und enger der Bereich, desto weniger Fehler.",
+    "area_mode", "Modus, Wave und Pearls",
+    "btn_area_adj", "Anpassen",
+    "btn_area_def", "Standard",
+    "btn_area_test", "Lesen jetzt testen",
+    "area_need_roblox", "Öffne zuerst Roblox.",
+    "area_testing", "Lese…",
+    "area_reset_ok", "Bereich zurückgesetzt.",
+    "area_tb_title", "Anpassen: {1}",
+    "area_tb_hint", "Ziehen, verschieben, Ränder ziehen · Enter speichert · Esc bricht ab",
+    "area_save", "Speichern",
+    "area_cancel", "Abbrechen",
+    "area_saw", "Gelesen:",
     "sw_whatsnew", "Neuigkeiten nach dem Update anzeigen",
     "btn_wn_now", "Jetzt ansehen",
     "wn_title", "Neu in v{1}",
@@ -3321,6 +3403,22 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "nav_readarea", "Чтение",
+    "pg_readarea_sub", "Выберите, где программа считывает данные с экрана",
+    "sec_readarea", "ОБЛАСТИ ЧТЕНИЯ",
+    "area_help", "Нажмите «Настроить»: протяните область на экране, перетаскивайте внутри для перемещения, тяните края или углы для изменения размера. Enter сохраняет, Esc отменяет. Чем меньше и точнее область, тем меньше ошибок.",
+    "area_mode", "Режим, Wave и Pearls",
+    "btn_area_adj", "Настроить",
+    "btn_area_def", "По умолч.",
+    "btn_area_test", "Проверить чтение",
+    "area_need_roblox", "Сначала откройте Roblox.",
+    "area_testing", "Чтение…",
+    "area_reset_ok", "Область сброшена.",
+    "area_tb_title", "Настройка: {1}",
+    "area_tb_hint", "Рисуйте, двигайте, тяните края · Enter — сохранить · Esc — отмена",
+    "area_save", "Сохранить",
+    "area_cancel", "Отмена",
+    "area_saw", "Прочитано:",
     "sw_whatsnew", "Показывать новости после обновления",
     "btn_wn_now", "Показать",
     "wn_title", "Что нового в v{1}",
@@ -3848,6 +3946,22 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "nav_readarea", "Okuma",
+    "pg_readarea_sub", "Uygulamanın ekranda nereyi okuyacağını seç",
+    "sec_readarea", "OKUMA ALANLARI",
+    "area_help", "Ayarla'ya tıkla: alanı ekranda sürükleyerek çiz, içinden sürükleyip taşı, kenar veya köşelerden çekip boyutlandır. Enter kaydeder, Esc iptal eder. Alan ne kadar küçük ve dar olursa hata o kadar azalır.",
+    "area_mode", "Mod, Wave ve Pearls",
+    "btn_area_adj", "Ayarla",
+    "btn_area_def", "Varsayılan",
+    "btn_area_test", "Okumayı test et",
+    "area_need_roblox", "Önce Roblox'u aç.",
+    "area_testing", "Okunuyor…",
+    "area_reset_ok", "Alan sıfırlandı.",
+    "area_tb_title", "Ayarlanıyor: {1}",
+    "area_tb_hint", "Çiz, taşı veya kenarları çek · Enter kaydeder · Esc iptal",
+    "area_save", "Kaydet",
+    "area_cancel", "İptal",
+    "area_saw", "Okunan:",
     "sw_whatsnew", "Güncellemeden sonra yenilikleri göster",
     "btn_wn_now", "Şimdi gör",
     "wn_title", "v{1} yenilikleri",
@@ -4375,6 +4489,22 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "nav_readarea", "Baca",
+    "pg_readarea_sub", "Pilih di mana app membaca info di layar",
+    "sec_readarea", "AREA BACA",
+    "area_help", "Klik Atur: seret di layar untuk menggambar area, seret di dalamnya untuk memindah dan tarik tepi atau sudut untuk ubah ukuran. Enter simpan, Esc batal. Makin kecil dan pas areanya, makin sedikit salah.",
+    "area_mode", "Mode, Wave dan Pearls",
+    "btn_area_adj", "Atur",
+    "btn_area_def", "Default",
+    "btn_area_test", "Tes baca sekarang",
+    "area_need_roblox", "Buka Roblox dulu.",
+    "area_testing", "Membaca…",
+    "area_reset_ok", "Area direset.",
+    "area_tb_title", "Mengatur: {1}",
+    "area_tb_hint", "Gambar, geser atau tarik tepi · Enter simpan · Esc batal",
+    "area_save", "Simpan",
+    "area_cancel", "Batal",
+    "area_saw", "Terbaca:",
     "sw_whatsnew", "Tampilkan yang baru setelah update",
     "btn_wn_now", "Lihat",
     "wn_title", "Yang baru di v{1}",
@@ -4487,7 +4617,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -4617,7 +4747,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
-    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD"]
+    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD", "Leitura"]
     , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
@@ -5047,6 +5177,22 @@ chkHudGd := ToggleSwitch(CX + 20, y + 86, hw2, TT("f_guild"), savedHudGd)
 for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd]
     ck.onChange := (*) => HudRelayout()
 
+; ---------------- Página: Leitura (onde o programa lê na tela) ----------------
+BeginPage("Leitura", TT("nav_readarea"), TT("pg_readarea_sub"))
+y := 92
+Card(CX, y, CW, 330)
+Lbl(CX + 20, y + 16, 400, TT("sec_readarea"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 38, CW - 40, TT("area_help"), "s9", C_MUTED)
+Lbl(CX + 20, y + 112, CW - 250, TT("area_mode"), "s10")
+Btn(CX + CW - 20 - 220, y + 106, 120, 32, TT("btn_area_adj"), (*) => AreaEdit("mode"))
+Btn(CX + CW - 20 - 90, y + 106, 90, 32, TT("btn_area_def"), (*) => AreaReset("mode"))
+Lbl(CX + 20, y + 158, CW - 250, TT("f_guild"), "s10")
+Btn(CX + CW - 20 - 220, y + 152, 120, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
+Btn(CX + CW - 20 - 90, y + 152, 90, 32, TT("btn_area_def"), (*) => AreaReset("guild"))
+Divider(CX + 20, y + 204, CW - 40)
+Btn(CX + 20, y + 218, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
+areaRes := Lbl(CX + 20, y + 262, CW - 40, "", "s9", C_MUTED)
+
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
 y := 92
@@ -5165,6 +5311,10 @@ LoadAccounts()
 DayRoll()
 HotIf((*) => tourOn)
 Hotkey("Esc", (*) => EndTour())
+HotIf()
+HotIf((*) => areaOn)
+Hotkey("Enter", (*) => AreaSave())
+Hotkey("Escape", (*) => AreaClose())
 HotIf()
 ; atalhos globais
 try Hotkey("^!h", HudToggleUser)
@@ -7029,13 +7179,211 @@ LineRect(line) {
     return [x1, y1, x2 - x1, y2 - y1]
 }
 
+; ---------- áreas de leitura (ajustáveis pelo usuário, guardadas em proporção da janela do Roblox) ----------
+AreaGet(name) {
+    global areaDef, iniFile
+    d := areaDef[name], r := []
+    for i, k in ["x", "y", "w", "h"] {
+        v := IniRead(iniFile, "area", name "_" k, "")
+        r.Push(v != "" && IsNumber(v) ? Float(v) : d[i])
+    }
+    return r
+}
+
+AreaReset(name) {
+    global iniFile, areaRes
+    for k in ["x", "y", "w", "h"]
+        IniDelete(iniFile, "area", name "_" k)
+    if IsObject(areaRes)
+        areaRes.Value := TT("area_reset_ok")
+}
+
+AreaDraw(u) {
+    k := A_ScreenDPI / 96
+    u.fill.Move(u.x, u.y, u.w, u.h)
+    u.frm.Move(u.x, u.y, u.w, u.h)
+    t := Max(2, Round(2 * k))
+    outer := DllCall("CreateRectRgn", "Int", 0, "Int", 0, "Int", u.w, "Int", u.h, "Ptr")
+    inner := DllCall("CreateRectRgn", "Int", t, "Int", t, "Int", Max(t + 1, u.w - t), "Int", Max(t + 1, u.h - t), "Ptr")
+    DllCall("CombineRgn", "Ptr", outer, "Ptr", outer, "Ptr", inner, "Int", 4)
+    DllCall("DeleteObject", "Ptr", inner)
+    DllCall("SetWindowRgn", "Ptr", u.frm.Hwnd, "Ptr", outer, "Int", 1)
+}
+
+; abre o "recortar tela": arraste pra desenhar, arraste dentro pra mover, puxe bordas/cantos pra ajustar (Enter salva, Esc cancela)
+AreaEdit(name) {
+    global areaOn, areaUi, C_BG, C_TEXT, C_MUTED, areaRes
+    if areaOn
+        return
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
+        if IsObject(areaRes)
+            areaRes.Value := TT("area_need_roblox")
+        return
+    }
+    WinGetClientPos(&cx, &cy, &cw, &ch, hw)
+    k := A_ScreenDPI / 96
+    ar := AreaGet(name)
+    u := {name: name, cx: cx, cy: cy, cw: cw, ch: ch, mode: "", was: false, ax: 0, ay: 0, ox: 0, oy: 0, fl: [0, 0]}
+    u.x := cx + Round(ar[1] * cw), u.y := cy + Round(ar[2] * ch)
+    u.w := Max(Round(20 * k), Round(ar[3] * cw)), u.h := Max(Round(16 * k), Round(ar[4] * ch))
+    u.ov := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale")
+    u.ov.BackColor := "000000"
+    u.ov.Show(Format("NA x{} y{} w{} h{}", cx, cy, cw, ch))
+    WinSetTransparent(120, u.ov.Hwnd)
+    u.fill := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20")
+    u.fill.BackColor := "5B8CFF"
+    u.fill.Show(Format("NA x{} y{} w{} h{}", u.x, u.y, u.w, u.h))
+    WinSetTransparent(90, u.fill.Hwnd)
+    u.frm := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +E0x20")
+    u.frm.BackColor := "FFFFFF"
+    u.frm.Show(Format("NA x{} y{} w{} h{}", u.x, u.y, u.w, u.h))
+    u.tb := Gui("-Caption +AlwaysOnTop +ToolWindow -DPIScale +Border")
+    u.tb.BackColor := C_BG
+    u.tb.MarginX := 0, u.tb.MarginY := 0
+    FontUI(u.tb, "s10 w700")
+    tbw := Round(520 * k)
+    u.tb.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(8 * k), tbw - Round(24 * k), Round(22 * k), C_TEXT, C_BG)
+        , TT("area_tb_title", TT(name = "mode" ? "area_mode" : "f_guild")))
+    FontUI(u.tb, "s8")
+    u.tb.Add("Text", Format("x{} y{} w{} h{} c{} Background{}", Round(12 * k), Round(30 * k), tbw - Round(24 * k), Round(18 * k), C_MUTED, C_BG), TT("area_tb_hint"))
+    FontUI(u.tb, "s9")
+    b1 := u.tb.Add("Button", Format("x{} y{} w{} h{} Default", tbw - Round(300 * k), Round(54 * k), Round(90 * k), Round(30 * k)), TT("area_save"))
+    b2 := u.tb.Add("Button", Format("x{} y{} w{} h{}", tbw - Round(204 * k), Round(54 * k), Round(90 * k), Round(30 * k)), TT("btn_area_def"))
+    b3 := u.tb.Add("Button", Format("x{} y{} w{} h{}", tbw - Round(108 * k), Round(54 * k), Round(96 * k), Round(30 * k)), TT("area_cancel"))
+    b1.OnEvent("Click", (*) => AreaSave())
+    b2.OnEvent("Click", (*) => AreaDefaults())
+    b3.OnEvent("Click", (*) => AreaClose())
+    u.tb.Show(Format("NA x{} y{} w{} h{}", cx + (cw - tbw) // 2, cy + Round(10 * k), tbw, Round(94 * k)))
+    areaUi := u, areaOn := true
+    AreaDraw(u)
+    SetTimer(AreaPoll, 15)
+}
+
+AreaDefaults() {
+    global areaUi, areaDef
+    u := areaUi
+    d := areaDef[u.name]
+    u.x := u.cx + Round(d[1] * u.cw), u.y := u.cy + Round(d[2] * u.ch)
+    u.w := Round(d[3] * u.cw), u.h := Round(d[4] * u.ch)
+    AreaDraw(u)
+}
+
+AreaPoll() {
+    global areaOn, areaUi
+    if (!areaOn || !IsObject(areaUi)) {
+        SetTimer(AreaPoll, 0)
+        return
+    }
+    u := areaUi
+    pt := Buffer(8, 0)
+    DllCall("GetCursorPos", "Ptr", pt)
+    mx := NumGet(pt, 0, "Int"), my := NumGet(pt, 4, "Int")
+    down := GetKeyState("LButton", "P")
+    k := A_ScreenDPI / 96, hm := Round(9 * k), minW := Round(16 * k)
+    mxc := Max(u.cx, Min(u.cx + u.cw, mx)), myc := Max(u.cy, Min(u.cy + u.ch, my))
+    if (down && !u.was) {
+        u.mode := ""
+        WinGetPos(&tx, &ty, &tw, &th, u.tb.Hwnd)
+        inTb := (mx >= tx && mx <= tx + tw && my >= ty && my <= ty + th)
+        inOv := (mx >= u.cx && mx <= u.cx + u.cw && my >= u.cy && my <= u.cy + u.ch)
+        if (!inTb && inOv) {
+            x1 := u.x, y1 := u.y, x2 := u.x + u.w, y2 := u.y + u.h
+            nL := Abs(mx - x1) <= hm, nR := Abs(mx - x2) <= hm, nT := Abs(my - y1) <= hm, nB := Abs(my - y2) <= hm
+            inX := (mx >= x1 - hm && mx <= x2 + hm), inY := (my >= y1 - hm && my <= y2 + hm)
+            if (inX && inY && (nL || nR || nT || nB)) {
+                u.mode := "resize"
+                u.fl := [nL ? 1 : (nR ? 2 : 0), nT ? 1 : (nB ? 2 : 0)]
+            } else if (mx > x1 && mx < x2 && my > y1 && my < y2) {
+                u.mode := "move", u.ox := mx - u.x, u.oy := my - u.y
+            } else
+                u.mode := "new", u.ax := mxc, u.ay := myc
+        }
+    }
+    if (down && u.mode != "") {
+        if (u.mode = "move") {
+            u.x := Max(u.cx, Min(u.cx + u.cw - u.w, mx - u.ox))
+            u.y := Max(u.cy, Min(u.cy + u.ch - u.h, my - u.oy))
+        } else if (u.mode = "new") {
+            u.x := Min(u.ax, mxc), u.y := Min(u.ay, myc)
+            u.w := Max(minW, Abs(mxc - u.ax)), u.h := Max(minW, Abs(myc - u.ay))
+            u.w := Min(u.w, u.cx + u.cw - u.x), u.h := Min(u.h, u.cy + u.ch - u.y)
+        } else {
+            x1 := u.x, y1 := u.y, x2 := u.x + u.w, y2 := u.y + u.h
+            if (u.fl[1] = 1)
+                x1 := Min(mxc, x2 - minW)
+            else if (u.fl[1] = 2)
+                x2 := Max(mxc, x1 + minW)
+            if (u.fl[2] = 1)
+                y1 := Min(myc, y2 - minW)
+            else if (u.fl[2] = 2)
+                y2 := Max(myc, y1 + minW)
+            u.x := x1, u.y := y1, u.w := x2 - x1, u.h := y2 - y1
+        }
+        AreaDraw(u)
+    }
+    if !down
+        u.mode := ""
+    u.was := down
+}
+
+AreaClose() {
+    global areaOn, areaUi
+    SetTimer(AreaPoll, 0)
+    areaOn := false
+    if IsObject(areaUi) {
+        for w in [areaUi.ov, areaUi.fill, areaUi.frm, areaUi.tb]
+            try w.Destroy()
+    }
+    areaUi := 0
+}
+
+AreaSave() {
+    global areaOn, areaUi, iniFile
+    if (!areaOn || !IsObject(areaUi))
+        return
+    u := areaUi
+    r := [(u.x - u.cx) / u.cw, (u.y - u.cy) / u.ch, u.w / u.cw, u.h / u.ch]
+    for i, key in ["x", "y", "w", "h"]
+        IniWrite(Round(Max(0, Min(1, r[i])), 4), iniFile, "area", u.name "_" key)
+    AreaClose()
+    SetTimer(AreaTest, -300)
+}
+
+; lê agora e mostra o resultado na própria aba
+AreaTest() {
+    global areaRes, farmLast, farmDbgT, chkHudGd
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
+        if IsObject(areaRes)
+            areaRes.Value := TT("area_need_roblox")
+        return
+    }
+    if IsObject(areaRes)
+        areaRes.Value := TT("area_testing")
+    farmDbgT := 0
+    farmLast := 0
+    FarmModeTick(true)
+    gr := ReadGuildRank(hw)
+    lr := IsObject(farmLast) ? farmLast : {mode: "", wave: "", pearls: "", seen: ""}
+    ok := (v) => v != "" ? "✔ " : "✖ "
+    msg := ok(lr.mode) TT("f_mode") ": " (lr.mode != "" ? lr.mode : "—") "`n"
+        . ok(lr.wave) "Wave: " (lr.wave != "" ? lr.wave : "—") "     " ok(lr.pearls) "Pearls: " (lr.pearls != "" ? "+" lr.pearls : "—")
+        . "     " ok(gr) TT("f_guild") ": " (gr != "" ? "#" gr : "—")
+    if (lr.mode = "" && lr.wave = "" && lr.seen != "")
+        msg .= "`n" TT("area_saw") " [" lr.seen "]"
+    if IsObject(areaRes)
+        areaRes.Value := msg
+}
+
 ; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
 ReadGuildRank(hw) {
-    global farmBest
+    global farmBest, farmGdbgT
     static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ox := Round(cw * 0.38), oy := Round(chh * 0.25), ow := Round(cw * 0.24), oh := Round(chh * 0.17)
+        ar := AreaGet("guild")
+        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         seen := ""
@@ -7052,9 +7400,8 @@ ReadGuildRank(hw) {
             if RegExMatch(seen, "#\s*(\d{1,6})", &m)
                 return m[1]
         }
-        static lastDbg := 0
-        if (A_TickCount - lastDbg > 120000) {
-            lastDbg := A_TickCount
+        if (A_TickCount - farmGdbgT > 120000) {
+            farmGdbgT := A_TickCount
             Log("Guilda · não achei o #rank. Leu: [" seen "]")
         }
     }
@@ -7062,10 +7409,11 @@ ReadGuildRank(hw) {
 }
 
 ; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
-FarmModeTick() {
-    global farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd
-    if !(hudMode = 4 || chkPanel.Value)
+FarmModeTick(test := false) {
+    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd
+    if (!test && !(hudMode = 4 || chkPanel.Value))
         return
+    farmLast := {mode: "", wave: "", pearls: "", seen: ""}
     hw := FindGameWindow()
     if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
         farmMode := "", farmWave := ""
@@ -7075,7 +7423,8 @@ FarmModeTick() {
     mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := "", err := ""
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ox := Round(cw * 0.08), oy := Round(chh * 0.01), ow := Round(cw * 0.72), oh := Round(chh * 0.22)
+        ar := AreaGet("mode")
+        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(3, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         Loop variants.Length {
@@ -7124,6 +7473,7 @@ FarmModeTick() {
         FarmDbg("erro na leitura: " e.Message)
         return
     }
+    farmLast := {mode: mode, wave: wave, pearls: pearls, seen: seen}
     if (mode = "" && wave = "") {
         FarmDbg("OCR não achou o modo. Leu: [" seen "]" (err != "" ? " erro: " err : ""))
         if (++farmMiss >= 3)
