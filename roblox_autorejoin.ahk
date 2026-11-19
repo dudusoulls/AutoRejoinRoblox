@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.8"
+VERSION     := "1.4.9"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7964,6 +7964,25 @@ GuildReadRun() {
         guildSub.Value := TT("guild_last", guildWhen != "" ? guildWhen : "—")
 }
 
+; área em pixels, com tamanho mínimo (o OCR do Windows erra em texto muito baixo/estreito): cresce pros dois lados
+AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh) {
+    ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Round(cw * ar[3]), oh := Round(chh * ar[4])
+    minW := 64, minH := 24
+    if (ow < minW)
+        ox -= (minW - ow) // 2, ow := minW
+    if (oh < minH)
+        oy -= (minH - oh) // 2, oh := minH
+    ox := Max(0, ox), oy := Max(0, oy)
+    ow := Max(24, Min(ow, cw - ox)), oh := Max(16, Min(oh, chh - oy))
+}
+
+; corrige letras que o OCR confunde com dígitos (só usado onde se espera número)
+FixDigits(t) {
+    for pr in [["O", "0"], ["o", "0"], ["I", "1"], ["l", "1"], ["|", "1"], ["S", "5"], ["s", "5"], ["B", "8"], ["Z", "2"], ["z", "2"], ["g", "9"], ["q", "9"]]
+        t := StrReplace(t, pr[1], pr[2], true)
+    return t
+}
+
 ; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
 ReadGuildRank(hw) {
     global farmBest, farmGdbgT
@@ -7971,11 +7990,12 @@ ReadGuildRank(hw) {
     try {
         WinGetClientPos(, , &cw, &chh, hw)
         ar := AreaGet("guild", cw, chh)
-        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
+        AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
-        seen := ""
-        for sc2 in [sc, Min(sc, 3), Min(sc, 2), Min(sc, 4.5)] {
+        seen := "", votes := Map(), hashV := Map()
+        ; várias escalas x formas de captura; o número que mais se repete ganha (tira o erro de leitura isolada)
+        for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6)] {
             Loop 4 {
                 v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
                 o := {x: ox, y: oy, w: ow, h: oh, scale: sc2, mode: v.mode}
@@ -7988,13 +8008,25 @@ ReadGuildRank(hw) {
                 t := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 80)
                 if (t != "" && !InStr(seen, t))
                     seen .= (seen = "" ? "" : " | ") t
-                ; com "#" (ideal); sem ele aceita só um número solto (o OCR às vezes perde o #)
-                if RegExMatch(t, "[#＃]\s*(\d{1,6})", &m)
-                    return m[1]
-                if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m) && SubStr(m[1], 1, 1) != "0"
-                    return m[1]
+                n := ""
+                hasHash := false
+                if RegExMatch(t, "[#＃]\s*([0-9OoIl|SsBZzgq]{1,6})", &m) {
+                    n := FixDigits(m[1]), hasHash := true
+                } else if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m)
+                    n := m[1]
+                if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$")) {
+                    votes[n] := (votes.Has(n) ? votes[n] : 0) + (hasHash ? 2 : 1)
+                    if (votes[n] >= 4)
+                        return n
+                }
             }
         }
+        best := "", bv := 0
+        for n, c in votes
+            if (c > bv)
+                best := n, bv := c
+        if (best != "")
+            return best
         if (A_TickCount - farmGdbgT > 120000) {
             farmGdbgT := A_TickCount
             Log("Guilda · não achei o #rank. Área " ow "x" oh " em " ox "," oy " (janela " cw "x" chh "). Leu: [" SubStr(seen, 1, 200) "]")
@@ -8031,7 +8063,7 @@ OcrAreaRead(hw, name, ok) {
     try {
         WinGetClientPos(, , &cw, &chh, hw)
         ar := AreaGet(name, cw, chh)
-        ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
+        AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         Loop variants.Length {

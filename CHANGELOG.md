@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.9
+- OCR mais preciso em números pequenos: área mínima automática, várias ampliações com votação do número mais repetido e correção de letras parecidas com dígitos (O→0, l→1, S→5...)
+
 ## v1.4.8
 - Visual novo "Aero Glass" (azul vidro) como tema padrão, com contorno luminoso nos cards (dá pra trocar em Aparência)
 - Nova animação de abertura: tela com logo e barra de progresso que some em fade e dá lugar à janela principal
