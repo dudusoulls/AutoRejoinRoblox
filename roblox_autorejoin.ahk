@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.1"
+VERSION     := "1.5.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5907,13 +5907,7 @@ Bg(ctrl, r := 0) {
 }
 
 Card(x, y, w, h) {
-    global g, C_CARD, C_BG, C_TEXT
-    ; contorno fino mais claro (efeito vidro): um card um pouco maior, atrás
-    light := (Integer("0x" SubStr(C_BG, 1, 2)) > 0x90)
-    edge := MixCol(C_CARD, light ? "000000" : "FFFFFF", light ? 0.10 : 0.09)
-    e := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x - 1, y - 1, w + 2, h + 2, edge))
-    Bg(e, 19)
-    P(e)
+    global g, C_CARD
     c := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x, y, w, h, C_CARD))
     Bg(c, 18)
     return P(c)
@@ -9850,8 +9844,10 @@ RingInit() {
         DllCall("DeleteDC", "Ptr", sheet)
         DllCall("DeleteObject", "Ptr", hbm)
         DllCall("ReleaseDC", "Ptr", 0, "Ptr", hdcS)
-        ringCtl := g.Add("Text", "x18 y20 w46 h46 +0xE")
-        SendMessage(0x172, 0, ringFr[1], ringCtl.Hwnd)
+        ringCtl := g.Add("Picture", "x18 y20 w46 h46", ASSET_DIR "\side.png")
+        old1 := SendMessage(0x172, 0, ringFr[1], ringCtl.Hwnd)
+        if old1
+            DllCall("DeleteObject", "Ptr", old1)
         SetTimer(RingTick, 60)
         return true
     }

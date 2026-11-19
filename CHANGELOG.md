@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.2
+- Corrige a GUI quebrada (cards cinza cobrindo os textos): o contorno dos cards ficava por cima
+- Logo animado reescrito para usar um controle de imagem de verdade
+
 ## v1.5.1
 - Som de clique em botões, abas e chaves (liga/desliga em Aparência > Avançado > Efeitos)
 - Logo animado: o anel de tinta agora anima no canto da barra lateral (também dá para desligar)
