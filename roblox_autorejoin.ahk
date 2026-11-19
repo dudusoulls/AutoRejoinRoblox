@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.4"
+VERSION     := "1.4.5"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7891,22 +7891,29 @@ ReadGuildRank(hw) {
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         seen := ""
-        Loop 4 {
-            v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
-            o := {x: ox, y: oy, w: ow, h: oh, scale: sc, mode: v.mode}
-            if v.HasOwnProp("gray")
-                o.grayscale := 1, o.invertcolors := 1
-            res := ""
-            try res := OCR.FromWindow("ahk_id " hw, o)
-            catch
-                continue
-            seen := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 80)
-            if RegExMatch(seen, "#\s*(\d{1,6})", &m)
-                return m[1]
+        for sc2 in [sc, Min(sc, 3), Min(sc, 2), Min(sc, 4.5)] {
+            Loop 4 {
+                v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
+                o := {x: ox, y: oy, w: ow, h: oh, scale: sc2, mode: v.mode}
+                if v.HasOwnProp("gray")
+                    o.grayscale := 1, o.invertcolors := 1
+                res := ""
+                try res := OCR.FromWindow("ahk_id " hw, o)
+                catch
+                    continue
+                t := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 80)
+                if (t != "" && !InStr(seen, t))
+                    seen .= (seen = "" ? "" : " | ") t
+                ; com "#" (ideal); sem ele aceita só um número solto (o OCR às vezes perde o #)
+                if RegExMatch(t, "[#＃]\s*(\d{1,6})", &m)
+                    return m[1]
+                if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m) && SubStr(m[1], 1, 1) != "0"
+                    return m[1]
+            }
         }
         if (A_TickCount - farmGdbgT > 120000) {
             farmGdbgT := A_TickCount
-            Log("Guilda · não achei o #rank. Leu: [" seen "]")
+            Log("Guilda · não achei o #rank. Área " ow "x" oh " em " ox "," oy " (janela " cw "x" chh "). Leu: [" SubStr(seen, 1, 200) "]")
         }
     }
     return ""
@@ -7924,7 +7931,7 @@ GuildTick(hw) {
         return
     if (gr = farmGuild)
         pendG := ""
-    else if (gr = pendG) {
+    else if (farmGuild = "" || gr = pendG) {
         old := farmGuild
         farmGuild := gr, pendG := ""
         GuildChanged(old, gr)
@@ -8398,7 +8405,7 @@ HudCol(nm, col) {
 
 HudPanelText() {
     global hudPnlW, hudLogs, hudPnlLogN, USER_FIRST, running, monStart, launches, discCount, prevCur, dashTitle, pendingUpd
-    global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED, farmGuild
+    global farmMode, farmWave, farmPearls, farmPrev, farmModeCol, farmPearlCol, curStateCol, C_TEXT, C_MUTED, farmGuild, chkHudGd
     SetIf(hudPnlW["hello"], TT("hud_welcome", USER_FIRST))
     HudCol("dot", curStateCol)
     SetIf(hudPnlW["stT"], dashTitle.Value)
@@ -8413,7 +8420,7 @@ HudPanelText() {
     } else {
         SetIf(hudPnlW["mdN"], TT("f_reading"))
         HudCol("mdN", C_MUTED)
-        SetIf(hudPnlW["mdW"], "")
+        SetIf(hudPnlW["mdW"], farmGuild != "" && chkHudGd.Value ? "🛡 " TT("f_guild") " #" farmGuild : "")
         SetIf(hudPnlW["mdP"], "")
         SetIf(hudPnlW["mdA"], "")
     }

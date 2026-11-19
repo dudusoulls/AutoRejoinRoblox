@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.5
+- Rank da guilda: o painel vertical mostra mesmo sem ler o modo; leitura aceita número sem o # e tenta várias escalas; primeira leitura aparece na hora; log mais detalhado
+
 ## v1.4.4
 - Seguir a resolução mais preciso em janelas de outras proporções (escala pelo menor lado + pequena folga nas áreas)
 
