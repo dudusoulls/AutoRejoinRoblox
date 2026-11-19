@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.2"
+VERSION     := "1.4.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -156,7 +156,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, stGuild := 0, stMode := 0, homeExtra := [], advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -221,6 +221,7 @@ savedWhatsNew := IniRead(iniFile, "cfg", "whatsNew", "1")
 savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1")
 savedAreaScale := IniRead(iniFile, "cfg", "areaScale", "1"), savedRemSize := IniRead(iniFile, "cfg", "remSize", "1")
 savedAreaShow := IniRead(iniFile, "cfg", "areaShow", "0")
+savedGuildStat := IniRead(iniFile, "cfg", "guildStat", "1")
 savedGuildSend := IniRead(iniFile, "cfg", "guildSend", "1"), savedGuildNotify := IniRead(iniFile, "cfg", "guildNotify", "0")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
 savedStartWin := IniRead(iniFile, "cfg", "startWin", "0")
@@ -819,6 +820,10 @@ I18N["pt"] := Map(
     "sw_donate_sub", "Mostra o QR de Pix toda vez que o app abre"
 )
 I18N["pt"].Set(
+    "st_guild", "RANK DA GUILDA",
+    "st_farm", "MODO DE FARM",
+    "sw_guildstat", "Mostrar na tela Início",
+    "sw_guildstat_sub", "Cartões com o rank da guilda e o modo de farm",
     "nav_guild", "Guilda",
     "pg_guild_sub", "Rank da guilda e avisos no Discord",
     "sec_guild", "RANK DA GUILDA",
@@ -1390,6 +1395,10 @@ I18N["en"] := Map(
     "sw_donate_sub", "Shows the Pix QR every time the app opens"
 )
 I18N["en"].Set(
+    "st_guild", "GUILD RANK",
+    "st_farm", "FARM MODE",
+    "sw_guildstat", "Show on the Home screen",
+    "sw_guildstat_sub", "Cards with the guild rank and farm mode",
     "nav_guild", "Guild",
     "pg_guild_sub", "Guild rank and Discord alerts",
     "sec_guild", "GUILD RANK",
@@ -1961,6 +1970,10 @@ I18N["es"] := Map(
     "sw_donate_sub", "Muestra el QR de Pix cada vez que abres la app"
 )
 I18N["es"].Set(
+    "st_guild", "RANGO DEL GREMIO",
+    "st_farm", "MODO DE FARMEO",
+    "sw_guildstat", "Mostrar en la pantalla Inicio",
+    "sw_guildstat_sub", "Tarjetas con el rango del gremio y el modo de farmeo",
     "nav_guild", "Gremio",
     "pg_guild_sub", "Rango del gremio y avisos en Discord",
     "sec_guild", "RANGO DEL GREMIO",
@@ -2532,6 +2545,10 @@ I18N["fr"] := Map(
     "sw_donate_sub", "Affiche le QR Pix à chaque ouverture"
 )
 I18N["fr"].Set(
+    "st_guild", "RANG DE GUILDE",
+    "st_farm", "MODE DE FARM",
+    "sw_guildstat", "Afficher sur l'écran Accueil",
+    "sw_guildstat_sub", "Cartes avec le rang de guilde et le mode de farm",
     "nav_guild", "Guilde",
     "pg_guild_sub", "Rang de guilde et alertes Discord",
     "sec_guild", "RANG DE GUILDE",
@@ -3103,6 +3120,10 @@ I18N["de"] := Map(
     "sw_donate_sub", "Zeigt den Pix-QR bei jedem Öffnen"
 )
 I18N["de"].Set(
+    "st_guild", "GILDEN-RANG",
+    "st_farm", "FARM-MODUS",
+    "sw_guildstat", "Auf dem Startbildschirm zeigen",
+    "sw_guildstat_sub", "Karten mit Gilden-Rang und Farm-Modus",
     "nav_guild", "Gilde",
     "pg_guild_sub", "Gilden-Rang und Discord-Hinweise",
     "sec_guild", "GILDEN-RANG",
@@ -3674,6 +3695,10 @@ I18N["ru"] := Map(
     "sw_donate_sub", "Показывает QR Pix при каждом запуске"
 )
 I18N["ru"].Set(
+    "st_guild", "РАНГ ГИЛЬДИИ",
+    "st_farm", "РЕЖИМ ФАРМА",
+    "sw_guildstat", "Показывать на главной",
+    "sw_guildstat_sub", "Карточки с рангом гильдии и режимом фарма",
     "nav_guild", "Гильдия",
     "pg_guild_sub", "Ранг гильдии и уведомления в Discord",
     "sec_guild", "РАНГ ГИЛЬДИИ",
@@ -4245,6 +4270,10 @@ I18N["tr"] := Map(
     "sw_donate_sub", "Uygulama her açıldığında Pix QR'ını gösterir"
 )
 I18N["tr"].Set(
+    "st_guild", "LONCA SIRASI",
+    "st_farm", "FARM MODU",
+    "sw_guildstat", "Ana ekranda göster",
+    "sw_guildstat_sub", "Lonca sırası ve farm modu kartları",
     "nav_guild", "Lonca",
     "pg_guild_sub", "Lonca sırası ve Discord bildirimleri",
     "sec_guild", "LONCA SIRASI",
@@ -4816,6 +4845,10 @@ I18N["id"] := Map(
     "sw_donate_sub", "Tampilkan QR Pix setiap app dibuka"
 )
 I18N["id"].Set(
+    "st_guild", "PERINGKAT GUILD",
+    "st_farm", "MODE FARM",
+    "sw_guildstat", "Tampilkan di layar Utama",
+    "sw_guildstat_sub", "Kartu peringkat guild dan mode farm",
     "nav_guild", "Guild",
     "pg_guild_sub", "Peringkat guild dan notifikasi Discord",
     "sec_guild", "PERINGKAT GUILD",
@@ -5051,7 +5084,18 @@ for i, lab in [TT("st_uptime"), TT("st_reopens"), TT("st_drops"), TT("st_lastdro
     stVals.Push(Lbl(sx + 18, y + 38, sw - 26, "—", (i = 4) ? "s11 w600" : "s15 w700"))
 }
 
-y := 296, bw := (CW - 40 - 24) // 3
+; linha extra: rank da guilda e modo de farm (liga/desliga na aba Discord > Guilda)
+BeginPage("_homex", "", "")
+y := 296, hw3 := (CW - 12) // 2
+Card(CX, y, hw3, 84)
+Lbl(CX + 18, y + 16, hw3 - 30, TT("st_guild"), "s7 w700", C_DIM)
+stGuild := Lbl(CX + 18, y + 38, hw3 - 26, "—", "s15 w700")
+Card(CX + hw3 + 12, y, hw3, 84)
+Lbl(CX + hw3 + 12 + 18, y + 16, hw3 - 30, TT("st_farm"), "s7 w700", C_DIM)
+stMode := Lbl(CX + hw3 + 12 + 18, y + 38, hw3 - 26, "—", "s11 w600")
+homeExtra := pages["_homex"]
+BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
+y := 392, bw := (CW - 40 - 24) // 3
 Card(CX, y, CW, 104)
 Lbl(CX + 20, y + 16, 300, TT("quick"), "s7 w700", C_DIM)
 Btn(CX + 20,                y + 46, bw, 38, TT("btn_open_now"),  (*) => LaunchGame(true))
@@ -5195,9 +5239,11 @@ guildSub := Lbl(CX + 20, y + 88, CW - 40, TT("guild_last", "—"), "s9", C_MUTED
 Btn(CX + 20, y + 116, 150, 32, TT("btn_guild_read"), (*) => GuildReadNow())
 Btn(CX + 180, y + 116, 150, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
 y += 176
-Card(CX, y, CW, 150)
+Card(CX, y, CW, 216)
 chkGuildSend := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_guildsend"), savedGuildSend, TT("sw_guildsend_sub"))
 chkGuildNotify := ToggleSwitch(CX + 20, y + 82, CW - 40, TT("sw_guildnotify"), savedGuildNotify, TT("sw_guildnotify_sub"))
+chkGuildStat := ToggleSwitch(CX + 20, y + 148, CW - 40, TT("sw_guildstat"), savedGuildStat, TT("sw_guildstat_sub"))
+chkGuildStat.onChange := (*) => HomeExtraVis()
 
 ; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
@@ -5665,7 +5711,8 @@ FontMono(gui, opts) {
 
 BeginPage(name, title, sub) {
     global pages, pageInfo, curBuild
-    pages[name] := []
+    if !pages.Has(name)
+        pages[name] := []
     pageInfo[name] := [title, sub]
     curBuild := name
 }
@@ -5903,6 +5950,15 @@ ShowPage(name, *) {
         pageTitleV.Value := TT(NAVK[name])
         pageSubV.Value := pageInfo[name][2]
     }
+    HomeExtraVis()
+}
+
+; a linha extra do Início só aparece na página Início e se a opção estiver ligada
+HomeExtraVis() {
+    global homeExtra, curPage, chkGuildStat
+    vis := (curPage = "Início") && IsObject(chkGuildStat) && chkGuildStat.Value
+    for c in homeExtra
+        c.Visible := vis
 }
 
 ; busca na lista lateral: mostra só as seções que têm o texto digitado
@@ -7854,6 +7910,25 @@ ReadGuildRank(hw) {
 }
 
 ; lê (só olhando a tela) o nome do modo/mapa, o contador de pearls e as cores deles, em cima da vida da base
+; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
+GuildTick(hw) {
+    global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
+    static pendG := ""
+    if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
+        return
+    gr := ReadGuildRank(hw)
+    if (gr = "")
+        return
+    if (gr = farmGuild)
+        pendG := ""
+    else if (gr = pendG) {
+        old := farmGuild
+        farmGuild := gr, pendG := ""
+        GuildChanged(old, gr)
+    } else
+        pendG := gr
+}
+
 ; OCR de uma área escolhida pelo usuário; tenta jeitos de captura até o teste "ok" passar
 OcrAreaRead(hw, name, ok) {
     global farmBest
@@ -7892,8 +7967,8 @@ OcrAreaRead(hw, name, ok) {
 
 ; lê (só olhando a tela) o nome do modo, a wave e as pearls, cada um na sua área, e as cores deles
 FarmModeTick(test := false) {
-    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify
-    if (!test && !(hudMode = 4 || chkPanel.Value))
+    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
+    if (!test && !(hudMode = 4 || chkPanel.Value || chkGuildStat.Value || chkGuildNotify.Value))
         return
     farmLast := {mode: "", wave: "", pearls: "", seen: ""}
     hw := FindGameWindow()
@@ -7901,6 +7976,7 @@ FarmModeTick(test := false) {
         farmMode := "", farmWave := ""
         return
     }
+    GuildTick(hw)
     mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := ""
     ; --- modo (nome do mapa) ---
     r := OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
@@ -7974,19 +8050,6 @@ FarmModeTick(test := false) {
         }
     }
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
-    ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
-    static pendG := ""
-    gr := (chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value) ? ReadGuildRank(hw) : ""
-    if (gr != "") {
-        if (gr = farmGuild)
-            pendG := ""
-        else if (gr = pendG) {
-            old := farmGuild
-            farmGuild := gr, pendG := ""
-            GuildChanged(old, gr)
-        } else
-            pendG := gr
-    }
 }
 
 PanelTick() {
@@ -9135,6 +9198,9 @@ UpdateStats() {
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
+    global farmGuild, farmMode, farmWave
+    SetIf(stGuild, farmGuild != "" ? "#" farmGuild : "—")
+    SetIf(stMode, farmMode != "" ? farmMode (farmWave != "" ? "  ·  W" farmWave : "") : "—")
     SetIf(mSub, TT("mini_sub", launches, discCount))
     ; tempo online de hoje (pro resumo diário)
     static n := 0
@@ -9254,6 +9320,7 @@ SaveConfig() {
     IniWrite(chkAreaShow.Value, iniFile, "cfg", "areaShow")
     IniWrite(chkGuildSend.Value, iniFile, "cfg", "guildSend")
     IniWrite(chkGuildNotify.Value, iniFile, "cfg", "guildNotify")
+    IniWrite(chkGuildStat.Value, iniFile, "cfg", "guildStat")
     IniWrite(chkWhatsNew.Value, iniFile, "cfg", "whatsNew")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")

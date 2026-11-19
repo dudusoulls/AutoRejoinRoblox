@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.3
+- Tela Início: nova linha com o Rank da guilda e o Modo de farm (liga/desliga em Discord > Guilda > Mostrar na tela Início)
+- O rank da guilda agora é lido mesmo quando o modo/wave/pearls não são lidos, e também sem o HUD Painel de farm nem o painel do Discord ligados
+
 ## v1.4.2
 - A barra Salvar/Padrão/Cancelar do ajuste de área agora pode ser arrastada (clique e segure no título ou no texto dela)
 
