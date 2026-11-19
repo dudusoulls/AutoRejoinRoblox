@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.8
+- Visual novo "Aero Glass" (azul vidro) como tema padrão, com contorno luminoso nos cards (dá pra trocar em Aparência)
+- Nova animação de abertura: tela com logo e barra de progresso que some em fade e dá lugar à janela principal
+
 ## v1.4.7
 - Tela Início reorganizada: tudo cabe na janela, cards mais compactos com detalhes coloridos, versão do Roblox logo abaixo das estatísticas
 

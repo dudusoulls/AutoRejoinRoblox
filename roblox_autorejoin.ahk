@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.7"
+VERSION     := "1.4.8"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -67,6 +67,7 @@ C_WARN  := "F5C542"
 iniFile  := A_ScriptDir "\config.ini"
 ; temas (Aparência): troca as cores acima antes de montar a janela
 THEMES := [
+    {name: "Aero Glass", BG: "090E1D", SIDE: "060A16", CARD: "101A33", INPUT: "18243F", TEXT: "EAF0FF", MUTED: "8E9CC0", DIM: "56628A", ACC: "6EA8FF", ACCH: "558FEA", BTN: "182441", BTNH: "223259", NAVA: "16233F", NAVH: "0E1730", SWOFF: "26324F"},
     {name: "Obsidian", BG: "0E0E11", SIDE: "09090B", CARD: "16161A", INPUT: "212127", TEXT: "EDEDF0", MUTED: "8B8B94", DIM: "55555D", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "25252C", BTNH: "303039", NAVA: "1A1A1F", NAVH: "131316", SWOFF: "2C2C33"},
     {name: "Medium", BG: "151517", SIDE: "0F0F11", CARD: "1C1C20", INPUT: "26262C", TEXT: "EDEDF0", MUTED: "8E8E97", DIM: "5A5A62", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "2A2A31", BTNH: "35353D", NAVA: "222228", NAVH: "18181B", SWOFF: "32323A"},
     {name: "Pearl", BG: "F4F4F6", SIDE: "E9E9EE", CARD: "FFFFFF", INPUT: "EFEFF3", TEXT: "18181C", MUTED: "5F5F68", DIM: "9A9AA3", ACC: "18181C", ACCH: "3A3A42", BTN: "E6E6EB", BTNH: "DADAE0", NAVA: "DCDCE3", NAVH: "E2E2E8", SWOFF: "D6D6DC"},
@@ -93,7 +94,12 @@ THEMES := [
     {name: "Ocean", BG: "081018", SIDE: "050B11", CARD: "0F1C2A", INPUT: "16283A", TEXT: "E4F0FA", MUTED: "84A0BC", DIM: "4F6880", ACC: "3BA0E6", ACCH: "2B86C6", BTN: "172E42", BTNH: "1F3C54", NAVA: "14293C", NAVH: "0D1B28", SWOFF: "21394F"},
     {name: "Cyber", BG: "0A0812", SIDE: "06040C", CARD: "130F20", INPUT: "1D172F", TEXT: "EAF6FF", MUTED: "8894B8", DIM: "505874", ACC: "22E0D0", ACCH: "14C0B2", BTN: "22203A", BTNH: "2C2948", NAVA: "1C1930", NAVH: "110E1E", SWOFF: "2A2742"}
 ]
-curTheme := IniRead(iniFile, "cfg", "theme", "Obsidian")
+; visual v2: na primeira vez que abre esta versão, usa o novo tema "Aero Glass" (depois dá pra trocar em Aparência)
+if (IniRead(iniFile, "cfg", "uiv", "") != "2") {
+    IniWrite("Aero Glass", iniFile, "cfg", "theme")
+    IniWrite("2", iniFile, "cfg", "uiv")
+}
+curTheme := IniRead(iniFile, "cfg", "theme", "Aero Glass")
 for th in THEMES
     if (th.name = curTheme) {
         C_BG := th.BG, C_SIDE := th.SIDE, C_CARD := th.CARD, C_INPUT := th.INPUT, C_TEXT := th.TEXT
@@ -5705,6 +5711,7 @@ StartApp() {
     appStarted := true
     firstRun := IniRead(iniFile, "cfg", "tourDone", "0") != "1" && IniRead(iniFile, "cfg", "resume", "0") != "1"
     IniWrite(0, iniFile, "cfg", "compact")          ; sempre abre no modo completo
+    SplashRun()
     IntroShow(g, Format("w{} h{}", W, H))
     SetTimer(PulseTick, 110)
     SetTimer(CpuSample, 2000)
@@ -5787,10 +5794,26 @@ Bg(ctrl, r := 0) {
 }
 
 Card(x, y, w, h) {
-    global g, C_CARD
+    global g, C_CARD, C_BG, C_TEXT
+    ; contorno fino mais claro (efeito vidro): um card um pouco maior, atrás
+    light := (Integer("0x" SubStr(C_BG, 1, 2)) > 0x90)
+    edge := MixCol(C_CARD, light ? "000000" : "FFFFFF", light ? 0.10 : 0.09)
+    e := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x - 1, y - 1, w + 2, h + 2, edge))
+    Bg(e, 19)
+    P(e)
     c := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x, y, w, h, C_CARD))
     Bg(c, 18)
     return P(c)
+}
+
+; mistura duas cores "RRGGBB" (t = 0 fica na primeira, 1 na segunda)
+MixCol(a, b, t) {
+    r := ""
+    for i in [1, 3, 5] {
+        va := Integer("0x" SubStr(a, i, 2)), vb := Integer("0x" SubStr(b, i, 2))
+        r .= Format("{:02X}", Round(va + (vb - va) * t))
+    }
+    return r
 }
 
 ; barrinha colorida na borda esquerda de um card (detalhe visual)
@@ -9102,6 +9125,53 @@ SetColorNow(o, c) {
 
 ; janela aparecendo/sumindo suave
 ; entrada da janela: aparece subindo uns pixels com fade
+; tela de abertura: logo + barra de progresso, some com fade e entra a janela principal
+SplashRun() {
+    global C_BG, C_TEXT, C_MUTED, C_ACC, C_CARD, C_DIM, VERSION, iniFile
+    if (IniRead(iniFile, "cfg", "splash", "1") != "1")
+        return
+    try {
+        sw := 400, sh := 220
+        sg := Gui("-Caption +AlwaysOnTop +ToolWindow +E0x08000000", "")
+        sg.BackColor := C_BG
+        sg.MarginX := 0, sg.MarginY := 0
+        edge := MixCol(C_BG, C_ACC, 0.55)
+        sg.Add("Text", Format("x0 y0 w{} h2 Background{}", sw, edge))
+        sg.SetFont("s9 w700 c" C_ACC, "Segoe UI")
+        tag := sg.Add("Text", Format("x0 y52 w{} Center BackgroundTrans", sw), "R O B L O X   ·   A F K")
+        sg.SetFont("s24 w700 c" C_TEXT, "Segoe UI Variable Display")
+        sg.Add("Text", Format("x0 y76 w{} Center BackgroundTrans", sw), "Auto Reconnect")
+        sg.SetFont("s9 c" C_MUTED, "Segoe UI")
+        st := sg.Add("Text", Format("x0 y142 w{} Center BackgroundTrans", sw), "")
+        tx := 60, tw := sw - 120
+        sg.Add("Text", Format("x{} y170 w{} h4 Background{}", tx, tw, C_CARD))
+        fill := sg.Add("Text", Format("x{} y170 w1 h4 Background{}", tx, C_ACC))
+        sg.SetFont("s8 c" C_DIM, "Segoe UI")
+        sg.Add("Text", Format("x0 y194 w{} Center BackgroundTrans", sw), "v" VERSION)
+        sg.Show(Format("w{} h{} Hide", sw, sh))
+        rg := DllCall("CreateRoundRectRgn", "Int", 0, "Int", 0, "Int", sw + 1, "Int", sh + 1, "Int", 22, "Int", 22, "Ptr")
+        DllCall("SetWindowRgn", "Ptr", sg.Hwnd, "Ptr", rg, "Int", 1)
+        WinSetTransparent(0, sg.Hwnd)
+        sg.Show(Format("w{} h{}", sw, sh))
+        steps := ["Carregando módulos…", "Preparando interface…", "Verificando Roblox…", "Pronto"]
+        t0 := A_TickCount, total := 1150
+        Loop {
+            el := A_TickCount - t0
+            pr := Min(1, el / total)
+            al := el < 220 ? el / 220 : (el > total - 180 ? Max(0, (total - el) / 180) : 1)
+            try WinSetTransparent(Round(255 * Min(1, Max(0, al))), sg.Hwnd)
+            fill.Move(, , Max(1, Round(tw * EaseOut(pr))))
+            idx := Min(steps.Length, 1 + Floor(pr * steps.Length))
+            if (st.Value != steps[idx])
+                st.Value := steps[idx]
+            if (el >= total)
+                break
+            Sleep(10)
+        }
+        sg.Destroy()
+    }
+}
+
 IntroShow(gui, opts := "") {
     try WinSetTransparent(0, gui.Hwnd)
     gui.Show(opts)
