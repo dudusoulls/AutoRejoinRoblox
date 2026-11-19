@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.6
+- Tela Início: card com a versão do Roblox em uso e a mais recente, com aviso de atualizado/desatualizado
+
 ## v1.4.5
 - Rank da guilda: o painel vertical mostra mesmo sem ler o modo; leitura aceita número sem o # e tenta várias escalas; primeira leitura aparece na hora; log mais detalhado
 

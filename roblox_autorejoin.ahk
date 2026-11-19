@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.5"
+VERSION     := "1.4.6"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -156,7 +156,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, stGuild := 0, stMode := 0, homeExtra := [], advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, stGuild := 0, stMode := 0, homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -820,6 +820,11 @@ I18N["pt"] := Map(
     "sw_donate_sub", "Mostra o QR de Pix toda vez que o app abre"
 )
 I18N["pt"].Set(
+    "rbx_ver_t", "VERSÃO DO ROBLOX",
+    "rbx_ver_cur", "Em uso",
+    "rbx_ver_new", "Mais recente",
+    "rbx_ver_ok", "✔ atualizado",
+    "rbx_ver_old", "⚠ desatualizado",
     "st_guild", "RANK DA GUILDA",
     "st_farm", "MODO DE FARM",
     "sw_guildstat", "Mostrar na tela Início",
@@ -1395,6 +1400,11 @@ I18N["en"] := Map(
     "sw_donate_sub", "Shows the Pix QR every time the app opens"
 )
 I18N["en"].Set(
+    "rbx_ver_t", "ROBLOX VERSION",
+    "rbx_ver_cur", "In use",
+    "rbx_ver_new", "Latest",
+    "rbx_ver_ok", "✔ up to date",
+    "rbx_ver_old", "⚠ outdated",
     "st_guild", "GUILD RANK",
     "st_farm", "FARM MODE",
     "sw_guildstat", "Show on the Home screen",
@@ -1970,6 +1980,11 @@ I18N["es"] := Map(
     "sw_donate_sub", "Muestra el QR de Pix cada vez que abres la app"
 )
 I18N["es"].Set(
+    "rbx_ver_t", "VERSIÓN DE ROBLOX",
+    "rbx_ver_cur", "En uso",
+    "rbx_ver_new", "Más reciente",
+    "rbx_ver_ok", "✔ actualizado",
+    "rbx_ver_old", "⚠ desactualizado",
     "st_guild", "RANGO DEL GREMIO",
     "st_farm", "MODO DE FARMEO",
     "sw_guildstat", "Mostrar en la pantalla Inicio",
@@ -2545,6 +2560,11 @@ I18N["fr"] := Map(
     "sw_donate_sub", "Affiche le QR Pix à chaque ouverture"
 )
 I18N["fr"].Set(
+    "rbx_ver_t", "VERSION DE ROBLOX",
+    "rbx_ver_cur", "Utilisée",
+    "rbx_ver_new", "Dernière",
+    "rbx_ver_ok", "✔ à jour",
+    "rbx_ver_old", "⚠ obsolète",
     "st_guild", "RANG DE GUILDE",
     "st_farm", "MODE DE FARM",
     "sw_guildstat", "Afficher sur l'écran Accueil",
@@ -3120,6 +3140,11 @@ I18N["de"] := Map(
     "sw_donate_sub", "Zeigt den Pix-QR bei jedem Öffnen"
 )
 I18N["de"].Set(
+    "rbx_ver_t", "ROBLOX-VERSION",
+    "rbx_ver_cur", "In Benutzung",
+    "rbx_ver_new", "Neueste",
+    "rbx_ver_ok", "✔ aktuell",
+    "rbx_ver_old", "⚠ veraltet",
     "st_guild", "GILDEN-RANG",
     "st_farm", "FARM-MODUS",
     "sw_guildstat", "Auf dem Startbildschirm zeigen",
@@ -3695,6 +3720,11 @@ I18N["ru"] := Map(
     "sw_donate_sub", "Показывает QR Pix при каждом запуске"
 )
 I18N["ru"].Set(
+    "rbx_ver_t", "ВЕРСИЯ ROBLOX",
+    "rbx_ver_cur", "Установлена",
+    "rbx_ver_new", "Последняя",
+    "rbx_ver_ok", "✔ актуальна",
+    "rbx_ver_old", "⚠ устарела",
     "st_guild", "РАНГ ГИЛЬДИИ",
     "st_farm", "РЕЖИМ ФАРМА",
     "sw_guildstat", "Показывать на главной",
@@ -4270,6 +4300,11 @@ I18N["tr"] := Map(
     "sw_donate_sub", "Uygulama her açıldığında Pix QR'ını gösterir"
 )
 I18N["tr"].Set(
+    "rbx_ver_t", "ROBLOX SÜRÜMÜ",
+    "rbx_ver_cur", "Kullanılan",
+    "rbx_ver_new", "En yeni",
+    "rbx_ver_ok", "✔ güncel",
+    "rbx_ver_old", "⚠ eski",
     "st_guild", "LONCA SIRASI",
     "st_farm", "FARM MODU",
     "sw_guildstat", "Ana ekranda göster",
@@ -4845,6 +4880,11 @@ I18N["id"] := Map(
     "sw_donate_sub", "Tampilkan QR Pix setiap app dibuka"
 )
 I18N["id"].Set(
+    "rbx_ver_t", "VERSI ROBLOX",
+    "rbx_ver_cur", "Dipakai",
+    "rbx_ver_new", "Terbaru",
+    "rbx_ver_ok", "✔ terbaru",
+    "rbx_ver_old", "⚠ usang",
     "st_guild", "PERINGKAT GUILD",
     "st_farm", "MODE FARM",
     "sw_guildstat", "Tampilkan di layar Utama",
@@ -5101,6 +5141,15 @@ Lbl(CX + 20, y + 16, 300, TT("quick"), "s7 w700", C_DIM)
 Btn(CX + 20,                y + 46, bw, 38, TT("btn_open_now"),  (*) => LaunchGame(true))
 Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, TT("btn_place"), (*) => ForcePlace())
 Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, TT("btn_compact"),    (*) => SetCompact(true))
+
+; versão do Roblox: a que está instalada/em uso e a mais recente publicada
+y := 508
+Card(CX, y, CW, 70)
+Lbl(CX + 20, y + 12, 300, TT("rbx_ver_t"), "s7 w700", C_DIM)
+stRbxTag := Lbl(CX + CW - 220, y + 12, 200, "", "s8 w700")
+stRbxTag.Opt("+Right")
+stRbxCur := Lbl(CX + 20, y + 34, (CW - 40) // 2, "—", "s9 w600")
+stRbxNew := Lbl(CX + 20 + (CW - 40) // 2, y + 34, (CW - 40) // 2, "—", "s9 w600")
 
 ; ---------------- Página: Jogo ----------------
 BeginPage("Jogo", TT("nav_game"), TT("pg_game_sub"))
@@ -9199,6 +9248,63 @@ SetState(state, title, sub) {
     SetIf(sbTxt, title "  ·  v" VERSION "  ·  BETA")
 }
 
+; ---- versão do Roblox ----
+; instalada: pasta "version-xxxx" do processo aberto (ou da instalação mais recente)
+RbxInstalled() {
+    exe := ""
+    try exe := WinGetProcessPath("ahk_exe RobloxPlayerBeta.exe")
+    if (exe = "")
+        exe := NewestRobloxExe(true)
+    if (exe = "")
+        return {ver: "", up: ""}
+    SplitPath(exe, , &dir)
+    SplitPath(dir, &folder)
+    v := ""
+    try v := FileGetVersion(exe)
+    return {ver: StrReplace(v, ",", "."), up: folder}
+}
+
+; mais recente: API pública de versões do cliente do Roblox (consulta em segundo plano, a cada 10 min)
+RbxLatestFetch() {
+    global rbxLatestT
+    if (A_TickCount - rbxLatestT < 600000 && rbxLatestT)
+        return
+    rbxLatestT := A_TickCount
+    try AsyncReq("GET", "https://clientsettings.roblox.com/v2/client-version/WindowsPlayer", , , , RbxLatestCb)
+}
+
+RbxLatestCb(h) {
+    global rbxLatest, rbxLatestUp, rbxLatestT
+    try {
+        if (HttpStatus(h) = 200) {
+            t := h.ResponseText
+            if RegExMatch(t, '"version"\s*:\s*"([^"]+)"', &m)
+                rbxLatest := m[1]
+            if RegExMatch(t, '"clientVersionUpload"\s*:\s*"([^"]+)"', &m2)
+                rbxLatestUp := m2[1]
+            return
+        }
+    }
+    rbxLatestT := A_TickCount - 540000   ; falhou: tenta de novo em ~1 min
+}
+
+RbxVerUpdate() {
+    global rbxLatest, rbxLatestUp, stRbxCur, stRbxNew, stRbxTag, C_MUTED
+    RbxLatestFetch()
+    cur := RbxInstalled()
+    SetIf(stRbxCur, TT("rbx_ver_cur") ": " (cur.ver != "" ? cur.ver : "—"))
+    SetIf(stRbxNew, TT("rbx_ver_new") ": " (rbxLatest != "" ? rbxLatest : "…"))
+    tag := "", col := "8A8F98"
+    if (cur.up != "" && rbxLatestUp != "") {
+        if (cur.up = rbxLatestUp)
+            tag := TT("rbx_ver_ok"), col := "4ADE80"
+        else
+            tag := TT("rbx_ver_old"), col := "FBBF24"
+    }
+    SetIf(stRbxTag, tag)
+    try stRbxTag.SetFont("c" col)
+}
+
 UpdateStats() {
     global stVals, mSub, running, monStart, launches, discCount, lastDiscShort, dayOnline, iniFile
     SetIf(stVals[1], AfkStr("—"))
@@ -9208,6 +9314,9 @@ UpdateStats() {
     SetIf(stVals[2], launches)
     SetIf(stVals[3], discCount)
     SetIf(stVals[4], lastDiscShort)
+    static rv := 0
+    if (Mod(rv++, 15) = 0)
+        RbxVerUpdate()
     global farmGuild, farmMode, farmWave
     SetIf(stGuild, farmGuild != "" ? "#" farmGuild : "—")
     SetIf(stMode, farmMode != "" ? farmMode (farmWave != "" ? "  ·  W" farmWave : "") : "—")
@@ -10733,7 +10842,7 @@ ListRbxVersions(*) {
 }
 
 ; acha o RobloxPlayerBeta.exe da versão MAIS RECENTE instalada (pela data de CRIAÇÃO da pasta = quando foi instalada)
-NewestRobloxExe() {
+NewestRobloxExe(quiet := false) {
     best := "", bestT := 0, bestDir := ""
     roots := []
     for v in ["LOCALAPPDATA", "ProgramFiles(x86)", "ProgramFiles"] {
@@ -10753,7 +10862,7 @@ NewestRobloxExe() {
             }
         }
     }
-    if (best != "")
+    if (best != "" && !quiet)
         Log("Versão do Roblox escolhida: " bestDir)
     return best
 }
