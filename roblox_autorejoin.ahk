@@ -2551,7 +2551,7 @@ I18N["fr"].Set(
     "sw_remsize", "Mémoriser la taille de la fenêtre Roblox",
     "sw_remsize_sub", "Si tu la redimensionnes, l'appli la garde",
     "sw_areashow", "Afficher à l'écran où il lit",
-    "sw_areashow_sub", "Contours colorés sur Roblox ; désactive quand tu veux",
+    "sw_areashow_sub", "Contours colorés sur Roblox, désactive quand tu veux",
     "adv_size", "Fenêtre Roblox : {1}×{2}",
     "adv_nowin", "Fenêtre Roblox : fermée",
     "log_size_saved", "Taille de la fenêtre Roblox enregistrée : {1}×{2}"
