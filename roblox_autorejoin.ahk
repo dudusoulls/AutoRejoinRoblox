@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.0"
+VERSION     := "1.4.1"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7467,7 +7467,7 @@ AreaIsSet(name) {
     return IniRead(iniFile, "area", name "_x", "") != ""
 }
 
-AreaReset(name) {
+AreaReset(name, *) {
     global iniFile, areaRes
     for k in ["x", "y", "w", "h", "rw", "rh"]
         IniDelete(iniFile, "area", name "_" k)
@@ -7488,7 +7488,7 @@ AreaDraw(u) {
 }
 
 ; abre o "recortar tela": arraste pra desenhar, arraste dentro pra mover, puxe bordas/cantos pra ajustar (Enter salva, Esc cancela)
-AreaEdit(name) {
+AreaEdit(name, *) {
     global areaOn, areaUi, C_BG, C_TEXT, C_MUTED, areaRes, areaKey
     if areaOn
         return
@@ -7635,7 +7635,35 @@ AreaSave() {
 }
 
 ; lê agora e mostra o resultado na própria aba
+; a leitura é da tela: se a janela do programa estiver por cima do Roblox, esconde um instante
+ReadUncovered(fn) {
+    global g
+    hw := FindGameWindow()
+    hid := false
+    try {
+        if (hw && DllCall("IsWindowVisible", "Ptr", g.Hwnd)) {
+            WinGetPos(&gx, &gy, &gw, &gh, g.Hwnd)
+            WinGetClientPos(&rx, &ry, &rw, &rh, hw)
+            if (gx < rx + rw && gx + gw > rx && gy < ry + rh && gy + gh > ry) {
+                g.Hide()
+                hid := true
+                Sleep(450)
+            }
+        }
+    }
+    try {
+        fn()
+    } finally {
+        if hid
+            g.Show("NA")
+    }
+}
+
 AreaTest() {
+    ReadUncovered(AreaTestRun)
+}
+
+AreaTestRun() {
     global areaRes, farmLast, farmDbgT, chkHudGd
     hw := FindGameWindow()
     if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
@@ -7751,6 +7779,10 @@ GuildChanged(old, new, notify := true) {
 }
 
 GuildReadNow() {
+    ReadUncovered(GuildReadRun)
+}
+
+GuildReadRun() {
     global guildSub, farmGuild
     hw := FindGameWindow()
     if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {

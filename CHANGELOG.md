@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.1
+- Corrigido o erro "Too many parameters passed to function: AreaEdit" ao clicar em Ajustar área / Padrão
+- Testar leitura e Ler agora escondem a janela do programa por um instante se ela estiver por cima do Roblox (a leitura é feita olhando a tela)
+
 ## v1.4.0
 - Nova aba Aparência > Avançado, pra qualquer monitor ou resolução:
   - as áreas de leitura acompanham o tamanho da janela do Roblox (cresce ou diminui junto)
