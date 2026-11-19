@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.1"
+VERSION     := "1.4.2"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7533,6 +7533,7 @@ AreaEdit(name, *) {
     b3.OnEvent("Click", (*) => AreaClose())
     u.tb.Show(Format("NA x{} y{} w{} h{}", cx + (cw - tbw) // 2, cy + Round(10 * k), tbw, Round(94 * k)))
     areaUi := u, areaOn := true
+    OnMessage(0x201, AreaTbDrag)
     AreaDraw(u)
     SetTimer(AreaPoll, 15)
 }
@@ -7609,8 +7610,26 @@ AreaPoll() {
     u.was := down
 }
 
+; arrastar a barra de botões: clique e segure em qualquer parte dela que não seja botão
+AreaTbDrag(wParam, lParam, msg, hwnd) {
+    global areaOn, areaUi
+    if (!areaOn || !IsObject(areaUi))
+        return
+    root := DllCall("GetAncestor", "Ptr", hwnd, "UInt", 2, "Ptr")
+    if (root != areaUi.tb.Hwnd)
+        return
+    try cls := WinGetClass("ahk_id " hwnd)
+    catch
+        return
+    if (cls = "Button")
+        return
+    PostMessage(0xA1, 2, 0, , "ahk_id " areaUi.tb.Hwnd)
+    return 0
+}
+
 AreaClose() {
     global areaOn, areaUi
+    OnMessage(0x201, AreaTbDrag, 0)
     SetTimer(AreaPoll, 0)
     areaOn := false
     if IsObject(areaUi) {

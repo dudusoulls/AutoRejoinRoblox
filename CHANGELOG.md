@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.2
+- A barra Salvar/Padrão/Cancelar do ajuste de área agora pode ser arrastada (clique e segure no título ou no texto dela)
+
 ## v1.4.1
 - Corrigido o erro "Too many parameters passed to function: AreaEdit" ao clicar em Ajustar área / Padrão
 - Testar leitura e Ler agora escondem a janela do programa por um instante se ela estiver por cima do Roblox (a leitura é feita olhando a tela)
