@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.6"
+VERSION     := "1.4.7"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5109,47 +5109,53 @@ sbTxt := g.Add("Text", Format("x{} y{} w{} h28 +0x200 c{} Background{}", CX + 20
 ; ---------------- Página: Início ----------------
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
 y := 92
-Card(CX, y, CW, 96)
-dashDot   := Lbl(CX + 22, y + 26, 30, "●", "s20", C_DIM)
-dashTitle := Lbl(CX + 58, y + 22, 290, TT("idle"), "s16 w700")
-dashSub   := Lbl(CX + 59, y + 56, 300, TT("click_start"), "s9", C_MUTED)
-btnStart  := Btn(CX + CW - 152, y + 29, 132, 38, TT("btn_start"), Toggle, "primary")
+Card(CX, y, CW, 88)
+Accent(CX, y + 18, 52, C_ON)
+dashDot   := Lbl(CX + 24, y + 22, 30, "●", "s20", C_DIM)
+dashTitle := Lbl(CX + 60, y + 16, 290, TT("idle"), "s16 w700")
+dashSub   := Lbl(CX + 61, y + 50, 300, TT("click_start"), "s9", C_MUTED)
+btnStart  := Btn(CX + CW - 152, y + 25, 132, 38, TT("btn_start"), Toggle, "primary")
 
-y := 200, sw := (CW - 36) // 4
+y := 192, sw := (CW - 36) // 4
 stVals := []
 for i, lab in [TT("st_uptime"), TT("st_reopens"), TT("st_drops"), TT("st_lastdrop")] {
     sx := CX + (i - 1) * (sw + 12)
-    Card(sx, y, sw, 84)
-    Lbl(sx + 18, y + 16, sw - 30, lab, "s7 w700", C_DIM)
-    stVals.Push(Lbl(sx + 18, y + 38, sw - 26, "—", (i = 4) ? "s11 w600" : "s15 w700"))
+    Card(sx, y, sw, 72)
+    Accent(sx, y + 14, 14, ["3DDC84", "4DA3FF", "FF5C5C", "F5C542"][i])
+    Lbl(sx + 16, y + 12, sw - 26, lab, "s7 w700", C_DIM)
+    stVals.Push(Lbl(sx + 16, y + 34, sw - 24, "—", (i = 4) ? "s11 w600" : "s15 w700"))
 }
+
+; versão do Roblox: a que está instalada/em uso e a mais recente publicada
+y := 276
+Card(CX, y, CW, 66)
+Accent(CX, y + 14, 14, "4DA3FF")
+Lbl(CX + 16, y + 12, 300, TT("rbx_ver_t"), "s7 w700", C_DIM)
+stRbxTag := Lbl(CX + CW - 220, y + 11, 200, "", "s8 w700")
+stRbxTag.Opt("+Right")
+stRbxCur := Lbl(CX + 16, y + 34, (CW - 32) // 2, "—", "s10 w600")
+stRbxNew := Lbl(CX + 16 + (CW - 32) // 2, y + 34, (CW - 32) // 2, "—", "s10 w600")
+
+y := 354, bw := (CW - 40 - 24) // 3
+Card(CX, y, CW, 92)
+Lbl(CX + 20, y + 12, 300, TT("quick"), "s7 w700", C_DIM)
+Btn(CX + 20,                 y + 38, bw, 38, TT("btn_open_now"), (*) => LaunchGame(true))
+Btn(CX + 20 + (bw + 12),     y + 38, bw, 38, TT("btn_place"), (*) => ForcePlace())
+Btn(CX + 20 + (bw + 12) * 2, y + 38, bw, 38, TT("btn_compact"), (*) => SetCompact(true))
 
 ; linha extra: rank da guilda e modo de farm (liga/desliga na aba Discord > Guilda)
 BeginPage("_homex", "", "")
-y := 296, hw3 := (CW - 12) // 2
-Card(CX, y, hw3, 84)
-Lbl(CX + 18, y + 16, hw3 - 30, TT("st_guild"), "s7 w700", C_DIM)
-stGuild := Lbl(CX + 18, y + 38, hw3 - 26, "—", "s15 w700")
-Card(CX + hw3 + 12, y, hw3, 84)
-Lbl(CX + hw3 + 12 + 18, y + 16, hw3 - 30, TT("st_farm"), "s7 w700", C_DIM)
-stMode := Lbl(CX + hw3 + 12 + 18, y + 38, hw3 - 26, "—", "s11 w600")
+y := 458, hw3 := (CW - 12) // 2
+Card(CX, y, hw3, 72)
+Accent(CX, y + 14, 14, "F5C542")
+Lbl(CX + 16, y + 12, hw3 - 30, TT("st_guild"), "s7 w700", C_DIM)
+stGuild := Lbl(CX + 16, y + 34, hw3 - 26, "—", "s15 w700")
+Card(CX + hw3 + 12, y, hw3, 72)
+Accent(CX + hw3 + 12, y + 14, 14, "B084FF")
+Lbl(CX + hw3 + 12 + 16, y + 12, hw3 - 30, TT("st_farm"), "s7 w700", C_DIM)
+stMode := Lbl(CX + hw3 + 12 + 16, y + 38, hw3 - 26, "—", "s11 w600")
 homeExtra := pages["_homex"]
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
-y := 392, bw := (CW - 40 - 24) // 3
-Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, TT("quick"), "s7 w700", C_DIM)
-Btn(CX + 20,                y + 46, bw, 38, TT("btn_open_now"),  (*) => LaunchGame(true))
-Btn(CX + 20 + (bw + 12),    y + 46, bw, 38, TT("btn_place"), (*) => ForcePlace())
-Btn(CX + 20 + (bw + 12) * 2, y + 46, bw, 38, TT("btn_compact"),    (*) => SetCompact(true))
-
-; versão do Roblox: a que está instalada/em uso e a mais recente publicada
-y := 508
-Card(CX, y, CW, 70)
-Lbl(CX + 20, y + 12, 300, TT("rbx_ver_t"), "s7 w700", C_DIM)
-stRbxTag := Lbl(CX + CW - 220, y + 12, 200, "", "s8 w700")
-stRbxTag.Opt("+Right")
-stRbxCur := Lbl(CX + 20, y + 34, (CW - 40) // 2, "—", "s9 w600")
-stRbxNew := Lbl(CX + 20 + (CW - 40) // 2, y + 34, (CW - 40) // 2, "—", "s9 w600")
 
 ; ---------------- Página: Jogo ----------------
 BeginPage("Jogo", TT("nav_game"), TT("pg_game_sub"))
@@ -5785,6 +5791,12 @@ Card(x, y, w, h) {
     c := g.Add("Text", Format("x{} y{} w{} h{} +0x4000000 Background{}", x, y, w, h, C_CARD))
     Bg(c, 18)
     return P(c)
+}
+
+; barrinha colorida na borda esquerda de um card (detalhe visual)
+Accent(x, y, h, color) {
+    global g
+    return P(g.Add("Text", Format("x{} y{} w3 h{} Background{}", x + 6, y, h, color)))
 }
 
 Lbl(x, y, w, text, font := "s10", color := "", bg := "") {

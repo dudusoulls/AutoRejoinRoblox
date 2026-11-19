@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.7
+- Tela Início reorganizada: tudo cabe na janela, cards mais compactos com detalhes coloridos, versão do Roblox logo abaixo das estatísticas
+
 ## v1.4.6
 - Tela Início: card com a versão do Roblox em uso e a mais recente, com aviso de atualizado/desatualizado
 
