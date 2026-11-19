@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.1
+- Som de clique em botões, abas e chaves (liga/desliga em Aparência > Avançado > Efeitos)
+- Logo animado: o anel de tinta agora anima no canto da barra lateral (também dá para desligar)
+
 ## v1.5.0
 - Relatório de erro em 1 clique: quando o app tem um erro interno, ele continua rodando e abre uma janela com "Enviar relatório" (abre uma Issue do GitHub já preenchida com erro, versões e últimas linhas do log, sem webhook/token)
 - Botão "Reportar problema" na aba Logs; erros também ficam salvos em erros.log
