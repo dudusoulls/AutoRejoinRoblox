@@ -21,7 +21,9 @@ g.BackColor := "1b1b1b"
 g.SetFont("s10", "Segoe UI")
 g.MarginX := 18, g.MarginY := 16
 st := g.AddText("w380 cWhite", "Pronto para baixar a ultima versao.")
-g.AddText("w380 cGray s8", "Pasta: " pasta)
+g.SetFont("s8")
+g.AddText("w380 cGray", "Pasta: " pasta)
+g.SetFont("s10")
 bar := g.AddProgress("w380 h10 -Smooth Range0-100")
 bOk := g.AddButton("w120 Default", "Atualizar agora")
 bClose := g.AddButton("x+16 w120", "Fechar")
