@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.3.15"
+VERSION     := "1.4.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -156,9 +156,10 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
+areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
 areaKey := Map("mode", "area_mode", "wave", "area_wave", "pearls", "area_pearls", "coins", "area_coins", "guild", "f_guild")
 tourIdx := 0
 tourWins := []
@@ -218,6 +219,9 @@ savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
 savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "1")
 savedWhatsNew := IniRead(iniFile, "cfg", "whatsNew", "1")
 savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1")
+savedAreaScale := IniRead(iniFile, "cfg", "areaScale", "1"), savedRemSize := IniRead(iniFile, "cfg", "remSize", "1")
+savedAreaShow := IniRead(iniFile, "cfg", "areaShow", "0")
+savedGuildSend := IniRead(iniFile, "cfg", "guildSend", "1"), savedGuildNotify := IniRead(iniFile, "cfg", "guildNotify", "0")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
 savedStartWin := IniRead(iniFile, "cfg", "startWin", "0")
 savedAutoMon  := IniRead(iniFile, "cfg", "autoMon", "0")
@@ -690,6 +694,29 @@ I18N["pt"] := Map(
     "nav_statusrep", "Relatório",
     "nav_stuck", "Travamento",
     "nav_qol", "QoL",
+    "nav_guild", "Guilda",
+    "pg_guild_sub", "Rank da guilda e avisos no Discord",
+    "sec_guild", "RANK DA GUILDA",
+    "guild_last", "Última mudança: {1}",
+    "guild_none", "Não achei o rank. Ajuste a área ou aumente a janela.",
+    "btn_guild_read", "Ler agora",
+    "sw_guildsend", "Rank no painel e relatório",
+    "sw_guildsend_sub", "Mostra o rank da guilda nas mensagens do Discord",
+    "sw_guildnotify", "Avisar quando o rank mudar",
+    "sw_guildnotify_sub", "Manda uma mensagem com o rank antigo e o novo",
+    "guild_changed", "🛡 Rank da guilda mudou: #{1} → #{2}",
+    "nav_adv", "Avançado",
+    "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
+    "sec_adv", "ACOMPANHAR A JANELA",
+    "sw_areascale", "Ajustar as áreas de leitura ao tamanho da janela",
+    "sw_areascale_sub", "Se você aumentar ou diminuir o Roblox, onde ele lê acompanha",
+    "sw_remsize", "Lembrar o tamanho da janela do Roblox",
+    "sw_remsize_sub", "Se você redimensionar, o programa guarda e não volta ao antigo",
+    "sw_areashow", "Mostrar na tela onde ele está lendo",
+    "sw_areashow_sub", "Contornos coloridos sobre o Roblox; desligue quando quiser",
+    "adv_size", "Janela do Roblox: {1}×{2}",
+    "adv_nowin", "Janela do Roblox: fechada",
+    "log_size_saved", "Tamanho da janela do Roblox salvo: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Pearls do evento (Summer)",
     "area_coins", "Moedas",
@@ -1236,6 +1263,29 @@ I18N["en"] := Map(
     "nav_statusrep", "Report",
     "nav_stuck", "Stuck check",
     "nav_qol", "QoL",
+    "nav_guild", "Guild",
+    "pg_guild_sub", "Guild rank and Discord alerts",
+    "sec_guild", "GUILD RANK",
+    "guild_last", "Last change: {1}",
+    "guild_none", "Rank not found. Adjust the area or enlarge the window.",
+    "btn_guild_read", "Read now",
+    "sw_guildsend", "Rank in panel and report",
+    "sw_guildsend_sub", "Shows the guild rank in Discord messages",
+    "sw_guildnotify", "Alert when the rank changes",
+    "sw_guildnotify_sub", "Sends a message with the old and new rank",
+    "guild_changed", "🛡 Guild rank changed: #{1} → #{2}",
+    "nav_adv", "Advanced",
+    "pg_adv_sub", "Settings for any monitor or resolution",
+    "sec_adv", "FOLLOW THE WINDOW",
+    "sw_areascale", "Fit reading areas to the window size",
+    "sw_areascale_sub", "If you resize Roblox, where it reads follows along",
+    "sw_remsize", "Remember the Roblox window size",
+    "sw_remsize_sub", "If you resize it, the app keeps it instead of going back",
+    "sw_areashow", "Show on screen where it is reading",
+    "sw_areashow_sub", "Colored outlines over Roblox; turn off any time",
+    "adv_size", "Roblox window: {1}×{2}",
+    "adv_nowin", "Roblox window: closed",
+    "log_size_saved", "Roblox window size saved: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Event pearls (Summer)",
     "area_coins", "Coins",
@@ -1782,6 +1832,29 @@ I18N["es"] := Map(
     "nav_statusrep", "Informe",
     "nav_stuck", "Detección de bloqueo",
     "nav_qol", "QoL",
+    "nav_guild", "Gremio",
+    "pg_guild_sub", "Rango del gremio y avisos en Discord",
+    "sec_guild", "RANGO DEL GREMIO",
+    "guild_last", "Último cambio: {1}",
+    "guild_none", "No encontré el rango. Ajusta el área o agranda la ventana.",
+    "btn_guild_read", "Leer ahora",
+    "sw_guildsend", "Rango en panel e informe",
+    "sw_guildsend_sub", "Muestra el rango del gremio en Discord",
+    "sw_guildnotify", "Avisar cuando cambie el rango",
+    "sw_guildnotify_sub", "Envía un mensaje con el rango anterior y el nuevo",
+    "guild_changed", "🛡 Cambió el rango del gremio: #{1} → #{2}",
+    "nav_adv", "Avanzado",
+    "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
+    "sec_adv", "SEGUIR LA VENTANA",
+    "sw_areascale", "Ajustar las áreas de lectura al tamaño de la ventana",
+    "sw_areascale_sub", "Si cambias el tamaño de Roblox, la zona de lectura lo sigue",
+    "sw_remsize", "Recordar el tamaño de la ventana de Roblox",
+    "sw_remsize_sub", "Si lo redimensionas, la app lo guarda y no vuelve al anterior",
+    "sw_areashow", "Mostrar en pantalla dónde está leyendo",
+    "sw_areashow_sub", "Contornos de colores sobre Roblox; desactívalo cuando quieras",
+    "adv_size", "Ventana de Roblox: {1}×{2}",
+    "adv_nowin", "Ventana de Roblox: cerrada",
+    "log_size_saved", "Tamaño de la ventana de Roblox guardado: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Pearls del evento (Summer)",
     "area_coins", "Monedas",
@@ -2328,6 +2401,29 @@ I18N["fr"] := Map(
     "nav_statusrep", "Rapport",
     "nav_stuck", "Blocage",
     "nav_qol", "QoL",
+    "nav_guild", "Guilde",
+    "pg_guild_sub", "Rang de guilde et alertes Discord",
+    "sec_guild", "RANG DE GUILDE",
+    "guild_last", "Dernier changement : {1}",
+    "guild_none", "Rang introuvable. Ajuste la zone ou agrandis la fenêtre.",
+    "btn_guild_read", "Lire",
+    "sw_guildsend", "Rang dans panneau et rapport",
+    "sw_guildsend_sub", "Affiche le rang de guilde dans Discord",
+    "sw_guildnotify", "Alerter si le rang change",
+    "sw_guildnotify_sub", "Envoie un message avec l'ancien et le nouveau rang",
+    "guild_changed", "🛡 Le rang de guilde a changé : #{1} → #{2}",
+    "nav_adv", "Avancé",
+    "pg_adv_sub", "Réglages pour tout écran ou résolution",
+    "sec_adv", "SUIVRE LA FENÊTRE",
+    "sw_areascale", "Adapter les zones de lecture à la taille de la fenêtre",
+    "sw_areascale_sub", "Si tu redimensionnes Roblox, la zone de lecture suit",
+    "sw_remsize", "Mémoriser la taille de la fenêtre Roblox",
+    "sw_remsize_sub", "Si tu la redimensionnes, l'appli la garde",
+    "sw_areashow", "Afficher à l'écran où il lit",
+    "sw_areashow_sub", "Contours colorés sur Roblox ; désactive quand tu veux",
+    "adv_size", "Fenêtre Roblox : {1}×{2}",
+    "adv_nowin", "Fenêtre Roblox : fermée",
+    "log_size_saved", "Taille de la fenêtre Roblox enregistrée : {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Pearls de l'événement (Summer)",
     "area_coins", "Pièces",
@@ -2874,6 +2970,29 @@ I18N["de"] := Map(
     "nav_statusrep", "Bericht",
     "nav_stuck", "Hänger",
     "nav_qol", "QoL",
+    "nav_guild", "Gilde",
+    "pg_guild_sub", "Gilden-Rang und Discord-Hinweise",
+    "sec_guild", "GILDEN-RANG",
+    "guild_last", "Letzte Änderung: {1}",
+    "guild_none", "Rang nicht gefunden. Bereich anpassen oder Fenster vergrößern.",
+    "btn_guild_read", "Jetzt lesen",
+    "sw_guildsend", "Rang in Panel und Bericht",
+    "sw_guildsend_sub", "Zeigt den Gilden-Rang in Discord",
+    "sw_guildnotify", "Hinweis bei Rangänderung",
+    "sw_guildnotify_sub", "Sendet eine Nachricht mit altem und neuem Rang",
+    "guild_changed", "🛡 Gilden-Rang geändert: #{1} → #{2}",
+    "nav_adv", "Erweitert",
+    "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
+    "sec_adv", "FENSTER FOLGEN",
+    "sw_areascale", "Leseberiche an die Fenstergröße anpassen",
+    "sw_areascale_sub", "Wenn du Roblox skalierst, folgt der Lesebereich",
+    "sw_remsize", "Roblox-Fenstergröße merken",
+    "sw_remsize_sub", "Wenn du die Größe änderst, merkt sich die App sie",
+    "sw_areashow", "Anzeigen, wo gelesen wird",
+    "sw_areashow_sub", "Farbige Umrisse über Roblox; jederzeit abschaltbar",
+    "adv_size", "Roblox-Fenster: {1}×{2}",
+    "adv_nowin", "Roblox-Fenster: geschlossen",
+    "log_size_saved", "Roblox-Fenstergröße gespeichert: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Event-Pearls (Summer)",
     "area_coins", "Münzen",
@@ -3420,6 +3539,29 @@ I18N["ru"] := Map(
     "nav_statusrep", "Отчёт",
     "nav_stuck", "Зависание",
     "nav_qol", "QoL",
+    "nav_guild", "Гильдия",
+    "pg_guild_sub", "Ранг гильдии и уведомления в Discord",
+    "sec_guild", "РАНГ ГИЛЬДИИ",
+    "guild_last", "Последнее изменение: {1}",
+    "guild_none", "Ранг не найден. Настройте область или увеличьте окно.",
+    "btn_guild_read", "Считать",
+    "sw_guildsend", "Ранг в панели и отчёте",
+    "sw_guildsend_sub", "Показывает ранг гильдии в Discord",
+    "sw_guildnotify", "Сообщать о смене ранга",
+    "sw_guildnotify_sub", "Отправляет сообщение со старым и новым рангом",
+    "guild_changed", "🛡 Ранг гильдии изменился: #{1} → #{2}",
+    "nav_adv", "Дополнительно",
+    "pg_adv_sub", "Настройки для любого монитора и разрешения",
+    "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
+    "sw_areascale", "Подгонять области чтения под размер окна",
+    "sw_areascale_sub", "Если изменить размер Roblox, область чтения следует за ним",
+    "sw_remsize", "Запоминать размер окна Roblox",
+    "sw_remsize_sub", "Если изменить размер, программа сохранит его",
+    "sw_areashow", "Показывать, где идёт чтение",
+    "sw_areashow_sub", "Цветные рамки поверх Roblox; можно отключить",
+    "adv_size", "Окно Roblox: {1}×{2}",
+    "adv_nowin", "Окно Roblox: закрыто",
+    "log_size_saved", "Размер окна Roblox сохранён: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Pearls события (Summer)",
     "area_coins", "Монеты",
@@ -3966,6 +4108,29 @@ I18N["tr"] := Map(
     "nav_statusrep", "Rapor",
     "nav_stuck", "Takılma",
     "nav_qol", "QoL",
+    "nav_guild", "Lonca",
+    "pg_guild_sub", "Lonca sırası ve Discord bildirimleri",
+    "sec_guild", "LONCA SIRASI",
+    "guild_last", "Son değişiklik: {1}",
+    "guild_none", "Sıra bulunamadı. Alanı ayarla veya pencereyi büyüt.",
+    "btn_guild_read", "Şimdi oku",
+    "sw_guildsend", "Panel ve raporda sıra",
+    "sw_guildsend_sub", "Lonca sırasını Discord'da gösterir",
+    "sw_guildnotify", "Sıra değişince bildir",
+    "sw_guildnotify_sub", "Eski ve yeni sırayı mesaj olarak yollar",
+    "guild_changed", "🛡 Lonca sırası değişti: #{1} → #{2}",
+    "nav_adv", "Gelişmiş",
+    "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
+    "sec_adv", "PENCEREYİ TAKİP ET",
+    "sw_areascale", "Okuma alanlarını pencere boyutuna uydur",
+    "sw_areascale_sub", "Roblox boyutunu değiştirirsen okuma alanı da uyar",
+    "sw_remsize", "Roblox pencere boyutunu hatırla",
+    "sw_remsize_sub", "Yeniden boyutlandırırsan uygulama bunu korur",
+    "sw_areashow", "Nereyi okuduğunu ekranda göster",
+    "sw_areashow_sub", "Roblox üzerinde renkli çerçeveler; istediğin zaman kapat",
+    "adv_size", "Roblox penceresi: {1}×{2}",
+    "adv_nowin", "Roblox penceresi: kapalı",
+    "log_size_saved", "Roblox pencere boyutu kaydedildi: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Etkinlik pearls (Summer)",
     "area_coins", "Paralar",
@@ -4512,6 +4677,29 @@ I18N["id"] := Map(
     "nav_statusrep", "Laporan",
     "nav_stuck", "Macet",
     "nav_qol", "QoL",
+    "nav_guild", "Guild",
+    "pg_guild_sub", "Peringkat guild dan notifikasi Discord",
+    "sec_guild", "PERINGKAT GUILD",
+    "guild_last", "Perubahan terakhir: {1}",
+    "guild_none", "Peringkat tidak ditemukan. Atur area atau perbesar jendela.",
+    "btn_guild_read", "Baca sekarang",
+    "sw_guildsend", "Peringkat di panel dan laporan",
+    "sw_guildsend_sub", "Tampilkan peringkat guild di Discord",
+    "sw_guildnotify", "Beri tahu saat peringkat berubah",
+    "sw_guildnotify_sub", "Kirim pesan dengan peringkat lama dan baru",
+    "guild_changed", "🛡 Peringkat guild berubah: #{1} → #{2}",
+    "nav_adv", "Lanjutan",
+    "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
+    "sec_adv", "IKUTI JENDELA",
+    "sw_areascale", "Sesuaikan area baca dengan ukuran jendela",
+    "sw_areascale_sub", "Jika ukuran Roblox diubah, area baca ikut menyesuaikan",
+    "sw_remsize", "Ingat ukuran jendela Roblox",
+    "sw_remsize_sub", "Jika diubah, app menyimpannya dan tidak kembali ke ukuran lama",
+    "sw_areashow", "Tampilkan di layar area yang dibaca",
+    "sw_areashow_sub", "Garis berwarna di atas Roblox; matikan kapan saja",
+    "adv_size", "Jendela Roblox: {1}×{2}",
+    "adv_nowin", "Jendela Roblox: tertutup",
+    "log_size_saved", "Ukuran jendela Roblox disimpan: {1}×{2}",
     "area_wave", "Wave",
     "area_pearls", "Pearls event (Summer)",
     "area_coins", "Koin",
@@ -4643,7 +4831,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -4773,7 +4961,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
-    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD", "Leitura"]
+    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD", "Leitura", "Avançado"]
     , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
@@ -4980,6 +5168,20 @@ Lbl(CX + 20, y + 120, CW - 40, TT("lbl_interval"), "s9", C_MUTED)
 edRepMin := Input(CX + CW - 20 - 64, y + 142, 64, savedRepMin, "Number")
 SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edRepMin, 5, 240)
 Btn(CX + 20, y + 188, 160, 32, TT("btn_send_now"), (*) => SendStatusReport(true))
+
+; ---------------- Discord: Guilda ----------------
+BeginPage("Guilda", TT("nav_guild"), TT("pg_guild_sub"))
+y := 92
+Card(CX, y, CW, 164)
+Lbl(CX + 20, y + 16, 300, TT("sec_guild"), "s7 w700", C_DIM)
+guildBig := Lbl(CX + 20, y + 36, CW - 40, "#—", "s26 w700")
+guildSub := Lbl(CX + 20, y + 88, CW - 40, TT("guild_last", "—"), "s9", C_MUTED)
+Btn(CX + 20, y + 116, 150, 32, TT("btn_guild_read"), (*) => GuildReadNow())
+Btn(CX + 180, y + 116, 150, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
+y += 176
+Card(CX, y, CW, 150)
+chkGuildSend := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_guildsend"), savedGuildSend, TT("sw_guildsend_sub"))
+chkGuildNotify := ToggleSwitch(CX + 20, y + 82, CW - 40, TT("sw_guildnotify"), savedGuildNotify, TT("sw_guildnotify_sub"))
 
 ; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
@@ -5219,6 +5421,18 @@ Divider(CX + 20, y + 318, CW - 40)
 Btn(CX + 20, y + 330, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
 areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 
+; ---------------- Página: Avançado (qualquer monitor ou resolução) ----------------
+BeginPage("Avançado", TT("nav_adv"), TT("pg_adv_sub"))
+y := 92
+Card(CX, y, CW, 300)
+Lbl(CX + 20, y + 14, 400, TT("sec_adv"), "s7 w700", C_DIM)
+chkAreaScale := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_areascale"), savedAreaScale, TT("sw_areascale_sub"))
+chkRemSize := ToggleSwitch(CX + 20, y + 106, CW - 40, TT("sw_remsize"), savedRemSize, TT("sw_remsize_sub"))
+chkAreaShow := ToggleSwitch(CX + 20, y + 174, CW - 40, TT("sw_areashow"), savedAreaShow, TT("sw_areashow_sub"))
+chkAreaShow.onChange := (*) => AreaShowTick()
+Divider(CX + 20, y + 246, CW - 40)
+advSize := Lbl(CX + 20, y + 260, CW - 40, TT("adv_nowin"), "s10", C_MUTED)
+
 ; ---------------- Página: Logs ----------------
 BeginPage("Logs", TT("nav_logs"), TT("pg_logs_sub"))
 y := 92
@@ -5384,6 +5598,7 @@ StartApp() {
     SetTimer(() => CheckUpdate(false), -8000)        ; procura atualização 8s depois de abrir
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
     SetTimer(WhatsNewCheck, -12000)
+    SetTimer(AreaShowTick, 500)
     SetTimer(FarmModeTick, 15000)
     SetTimer(() => FarmModeTick(), -6000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
@@ -7206,12 +7421,27 @@ LineRect(line) {
 }
 
 ; ---------- áreas de leitura (ajustáveis pelo usuário, guardadas em proporção da janela do Roblox) ----------
-AreaGet(name) {
-    global areaDef, iniFile
+; devolve a área em proporção da janela ATUAL. Se "ajustar ao tamanho da janela" estiver ligado, converte do tamanho em que foi marcada
+; (o texto do Roblox cresce junto com a altura; esquerda/centro seguem o canto/centro da janela)
+AreaGet(name, cw := 0, ch := 0) {
+    global areaDef, iniFile, areaAnchor, chkAreaScale
     d := areaDef[name], r := []
     for i, k in ["x", "y", "w", "h"] {
         v := IniRead(iniFile, "area", name "_" k, "")
         r.Push(v != "" && IsNumber(v) ? Float(v) : d[i])
+    }
+    rw := IniRead(iniFile, "area", name "_rw", ""), rh := IniRead(iniFile, "area", name "_rh", "")
+    if (cw > 0 && ch > 0 && IsNumber(rw) && IsNumber(rh) && Integer(rw) > 0 && Integer(rh) > 0 && IsObject(chkAreaScale) && chkAreaScale.Value
+        && (cw != Integer(rw) || ch != Integer(rh))) {
+        rw := Integer(rw), rh := Integer(rh)
+        sc := ch / rh
+        an := areaAnchor[name]
+        axRef := an * rw / 2, axCur := an * cw / 2
+        x := axCur + (r[1] * rw - axRef) * sc, y := r[2] * rh * sc
+        w := r[3] * rw * sc, h := r[4] * rh * sc
+        x := Max(0, Min(cw - 8, x)), y := Max(0, Min(ch - 8, y))
+        w := Max(8, Min(w, cw - x)), h := Max(8, Min(h, ch - y))
+        return [x / cw, y / ch, w / cw, h / ch]
     }
     return r
 }
@@ -7223,7 +7453,7 @@ AreaIsSet(name) {
 
 AreaReset(name) {
     global iniFile, areaRes
-    for k in ["x", "y", "w", "h"]
+    for k in ["x", "y", "w", "h", "rw", "rh"]
         IniDelete(iniFile, "area", name "_" k)
     if IsObject(areaRes)
         areaRes.Value := TT("area_reset_ok")
@@ -7254,7 +7484,7 @@ AreaEdit(name) {
     }
     WinGetClientPos(&cx, &cy, &cw, &ch, hw)
     k := A_ScreenDPI / 96
-    ar := AreaGet(name)
+    ar := AreaGet(name, cw, ch)
     u := {name: name, cx: cx, cy: cy, cw: cw, ch: ch, mode: "", was: false, ax: 0, ay: 0, ox: 0, oy: 0, fl: [0, 0]}
     u.x := cx + Round(ar[1] * cw), u.y := cy + Round(ar[2] * ch)
     u.w := Max(Round(20 * k), Round(ar[3] * cw)), u.h := Max(Round(16 * k), Round(ar[4] * ch))
@@ -7382,6 +7612,8 @@ AreaSave() {
     r := [(u.x - u.cx) / u.cw, (u.y - u.cy) / u.ch, u.w / u.cw, u.h / u.ch]
     for i, key in ["x", "y", "w", "h"]
         IniWrite(Round(Max(0, Min(1, r[i])), 4), iniFile, "area", u.name "_" key)
+    IniWrite(u.cw, iniFile, "area", u.name "_rw")
+    IniWrite(u.ch, iniFile, "area", u.name "_rh")
     AreaClose()
     SetTimer(AreaTest, -300)
 }
@@ -7414,13 +7646,121 @@ AreaTest() {
         areaRes.Value := msg
 }
 
+; ---------- mostra na tela onde ele está lendo (contornos coloridos sobre o Roblox) + tamanho da janela ----------
+AreaShowTick() {
+    global chkAreaShow, areaOn, chkHudGd, areaKey, advSize
+    static wins := Map(), shown := false, sizeTxt := ""
+    hw := FindGameWindow()
+    ok := hw && !DllCall("IsIconic", "Ptr", hw) && DllCall("IsWindowVisible", "Ptr", hw)
+    if IsObject(advSize) {
+        txt := TT("adv_nowin")
+        if ok {
+            WinGetClientPos(, , &qw, &qh, hw)
+            txt := TT("adv_size", qw, qh)
+        }
+        if (txt != sizeTxt) {
+            sizeTxt := txt
+            advSize.Value := txt
+        }
+    }
+    if !(chkAreaShow.Value && !areaOn && ok) {
+        if shown {
+            for n, o in wins
+                try o.frm.Hide(), o.lab.Hide(), o.vis := false
+            shown := false
+        }
+        return
+    }
+    WinGetClientPos(&cx, &cy, &cw, &ch, hw)
+    cols := Map("mode", "5BE37D", "wave", "FFD84D", "pearls", "FF7AC8", "coins", "FFA23D", "guild", "4DD2FF")
+    k := A_ScreenDPI / 96
+    for n in ["mode", "wave", "pearls", "coins", "guild"] {
+        vis := (n != "coins" || AreaIsSet("coins")) && (n != "guild" || chkHudGd.Value)
+        if !wins.Has(n) {
+            o := {key: "", vis: false, hw: 0}
+            o.frm := Gui("-Caption +ToolWindow -DPIScale +E0x20 +E0x08000000")
+            o.frm.BackColor := cols[n]
+            o.lab := Gui("-Caption +ToolWindow -DPIScale +E0x20 +E0x08000000")
+            o.lab.BackColor := cols[n]
+            o.lab.SetFont("s8 w700", "Segoe UI")
+            lt := o.lab.Add("Text", "x5 y1 c101018 BackgroundTrans", TT(areaKey[n]))
+            lt.GetPos(, , &tw, &th)
+            o.lw := tw + 10, o.lh := th + 2
+            wins[n] := o
+        }
+        o := wins[n]
+        if !vis {
+            if o.vis {
+                o.frm.Hide(), o.lab.Hide()
+                o.vis := false
+            }
+            continue
+        }
+        ar := AreaGet(n, cw, ch)
+        x := cx + Round(ar[1] * cw), y := cy + Round(ar[2] * ch), w := Max(8, Round(ar[3] * cw)), h := Max(8, Round(ar[4] * ch))
+        key := x "," y "," w "," h
+        if (key != o.key || !o.vis || o.hw != hw) {
+            if (o.hw != hw) {
+                HudOwn(o.frm, hw), HudOwn(o.lab, hw)
+                o.hw := hw
+            }
+            o.key := key
+            o.frm.Show(Format("NA x{} y{} w{} h{}", x, y, w, h))
+            t := Max(2, Round(2 * k))
+            outer := DllCall("CreateRectRgn", "Int", 0, "Int", 0, "Int", w, "Int", h, "Ptr")
+            inner := DllCall("CreateRectRgn", "Int", t, "Int", t, "Int", Max(t + 1, w - t), "Int", Max(t + 1, h - t), "Ptr")
+            DllCall("CombineRgn", "Ptr", outer, "Ptr", outer, "Ptr", inner, "Int", 4)
+            DllCall("DeleteObject", "Ptr", inner)
+            DllCall("SetWindowRgn", "Ptr", o.frm.Hwnd, "Ptr", outer, "Int", 1)
+            ly := (y - o.lh >= cy) ? y - o.lh : y + h
+            o.lab.Show(Format("NA x{} y{} w{} h{}", x, ly, o.lw, o.lh))
+            o.vis := true
+        }
+    }
+    shown := true
+}
+
+; ---------- rank da guilda: mostra na aba e avisa no webhook quando muda ----------
+GuildChanged(old, new, notify := true) {
+    global guildBig, guildSub, guildWhen, chkGuildNotify
+    if IsObject(guildBig)
+        guildBig.Value := "#" new
+    if (old != new) {
+        guildWhen := FormatTime(, "dd/MM HH:mm")
+        if IsObject(guildSub)
+            guildSub.Value := TT("guild_last", guildWhen)
+        if (notify && old != "" && chkGuildNotify.Value)
+            SendWebhook(TT("guild_changed", old, new))
+    }
+}
+
+GuildReadNow() {
+    global guildSub, farmGuild
+    hw := FindGameWindow()
+    if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
+        guildSub.Value := TT("area_need_roblox")
+        return
+    }
+    guildSub.Value := TT("area_testing")
+    gr := ReadGuildRank(hw)
+    if (gr = "") {
+        guildSub.Value := TT("guild_none")
+        return
+    }
+    old := farmGuild
+    farmGuild := gr
+    GuildChanged(old, gr, false)
+    if (old = gr)
+        guildSub.Value := TT("guild_last", guildWhen != "" ? guildWhen : "—")
+}
+
 ; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
 ReadGuildRank(hw) {
     global farmBest, farmGdbgT
     static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ar := AreaGet("guild")
+        ar := AreaGet("guild", cw, chh)
         ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
@@ -7454,7 +7794,7 @@ OcrAreaRead(hw, name, ok) {
     out := {res: 0, text: "", vi: 0, ok: false, err: ""}
     try {
         WinGetClientPos(, , &cw, &chh, hw)
-        ar := AreaGet(name)
+        ar := AreaGet(name, cw, chh)
         ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Max(24, Round(cw * ar[3])), oh := Max(16, Round(chh * ar[4]))
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
@@ -7485,7 +7825,7 @@ OcrAreaRead(hw, name, ok) {
 
 ; lê (só olhando a tela) o nome do modo, a wave e as pearls, cada um na sua área, e as cores deles
 FarmModeTick(test := false) {
-    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd
+    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify
     if (!test && !(hudMode = 4 || chkPanel.Value))
         return
     farmLast := {mode: "", wave: "", pearls: "", seen: ""}
@@ -7569,13 +7909,15 @@ FarmModeTick(test := false) {
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
     ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
     static pendG := ""
-    gr := chkHudGd.Value ? ReadGuildRank(hw) : ""
+    gr := (chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value) ? ReadGuildRank(hw) : ""
     if (gr != "") {
         if (gr = farmGuild)
             pendG := ""
-        else if (gr = pendG)
+        else if (gr = pendG) {
+            old := farmGuild
             farmGuild := gr, pendG := ""
-        else
+            GuildChanged(old, gr)
+        } else
             pendG := gr
     }
 }
@@ -7644,7 +7986,7 @@ PanelUpdate(force := false) {
         fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
     if (farmMode != "" && farmPearls != "")
         fields.Push(["🦪 Pearls", "+" farmPearls, true])
-    if (farmGuild != "" && chkHudGd.Value)
+    if (farmGuild != "" && chkGuildSend.Value)
         fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
         fields.Push([TT("f_prevround"), "+" farmPrev, true])
@@ -8840,6 +9182,11 @@ SaveConfig() {
     IniWrite(chkHudCo.Value, iniFile, "cfg", "hudShowCo")
     IniWrite(chkHudLg.Value, iniFile, "cfg", "hudShowLg")
     IniWrite(chkHudGd.Value, iniFile, "cfg", "hudShowGd")
+    IniWrite(chkAreaScale.Value, iniFile, "cfg", "areaScale")
+    IniWrite(chkRemSize.Value, iniFile, "cfg", "remSize")
+    IniWrite(chkAreaShow.Value, iniFile, "cfg", "areaShow")
+    IniWrite(chkGuildSend.Value, iniFile, "cfg", "guildSend")
+    IniWrite(chkGuildNotify.Value, iniFile, "cfg", "guildNotify")
     IniWrite(chkWhatsNew.Value, iniFile, "cfg", "whatsNew")
     IniWrite(winW, iniFile, "cfg", "winW")
     IniWrite(winH, iniFile, "cfg", "winH")
@@ -9792,6 +10139,11 @@ SendStatusReport(manual := false) {
     else
         title := "🟢  " TT("emb_online"), color := 0x3DDC84
 
+    extra := ""
+    if (farmMode != "")
+        extra .= '{"name":"' JsonEsc("🎯 " TT("f_mode")) '","value":"' JsonEsc(farmMode (farmWave != "" ? "  ·  Wave " farmWave : "") (farmPearls != "" ? "  ·  🦪 +" farmPearls : "")) '","inline":false},'
+    if (farmGuild != "" && chkGuildSend.Value)
+        extra .= '{"name":"' JsonEsc("🛡 " TT("f_guild")) '","value":"``#' farmGuild '``","inline":true},'
     up := AfkStr()
     queda := lastDiscUnix ? "<t:" lastDiscUnix ":t>  ·  <t:" lastDiscUnix ":R>" : TT("none")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
@@ -9804,7 +10156,7 @@ SendStatusReport(manual := false) {
        . '"title":"' JsonEsc(title) '",'
        . '"color":' color ','
        . (stats != "" ? '"description":"' JsonEsc(stats) '",' : '')
-       . '"fields":['
+       . '"fields":[' extra
        . '{"name":"' JsonEsc("⏱️ " TT("f_uptime")) '","value":"``' JsonEsc(up) '``","inline":true},'
        . '{"name":"' JsonEsc("🔁 " TT("f_reopens")) '","value":"``' launches '``","inline":true},'
        . '{"name":"' JsonEsc("📉 " TT("f_drops")) '","value":"``' discCount '``","inline":true},'
@@ -9898,7 +10250,7 @@ OcrWords(hw, opt) {
     if AreaIsSet("coins") {                   ; o usuário marcou onde ficam as moedas
         try {
             WinGetClientPos(, , &cw, &chh, hw)
-            ar := AreaGet("coins")
+            ar := AreaGet("coins", cw, chh)
             opt.x := Round(cw * ar[1]), opt.y := Round(chh * ar[2]), opt.w := Max(24, Round(cw * ar[3])), opt.h := Max(16, Round(chh * ar[4]))
         }
     }
@@ -10419,14 +10771,35 @@ VisibleRect(hwnd) {
 ; Gruda a janela no canto superior direito (borda visível encostada na tela).
 ; winW/winH = tamanho visível. Retorna true se já estava no lugar.
 PlaceRoblox(hwnd) {
-    global winW, winH, fsTries
+    global winW, winH, fsTries, chkRemSize, placedHw, iniFile, edW, edH
+    static lw := 0, lh := 0
     mm := WinGetMinMax(hwnd)
     WinGetPos(&x, &y, &w, &h, hwnd)
     v := VisibleRect(hwnd)
+    ; você redimensionou a janela? guarda o tamanho novo (depois que parar de mexer) em vez de voltar pro antigo
+    if (chkRemSize.Value && placedHw = hwnd && mm = 0) {
+        vw := v[3] - v[1], vh := v[4] - v[2]
+        if (vw >= 300 && vh >= 200 && vw < A_ScreenWidth - 20 && (Abs(vw - winW) > 2 || Abs(vh - winH) > 2)) {
+            if (vw = lw && vh = lh) {
+                winW := vw, winH := vh
+                try edW.Value := vw
+                try edH.Value := vh
+                IniWrite(winW, iniFile, "cfg", "winW")
+                IniWrite(winH, iniFile, "cfg", "winH")
+                Log(TT("log_size_saved", vw, vh))
+                lw := 0, lh := 0
+            } else {
+                lw := vw, lh := vh
+                return true
+            }
+        }
+    }
 
     if (mm = 0 && Abs(v[3] - A_ScreenWidth) <= 1 && Abs(v[2]) <= 1
-        && Abs((v[3] - v[1]) - winW) <= 2 && Abs((v[4] - v[2]) - winH) <= 2)
+        && Abs((v[3] - v[1]) - winW) <= 2 && Abs((v[4] - v[2]) - winH) <= 2) {
+        placedHw := hwnd
         return true
+    }
 
     ; tela cheia -> sai com F11 (no máximo 2 vezes por janela)
     if (mm = 0 && w >= A_ScreenWidth - 20 && h >= A_ScreenHeight - 20 && fsTries < 2) {
@@ -10448,6 +10821,7 @@ PlaceRoblox(hwnd) {
     offR := (x + w) - v[3], offB := (y + h) - v[4]
 
     WinMove(A_ScreenWidth - winW - offL, -offT, winW + offL + offR, winH + offT + offB, hwnd)
+    placedHw := hwnd
     return false
 }
 

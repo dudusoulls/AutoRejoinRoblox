@@ -1,5 +1,13 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.4.0
+- Nova aba Aparência > Avançado, pra qualquer monitor ou resolução:
+  - as áreas de leitura acompanham o tamanho da janela do Roblox (cresce ou diminui junto)
+  - o programa lembra o tamanho da janela quando você redimensiona (não volta ao antigo)
+  - opção de mostrar na tela, com contornos coloridos, onde ele está lendo
+- Nova aba Discord > Guilda: rank atual, botão Ler agora, rank no painel e no relatório, aviso no webhook quando o rank mudar
+- O relatório de status do Discord agora inclui modo, wave, pearls e rank da guilda
+
 ## v1.3.15
 - Aba Leitura: agora cada coisa tem a sua própria área (Modo, Wave, Pearls do evento, Moedas e Rank da guilda)
 - Corrigido: depois de mover a área, os botões Salvar/Padrão/Cancelar ficavam inclicáveis
