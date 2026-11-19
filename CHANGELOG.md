@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.0
+- Relatório de erro em 1 clique: quando o app tem um erro interno, ele continua rodando e abre uma janela com "Enviar relatório" (abre uma Issue do GitHub já preenchida com erro, versões e últimas linhas do log, sem webhook/token)
+- Botão "Reportar problema" na aba Logs; erros também ficam salvos em erros.log
+
 ## v1.4.9
 - OCR mais preciso em números pequenos: área mínima automática, várias ampliações com votação do número mais repetido e correção de letras parecidas com dígitos (O→0, l→1, S→5...)
 

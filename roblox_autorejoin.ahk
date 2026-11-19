@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.9"
+VERSION     := "1.5.0"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -826,6 +826,11 @@ I18N["pt"] := Map(
     "sw_donate_sub", "Mostra o QR de Pix toda vez que o app abre"
 )
 I18N["pt"].Set(
+    "err_title", "Auto Reconnect — erro",
+    "err_msg", "Aconteceu um erro no app, mas ele continua rodando. Quer enviar o relatório pro desenvolvedor? (abre o GitHub já preenchido, é só clicar em Enviar)",
+    "err_send", "Enviar relatório (1 clique)",
+    "err_close", "Fechar",
+    "btn_report", "Reportar problema",
     "rbx_ver_t", "VERSÃO DO ROBLOX",
     "rbx_ver_cur", "Em uso",
     "rbx_ver_new", "Mais recente",
@@ -1406,6 +1411,11 @@ I18N["en"] := Map(
     "sw_donate_sub", "Shows the Pix QR every time the app opens"
 )
 I18N["en"].Set(
+    "err_title", "Auto Reconnect — error",
+    "err_msg", "The app hit an error but keeps running. Send a report to the developer? (opens GitHub pre-filled, just click Submit)",
+    "err_send", "Send report (1 click)",
+    "err_close", "Close",
+    "btn_report", "Report a problem",
     "rbx_ver_t", "ROBLOX VERSION",
     "rbx_ver_cur", "In use",
     "rbx_ver_new", "Latest",
@@ -1986,6 +1996,11 @@ I18N["es"] := Map(
     "sw_donate_sub", "Muestra el QR de Pix cada vez que abres la app"
 )
 I18N["es"].Set(
+    "err_title", "Auto Reconnect — error",
+    "err_msg", "La app tuvo un error pero sigue funcionando. ¿Enviar un reporte al desarrollador? (abre GitHub ya rellenado, solo pulsa Enviar)",
+    "err_send", "Enviar reporte (1 clic)",
+    "err_close", "Cerrar",
+    "btn_report", "Reportar problema",
     "rbx_ver_t", "VERSIÓN DE ROBLOX",
     "rbx_ver_cur", "En uso",
     "rbx_ver_new", "Más reciente",
@@ -2566,6 +2581,11 @@ I18N["fr"] := Map(
     "sw_donate_sub", "Affiche le QR Pix à chaque ouverture"
 )
 I18N["fr"].Set(
+    "err_title", "Auto Reconnect — erreur",
+    "err_msg", "L’app a rencontré une erreur mais continue. Envoyer un rapport au développeur ? (ouvre GitHub pré-rempli, clique sur Envoyer)",
+    "err_send", "Envoyer le rapport (1 clic)",
+    "err_close", "Fermer",
+    "btn_report", "Signaler un problème",
     "rbx_ver_t", "VERSION DE ROBLOX",
     "rbx_ver_cur", "Utilisée",
     "rbx_ver_new", "Dernière",
@@ -3146,6 +3166,11 @@ I18N["de"] := Map(
     "sw_donate_sub", "Zeigt den Pix-QR bei jedem Öffnen"
 )
 I18N["de"].Set(
+    "err_title", "Auto Reconnect — Fehler",
+    "err_msg", "Die App hatte einen Fehler, läuft aber weiter. Bericht an den Entwickler senden? (öffnet GitHub vorausgefüllt, nur auf Senden klicken)",
+    "err_send", "Bericht senden (1 Klick)",
+    "err_close", "Schließen",
+    "btn_report", "Problem melden",
     "rbx_ver_t", "ROBLOX-VERSION",
     "rbx_ver_cur", "In Benutzung",
     "rbx_ver_new", "Neueste",
@@ -3726,6 +3751,11 @@ I18N["ru"] := Map(
     "sw_donate_sub", "Показывает QR Pix при каждом запуске"
 )
 I18N["ru"].Set(
+    "err_title", "Auto Reconnect — ошибка",
+    "err_msg", "В приложении произошла ошибка, но оно продолжает работать. Отправить отчёт разработчику? (откроется GitHub с готовым текстом, нажмите Отправить)",
+    "err_send", "Отправить отчёт (1 клик)",
+    "err_close", "Закрыть",
+    "btn_report", "Сообщить о проблеме",
     "rbx_ver_t", "ВЕРСИЯ ROBLOX",
     "rbx_ver_cur", "Установлена",
     "rbx_ver_new", "Последняя",
@@ -4306,6 +4336,11 @@ I18N["tr"] := Map(
     "sw_donate_sub", "Uygulama her açıldığında Pix QR'ını gösterir"
 )
 I18N["tr"].Set(
+    "err_title", "Auto Reconnect — hata",
+    "err_msg", "Uygulamada hata oluştu ama çalışmaya devam ediyor. Geliştiriciye rapor gönderilsin mi? (GitHub dolu açılır, Gönder’e tıkla)",
+    "err_send", "Raporu gönder (1 tık)",
+    "err_close", "Kapat",
+    "btn_report", "Sorun bildir",
     "rbx_ver_t", "ROBLOX SÜRÜMÜ",
     "rbx_ver_cur", "Kullanılan",
     "rbx_ver_new", "En yeni",
@@ -4886,6 +4921,11 @@ I18N["id"] := Map(
     "sw_donate_sub", "Tampilkan QR Pix setiap app dibuka"
 )
 I18N["id"].Set(
+    "err_title", "Auto Reconnect — kesalahan",
+    "err_msg", "Aplikasi mengalami kesalahan tetapi tetap berjalan. Kirim laporan ke pengembang? (membuka GitHub terisi, tinggal klik Kirim)",
+    "err_send", "Kirim laporan (1 klik)",
+    "err_close", "Tutup",
+    "btn_report", "Laporkan masalah",
     "rbx_ver_t", "VERSI ROBLOX",
     "rbx_ver_cur", "Dipakai",
     "rbx_ver_new", "Terbaru",
@@ -5565,6 +5605,7 @@ logBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly -Wrap +Multi +VScroll
     , CX + 16, y + 14, CW - 32, 296, C_TEXT, C_CARD)))
 DllCall("uxtheme\SetWindowTheme", "Ptr", logBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 Btn(CX + CW - 110, y + 336, 110, 32, TT("btn_clear"), (*) => (logBox.Value := ""))
+Btn(CX + CW - 110 - 12 - 190, y + 336, 190, 32, TT("btn_report"), ReportManual)
 
 curBuild := ""
 
@@ -5690,6 +5731,7 @@ OnMessage(0x200, OnMouseMove)
 
 ShowPage("Início")
 OnExit(OnQuit)
+OnError(AppError)
 kHwid.Value := ShortHWID()
 
 if !KaEnabled()
@@ -9490,6 +9532,96 @@ Log(msg) {
     }
     SendMessage(0xB1, n, n, logBox.Hwnd)                  ; EM_SETSEL no fim
     SendMessage(0xC2, 0, StrPtr(line), logBox.Hwnd)       ; EM_REPLACESEL
+}
+
+; ---------------- relatório de erro (abre uma Issue do GitHub já preenchida, 1 clique) ----------------
+; tira dados sensíveis (webhook, token de bot, nome de usuário do Windows) antes de mandar qualquer coisa
+Redact(t) {
+    t := RegExReplace(t, "i)https?://(?:\w+\.)?discord(?:app)?\.com/api/(?:v\d+/)?webhooks/\S+", "[webhook removido]")
+    t := RegExReplace(t, "[A-Za-z0-9_\-]{23,28}\.[A-Za-z0-9_\-]{6,7}\.[A-Za-z0-9_\-]{27,}", "[token removido]")
+    t := RegExReplace(t, "i)(Bot|Bearer)\s+[A-Za-z0-9_\.\-]{20,}", "$1 [removido]")
+    if (A_UserName != "")
+        t := StrReplace(t, A_UserName, "USER")
+    return t
+}
+
+ReportBody(detail) {
+    global VERSION, curTheme, logBox
+    static fence := "``````"      ; três crases de verdade
+    rv := ""
+    try rv := RbxInstalled().ver
+    logs := ""
+    try logs := logBox.Value
+    arr := StrSplit(RTrim(logs, "`r`n"), "`n", "`r")
+    take := ""
+    Loop Min(25, arr.Length)
+        take := arr[arr.Length - A_Index + 1] "`n" take
+    body := "**Versão do app:** " VERSION "`n**Roblox:** " (rv != "" ? rv : "?") "`n**Windows:** " A_OSVersion " (" (A_Is64bitOS ? "64" : "32") " bits)`n**Tema:** " curTheme "`n`n"
+    body .= "### Erro`n" fence "text`n" Redact(SubStr(detail, 1, 1800)) "`n" fence "`n`n### Últimas linhas do log`n" fence "text`n" Redact(take) "`n" fence "`n"
+    return body
+}
+
+; abre a página "nova issue" do GitHub com tudo preenchido; o usuário só clica em Enviar
+ReportIssue(title, detail) {
+    global GITHUB_REPO
+    body := ReportBody(detail)
+    url := ""
+    Loop 6 {
+        url := "https://github.com/" GITHUB_REPO "/issues/new?labels=bug&title=" UrlEnc(SubStr(title, 1, 120)) "&body=" UrlEnc(body)
+        if (StrLen(url) <= 7600)
+            break
+        body := SubStr(body, 1, Floor(StrLen(body) * 0.7)) "`n(cortado)"
+    }
+    try Run(url)
+    catch
+        Log("Não consegui abrir o navegador para enviar o relatório.")
+}
+
+AppError(e, mode) {
+    global VERSION
+    static busy := false, lastMsg := "", lastT := 0
+    if busy
+        return 1
+    busy := true
+    try {
+        msg := e.Message
+        stk := ""
+        try stk := e.Stack
+        det := msg "`nem: " (e.HasProp("What") ? e.What : "?") "  linha " (e.HasProp("Line") ? e.Line : "?") "`n" SubStr(stk, 1, 900)
+        try FileAppend("[" FormatTime(, "yyyy-MM-dd HH:mm:ss") "] v" VERSION "`n" det "`n`n", A_ScriptDir "\erros.log", "UTF-8")
+        try Log("⚠ Erro interno: " SubStr(msg, 1, 120))
+        if (msg != lastMsg || A_TickCount - lastT > 120000) {
+            lastMsg := msg, lastT := A_TickCount
+            SetTimer(() => ErrDialog(msg, det), -50)
+        }
+    }
+    busy := false
+    return 1
+}
+
+ErrDialog(msg, det) {
+    global C_BG, C_TEXT, C_MUTED
+    try {
+        d := Gui("+AlwaysOnTop +ToolWindow", TT("err_title"))
+        d.BackColor := C_BG
+        d.MarginX := 20, d.MarginY := 16
+        d.SetFont("s10 c" C_TEXT, "Segoe UI")
+        d.AddText("w420", TT("err_msg"))
+        d.SetFont("s8 c" C_MUTED, "Consolas")
+        d.AddText("w420 r3", SubStr(Redact(msg), 1, 220))
+        d.SetFont("s9", "Segoe UI")
+        b1 := d.AddButton("w200 Default", TT("err_send"))
+        b2 := d.AddButton("x+12 w120", TT("err_close"))
+        b1.OnEvent("Click", (*) => (ReportIssue("Erro: " SubStr(msg, 1, 80), det), d.Destroy()))
+        b2.OnEvent("Click", (*) => d.Destroy())
+        d.OnEvent("Close", (*) => d.Destroy())
+        d.Show()
+    }
+}
+
+; botão manual (aba Logs): relata um problema mesmo sem erro
+ReportManual(*) {
+    ReportIssue("Problema relatado pelo app", "(relatório manual: descreva o problema aqui)")
 }
 
 SaveConfig() {
