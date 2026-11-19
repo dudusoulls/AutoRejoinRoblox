@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.4.3"
+VERSION     := "1.4.4"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -7506,11 +7506,14 @@ AreaGet(name, cw := 0, ch := 0) {
     if (cw > 0 && ch > 0 && IsNumber(rw) && IsNumber(rh) && Integer(rw) > 0 && Integer(rh) > 0 && IsObject(chkAreaScale) && chkAreaScale.Value
         && (cw != Integer(rw) || ch != Integer(rh))) {
         rw := Integer(rw), rh := Integer(rh)
-        sc := ch / rh
+        ; UI de jogos do Roblox costuma escalar pelo MENOR lado (janela mais estreita que a original encolhe pela largura)
+        sc := Min(ch / rh, cw / rw)
         an := areaAnchor[name]
         axRef := an * rw / 2, axCur := an * cw / 2
         x := axCur + (r[1] * rw - axRef) * sc, y := r[2] * rh * sc
         w := r[3] * rw * sc, h := r[4] * rh * sc
+        ; folga de 6% pra absorver diferença de proporção (só quando o tamanho mudou)
+        x -= w * 0.03, y -= h * 0.03, w *= 1.06, h *= 1.06
         x := Max(0, Min(cw - 8, x)), y := Max(0, Min(ch - 8, y))
         w := Max(8, Min(w, cw - x)), h := Max(8, Min(h, ch - y))
         return [x / cw, y / ch, w / cw, h / ch]
