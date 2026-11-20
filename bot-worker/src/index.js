@@ -10,18 +10,17 @@ const REPO = "https://github.com/dudusoulls/AutoRejoinRoblox/releases/latest";
 // Mensagem de boas-vindas (ao adicionar o bot) e lembrete diário (no canal vinculado)
 function welcomeEmbed(full) {
   const how =
-    "### 🚀 Como usar\n" +
-    "**1.** No app: **EXTRAS → Bot → Bot oficial**, ligue a chave e **copie o código**.\n" +
-    "**2.** Neste canal: `/vincular codigo:SEU_CODIGO`\n" +
-    "**3.** Controle o **seu** Roblox com `/roblox comando:...`\n\n" +
+    "### ✅ Tudo pronto!\n" +
+    "Este canal agora recebe os avisos do **seu** app e você controla o **seu** Roblox por aqui com `/roblox comando:...`\n\n" +
     "### 🎮 Comandos\n" +
-    "```\nstatus  print  iniciar  parar  reiniciar\nmoedas  resumo  pc  historico  logs\npainel  grafico  ajuda\n```\n";
+    "```\nstatus  print  iniciar  parar  reiniciar\nmoedas  resumo  pc  historico  logs\npainel  grafico  ajuda\n```\n" +
+    "-# Deixe o app aberto com **Bot oficial** ligado (EXTRAS → Bot).\n";
   const thanks =
     "### 💜 Obrigado por usar o Auto Reconnect!\n" +
     "O app é **grátis** e feito por uma pessoa só. Se ele está te ajudando a farmar, qualquer **Pix** ajuda a manter o projeto vivo — é só escanear o QR abaixo. 🙏\n";
   return {
     author: { name: "Auto Reconnect Roblox" },
-    title: full ? "👋  Bem-vindo!" : "☀️  Bom dia!",
+    title: full ? "👋  Bem-vindo ao Auto Reconnect!" : "☀️  Bom dia!",
     description: (full ? how + "\n" : "-# Seu lembrete diário. Comandos: `/roblox`, `/vincular`, `/desvincular`\n\n") + thanks + "\n[⬇ Baixar a versão mais recente](" + REPO + ")",
     color: 0x6ea8ff,
     image: { url: QR_URL },
@@ -46,7 +45,7 @@ async function verify(req, body, env) {
 const reply = (content) => Response.json({ type: 4, data: { content, flags: 64 } });
 const optVal = (i, name) => (i.data.options || []).find((o) => o.name === name)?.value;
 
-async function interaction(i, env) {
+async function interaction(i, env, ctx) {
   if (i.type === 1) return Response.json({ type: 1 });
   if (i.type !== 2) return reply("?");
   const user = i.member?.user?.id || i.user?.id;
@@ -69,7 +68,19 @@ async function interaction(i, env) {
     const url = `https://discord.com/api/webhooks/${w.id}/${w.token}`;
     await env.DB.prepare("INSERT OR REPLACE INTO links(code,guild_id,channel_id,owner_id,webhook,last_seen,created) VALUES(?,?,?,?,?,0,?)")
       .bind(code, guild, i.channel_id, user, url, now).run();
-    return reply("✅ Vinculado! Deixe o app aberto com **Bot oficial** ligado. Os avisos virão neste canal e você controla seu Roblox com `/roblox`.");
+    // boas-vindas + agradecimento + QR no canal vinculado (só na primeira vez)
+    if (!old)
+      ctx.waitUntil(fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: "Auto Reconnect", embeds: [welcomeEmbed(true)] }) }));
+    // o webhook criado + como colocar no app (só você vê esta mensagem)
+    return reply(
+      "✅ **Vinculado!** Criei um webhook neste canal. Só você vê esta mensagem.\n\n" +
+      "**Seu webhook** (é secreto — não compartilhe):\n```\n" + url + "\n```\n" +
+      "### 📌 Como colocar no app\n" +
+      "**1.** Abra o app → **EXTRAS → Webhook**\n" +
+      "**2.** Cole o link acima em **URL do webhook** e salve\n" +
+      "**3.** Ative as notificações que quiser (queda, volta, painel ao vivo…)\n\n" +
+      "-# Com **Bot oficial** ligado o app já recebe esse webhook sozinho. Colar à mão só serve se quiser usar o webhook sem o bot."
+    );
   }
 
   if (i.data.name === "desvincular") {
@@ -87,21 +98,6 @@ async function interaction(i, env) {
     return reply(off ? "⚠️ Comando guardado, mas seu app parece fechado ou sem internet. Ele executa assim que voltar (até 10 min)." : "📨 Enviado ao seu PC. A resposta chega neste canal em instantes.");
   }
   return reply("?");
-}
-
-// primeira mensagem ao instalar o bot: canal de sistema (ou o primeiro canal de texto onde der pra escrever)
-async function welcomeGuild(guildId, env) {
-  const H = { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`, "Content-Type": "application/json" };
-  const body = JSON.stringify({ embeds: [welcomeEmbed(true)] });
-  const g = await (await fetch(`${API}/guilds/${guildId}`, { headers: H })).json().catch(() => ({}));
-  const tried = [];
-  if (g.system_channel_id) tried.push(g.system_channel_id);
-  const chs = await (await fetch(`${API}/guilds/${guildId}/channels`, { headers: H })).json().catch(() => []);
-  if (Array.isArray(chs)) for (const c of chs) if (c.type === 0 && !tried.includes(c.id)) tried.push(c.id);
-  for (const id of tried.slice(0, 6)) {
-    const r = await fetch(`${API}/channels/${id}/messages`, { method: "POST", headers: H, body });
-    if (r.ok) return;
-  }
 }
 
 // lembrete diário: só pra quem usou o app nos últimos 3 dias, no canal vinculado (webhook)
@@ -147,14 +143,12 @@ export default {
       const body = await req.text();
       if (!(await verify(req, body, env))) return new Response("bad signature", { status: 401 });
       const j = JSON.parse(body);
-      if (j.type === 1 && j.event?.type === "APPLICATION_AUTHORIZED" && j.event.data?.guild?.id)
-        ctx.waitUntil(welcomeGuild(j.event.data.guild.id, env));
       return new Response(null, { status: 204 });
     }
     if (req.method === "POST") {
       const body = await req.text();
       if (!(await verify(req, body, env))) return new Response("bad signature", { status: 401 });
-      return interaction(JSON.parse(body), env);
+      return interaction(JSON.parse(body), env, ctx);
     }
     return new Response("Auto Reconnect bot");
   },

@@ -31,7 +31,8 @@ Sem servidor, sem PC ligado, grátis. Cada usuário só controla o **próprio** 
 
 O token fica só nos *secrets* do Cloudflare — nunca no app nem no GitHub.
 
-## Mensagem de boas-vindas e lembrete diário
-- **Ao adicionar o bot:** Developer Portal → *Webhooks* → **Events URL** = `https://SEU-WORKER.workers.dev/events` (salve; o Discord testa) → ative o evento **Application Authorized**. O bot manda a mensagem de ajuda + QR de Pix no canal de sistema do servidor.
+## Boas-vindas e lembrete diário
+- **Ao vincular (`/vincular`):** o bot cria o webhook, posta no canal a mensagem de boas-vindas + agradecimento + QR do Pix, e responde só para a pessoa (efêmero) com o link do webhook e como colocar no app.
 - **Todo dia:** um *cron* do Cloudflare (`wrangler.toml`) posta um lembrete curto com o QR no canal vinculado, só para quem usou o app nos últimos 3 dias.
-- Depois de atualizar: `wrangler d1 execute auto-reconnect --remote --file=schema.sql` e `wrangler deploy`.
+- A *Events URL* do Developer Portal não é mais necessária (pode deixar configurada, não faz nada).
+- Depois de atualizar: `wrangler deploy`.
