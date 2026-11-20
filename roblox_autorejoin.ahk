@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.4"
+VERSION     := "1.5.5"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -8157,6 +8157,90 @@ GuildPre(hw, ox, oy, ow, oh, votes) {
     return seen
 }
 
+; Captura a área, amplia até ~8x e isola o texto claro (modo "white" = só branco; "bright" = claro mas não azul-ciano).
+; Devolve uma lista de {text, words:[{t,x}]} (um por limiar), pra quem chamou votar/ordenar.
+PreOcr(hw, ox, oy, ow, oh, kind, ths) {
+    results := []
+    hBM := 0, srcDC := 0, dc := 0, dib := 0
+    try {
+        rc := Buffer(16, 0)
+        DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
+        cw := NumGet(rc, 8, "Int"), chh := NumGet(rc, 12, "Int")
+        if (cw < 50 || chh < 50)
+            return results
+        ox := Max(0, Min(ox, cw - 8)), oy := Max(0, Min(oy, chh - 8))
+        ow := Min(ow, cw - ox), oh := Min(oh, chh - oy)
+        hS := DllCall("GetDC", "Ptr", 0, "Ptr")
+        srcDC := DllCall("CreateCompatibleDC", "Ptr", hS, "Ptr")
+        hBM := DllCall("CreateCompatibleBitmap", "Ptr", hS, "Int", cw, "Int", chh, "Ptr")
+        DllCall("SelectObject", "Ptr", srcDC, "Ptr", hBM)
+        ok := DllCall("PrintWindow", "Ptr", hw, "Ptr", srcDC, "UInt", 3)
+        if (!ok || IsBlackDC(srcDC, cw, chh)) {
+            pt := Buffer(8, 0)
+            DllCall("ClientToScreen", "Ptr", hw, "Ptr", pt)
+            DllCall("BitBlt", "Ptr", srcDC, "Int", 0, "Int", 0, "Int", cw, "Int", chh
+                , "Ptr", hS, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
+        }
+        DllCall("ReleaseDC", "Ptr", 0, "Ptr", hS)
+        sc := 8
+        while (sc > 2 && (ow * sc) * (oh * sc) > 260000)
+            sc -= 1
+        pad := 24
+        wd0 := ow * sc, ht0 := oh * sc, Wp := wd0 + 2 * pad, Hp := ht0 + 2 * pad
+        bmi := Buffer(40, 0)
+        NumPut("UInt", 40, "Int", Wp, "Int", -Hp, "UShort", 1, "UShort", 32, bmi)
+        dib := DllCall("CreateDIBSection", "Ptr", 0, "Ptr", bmi, "UInt", 0, "Ptr*", &bits := 0, "Ptr", 0, "UInt", 0, "Ptr")
+        dc := DllCall("CreateCompatibleDC", "Ptr", 0, "Ptr")
+        DllCall("SelectObject", "Ptr", dc, "Ptr", dib)
+        r2 := Buffer(16, 0), NumPut("Int", Wp, "Int", Hp, r2, 8)
+        DllCall("FillRect", "Ptr", dc, "Ptr", r2, "Ptr", DllCall("GetStockObject", "Int", 0, "Ptr"))
+        DllCall("SetStretchBltMode", "Ptr", dc, "Int", 4)
+        DllCall("StretchBlt", "Ptr", dc, "Int", pad, "Int", pad, "Int", wd0, "Int", ht0
+            , "Ptr", srcDC, "Int", ox, "Int", oy, "Int", ow, "Int", oh, "UInt", 0x00CC0020)
+        DllCall("GdiFlush")
+        orig := Buffer(Wp * Hp * 4)
+        DllCall("RtlMoveMemory", "Ptr", orig, "Ptr", bits, "UPtr", Wp * Hp * 4)
+        for th in ths {
+            yy := 0
+            while (yy < ht0) {
+                off := ((pad + yy) * Wp + pad) * 4
+                Loop wd0 {
+                    v := NumGet(orig, off, "UInt")
+                    r := (v >> 16) & 255, gg := (v >> 8) & 255, b := v & 255
+                    if (kind = "white")
+                        on := (r > th && gg > th && b > th)
+                    else
+                        on := ((r * 3 + gg * 6 + b) // 10 > th && b - r < 60)
+                    NumPut("UInt", on ? 0xFF000000 : 0xFFFFFFFF, bits, off)
+                    off += 4
+                }
+                yy += 1
+            }
+            DllCall("GdiFlush")
+            res := ""
+            try res := OCR.FromBitmap(dib)
+            catch
+                continue
+            words := []
+            try for ln in res.Lines
+                for w1 in ln.Words
+                    words.Push({t: w1.Text, x: w1.x})
+            results.Push({text: res.Text, words: words})
+        }
+    }
+    try {
+        if dc
+            DllCall("DeleteDC", "Ptr", dc)
+        if dib
+            DllCall("DeleteObject", "Ptr", dib)
+        if srcDC
+            DllCall("DeleteDC", "Ptr", srcDC)
+        if hBM
+            DllCall("DeleteObject", "Ptr", hBM)
+    }
+    return results
+}
+
 ; área em pixels, com tamanho mínimo (o OCR do Windows erra em texto muito baixo/estreito): cresce pros dois lados
 AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh) {
     ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Round(cw * ar[3]), oh := Round(chh * ar[4])
@@ -8424,35 +8508,46 @@ PanelUpdate(force := false) {
         title .= "  ·  " TT("up_stopped"), color := 0x8B8B94
 
     ; painel leve: usa as moedas já lidas (prevCur) e dados rápidos — nada de OCR/WMI que trava
-    shot := "", coins := ""
-    for c in CurrencySpec()
-        if (prevCur.Has(c.name) && prevCur[c.name] != "")
-            coins .= c.emoji "  **" prevCur[c.name] "**  ·  " c.name "`n"
+    shot := ""
+    esc := Chr(27)
+    coinsBlk := ""
+    for c in CurrencySpec() {
+        if !(prevCur.Has(c.name) && prevCur[c.name] != "")
+            continue
+        nm := StrLower(c.name)
+        col := InStr(nm, "gem") && !InStr(nm, "legacy") ? "36" : (InStr(nm, "gold") || InStr(nm, "coin")) ? "33" : InStr(nm, "pearl") ? "35" : InStr(nm, "legacy") ? "34" : "37"
+        lbl := SubStr(c.name "              ", 1, 16)
+        val := FmtNum(prevCur[c.name])
+        coinsBlk .= esc "[" col "m" lbl esc "[0m" esc "[1;37m" SubStr("            " val, -11) esc "[0m`n"
+    }
     DayRoll()
     ms := Buffer(64, 0), NumPut("UInt", 64, ms), DllCall("GlobalMemoryStatusEx", "Ptr", ms)
     cpu := CpuLoad(), ramPct := NumGet(ms, 4, "UInt")
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
-    desc := (coins != "" ? "### Player Stats`n" coins "`n" : "")
-        . "**" TT("f_cpu") "**  " cpu "%`n**" TT("f_ram") "**  " ramPct "%"
-        . "`n`n🔄 " TT("d_updated") " <t:" now ":R>"
+    fence := "``````"
+    desc := "# " title "`n-# ⏱ " AfkStr() "  ·  🔄 " TT("d_updated") " <t:" now ":R>`n"
+    if (farmMode != "") {
+        desc .= "`n> 🗺 **" farmMode "**" (farmWave != "" ? "  ·  Wave **" farmWave "**" : "")
+        if (farmPearls != "")
+            desc .= "`n> 🫧 **+" farmPearls "**"
+        desc .= "`n"
+    }
+    if (coinsBlk != "")
+        desc .= "`n" fence "ansi`n" coinsBlk fence "`n"
     fields := []
-    if (farmMode != "")
-        fields.Push([TT("f_mode"), farmMode (farmWave != "" ? "  ·  Wave " farmWave : ""), false])
-    if (farmMode != "" && farmPearls != "")
-        fields.Push(["🦪 Pearls", "+" farmPearls, true])
     if (farmGuild != "" && chkGuildSend.Value)
         fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
-        fields.Push([TT("f_prevround"), "+" farmPrev, true])
-    for f in [[TT("f_session"), AfkStr(), true]
-        , [TT("f_online_today"), DurStr(dayOnline * 1000), true]
-        , [TT("f_reopens"), launches, true], [TT("f_drops"), discCount, true]
-        , [TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]]
+        fields.Push(["⏮ " TT("f_prevround"), "+" farmPrev, true])
+    for f in [["📅 " TT("f_online_today"), DurStr(dayOnline * 1000), true]
+        , ["♻ " TT("f_reopens"), launches, true], ["⚠ " TT("f_drops"), discCount, true]
+        , ["🕓 " TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]
+        , ["🖥 " TT("f_cpu") " / " TT("f_ram"), cpu "%  /  " ramPct "%", true]]
         fields.Push(f)
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     pbody := '"embeds":[{'
         . '"author":{"name":"' JsonEsc(APP_NAME "  ·  " TT("ev_panel")) '","icon_url":"' LOGO_URL '"},'
-        . '"title":"' JsonEsc(title) '","color":' color ','
+        . '"color":' color ','
         . '"description":"' JsonEsc(desc) '",' FieldsJson(fields)
         . '"thumbnail":{"url":"' LOGO_URL '"},'
         . (shot != "" ? '"image":{"url":"attachment://roblox.png"},' : '')
@@ -10576,7 +10671,7 @@ JsonEsc(s) {
             code -= 0x10000
             out .= Format("\u{:04x}\u{:04x}", 0xD800 + (code >> 10), 0xDC00 + (code & 0x3FF))
         } else
-            out .= (code > 126) ? Format("\u{:04x}", code) : ch
+            out .= (code > 126 || code < 32) ? Format("\u{:04x}", code) : ch
     }
     return out
 }
@@ -10718,10 +10813,13 @@ SendEvent(kind, lines := [], feedback := false, arg := "", fields := [], thumb :
     ; marca só o seu ID (nunca @everyone / @here)
     id := Trim(edDiscId.Value)
     ping := (chkMention.Value && RegExMatch(id, "^\d{15,21}$") && (kind = "down" || kind = "error" || kind = "fail" || kind = "lic"))
-    desc := ""
-    for l in lines
-        desc .= l "`n"
-    desc .= "**" TT("d_time") ":** <t:" now ":T>  ·  <t:" now ":R>"
+    ; visual novo: horário em texto pequeno no topo, conteúdo em citação (barra lateral), blocos de código intactos
+    desc := "-# 🕒 <t:" now ":T>  ·  <t:" now ":R>`n"
+    for l in lines {
+        if (l = "")
+            continue
+        desc .= (InStr(l, "``````") || SubStr(l, 1, 2) = "> " ? l : "> " l) "`n"
+    }
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     e := '{' head
        . (ping ? '"content":"<@' id '>","allowed_mentions":{"users":["' id '"]},' : '"allowed_mentions":{"parse":[]},')
@@ -10956,6 +11054,14 @@ ReadCurrencies(hw) {
     if !labels.Length
         return [labels, found]
 
+    ; barra de moedas sem nomes (só ícone + número): se a área "Moedas" foi marcada, lê os números da esquerda pra direita
+    ; e entrega na ordem da lista de moedas (Gems, Gold, Summer Pearls…)
+    if AreaIsSet("coins") {
+        bar := ReadCoinBar(hw)
+        if bar.Count
+            return [labels, bar]
+    }
+
     ; tenta jeitos diferentes de capturar até achar pelo menos um nome
     ; mode 4 = PrintWindow (funciona com janela coberta), 0 = copia da tela
     lastOcrText := ""
@@ -10978,6 +11084,46 @@ ReadCurrencies(hw) {
         }
     }
     return [labels, Map()]
+}
+
+; Lê só os números da barra: amplia a área, deixa só o que é claro (branco/amarelo/rosa), tira o azul-ciano do cenário
+ReadCoinBar(hw) {
+    global lastOcrText
+    out := Map()
+    specs := CurrencySpec()
+    if !specs.Length
+        return out
+    try {
+        WinGetClientPos(, , &cw, &chh, hw)
+        ar := AreaGet("coins", cw, chh)
+        AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
+        best := [], seen := ""
+        for r in PreOcr(hw, ox, oy, ow, oh, "bright", [175, 150, 200]) {
+            seen .= (seen = "" ? "" : " | ") SubStr(RegExReplace(r.text, "\s+", " "), 1, 60)
+            nums := []
+            for wd in r.words {
+                t := RegExReplace(wd.t, "[^0-9OoIlSsBZz.,kKmMbB]")
+                if (RegExMatch(t, "^[0-9OoIlSsBZz][0-9OoIlSsBZz.,]*[kKmMbB]?$") && RegExMatch(t, "\d"))
+                    nums.Push({x: wd.x, t: RegExReplace(FixDigits(t), "[^\d.,kKmMbB]+$")})
+            }
+            if (nums.Length > best.Length) {
+                ; ordem da esquerda pra direita
+                Loop nums.Length - 1 {
+                    i := A_Index
+                    Loop nums.Length - i
+                        if (nums[A_Index].x > nums[A_Index + 1].x)
+                            tmp := nums[A_Index], nums[A_Index] := nums[A_Index + 1], nums[A_Index + 1] := tmp
+                }
+                best := nums
+            }
+            if (best.Length >= Min(3, specs.Length))
+                break
+        }
+        lastOcrText .= "[barra de moedas] " seen "`n"
+        Loop Min(best.Length, specs.Length)
+            out[specs[A_Index].name] := best[A_Index].t
+    }
+    return out
 }
 
 ; maior zoom possível sem passar do limite de tamanho do OCR do Windows

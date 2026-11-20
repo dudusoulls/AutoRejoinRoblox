@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.5
+- Moedas: lê os números da barra de moedas (sem nomes) pela área "Moedas": ampliação, isolamento do texto claro e ordem esquerda→direita (Gems, Gold, Pearls)
+- Webhook com visual novo: painel ao vivo com cabeçalho grande, modo/wave em destaque, moedas em bloco colorido e cartões compactos; avisos com horário em texto pequeno e conteúdo em citação
+
 ## v1.5.4
 - Rank da guilda lê texto minúsculo (sem zoom): a área é ampliada até ~8x e só o branco do texto é isolado (preto no branco) antes do OCR, com votação entre 3 limiares
 
