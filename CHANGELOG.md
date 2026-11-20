@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.48
+- Corrige a leitura automática (OCR) que rodava só uma vez ao abrir o app e depois parava: agora lê sempre, no intervalo configurado.
+
 ## v1.5.47
 - Corrige o recorte do print do rank que saía embaralhado (listras): agora o recorte é feito pelo GDI+.
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.47"
+VERSION     := "1.5.48"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6630,8 +6630,7 @@ StartApp() {
     SetTimer(WhatsNewCheck, -12000)
     SetTimer(AreaShowTick, 500)
     SetTimer(GuildEveryTick, 30000)
-    SetTimer(OcrLoop, 1000)
-    SetTimer(OcrLoop, -6000)
+    SetTimer(OcrLoop, 1000)          ; (o atraso da 1ª leitura é feito dentro do OcrLoop; um 2º SetTimer negativo cancelava o repetido)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
@@ -9705,7 +9704,7 @@ OcrAreaRead(hw, name, ok) {
 ; ini [cfg] ocrSec = intervalo em segundos (padrão 15, mínimo 2). O ciclo
 ; nunca se sobrepõe e se adapta: se a leitura demorou, espera ~4x o tempo gasto.
 OcrLoop() {
-    static busy := false, nextAt := 0
+    static busy := false, nextAt := A_TickCount + 5000
     if (busy || A_TickCount < nextAt)
         return
     busy := true
