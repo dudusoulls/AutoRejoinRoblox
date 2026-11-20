@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.35"
+VERSION     := "1.5.36"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -162,7 +162,7 @@ curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
 placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
-    , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
+    , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
 areaKey := Map("mode", "area_mode", "wave", "area_wave", "pearls", "area_pearls", "coins", "area_coins", "guild", "f_guild")
 tourIdx := 0

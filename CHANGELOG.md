@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.36
+- Área padrão do rank da guilda ajustada para só o número (64x24 em janela 800x599).
+
 ## v1.5.35
 - Leitura: cada área (modo, wave, pearls, moedas, rank) ganhou seu botão "Testar", que lê só aquela área e mostra o resultado e o texto bruto do OCR.
 
