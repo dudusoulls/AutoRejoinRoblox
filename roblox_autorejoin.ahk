@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.8"
+VERSION     := "1.5.9"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9573,7 +9573,39 @@ IntroShow(gui, opts := "") {
     try WinSetTransparent("Off", gui.Hwnd)
 }
 
+; lembra onde a janela principal estava
+GuiPosSave() {
+    global g, iniFile
+    try {
+        if (WinGetMinMax(g.Hwnd) != 0 || !DllCall("IsWindowVisible", "Ptr", g.Hwnd))
+            return
+        WinGetPos(&x, &y, , , g.Hwnd)
+        if (x > -5000 && y > -5000) {
+            IniWrite(x, iniFile, "cfg", "gx")
+            IniWrite(y, iniFile, "cfg", "gy")
+        }
+    }
+}
+
+GuiPosOpt() {
+    global iniFile, W, H
+    x := IniRead(iniFile, "cfg", "gx", ""), y := IniRead(iniFile, "cfg", "gy", "")
+    if !(IsInteger(x) && IsInteger(y))
+        return ""
+    ; só usa se ainda estiver (pelo menos em parte) numa tela
+    ok := false
+    Loop MonitorGetCount() {
+        MonitorGetWorkArea(A_Index, &l, &t, &r, &b)
+        if (x + 120 < r && x + W - 120 > l && y >= t - 10 && y + 60 < b)
+            ok := true
+    }
+    return ok ? Format("x{} y{}", x, y) : ""
+}
+
 FadeShow(gui, opts := "") {
+    global g
+    if (gui = g && !InStr(opts, "x"))
+        opts := Trim(opts " " GuiPosOpt())
     try WinSetTransparent(0, gui.Hwnd)
     gui.Show(opts)
     Loop 8 {
@@ -9584,6 +9616,9 @@ FadeShow(gui, opts := "") {
 }
 
 FadeHide(gui) {
+    global g
+    if (gui = g)
+        GuiPosSave()
     if DllCall("IsWindowVisible", "Ptr", gui.Hwnd) {
         Loop 6 {
             try WinSetTransparent(Round(255 * (1 - A_Index / 6)), gui.Hwnd)
@@ -9835,6 +9870,7 @@ SetCompact(on) {
 }
 
 OnQuit(*) {
+    try GuiPosSave()
     try AfkSave()
     try SaveConfig()
     try FileDelete(A_Temp "\roblox_status.png")

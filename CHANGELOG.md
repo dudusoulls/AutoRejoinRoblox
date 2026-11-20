@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.9
+- A janela lembra onde estava da última vez (posição salva ao fechar/esconder; se o monitor mudou, abre centralizada).
+
 ## v1.5.8
 - Novo **Modo AA** (Opções), desligado por padrão: guilda, moedas, painel ao vivo, HUD e áreas de leitura só aparecem e funcionam com ele ligado. Desligado, o app é só o Auto Reconnect e suas funções. O app reinicia ao alternar.
 
