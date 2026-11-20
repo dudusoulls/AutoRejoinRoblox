@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.7"
+VERSION     := "1.5.8"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -229,6 +229,7 @@ savedAreaScale := IniRead(iniFile, "cfg", "areaScale", "1"), savedRemSize := Ini
 savedAreaShow := IniRead(iniFile, "cfg", "areaShow", "0")
 savedGuildStat := IniRead(iniFile, "cfg", "guildStat", "1")
 savedClickSnd := IniRead(iniFile, "cfg", "clickSnd", "1")
+aaMode := IniRead(iniFile, "cfg", "aaMode", "0") = "1"   ; recursos do jogo AA (guilda, moedas, leitura, HUD)
 savedLogoAnim := IniRead(iniFile, "cfg", "logoAnim", "1")
 savedGuildSend := IniRead(iniFile, "cfg", "guildSend", "1"), savedGuildNotify := IniRead(iniFile, "cfg", "guildNotify", "0")
 savedLang     := IniRead(iniFile, "cfg", "lang", "auto")
@@ -833,6 +834,8 @@ I18N["pt"].Set(
     "sw_clicksnd_sub", "Toca um clique ao apertar botões, abas e chaves",
     "sw_logoanim", "Logo animado",
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
+    "sw_aa", "Modo AA (Anime Adventures)",
+    "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
     "err_title", "Auto Reconnect — erro",
     "err_msg", "Aconteceu um erro no app, mas ele continua rodando. Quer enviar o relatório pro desenvolvedor? (abre o GitHub já preenchido, é só clicar em Enviar)",
     "err_send", "Enviar relatório (1 clique)",
@@ -1423,6 +1426,8 @@ I18N["en"].Set(
     "sw_clicksnd_sub", "Plays a click on buttons, tabs and switches",
     "sw_logoanim", "Animated logo",
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — error",
     "err_msg", "The app hit an error but keeps running. Send a report to the developer? (opens GitHub pre-filled, just click Submit)",
     "err_send", "Send report (1 click)",
@@ -2013,6 +2018,8 @@ I18N["es"].Set(
     "sw_clicksnd_sub", "Suena un clic en botones, pestañas e interruptores",
     "sw_logoanim", "Logo animado",
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
+    "sw_aa", "Modo AA (Anime Adventures)",
+    "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
     "err_title", "Auto Reconnect — error",
     "err_msg", "La app tuvo un error pero sigue funcionando. ¿Enviar un reporte al desarrollador? (abre GitHub ya rellenado, solo pulsa Enviar)",
     "err_send", "Enviar reporte (1 clic)",
@@ -2603,6 +2610,8 @@ I18N["fr"].Set(
     "sw_clicksnd_sub", "Joue un clic sur les boutons, onglets et interrupteurs",
     "sw_logoanim", "Logo animé",
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — erreur",
     "err_msg", "L’app a rencontré une erreur mais continue. Envoyer un rapport au développeur ? (ouvre GitHub pré-rempli, clique sur Envoyer)",
     "err_send", "Envoyer le rapport (1 clic)",
@@ -3193,6 +3202,8 @@ I18N["de"].Set(
     "sw_clicksnd_sub", "Spielt einen Klick bei Tasten, Tabs und Schaltern",
     "sw_logoanim", "Animiertes Logo",
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — Fehler",
     "err_msg", "Die App hatte einen Fehler, läuft aber weiter. Bericht an den Entwickler senden? (öffnet GitHub vorausgefüllt, nur auf Senden klicken)",
     "err_send", "Bericht senden (1 Klick)",
@@ -3783,6 +3794,8 @@ I18N["ru"].Set(
     "sw_clicksnd_sub", "Звук при нажатии кнопок, вкладок и переключателей",
     "sw_logoanim", "Анимированный логотип",
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — ошибка",
     "err_msg", "В приложении произошла ошибка, но оно продолжает работать. Отправить отчёт разработчику? (откроется GitHub с готовым текстом, нажмите Отправить)",
     "err_send", "Отправить отчёт (1 клик)",
@@ -4373,6 +4386,8 @@ I18N["tr"].Set(
     "sw_clicksnd_sub", "Düğmelerde, sekmelerde ve anahtarlarda tıklama sesi",
     "sw_logoanim", "Animasyonlu logo",
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — hata",
     "err_msg", "Uygulamada hata oluştu ama çalışmaya devam ediyor. Geliştiriciye rapor gönderilsin mi? (GitHub dolu açılır, Gönder’e tıkla)",
     "err_send", "Raporu gönder (1 tık)",
@@ -4963,6 +4978,8 @@ I18N["id"].Set(
     "sw_clicksnd_sub", "Memutar klik pada tombol, tab, dan sakelar",
     "sw_logoanim", "Logo animasi",
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
+    "sw_aa", "AA mode (Anime Adventures)",
+    "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
     "err_title", "Auto Reconnect — kesalahan",
     "err_msg", "Aplikasi mengalami kesalahan tetapi tetap berjalan. Kirim laporan ke pengembang? (membuka GitHub terisi, tinggal klik Kirim)",
     "err_send", "Kirim laporan (1 klik)",
@@ -5161,7 +5178,9 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
-    , "Discord", ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"], "QoL", ["Moedas", "Travou", "Histórico"], "Aparência", ["Aparência", "HUD", "Leitura", "Avançado"]
+    , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Notif", "Bot", "Relat"]
+    , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
+    , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
     , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
@@ -5535,6 +5554,11 @@ chkDaily := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_daily"), savedDaily)
 Lbl(CX + 20, y + 84, 140, TT("lbl_daily_time"), "s9", C_MUTED)
 edDailyAt := Input(CX + 170, y + 77, 90, savedDailyAt)
 Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(true))
+
+y := 512
+Card(CX, y, CW, 64)
+chkAA := ToggleSwitch(CX + 20, y + 10, CW - 40, TT("sw_aa"), aaMode, TT("sw_aa_sub"))
+chkAA.onChange := (*) => AaToggle()
 
 ; ---------------- Página: Sobre ----------------
 BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
@@ -6145,9 +6169,18 @@ ShowPage(name, *) {
 }
 
 ; a linha extra do Início só aparece na página Início e se a opção estiver ligada
+AaToggle() {
+    global chkAA, iniFile
+    IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
+    try SaveConfig()
+    IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
+    Sleep(150)
+    Reload()
+}
+
 HomeExtraVis() {
-    global homeExtra, curPage, chkGuildStat
-    vis := (curPage = "Início") && IsObject(chkGuildStat) && chkGuildStat.Value
+    global homeExtra, curPage, chkGuildStat, aaMode
+    vis := aaMode && (curPage = "Início") && IsObject(chkGuildStat) && chkGuildStat.Value
     for c in homeExtra
         c.Visible := vis
 }
@@ -6275,19 +6308,25 @@ RoundCtrl(ctrl, radius) {
 ; ==========================================================
 TourSteps() {
     global edLink, edHook, btnHookTest, chkShrink, edCur, btnStart, hbCompact, hbLang, btnUpd
-    return [
+    global aaMode
+    all := [
         {page: "Início",  t: "tour_welcome_t", d: "tour_welcome", targets: [],                          pad: 0},
         {page: "Jogo",    t: "tour_link_t",    d: "tour_link",    targets: [edLink],                    pad: 10},
         {page: "Webhook", t: "tour_hook_t",    d: "tour_hook",    targets: [edHook],                    pad: 10},
         {page: "Webhook", t: "tour_test_t",    d: "tour_test",    targets: [btnHookTest],               pad: 4},
         {page: "Janela",  t: "tour_win_t",     d: "tour_win",     targets: [chkShrink.lbl, chkShrink.pill], pad: 8},
-        {page: "Moedas",  t: "tour_coins_t",   d: "tour_coins",   targets: [edCur],                     pad: 10},
+        aaMode ? {page: "Moedas",  t: "tour_coins_t",   d: "tour_coins",   targets: [edCur],                     pad: 10} : {page: "Início", t: "tour_welcome_t", d: "tour_welcome", targets: [], pad: 0, skip: true},
         {page: "Início",  t: "tour_start_t",   d: "tour_start",   targets: [btnStart],                  pad: 4},
         {page: "",        t: "tour_compact_t", d: "tour_compact", targets: [hbCompact],                 pad: 2},
         {page: "",        t: "tour_lang_t",    d: "tour_lang",    targets: [hbLang],                    pad: 2},
         {page: "Sobre",   t: "tour_upd_t",     d: "tour_upd",     targets: [btnUpd],                    pad: 4},
         {page: "Início",  t: "tour_done_t",    d: "tour_done",    targets: [],                          pad: 0}
     ]
+    out := []
+    for st in all
+        if !st.HasOwnProp("skip")
+            out.Push(st)
+    return out
 }
 
 StartTour(*) {
@@ -8392,7 +8431,9 @@ OcrLoop() {
 }
 
 FarmModeTick(test := false) {
-    global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
+    global aaMode, farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
+    if !aaMode
+        return
     if (!test && !(hudMode = 4 || chkPanel.Value || chkGuildStat.Value || chkGuildNotify.Value))
         return
     farmLast := {mode: "", wave: "", pearls: "", seen: ""}
@@ -9970,6 +10011,7 @@ SaveConfig() {
     IniWrite(chkGuildNotify.Value, iniFile, "cfg", "guildNotify")
     IniWrite(chkGuildStat.Value, iniFile, "cfg", "guildStat")
     IniWrite(chkClickSnd.Value, iniFile, "cfg", "clickSnd")
+    IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
     IniWrite(chkLogoAnim.Value, iniFile, "cfg", "logoAnim")
     IniWrite(chkWhatsNew.Value, iniFile, "cfg", "whatsNew")
     IniWrite(winW, iniFile, "cfg", "winW")
@@ -11063,7 +11105,7 @@ FmtNum(n) {
 ; Lê as moedas na janela do Roblox. Retorna Map(nome -> texto do valor) na ordem dos nomes.
 ; Procura cada nome na tela e pega o número logo acima (ou do lado) dele.
 ReadCurrencies(hw) {
-    global edCur, lastOcrText
+    global edCur, lastOcrText, aaMode
     labels := []
     for c in CurrencySpec()
         labels.Push(c.name)

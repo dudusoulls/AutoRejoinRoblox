@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.8
+- Novo **Modo AA** (Opções), desligado por padrão: guilda, moedas, painel ao vivo, HUD e áreas de leitura só aparecem e funcionam com ele ligado. Desligado, o app é só o Auto Reconnect e suas funções. O app reinicia ao alternar.
+
 ## v1.5.7
 - Barra de moedas: reconhece cada moeda pela cor do ícone (gold amarelo, gem arco-íris, pearl rosa) em vez da ordem, lê números azulados/lilás (gems) e corrige 8↔0 votando entre várias leituras.
 
