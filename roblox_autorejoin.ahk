@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.5"
+VERSION     := "1.5.6"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5836,8 +5836,8 @@ StartApp() {
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
     SetTimer(WhatsNewCheck, -12000)
     SetTimer(AreaShowTick, 500)
-    SetTimer(FarmModeTick, 15000)
-    SetTimer(() => FarmModeTick(), -6000)
+    SetTimer(OcrLoop, 1000)
+    SetTimer(OcrLoop, -6000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
@@ -8374,6 +8374,21 @@ OcrAreaRead(hw, name, ok) {
 }
 
 ; lê (só olhando a tela) o nome do modo, a wave e as pearls, cada um na sua área, e as cores deles
+; Agenda das leituras (modo, wave, pérolas, guilda) numa passada só.
+; ini [cfg] ocrSec = intervalo em segundos (padrão 15, mínimo 2). O ciclo
+; nunca se sobrepõe e se adapta: se a leitura demorou, espera ~4x o tempo gasto.
+OcrLoop() {
+    static busy := false, nextAt := 0
+    if (busy || A_TickCount < nextAt)
+        return
+    busy := true
+    t0 := A_TickCount
+    try FarmModeTick()
+    busy := false
+    sec := Max(2, Integer(IniRead(iniFile, "cfg", "ocrSec", "15")))
+    nextAt := A_TickCount + Max(sec * 1000, (A_TickCount - t0) * 4)
+}
+
 FarmModeTick(test := false) {
     global farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
     if (!test && !(hudMode = 4 || chkPanel.Value || chkGuildStat.Value || chkGuildNotify.Value))

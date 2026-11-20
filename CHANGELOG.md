@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.6
+- Leituras de OCR agora num agendador único: nunca se sobrepõem e se adaptam ao tempo gasto (poupa CPU/FPS). Intervalo ajustável em `[cfg] ocrSec` no ini (padrão 15s, mínimo 2s).
+
 ## v1.5.5
 - Moedas: lê os números da barra de moedas (sem nomes) pela área "Moedas": ampliação, isolamento do texto claro e ordem esquerda→direita (Gems, Gold, Pearls)
 - Webhook com visual novo: painel ao vivo com cabeçalho grande, modo/wave em destaque, moedas em bloco colorido e cartões compactos; avisos com horário em texto pequeno e conteúdo em citação
