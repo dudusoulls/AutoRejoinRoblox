@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.29
+- Som de abertura ao abrir o app (dá pra desligar em Configurações → Avançado).
+
 ## v1.5.28
 - Configurações reorganizada: versão com botões à direita (sem sobrepor), licença menor, as 3 opções de atualização juntas num cartão e novidades embaixo.
 
