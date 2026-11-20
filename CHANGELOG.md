@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.16
+- Temas refeitos: 15 paletas bem diferentes entre si (Aero Glass, Obsidian, Aurora, Ember, Nebula, Crimson, Lagoon, Mocha, Lime, Neon, Void, Gold, Pearl, Sakura, Mint). Quem usava um tema removido volta pro Aero Glass.
+- Texto mais nítido (ClearType) em toda a interface.
+- Ferramentas: cartões "Convidar o bot" e "ID do app" (preparação pra vincular o app a um bot oficial).
+
 ## v1.5.15
 - Nova aba **Ferramentas** (EXTRAS): backup e restauração das configurações, pasta de dados, log de erros, copiar diagnóstico, limpar logs/cache, fechar todos os Roblox e reiniciar o app, em cartões grandes.
 - Barra lateral em degraus: nomes maiores primeiro em cada seção (ROBLOX, EXTRAS, APP). A linha de ferramentas saiu do Início.

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.15"
+VERSION     := "1.5.16"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -69,37 +69,35 @@ iniFile  := A_ScriptDir "\config.ini"
 THEMES := [
     {name: "Aero Glass", BG: "090E1D", SIDE: "060A16", CARD: "101A33", INPUT: "18243F", TEXT: "EAF0FF", MUTED: "8E9CC0", DIM: "56628A", ACC: "6EA8FF", ACCH: "558FEA", BTN: "182441", BTNH: "223259", NAVA: "16233F", NAVH: "0E1730", SWOFF: "26324F"},
     {name: "Obsidian", BG: "0E0E11", SIDE: "09090B", CARD: "16161A", INPUT: "212127", TEXT: "EDEDF0", MUTED: "8B8B94", DIM: "55555D", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "25252C", BTNH: "303039", NAVA: "1A1A1F", NAVH: "131316", SWOFF: "2C2C33"},
-    {name: "Medium", BG: "151517", SIDE: "0F0F11", CARD: "1C1C20", INPUT: "26262C", TEXT: "EDEDF0", MUTED: "8E8E97", DIM: "5A5A62", ACC: "F2F2F4", ACCH: "D4D4D9", BTN: "2A2A31", BTNH: "35353D", NAVA: "222228", NAVH: "18181B", SWOFF: "32323A"},
-    {name: "Pearl", BG: "F4F4F6", SIDE: "E9E9EE", CARD: "FFFFFF", INPUT: "EFEFF3", TEXT: "18181C", MUTED: "5F5F68", DIM: "9A9AA3", ACC: "18181C", ACCH: "3A3A42", BTN: "E6E6EB", BTNH: "DADAE0", NAVA: "DCDCE3", NAVH: "E2E2E8", SWOFF: "D6D6DC"},
-    {name: "Aurora", BG: "0B1418", SIDE: "071013", CARD: "102027", INPUT: "173039", TEXT: "E6F6F4", MUTED: "86A9A6", DIM: "4F6E6C", ACC: "3DDCA8", ACCH: "2FB98C", BTN: "18323B", BTNH: "214350", NAVA: "15303A", NAVH: "0F2228", SWOFF: "21404A"},
-    {name: "Ember", BG: "140C08", SIDE: "0E0805", CARD: "1E130D", INPUT: "2A1B12", TEXT: "F7ECE4", MUTED: "B09382", DIM: "6E5546", ACC: "FF7A2E", ACCH: "E2611A", BTN: "33211A", BTNH: "402A20", NAVA: "2C1C14", NAVH: "1C120C", SWOFF: "3A271C"},
-    {name: "Silk", BG: "120F1A", SIDE: "0C0A12", CARD: "1B1726", INPUT: "251F33", TEXT: "F0ECF8", MUTED: "9E95B5", DIM: "625A78", ACC: "E9A8E0", ACCH: "D18BC7", BTN: "2B2440", BTNH: "362D4F", NAVA: "262036", NAVH: "1A1626", SWOFF: "342C48"},
-    {name: "Nebula", BG: "120A18", SIDE: "0C0611", CARD: "1D1026", INPUT: "2A1736", TEXT: "F5EAF8", MUTED: "AD8FBA", DIM: "6C5277", ACC: "FF5CA8", ACCH: "E2438E", BTN: "34203F", BTNH: "42294F", NAVA: "2E1B38", NAVH: "1E1127", SWOFF: "3C2648"},
-    {name: "Lava Lamp", BG: "160A0E", SIDE: "0F0609", CARD: "22101A", INPUT: "2F1622", TEXT: "FBEDEF", MUTED: "B98E98", DIM: "75525A", ACC: "FF9A3C", ACCH: "F07F1E", BTN: "3A1E28", BTNH: "482532", NAVA: "331A24", NAVH: "22111A", SWOFF: "44242E"},
-    {name: "Lagoon", BG: "081416", SIDE: "050E10", CARD: "0E2124", INPUT: "142D31", TEXT: "E3F7F7", MUTED: "7FAFAF", DIM: "4A6E6F", ACC: "2FD6C9", ACCH: "1FB8AC", BTN: "163639", BTNH: "1E4549", NAVA: "133034", NAVH: "0C2023", SWOFF: "1F3F43"},
-    {name: "Borealis", BG: "0D0F1C", SIDE: "080A14", CARD: "141830", INPUT: "1C2240", TEXT: "EAF2F0", MUTED: "8FA3B4", DIM: "56637A", ACC: "4CE38D", ACCH: "36C676", BTN: "1F2747", BTNH: "293258", NAVA: "1C2340", NAVH: "131830", SWOFF: "26304F"},
-    {name: "Glass", BG: "0B0E1A", SIDE: "080A13", CARD: "121729", INPUT: "1A2036", TEXT: "E8ECF7", MUTED: "8C95B2", DIM: "545C78", ACC: "8FB4FF", ACCH: "6F9BF5", BTN: "1D2440", BTNH: "262F50", NAVA: "1A2038", NAVH: "121729", SWOFF: "252D49"},
-    {name: "Classic", BG: "121212", SIDE: "0C0C0C", CARD: "1A1A1A", INPUT: "242424", TEXT: "EEEEEE", MUTED: "909090", DIM: "5C5C5C", ACC: "FFFFFF", ACCH: "DDDDDD", BTN: "2A2A2A", BTNH: "353535", NAVA: "222222", NAVH: "181818", SWOFF: "333333"},
-    {name: "Midnight", BG: "0B0F17", SIDE: "070A10", CARD: "111723", INPUT: "18202F", TEXT: "E6ECF5", MUTED: "8A96AA", DIM: "535E72", ACC: "3B82F6", ACCH: "2F6DD6", BTN: "1B2333", BTNH: "243044", NAVA: "182030", NAVH: "101622", SWOFF: "222C3E"},
-    {name: "Slate", BG: "1E232B", SIDE: "181C23", CARD: "262C36", INPUT: "2F3642", TEXT: "E8EDF3", MUTED: "98A3B3", DIM: "66707E", ACC: "7CC4D8", ACCH: "5FB0C6", BTN: "333B48", BTNH: "3D4656", NAVA: "2E3542", NAVH: "232932", SWOFF: "3A4250"},
-    {name: "Rose", BG: "141014", SIDE: "0E0B0E", CARD: "1D171D", INPUT: "282028", TEXT: "F6EDF0", MUTED: "A99AA2", DIM: "6A5D64", ACC: "F2B8C6", ACCH: "E29CAE", BTN: "2D242C", BTNH: "382D37", NAVA: "281F27", NAVH: "1B151B", SWOFF: "352B33"},
-    {name: "Marble", BG: "F6F6F8", SIDE: "ECECEF", CARD: "FFFFFF", INPUT: "F0F0F3", TEXT: "1B1B20", MUTED: "63636C", DIM: "9C9CA5", ACC: "2A2A30", ACCH: "45454D", BTN: "E8E8ED", BTNH: "DCDCE2", NAVA: "DEDEE4", NAVH: "E4E4EA", SWOFF: "D4D4DA"},
-    {name: "Sakura", BG: "FBF4F6", SIDE: "F3E6EB", CARD: "FFFFFF", INPUT: "FBEEF2", TEXT: "2A1A20", MUTED: "8A6670", DIM: "B89AA2", ACC: "E86A94", ACCH: "D4517E", BTN: "F6E2E9", BTNH: "F0D4DE", NAVA: "F2DCE4", NAVH: "F6E6EC", SWOFF: "EBCCD6"},
-    {name: "Mint", BG: "F1F8F4", SIDE: "E2F0E8", CARD: "FFFFFF", INPUT: "ECF6F0", TEXT: "14241C", MUTED: "5E7A6C", DIM: "97B3A5", ACC: "1FA971", ACCH: "16905E", BTN: "DFF0E7", BTNH: "D2E8DB", NAVA: "DAEDE3", NAVH: "E4F3EB", SWOFF: "CCE4D7"},
-    {name: "Sky", BG: "F0F5FB", SIDE: "E1EBF5", CARD: "FFFFFF", INPUT: "EBF2FA", TEXT: "151C28", MUTED: "5C6A7E", DIM: "97A6BC", ACC: "2F7FE6", ACCH: "2168C6", BTN: "DEEAF7", BTNH: "D0E0F2", NAVA: "D8E6F5", NAVH: "E3EEFA", SWOFF: "CADCF0"},
-    {name: "Sunset", BG: "170F14", SIDE: "100A0E", CARD: "22141D", INPUT: "301C28", TEXT: "FBEDF2", MUTED: "BB8EA0", DIM: "74505E", ACC: "FF6B8A", ACCH: "E84F70", BTN: "3A212D", BTNH: "482A38", NAVA: "331B27", NAVH: "22121B", SWOFF: "44262F"},
-    {name: "Grape", BG: "100A1C", SIDE: "0A0613", CARD: "1A1030", INPUT: "251640", TEXT: "EFE9FA", MUTED: "9D8FC2", DIM: "605380", ACC: "9D5CFF", ACCH: "8343E8", BTN: "2B1E4A", BTNH: "36275A", NAVA: "261A42", NAVH: "18102E", SWOFF: "342554"},
-    {name: "Carbon", BG: "0A0A0A", SIDE: "050505", CARD: "141414", INPUT: "1E1E1E", TEXT: "F0F0F0", MUTED: "8A8A8A", DIM: "565656", ACC: "E0E0E0", ACCH: "C2C2C2", BTN: "222222", BTNH: "2D2D2D", NAVA: "1A1A1A", NAVH: "111111", SWOFF: "2B2B2B"},
+    {name: "Aurora", BG: "07140F", SIDE: "040E0A", CARD: "0D2018", INPUT: "142E24", TEXT: "E6FFF4", MUTED: "82B09C", DIM: "4B7563", ACC: "3DE0A0", ACCH: "2BC088", BTN: "123226", BTNH: "1A4434", NAVA: "123024", NAVH: "0A1C14", SWOFF: "1F4032"},
+    {name: "Ember", BG: "150A06", SIDE: "0E0603", CARD: "21120B", INPUT: "2E1A10", TEXT: "FFEFE4", MUTED: "B8917A", DIM: "7A5A48", ACC: "FF8A3D", ACCH: "E0732A", BTN: "321B10", BTNH: "44261A", NAVA: "2E190F", NAVH: "1A0E08", SWOFF: "41281A"},
+    {name: "Nebula", BG: "100A1E", SIDE: "0A0614", CARD: "1A1030", INPUT: "251745", TEXT: "F1EAFF", MUTED: "A593C8", DIM: "695B8C", ACC: "B084FF", ACCH: "9468E8", BTN: "2A1B4A", BTNH: "38265E", NAVA: "24173F", NAVH: "150D28", SWOFF: "3A2A5E"},
+    {name: "Crimson", BG: "150709", SIDE: "0E0406", CARD: "220D12", INPUT: "2F1219", TEXT: "FFEAEC", MUTED: "BE8E96", DIM: "805A62", ACC: "FF4D63", ACCH: "E03850", BTN: "331820", BTNH: "46222B", NAVA: "2E141B", NAVH: "1A090E", SWOFF: "442630"},
+    {name: "Lagoon", BG: "061519", SIDE: "030F12", CARD: "0B2128", INPUT: "122E37", TEXT: "E2FBFF", MUTED: "7FB0BA", DIM: "4A7580", ACC: "2FD4E8", ACCH: "1FB5C8", BTN: "10303A", BTNH: "183F4C", NAVA: "0F2D36", NAVH: "081A20", SWOFF: "1B3F4A"},
+    {name: "Mocha", BG: "14100D", SIDE: "0D0A08", CARD: "201A15", INPUT: "2C241D", TEXT: "F5EBDD", MUTED: "A8967F", DIM: "70604F", ACC: "D9A066", ACCH: "BE8A53", BTN: "30271E", BTNH: "3F3328", NAVA: "2B231B", NAVH: "19130F", SWOFF: "3D3227"},
+    {name: "Lime", BG: "0B1006", SIDE: "070A03", CARD: "131B0B", INPUT: "1C2812", TEXT: "F0FFE0", MUTED: "98B07A", DIM: "62784B", ACC: "B8F23C", ACCH: "9AD42B", BTN: "1F2D12", BTNH: "2B3E19", NAVA: "1C2810", NAVH: "0F1608", SWOFF: "2E4219"},
+    {name: "Neon", BG: "14061A", SIDE: "0D0311", CARD: "220B2B", INPUT: "301238", TEXT: "FFE9FF", MUTED: "C08BC8", DIM: "82588A", ACC: "FF3DDB", ACCH: "DB2BB9", BTN: "351341", BTNH: "481B58", NAVA: "30103C", NAVH: "1A0822", SWOFF: "4A2455"},
+    {name: "Void", BG: "05060A", SIDE: "020305", CARD: "0C0E16", INPUT: "141722", TEXT: "E6E9F5", MUTED: "7A8199", DIM: "4A5066", ACC: "5B7CFA", ACCH: "4A66DC", BTN: "161A2A", BTNH: "20263B", NAVA: "12162A", NAVH: "090B14", SWOFF: "222840"},
     {name: "Gold", BG: "121008", SIDE: "0C0B05", CARD: "1C1810", INPUT: "282218", TEXT: "F7F2E4", MUTED: "B0A682", DIM: "6E6646", ACC: "E5B84B", ACCH: "CC9F30", BTN: "2E2718", BTNH: "3A3120", NAVA: "272015", NAVH: "18140C", SWOFF: "38301E"},
-    {name: "Ocean", BG: "081018", SIDE: "050B11", CARD: "0F1C2A", INPUT: "16283A", TEXT: "E4F0FA", MUTED: "84A0BC", DIM: "4F6880", ACC: "3BA0E6", ACCH: "2B86C6", BTN: "172E42", BTNH: "1F3C54", NAVA: "14293C", NAVH: "0D1B28", SWOFF: "21394F"},
-    {name: "Cyber", BG: "0A0812", SIDE: "06040C", CARD: "130F20", INPUT: "1D172F", TEXT: "EAF6FF", MUTED: "8894B8", DIM: "505874", ACC: "22E0D0", ACCH: "14C0B2", BTN: "22203A", BTNH: "2C2948", NAVA: "1C1930", NAVH: "110E1E", SWOFF: "2A2742"}
+    {name: "Pearl", BG: "F4F4F6", SIDE: "E9E9EE", CARD: "FFFFFF", INPUT: "EFEFF3", TEXT: "18181C", MUTED: "5F5F68", DIM: "9A9AA3", ACC: "18181C", ACCH: "3A3A42", BTN: "E6E6EB", BTNH: "DADAE0", NAVA: "DCDCE3", NAVH: "E2E2E8", SWOFF: "D6D6DC"},
+    {name: "Sakura", BG: "FBF4F6", SIDE: "F3E6EB", CARD: "FFFFFF", INPUT: "FBEEF2", TEXT: "2A1A20", MUTED: "8A6670", DIM: "B89AA2", ACC: "E86A94", ACCH: "D4517E", BTN: "F6E2E9", BTNH: "F0D4DE", NAVA: "F2DCE4", NAVH: "F6E6EC", SWOFF: "EBCCD6"},
+    {name: "Mint", BG: "F1F8F4", SIDE: "E2F0E8", CARD: "FFFFFF", INPUT: "ECF6F0", TEXT: "14241C", MUTED: "5E7A6C", DIM: "97B3A5", ACC: "1FA971", ACCH: "16905E", BTN: "DFF0E7", BTNH: "D2E8DB", NAVA: "DAEDE3", NAVH: "E4F3EB", SWOFF: "CCE4D7"}
 ]
+
 ; visual v2: na primeira vez que abre esta versão, usa o novo tema "Aero Glass" (depois dá pra trocar em Aparência)
 if (IniRead(iniFile, "cfg", "uiv", "") != "2") {
     IniWrite("Aero Glass", iniFile, "cfg", "theme")
     IniWrite("2", iniFile, "cfg", "uiv")
 }
 curTheme := IniRead(iniFile, "cfg", "theme", "Aero Glass")
+_thOk := false
+for th in THEMES
+    if (th.name = curTheme)
+        _thOk := true
+if !_thOk {
+    curTheme := "Aero Glass"
+    IniWrite(curTheme, iniFile, "cfg", "theme")
+}
 for th in THEMES
     if (th.name = curTheme) {
         C_BG := th.BG, C_SIDE := th.SIDE, C_CARD := th.CARD, C_INPUT := th.INPUT, C_TEXT := th.TEXT
@@ -275,6 +273,7 @@ savedHudSt := IniRead(iniFile, "cfg", "hudShowSt", "1"), savedHudMd := IniRead(i
 savedHudCo := IniRead(iniFile, "cfg", "hudShowCo", "1"), savedHudLg := IniRead(iniFile, "cfg", "hudShowLg", "1")
 hudPnlKey := ""
 ANON_ID := IniRead(iniFile, "cfg", "anonId", "")
+BOT_CLIENT_ID := ""   ; ID do aplicativo do bot oficial (Discord Developer Portal) — preencha quando o bot existir
 if (ANON_ID = "") {
     Loop 8
         ANON_ID .= SubStr("0123456789ABCDEF", Random(1, 16), 1)
@@ -838,6 +837,12 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "tool_invite", "Convidar o bot",
+    "tool_invite_s", "Adiciona o bot oficial ao seu servidor do Discord",
+    "tool_appid", "ID do app",
+    "tool_appid_s", "Copia seu ID pra vincular mandando DM pro bot",
+    "bot_noclient", "O bot oficial ainda não foi configurado nesta versão",
+    "appid_ok", "ID copiado: {1}",
     "nav_tools", "Ferramentas",
     "pg_tools_sub", "Atalhos de manutenção e suporte",
     "tool_backup", "Backup das configurações",
@@ -1474,6 +1479,12 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -2110,6 +2121,12 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "tool_invite", "Invitar al bot",
+    "tool_invite_s", "Añade el bot oficial a tu servidor de Discord",
+    "tool_appid", "ID de la app",
+    "tool_appid_s", "Copia tu ID para vincular por DM al bot",
+    "bot_noclient", "El bot oficial aún no está configurado en esta versión",
+    "appid_ok", "ID copiado: {1}",
     "nav_tools", "Herramientas",
     "pg_tools_sub", "Atajos de mantenimiento y soporte",
     "tool_backup", "Copia de configuración",
@@ -2746,6 +2763,12 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -3382,6 +3405,12 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -4018,6 +4047,12 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -4654,6 +4689,12 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -5290,6 +5331,12 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tool_invite", "Invite the bot",
+    "tool_invite_s", "Adds the official bot to your Discord server",
+    "tool_appid", "App ID",
+    "tool_appid_s", "Copies your ID to link by DMing the bot",
+    "bot_noclient", "The official bot is not configured in this version yet",
+    "appid_ok", "ID copied: {1}",
     "nav_tools", "Tools",
     "pg_tools_sub", "Maintenance and support shortcuts",
     "tool_backup", "Back up settings",
@@ -5925,8 +5972,9 @@ tw2 := (CW - 12) // 2
 for i, tl in [[0xE74E, "tool_backup", BackupConfig, "F5C542"], [0xE777, "tool_restore", RestoreConfig, "4DA3FF"]
     , [0xE8B7, "tool_folder", (*) => Run(A_ScriptDir), "B084FF"], [0xE8A5, "tool_log", OpenLogFile, "3DDC84"]
     , [0xE8C8, "tool_diag", CopyDiag, "4DA3FF"], [0xE74D, "tool_clear", ClearCache, "FF5C5C"]
-    , [0xE711, "tool_kill", KillRobloxManual, "FF5C5C"], [0xE72C, "tool_restart", (*) => Reload(), "F5C542"]]
-    ToolTile(CX + Mod(i - 1, 2) * (tw2 + 12), 92 + ((i - 1) // 2) * 98, tw2, 88, tl[1], tl[2], tl[3], tl[4])
+    , [0xE711, "tool_kill", KillRobloxManual, "FF5C5C"], [0xE72C, "tool_restart", (*) => Reload(), "F5C542"]
+    , [0xE8F2, "tool_invite", BotInvite, "B084FF"], [0xE8D7, "tool_appid", CopyAppId, "3DDC84"]]
+    ToolTile(CX + Mod(i - 1, 2) * (tw2 + 12), 92 + ((i - 1) // 2) * 88, tw2, 80, tl[1], tl[2], tl[3], tl[4])
 
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
@@ -6021,7 +6069,7 @@ Lbl(CX + 20, y + 260, CW - 40, TT("lbl_report_id") ": " ANON_ID, "s8", C_MUTED)
 ; ---------------- Página: Aparência ----------------
 BeginPage("Aparência", TT("nav_look"), TT("pg_look_sub"))
 y := 92
-Card(CX, y, CW, 470)
+Card(CX, y, CW, 310)
 Lbl(CX + 20, y + 16, 300, TT("sec_theme"), "s7 w700", C_DIM)
 tw := (CW - 40 - 48) // 5, thh := 52
 for i, th in THEMES
@@ -6297,15 +6345,15 @@ StartApp() {
 ;  Helpers da GUI
 ; ==========================================================
 FontUI(gui, opts) {
-    gui.SetFont("norm " opts, "Segoe UI")
+    gui.SetFont("norm q5 " opts, "Segoe UI")
     gui.SetFont(, "Segoe UI Variable Text")   ; Win11 (se não existir, fica Segoe UI)
 }
 FontIcon(gui, opts) {
-    gui.SetFont("norm " opts, "Segoe MDL2 Assets")
+    gui.SetFont("norm q5 " opts, "Segoe MDL2 Assets")
     gui.SetFont(, "Segoe Fluent Icons")
 }
 FontMono(gui, opts) {
-    gui.SetFont("norm " opts, "Consolas")
+    gui.SetFont("norm q5 " opts, "Consolas")
     gui.SetFont(, "Cascadia Mono")
 }
 
@@ -6580,16 +6628,31 @@ AaToggle() {
 }
 
 ; cartão grande clicável (ícone + título + descrição)
+BotInvite(*) {
+    global BOT_CLIENT_ID
+    if (BOT_CLIENT_ID = "") {
+        Notify(TT("bot_noclient"), "Auto Reconnect", "Icon!")
+        return
+    }
+    Run("https://discord.com/oauth2/authorize?client_id=" BOT_CLIENT_ID "&scope=bot%20applications.commands&permissions=117760")
+}
+
+CopyAppId(*) {
+    global ANON_ID
+    A_Clipboard := ANON_ID
+    Notify(TT("appid_ok", ANON_ID), "Auto Reconnect")
+}
+
 ToolTile(x, y, w, h, icon, key, fn, col) {
     global g, C_DIM
     Card(x, y, w, h)
     Accent(x, y + 20, h - 40, col)
     FontIcon(g, "s18")
-    ic := P(g.Add("Text", Format("x{} y{} w44 h44 +0x200 Center c{} Background{}", x + 18, y + 22, col, C_CARD), Chr(icon)))
+    ic := P(g.Add("Text", Format("x{} y{} w44 h44 +0x200 Center c{} Background{}", x + 18, y + 18, col, C_CARD), Chr(icon)))
     FontUI(g, "s11 w700")
-    t1 := P(g.Add("Text", Format("x{} y{} w{} c{} Background{}", x + 72, y + 22, w - 88, C_TEXT, C_CARD), TT(key)))
+    t1 := P(g.Add("Text", Format("x{} y{} w{} c{} Background{}", x + 72, y + 16, w - 88, C_TEXT, C_CARD), TT(key)))
     FontUI(g, "s8")
-    t2 := P(g.Add("Text", Format("x{} y{} w{} h34 c{} Background{}", x + 72, y + 46, w - 88, C_MUTED, C_CARD), TT(key "_s")))
+    t2 := P(g.Add("Text", Format("x{} y{} w{} h30 c{} Background{}", x + 72, y + 40, w - 88, C_MUTED, C_CARD), TT(key "_s")))
     for c in [ic, t1, t2]
         c.OnEvent("Click", BtnClick.Bind(fn))
 }
