@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.24
+- Leitura e Avançado foram para Configurações (subabas ao lado de Configurações). Aparência ficou só com temas e HUD.
+
 ## v1.5.23
 - A busca de atualização a cada 30 s agora vem **desligada** por padrão (Sobre → atualização rápida). O app continua procurando ao abrir e a cada 6 horas.
 

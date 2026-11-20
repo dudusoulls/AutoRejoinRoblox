@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.23"
+VERSION     := "1.5.24"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5696,8 +5696,8 @@ GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Aut
     , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Relat", "Guilda"] : ["Webhook", "Notif", "Painel", "Relat"]
     , "Bots", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
-    , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
-    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
+    , "Aparência", aaMode ? ["Aparência", "HUD"] : ["Aparência"]
+    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
 for gk, subs in GROUPS
