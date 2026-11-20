@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.41"
+VERSION     := "1.5.42"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -943,6 +943,7 @@ I18N["pt"].Set(
     "sw_guildnotify_sub", "Manda uma mensagem com o rank antigo e o novo",
     "guild_changed", "🛡 Rank da guilda mudou: #{1} → #{2}",
     "lbl_guildhook", "Webhook do canal do rank (opcional — vazio usa o webhook principal)",
+    "btn_guild_test", "Enviar aviso de teste",
     "nav_adv", "Avançado",
     "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
     "sec_adv", "ACOMPANHAR A JANELA",
@@ -1606,6 +1607,7 @@ I18N["en"].Set(
     "sw_guildnotify_sub", "Sends a message with the old and new rank",
     "guild_changed", "🛡 Guild rank changed: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Advanced",
     "pg_adv_sub", "Settings for any monitor or resolution",
     "sec_adv", "FOLLOW THE WINDOW",
@@ -2269,6 +2271,7 @@ I18N["es"].Set(
     "sw_guildnotify_sub", "Envía un mensaje con el rango anterior y el nuevo",
     "guild_changed", "🛡 Cambió el rango del gremio: #{1} → #{2}",
     "lbl_guildhook", "Webhook del canal del rango (opcional — vacío usa el principal)",
+    "btn_guild_test", "Enviar aviso de prueba",
     "nav_adv", "Avanzado",
     "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
     "sec_adv", "SEGUIR LA VENTANA",
@@ -2932,6 +2935,7 @@ I18N["fr"].Set(
     "sw_guildnotify_sub", "Envoie un message avec l'ancien et le nouveau rang",
     "guild_changed", "🛡 Le rang de guilde a changé : #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Avancé",
     "pg_adv_sub", "Réglages pour tout écran ou résolution",
     "sec_adv", "SUIVRE LA FENÊTRE",
@@ -3595,6 +3599,7 @@ I18N["de"].Set(
     "sw_guildnotify_sub", "Sendet eine Nachricht mit altem und neuem Rang",
     "guild_changed", "🛡 Gilden-Rang geändert: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Erweitert",
     "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
     "sec_adv", "FENSTER FOLGEN",
@@ -4258,6 +4263,7 @@ I18N["ru"].Set(
     "sw_guildnotify_sub", "Отправляет сообщение со старым и новым рангом",
     "guild_changed", "🛡 Ранг гильдии изменился: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Дополнительно",
     "pg_adv_sub", "Настройки для любого монитора и разрешения",
     "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
@@ -4921,6 +4927,7 @@ I18N["tr"].Set(
     "sw_guildnotify_sub", "Eski ve yeni sırayı mesaj olarak yollar",
     "guild_changed", "🛡 Lonca sırası değişti: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Gelişmiş",
     "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
     "sec_adv", "PENCEREYİ TAKİP ET",
@@ -5584,6 +5591,7 @@ I18N["id"].Set(
     "sw_guildnotify_sub", "Kirim pesan dengan peringkat lama dan baru",
     "guild_changed", "🛡 Peringkat guild berubah: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
+    "btn_guild_test", "Send test alert",
     "nav_adv", "Lanjutan",
     "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
     "sec_adv", "IKUTI JENDELA",
@@ -6032,6 +6040,7 @@ guildBig := Lbl(CX + 20, y + 36, CW - 40, "#—", "s26 w700")
 guildSub := Lbl(CX + 20, y + 88, CW - 40, TT("guild_last", "—"), "s9", C_MUTED)
 Btn(CX + 20, y + 116, 150, 32, TT("btn_guild_read"), (*) => GuildReadNow())
 Btn(CX + 180, y + 116, 150, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
+Btn(CX + 340, y + 116, 150, 32, TT("btn_guild_test"), GuildTest)
 y += 176
 Card(CX, y, CW, 216)
 chkGuildSend := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_guildsend"), savedGuildSend, TT("sw_guildsend_sub"))
@@ -9052,7 +9061,7 @@ GuildChanged(old, new, notify := true) {
 }
 
 ; posta no canal (webhook do rank, ou o webhook principal) a mensagem do novo rank com data/hora e print do boneco
-GuildPost(old, new) {
+GuildPost(old, new, test := false) {
     global edGuildHook, edHook, guildTrk, USER_NAME, APP_NAME, LOGO_URL, VERSION
     url := Trim(edGuildHook.Value), auth := "", head := '"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
     if (InStr(url, "https://discord.com/api/webhooks/") != 1) {
@@ -9093,7 +9102,7 @@ GuildPost(old, new) {
     desc := "# #" fmt(new) "`n-# 🕒 <t:" now ":F>  ·  <t:" now ":R>`n"
     desc .= "> " "Antes: **#" fmt(old) "**" (delta != "" ? "  ·  " delta : "") "`n"
     e := '{' head '"allowed_mentions":{"parse":[]},'
-        . '"content":"``' JsonEsc(FormatTime(, "dd/MM/yyyy, HH:mm:ss")) '``",'
+        . '"content":"' (test ? "🧪 **Teste** — " : "") '``' JsonEsc(FormatTime(, "dd/MM/yyyy, HH:mm:ss")) '``",'
         . '"embeds":[{'
         . '"author":{"name":"' JsonEsc(APP_NAME "  ·  🛡 " TT("f_guild")) '","icon_url":"' LOGO_URL '"},'
         . '"color":' 0x6EA8FF ','
@@ -9106,6 +9115,19 @@ GuildPost(old, new) {
         SendWebhookImage(url, e, shot, auth, 0, "rank.png")
     else
         HttpPost(url, e, "application/json", auth, 0)
+}
+
+; botão "Enviar aviso de teste" da aba Guilda: manda o aviso do rank agora (com print) pro canal configurado
+GuildTest(*) {
+    global farmGuild
+    new := farmGuild != "" ? farmGuild : "12345"
+    old := IsInteger(new) ? Integer(new) + 37 : 12382
+    try {
+        GuildPost(old, new, true)
+        Log("Rank · aviso de teste enviado")
+    } catch as e {
+        Log(TT("hook_fail", e.Message))
+    }
 }
 
 GuildReadNow() {
@@ -9489,29 +9511,29 @@ ReadGuildRank(hw) {
 ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
 GuildTick(hw) {
     global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
-    static hist := []
+    static pend := "", cnt := 0
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
     gr := ReadGuildRank(hw)
-    if (gr = "")
-        return
-    if (gr = farmGuild) {                 ; já confirmado: zera o histórico
-        hist := []
+    if (gr = "") {                        ; não achou: zera a contagem (as leituras precisam ser SEGUIDAS)
+        pend := "", cnt := 0
         return
     }
-    ; só mostra um rank novo quando o MESMO número aparece N vezes nas últimas leituras (N = ini [cfg] guildN, padrão 3)
+    if (gr = farmGuild) {                 ; já confirmado
+        pend := "", cnt := 0
+        return
+    }
+    ; só mostra um rank novo depois de N leituras IGUAIS SEGUIDAS (N = ini [cfg] guildN, padrão 3);
+    ; se uma leitura falhar ou vier um número diferente, recomeça do zero
     need := 3
     try need := Max(1, Min(10, Integer(IniRead(iniFile, "cfg", "guildN", "3"))))
-    hist.Push(gr)
-    while (hist.Length > need * 2 + 2)
-        hist.RemoveAt(1)
-    cnt := 0
-    for v in hist
-        if (v = gr)
-            cnt++
+    if (gr = pend)
+        cnt++
+    else
+        pend := gr, cnt := 1
     if (cnt >= need) {
         old := farmGuild
-        farmGuild := gr, hist := []
+        farmGuild := gr, pend := "", cnt := 0
         GuildChanged(old, gr)
     }
 }
