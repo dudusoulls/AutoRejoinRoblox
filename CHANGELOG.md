@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.11
+- O interruptor do Modo AA agora fica no topo de Automação → Opções (antes estava no fim da página, escondido).
+
 ## v1.5.10
 - Barra lateral com separadores: ROBLOX (Jogo, Automação), INTEGRAÇÕES (Discord, QoL) e APP (Aparência, Logs, Sobre, Suporte).
 

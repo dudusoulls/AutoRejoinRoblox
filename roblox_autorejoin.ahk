@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.10"
+VERSION     := "1.5.11"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5543,30 +5543,30 @@ chkLowPrio := ToggleSwitch(CX + 20, y + 152, CW - 40, TT("sw_lowprio"), savedLow
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
 y := 92
-Card(CX, y, CW, 132)
+Card(CX, y, CW, 64)
+chkAA := ToggleSwitch(CX + 20, y + 10, CW - 40, TT("sw_aa"), aaMode, TT("sw_aa_sub"))
+chkAA.onChange := (*) => AaToggle()
+
+y := 168
+Card(CX, y, CW, 120)
 Lbl(CX + 20, y + 16, 300, TT("sec_startup"), "s7 w700", C_DIM)
 chkStartWin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_startwin"), savedStartWin, TT("sw_startwin_sub"))
 chkStartWin.onChange := (*) => SetStartup(chkStartWin.Value)
 chkAutoMon := ToggleSwitch(CX + 20, y + 86, CW - 40, TT("sw_automon"), savedAutoMon, TT("sw_automon_sub"))
 
-y := 236
-Card(CX, y, CW, 132)
+y := 300
+Card(CX, y, CW, 120)
 Lbl(CX + 20, y + 16, 300, TT("sec_notify"), "s7 w700", C_DIM)
 chkToast := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_toast"), savedToast, TT("sw_toast_sub"))
 chkTray := ToggleSwitch(CX + 20, y + 86, CW - 40, TT("sw_tray"), savedTray, TT("sw_tray_sub"))
 
-y := 380
+y := 432
 Card(CX, y, CW, 120)
 Lbl(CX + 20, y + 16, 300, TT("sec_daily"), "s7 w700", C_DIM)
 chkDaily := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_daily"), savedDaily)
 Lbl(CX + 20, y + 84, 140, TT("lbl_daily_time"), "s9", C_MUTED)
 edDailyAt := Input(CX + 170, y + 77, 90, savedDailyAt)
 Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(true))
-
-y := 512
-Card(CX, y, CW, 64)
-chkAA := ToggleSwitch(CX + 20, y + 10, CW - 40, TT("sw_aa"), aaMode, TT("sw_aa_sub"))
-chkAA.onChange := (*) => AaToggle()
 
 ; ---------------- Página: Sobre ----------------
 BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
