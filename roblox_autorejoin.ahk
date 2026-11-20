@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.6"
+VERSION     := "1.5.7"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -8209,6 +8209,8 @@ PreOcr(hw, ox, oy, ow, oh, kind, ths) {
                     r := (v >> 16) & 255, gg := (v >> 8) & 255, b := v & 255
                     if (kind = "white")
                         on := (r > th && gg > th && b > th)
+                    else if (kind = "coin")
+                        on := ((r * 3 + gg * 6 + b) // 10 > th)
                     else
                         on := ((r * 3 + gg * 6 + b) // 10 > th && b - r < 60)
                     NumPut("UInt", on ? 0xFF000000 : 0xFFFFFFFF, bits, off)
@@ -8224,8 +8226,8 @@ PreOcr(hw, ox, oy, ow, oh, kind, ths) {
             words := []
             try for ln in res.Lines
                 for w1 in ln.Words
-                    words.Push({t: w1.Text, x: w1.x})
-            results.Push({text: res.Text, words: words})
+                    words.Push({t: w1.Text, x: w1.x, w: w1.w})
+            results.Push({text: res.Text, words: words, sc: sc, pad: pad})
         }
     }
     try {
@@ -11112,33 +11114,112 @@ ReadCoinBar(hw) {
         WinGetClientPos(, , &cw, &chh, hw)
         ar := AreaGet("coins", cw, chh)
         AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
-        best := [], seen := ""
-        for r in PreOcr(hw, ox, oy, ow, oh, "bright", [175, 150, 200]) {
+        seen := "", attempts := [], mx := 0
+        for r in PreOcr(hw, ox, oy, ow, oh, "coin", [150, 175, 200]) {
             seen .= (seen = "" ? "" : " | ") SubStr(RegExReplace(r.text, "\s+", " "), 1, 60)
             nums := []
             for wd in r.words {
                 t := RegExReplace(wd.t, "[^0-9OoIlSsBZz.,kKmMbB]")
                 if (RegExMatch(t, "^[0-9OoIlSsBZz][0-9OoIlSsBZz.,]*[kKmMbB]?$") && RegExMatch(t, "\d"))
-                    nums.Push({x: wd.x, t: RegExReplace(FixDigits(t), "[^\d.,kKmMbB]+$")})
+                    nums.Push({x: wd.x, ex: wd.x + wd.w, sc: r.sc, pad: r.pad, t: RegExReplace(FixDigits(t), "[^\d.,kKmMbB]+$")})
             }
-            if (nums.Length > best.Length) {
-                ; ordem da esquerda pra direita
-                Loop nums.Length - 1 {
-                    i := A_Index
-                    Loop nums.Length - i
-                        if (nums[A_Index].x > nums[A_Index + 1].x)
-                            tmp := nums[A_Index], nums[A_Index] := nums[A_Index + 1], nums[A_Index + 1] := tmp
+            Loop nums.Length - 1 {
+                i := A_Index
+                Loop nums.Length - i
+                    if (nums[A_Index].x > nums[A_Index + 1].x)
+                        tmp := nums[A_Index], nums[A_Index] := nums[A_Index + 1], nums[A_Index + 1] := tmp
+            }
+            attempts.Push(nums), mx := Max(mx, nums.Length)
+        }
+        ; entre as leituras com mais números, vota por posição (corrige 8↔0 etc.)
+        best := []
+        Loop mx {
+            idx := A_Index, votes := Map(), ref := 0
+            for nums in attempts
+                if (nums.Length = mx) {
+                    votes[nums[idx].t] := (votes.Has(nums[idx].t) ? votes[nums[idx].t] : 0) + 1
+                    if !ref
+                        ref := nums[idx]
                 }
-                best := nums
-            }
-            if (best.Length >= Min(3, specs.Length))
-                break
+            bt := "", bv := 0
+            for k, v in votes
+                if (v > bv || (v = bv && StrLen(k) > StrLen(bt)))
+                    bt := k, bv := v
+            best.Push({t: bt, ex: ref.ex, sc: ref.sc, pad: ref.pad})
         }
         lastOcrText .= "[barra de moedas] " seen "`n"
-        Loop Min(best.Length, specs.Length)
-            out[specs[A_Index].name] := best[A_Index].t
+        used := Map()
+        for i, n in best {
+            kind := CoinIconKind(hw, ox + (n.ex - n.pad) / n.sc, oy, oh * 1.3, oh)
+            nm := ""
+            for sp in specs {
+                l := StrLower(sp.name)
+                if (!used.Has(sp.name) && ((kind = "gold" && (InStr(l, "gold") || InStr(l, "coin")))
+                    || (kind = "pearl" && InStr(l, "pearl")) || (kind = "legacy" && InStr(l, "legacy"))
+                    || (kind = "gem" && InStr(l, "gem") && !InStr(l, "legacy")))) {
+                    nm := sp.name
+                    break
+                }
+            }
+            if (nm = "")
+                for sp in specs
+                    if !used.Has(sp.name) {
+                        nm := sp.name
+                        break
+                    }
+            if (nm != "")
+                used[nm] := 1, out[nm] := n.t
+        }
     }
     return out
+}
+
+; classifica o ícone da moeda pela cor: gold(amarelo) / pearl(rosa) / gem(ciano-arco-íris) / legacy(azul)
+CoinIconKind(hw, rx, ry, rw, rh) {
+    pt := Buffer(8, 0)
+    NumPut("Int", Round(rx), pt, 0), NumPut("Int", Round(ry), pt, 4)
+    DllCall("ClientToScreen", "Ptr", hw, "Ptr", pt)
+    sx := NumGet(pt, 0, "Int"), sy := NumGet(pt, 4, "Int")
+    dc := DllCall("GetDC", "Ptr", 0, "Ptr")
+    if !dc
+        return ""
+    yel := 0, pnk := 0, cyn := 0, blu := 0
+    yy := 0
+    while (yy < rh) {
+        xx := 0
+        while (xx < rw) {
+            c := DllCall("GetPixel", "Ptr", dc, "Int", sx + Round(xx), "Int", sy + yy, "UInt")
+            if (c != 0xFFFFFFFF) {
+                r := c & 0xFF, g := (c >> 8) & 0xFF, b := (c >> 16) & 0xFF
+                mx := Max(r, g, b), mn := Min(r, g, b)
+                if (mx >= 130 && mx - mn >= 70) {
+                    if (mx = r && g >= b + 40 && g >= r * 0.55)
+                        yel++
+                    else if (mx = r && b > g + 25)
+                        pnk++
+                    else if (mx = b && g >= r + 50 && g > b * 0.6)
+                        cyn++
+                    else if (mx = b && r < g + 30 && g < b * 0.75)
+                        blu++
+                    else if (mx = g && b >= r)
+                        cyn++
+                    else if (mx = b && r > g + 30)
+                        pnk++
+                }
+            }
+            xx += 1.5
+        }
+        yy += 2
+    }
+    DllCall("ReleaseDC", "Ptr", 0, "Ptr", dc)
+    tot := yel + pnk + cyn + blu
+    if (tot < 6)
+        return ""
+    if (blu > cyn && blu > yel && blu > pnk)
+        return "legacy"
+    if (cyn * 6 >= tot)
+        return "gem"
+    return yel >= pnk ? "gold" : "pearl"
 }
 
 ; maior zoom possível sem passar do limite de tamanho do OCR do Windows

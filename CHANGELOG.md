@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.7
+- Barra de moedas: reconhece cada moeda pela cor do ícone (gold amarelo, gem arco-íris, pearl rosa) em vez da ordem, lê números azulados/lilás (gems) e corrige 8↔0 votando entre várias leituras.
+
 ## v1.5.6
 - Leituras de OCR agora num agendador único: nunca se sobrepõem e se adaptam ao tempo gasto (poupa CPU/FPS). Intervalo ajustável em `[cfg] ocrSec` no ini (padrão 15s, mínimo 2s).
 
