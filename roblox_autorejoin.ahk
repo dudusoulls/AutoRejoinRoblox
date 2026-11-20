@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.37"
+VERSION     := "1.5.38"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -8922,6 +8922,8 @@ AreaTestOneRun(an) {
             case "guild":
                 gr := ReadGuildRank(hw)
                 val := gr != "" ? "#" gr : ""
+                global guildSeen
+                raw := guildSeen
         }
     } catch as e {
         raw := e.Message
@@ -9234,7 +9236,8 @@ FixDigits(t) {
 
 ; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
 ReadGuildRank(hw) {
-    global farmBest, farmGdbgT
+    global farmBest, farmGdbgT, guildSeen
+    guildSeen := ""
     static variants := [{mode: 0}, {mode: 4}, {mode: 4, gray: 1}, {mode: 0, gray: 1}]
     try {
         WinGetClientPos(, , &cw, &chh, hw)
@@ -9245,6 +9248,7 @@ ReadGuildRank(hw) {
         seen := "", votes := Map(), hashV := Map()
         ; 1) leitura "limpa": amplia a área e isola só o branco do texto (preto no branco) antes do OCR — é o que resolve texto minúsculo
         seen := GuildPre(hw, ox, oy, ow, oh, votes)
+        guildSeen := seen
         for n0, c0 in votes
             if (c0 >= 5)
                 return n0
@@ -9279,6 +9283,7 @@ ReadGuildRank(hw) {
         for n, c in votes
             if (c > bv)
                 best := n, bv := c
+        guildSeen := seen
         if (best != "")
             return best
         if (A_TickCount - farmGdbgT > 120000) {

@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.38
+- Leitura → Testar (Rank da guilda): quando não acha o número, mostra o texto bruto que o OCR leu, pra ajudar a ajustar.
+
 ## v1.5.37
 - Atualização: corrigido o loop de "atualizar sempre pra mesma versão" (o Windows reaproveitava o exe velho do cache). Agora baixa sempre o exe novo e, se mesmo assim a versão não mudar depois de 2 tentativas, para o automático e avisa no log.
 
