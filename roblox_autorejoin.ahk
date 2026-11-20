@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.18"
+VERSION     := "1.5.19"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9330,7 +9330,7 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev, farmGuild, edLink
+    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev, farmGuild, edLink, aaMode
     if !chkPanel.Value {
         if force
             Log("Painel · ligue o toggle 'Painel fixo no canal'")
@@ -9370,7 +9370,7 @@ PanelUpdate(force := false) {
     esc := Chr(27)
     coinsBlk := ""
     for c in CurrencySpec() {
-        if !(prevCur.Has(c.name) && prevCur[c.name] != "")
+        if !(aaMode && prevCur.Has(c.name) && prevCur[c.name] != "")
             continue
         nm := StrLower(c.name)
         col := InStr(nm, "gem") && !InStr(nm, "legacy") ? "36" : (InStr(nm, "gold") || InStr(nm, "coin")) ? "33" : InStr(nm, "pearl") ? "35" : InStr(nm, "legacy") ? "34" : "37"
@@ -9401,7 +9401,7 @@ PanelUpdate(force := false) {
     if (SubStr(lk, 1, 4) = "http" && !InStr(lk, " "))
         desc .= "`n[🎮 " TT("f_link") "](" lk ")"
     fields := []
-    if (farmGuild != "" && chkGuildSend.Value)
+    if (aaMode && farmGuild != "" && chkGuildSend.Value)
         fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
         fields.Push(["⏮ " TT("f_prevround"), "+" farmPrev, true])
@@ -11981,6 +11981,8 @@ FmtNum(n) {
 ; Procura cada nome na tela e pega o número logo acima (ou do lado) dele.
 ReadCurrencies(hw) {
     global edCur, lastOcrText, aaMode
+    if !aaMode                       ; moedas são do Modo AA
+        return [[], Map()]
     labels := []
     for c in CurrencySpec()
         labels.Push(c.name)
@@ -12296,7 +12298,9 @@ DefaultEmoji(name) {
 
 ; monta o bloco "Player Stats" do embed e atualiza a tela de "Última leitura"
 CurrencyBlock(cur) {
-    global prevCur, curView
+    global prevCur, curView, aaMode
+    if !aaMode
+        return ""
     found := cur[2]
     out := "", view := ""
     for c in CurrencySpec() {

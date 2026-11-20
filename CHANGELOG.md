@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.19
+- Com o Modo AA desligado, nada do jogo vai pro Discord: moedas, guilda, farm e leitura saem do painel, do status, do resumo diário e dos comandos.
+
 ## v1.5.18
 - Painel fixo (1 embed que se atualiza sozinho) redesenhado com mais recursos do Discord: títulos, seções (Farm, Moedas, PC), blocos coloridos com barras de CPU/RAM, link do jogo clicável e valores em negrito.
 - A aba Painel agora aparece também com o Modo AA desligado.
