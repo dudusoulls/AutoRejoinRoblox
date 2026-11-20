@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.26
+- Bot oficial conectado: o app já aponta para o servidor do bot (aba Bot → Bot oficial).
+
 ## v1.5.25
 - O botão "Convidar o bot" agora abre o convite do bot oficial.
 

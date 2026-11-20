@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.25"
+VERSION     := "1.5.26"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -282,7 +282,7 @@ savedHudSt := IniRead(iniFile, "cfg", "hudShowSt", "1"), savedHudMd := IniRead(i
 savedHudCo := IniRead(iniFile, "cfg", "hudShowCo", "1"), savedHudLg := IniRead(iniFile, "cfg", "hudShowLg", "1")
 hudPnlKey := ""
 ANON_ID := IniRead(iniFile, "cfg", "anonId", "")
-BOT_API := ""   ; URL do Worker do bot oficial (ver bot-worker/README.md)
+BOT_API := "https://auto-reconnect-bot.autoreconnect.workers.dev"   ; URL do Worker do bot oficial (ver bot-worker/README.md)
 BOT_CLIENT_ID := "1572049274768990259"   ; ID do aplicativo do bot oficial (Discord Developer Portal) — preencha quando o bot existir
 if (ANON_ID = "") {
     Loop 8

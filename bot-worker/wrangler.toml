@@ -5,4 +5,4 @@ compatibility_date = "2024-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "auto-reconnect"
-database_id = "COLE_O_ID_AQUI"
+database_id = "90c4a28c-02df-4dd1-9ec2-ca6d3d6e02f7"
