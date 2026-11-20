@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.10
+- Barra lateral com separadores: ROBLOX (Jogo, Automação), INTEGRAÇÕES (Discord, QoL) e APP (Aparência, Logs, Sobre, Suporte).
+
 ## v1.5.9
 - A janela lembra onde estava da última vez (posição salva ao fechar/esconder; se o monitor mudou, abre centralizada).
 

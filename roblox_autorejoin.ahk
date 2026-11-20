@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.9"
+VERSION     := "1.5.10"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5187,16 +5187,24 @@ GROUP_OF := Map()
 for gk, subs in GROUPS
     for sb in subs
         GROUP_OF[sb] := gk
-AddNav("Início",    Chr(0xE80F), 92)
-AddNav("Jogo",      Chr(0xE7FC), 134)
-AddNav("Automação", Chr(0xE916), 176)
-AddNav("Discord",   Chr(0xE8F2), 218)
-AddNav("QoL",       Chr(0xE8C7), 260)
-AddNav("Aparência", Chr(0xE790), 302)
-AddNav("Logs",      Chr(0xE81C), 344)
-AddNav("Sobre",     Chr(0xE713), 386)
-AddNav("Suporte",   Chr(0xE897), 428)
-navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 102, C_ACC))
+NavHead(name, y) {
+    global g, C_SIDE, C_DIM, SIDE
+    FontUI(g, "s7 w700")
+    g.Add("Text", Format("x20 y{} w{} h14 Background{} c{}", y, SIDE - 40, C_SIDE, C_DIM), name)
+}
+AddNav("Início",    Chr(0xE80F), 84)
+NavHead("ROBLOX", 134)
+AddNav("Jogo",      Chr(0xE7FC), 150)
+AddNav("Automação", Chr(0xE916), 188)
+NavHead("INTEGRAÇÕES", 236)
+AddNav("Discord",   Chr(0xE8F2), 252)
+AddNav("QoL",       Chr(0xE8C7), 290)
+NavHead("APP", 338)
+AddNav("Aparência", Chr(0xE790), 354)
+AddNav("Logs",      Chr(0xE81C), 392)
+AddNav("Sobre",     Chr(0xE713), 430)
+AddNav("Suporte",   Chr(0xE897), 468)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 94, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
