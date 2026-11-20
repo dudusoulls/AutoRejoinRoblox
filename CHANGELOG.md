@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.51
+- Nova opção em Configurações: "Enviar dados de uso" (desligada por padrão). Com ela ligada o app manda um ping com ID anônimo, nome de usuário do Windows, versão e SO — ajuda a identificar quem pede suporte.
+
 ## v1.5.50
 - Logs avançados (Configurações → Exibir): mostra no log cada ciclo de leitura (janela, área de cada OCR, texto lido, resultado, rank/contagem, ação do monitor). Opção de salvar uma imagem com as áreas desenhadas (onde ele procura) em `debug\ocr_last.png`, com botão pra abrir a pasta.
 

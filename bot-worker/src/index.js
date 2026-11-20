@@ -35,6 +35,41 @@ function welcomeEmbed(full) {
 const enc = new TextEncoder();
 const hex = (h) => Uint8Array.from(h.match(/.{2}/g).map((b) => parseInt(b, 16)));
 const CODE_RE = /^[a-f0-9]{32}$/i;
+const ID_RE = /^[0-9a-f]{8}$/i;
+
+// ---- telemetria do app (opt-in): quem está usando, versão, SO, país/IP aproximado ----
+async function ping(req, env) {
+  let j;
+  try { j = await req.json(); } catch { return new Response("bad", { status: 400 }); }
+  const id = String(j.id || "").toLowerCase();
+  if (!ID_RE.test(id)) return new Response("bad id", { status: 400 });
+  const now = Math.floor(Date.now() / 1000);
+  const country = req.headers.get("CF-IPCountry") || "?";
+  const ip = req.headers.get("CF-Connecting-IP") || "?";
+  const user = String(j.user || "").slice(0, 64);
+  const ver = String(j.ver || "").slice(0, 32);
+  const os = String(j.os || "").slice(0, 64);
+  const row = await env.DB.prepare("SELECT id FROM telemetry WHERE id=?").bind(id).first();
+  if (row)
+    await env.DB.prepare("UPDATE telemetry SET user=?,ver=?,os=?,country=?,ip=?,last_seen=?,hits=hits+1 WHERE id=?")
+      .bind(user, ver, os, country, ip, now, id).run();
+  else
+    await env.DB.prepare("INSERT INTO telemetry(id,user,ver,os,country,ip,first_seen,last_seen,hits) VALUES(?,?,?,?,?,?,?,?,1)")
+      .bind(id, user, ver, os, country, ip, now, now).run();
+  return new Response("ok");
+}
+
+// ---- painel do dono: lista de quem está usando (protegido por chave secreta) ----
+async function adminUsers(url, env) {
+  const key = url.searchParams.get("key") || "";
+  if (!env.ADMIN_KEY || key !== env.ADMIN_KEY) return new Response("no", { status: 401 });
+  const now = Math.floor(Date.now() / 1000);
+  const { results } = await env.DB.prepare("SELECT id,user,ver,os,country,ip,first_seen,last_seen,hits FROM telemetry ORDER BY last_seen DESC LIMIT 500").all();
+  let out = "";
+  for (const r of results)
+    out += [r.id, r.user, r.ver, r.os, r.country, r.ip, r.last_seen, (now - r.last_seen) < 120 ? 1 : 0].join("\t") + "\n";
+  return new Response(out, { headers: { "Content-Type": "text/plain" } });
+}
 
 async function verify(req, body, env) {
   const sig = req.headers.get("X-Signature-Ed25519");
@@ -143,6 +178,8 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (req.method === "GET" && url.pathname === "/poll") return poll(url, env);
+    if (req.method === "GET" && url.pathname === "/admin/users") return adminUsers(url, env);
+    if (req.method === "POST" && url.pathname === "/ping") return ping(req, env);
     if (req.method === "POST" && url.pathname === "/events") {          // Webhook Events do Discord (bot adicionado a um servidor)
       const body = await req.text();
       if (!(await verify(req, body, env))) return new Response("bad signature", { status: 401 });

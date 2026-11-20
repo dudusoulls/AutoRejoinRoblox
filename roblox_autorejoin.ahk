@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.50"
+VERSION     := "1.5.51"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -288,6 +288,14 @@ if (ANON_ID = "") {
     Loop 8
         ANON_ID .= SubStr("0123456789ABCDEF", Random(1, 16), 1)
     IniWrite(ANON_ID, iniFile, "cfg", "anonId")
+}
+savedTelemetry := IniRead(iniFile, "cfg", "telemetry", "0")
+OWNER_KEY_FILE := A_ScriptDir "\owner.key"
+IS_OWNER := FileExist(OWNER_KEY_FILE) ? true : false
+OWNER_KEY := ""
+if IS_OWNER {
+    try OWNER_KEY := Trim(FileRead(OWNER_KEY_FILE))
+    IS_OWNER := OWNER_KEY != ""
 }
 ; ---------------- Idiomas (gerado) ----------------
 LANG_CODES := ["pt", "en", "es", "fr", "de", "ru", "tr", "id"]
@@ -960,6 +968,11 @@ I18N["pt"].Set(
     "lbl_guildevery", "Enviar o rank também a cada (minutos)",
     "guildevery_sub", "0 = só quando mudar",
     "nav_adv", "Avançado",
+    "nav_owner", "Dono",
+    "pg_owner_sub", "Só você vê esta aba — lista de quem está usando o app",
+    "sec_telemetry", "DADOS DE USO",
+    "sw_telemetry", "Enviar dados de uso",
+    "sw_telemetry_sub", "Manda pro criador do app: um ID anônimo, seu nome de usuário do Windows, versão do app/SO e país/IP aproximado. Ajuda a te identificar em pedidos de suporte. Desligue quando quiser.",
     "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
     "sec_adv", "ACOMPANHAR A JANELA",
     "sw_areascale", "Ajustar as áreas de leitura ao tamanho da janela",
@@ -1639,6 +1652,11 @@ I18N["en"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Advanced",
+    "nav_owner", "Owner",
+    "pg_owner_sub", "Only you see this tab — list of who is using the app",
+    "sec_telemetry", "USAGE DATA",
+    "sw_telemetry", "Send usage data",
+    "sw_telemetry_sub", "Sends the app's creator: an anonymous ID, your Windows username, app/OS version and approximate country/IP. Helps identify you in support requests. Turn off anytime.",
     "pg_adv_sub", "Settings for any monitor or resolution",
     "sec_adv", "FOLLOW THE WINDOW",
     "sw_areascale", "Fit reading areas to the window size",
@@ -2318,6 +2336,11 @@ I18N["es"].Set(
     "lbl_guildevery", "Enviar el rango también cada (minutos)",
     "guildevery_sub", "0 = solo cuando cambie",
     "nav_adv", "Avanzado",
+    "nav_owner", "Dueño",
+    "pg_owner_sub", "Solo tú ves esta pestaña — lista de quién usa la app",
+    "sec_telemetry", "DATOS DE USO",
+    "sw_telemetry", "Enviar datos de uso",
+    "sw_telemetry_sub", "Envía al creador de la app: un ID anónimo, tu nombre de usuario de Windows, versión de la app/SO y país/IP aproximado. Ayuda a identificarte en pedidos de soporte. Desactívalo cuando quieras.",
     "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
     "sec_adv", "SEGUIR LA VENTANA",
     "sw_areascale", "Ajustar las áreas de lectura al tamaño de la ventana",
@@ -2997,6 +3020,11 @@ I18N["fr"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Avancé",
+    "nav_owner", "Propriétaire",
+    "pg_owner_sub", "Vous seul voyez cet onglet — liste de qui utilise l'appli",
+    "sec_telemetry", "DONNÉES D'UTILISATION",
+    "sw_telemetry", "Envoyer les données d'utilisation",
+    "sw_telemetry_sub", "Envoie au créateur de l'appli : un ID anonyme, votre nom d'utilisateur Windows, la version de l'appli/OS et le pays/IP approximatif. Aide à vous identifier lors d'une demande de support. Désactivable à tout moment.",
     "pg_adv_sub", "Réglages pour tout écran ou résolution",
     "sec_adv", "SUIVRE LA FENÊTRE",
     "sw_areascale", "Adapter les zones de lecture à la taille de la fenêtre",
@@ -3676,6 +3704,11 @@ I18N["de"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Erweitert",
+    "nav_owner", "Eigentümer",
+    "pg_owner_sub", "Nur du siehst diesen Tab — Liste, wer die App nutzt",
+    "sec_telemetry", "NUTZUNGSDATEN",
+    "sw_telemetry", "Nutzungsdaten senden",
+    "sw_telemetry_sub", "Sendet an den App-Ersteller: eine anonyme ID, deinen Windows-Benutzernamen, App-/OS-Version und ungefähres Land/IP. Hilft bei der Identifizierung bei Support-Anfragen. Jederzeit abschaltbar.",
     "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
     "sec_adv", "FENSTER FOLGEN",
     "sw_areascale", "Leseberiche an die Fenstergröße anpassen",
@@ -4355,6 +4388,11 @@ I18N["ru"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Дополнительно",
+    "nav_owner", "Владелец",
+    "pg_owner_sub", "Только вы видите эту вкладку — список тех, кто использует приложение",
+    "sec_telemetry", "ДАННЫЕ ИСПОЛЬЗОВАНИЯ",
+    "sw_telemetry", "Отправлять данные использования",
+    "sw_telemetry_sub", "Отправляет создателю приложения: анонимный ID, имя пользователя Windows, версию приложения/ОС и примерную страну/IP. Помогает опознать вас в запросах поддержки. Можно отключить в любой момент.",
     "pg_adv_sub", "Настройки для любого монитора и разрешения",
     "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
     "sw_areascale", "Подгонять области чтения под размер окна",
@@ -5034,6 +5072,11 @@ I18N["tr"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Gelişmiş",
+    "nav_owner", "Sahip",
+    "pg_owner_sub", "Bu sekmeyi sadece sen görürsün — uygulamayı kimlerin kullandığının listesi",
+    "sec_telemetry", "KULLANIM VERİLERİ",
+    "sw_telemetry", "Kullanım verilerini gönder",
+    "sw_telemetry_sub", "Uygulamanın yapımcısına gönderir: anonim bir kimlik, Windows kullanıcı adınız, uygulama/işletim sistemi sürümü ve yaklaşık ülke/IP. Destek taleplerinde sizi tanımlamaya yardımcı olur. İstediğiniz zaman kapatabilirsiniz.",
     "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
     "sec_adv", "PENCEREYİ TAKİP ET",
     "sw_areascale", "Okuma alanlarını pencere boyutuna uydur",
@@ -5713,6 +5756,11 @@ I18N["id"].Set(
     "lbl_guildevery", "Also send the rank every (minutes)",
     "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Lanjutan",
+    "nav_owner", "Pemilik",
+    "pg_owner_sub", "Hanya Anda yang melihat tab ini — daftar siapa yang menggunakan aplikasi",
+    "sec_telemetry", "DATA PENGGUNAAN",
+    "sw_telemetry", "Kirim data penggunaan",
+    "sw_telemetry_sub", "Mengirim ke pembuat aplikasi: ID anonim, nama pengguna Windows Anda, versi aplikasi/OS, dan negara/IP perkiraan. Membantu mengidentifikasi Anda saat meminta dukungan. Bisa dimatikan kapan saja.",
     "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
     "sec_adv", "IKUTI JENDELA",
     "sw_areascale", "Sesuaikan area baca dengan ukuran jendela",
@@ -5732,7 +5780,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "GuildaAv", "nav_guildav", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "GuildaAv", "nav_guildav", "Guilda", "nav_guild", "Avançado", "nav_adv", "Dono", "nav_owner")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5892,6 +5940,8 @@ GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Aut
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD"] : ["Aparência"]
     , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "Exibir", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
+if IS_OWNER
+    GROUPS["Dono"] := ["Dono"]
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
 for gk, subs in GROUPS
@@ -6353,6 +6403,12 @@ Lbl(CX + 20, y + 84, 140, TT("lbl_daily_time"), "s9", C_MUTED)
 edDailyAt := Input(CX + 170, y + 77, 90, savedDailyAt)
 Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(true))
 
+y := 564
+Card(CX, y, CW, 110)
+Lbl(CX + 20, y + 16, 300, TT("sec_telemetry"), "s7 w700", C_DIM)
+chkTelemetry := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_telemetry"), savedTelemetry, TT("sw_telemetry_sub"))
+chkTelemetry.onChange := (*) => SetTelemetry(chkTelemetry.Value)
+
 ; ---------------- Página: Sobre ----------------
 BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
 ; --- versão: texto à esquerda, botões empilhados à direita (nada se sobrepõe) ---
@@ -6467,6 +6523,25 @@ chkAdvImg := ToggleSwitch(CX + 20, y + 94, CW - 40, TT("sw_advimg"), IniRead(ini
 chkAdvImg.onChange := (*) => IniWrite(chkAdvImg.Value, iniFile, "cfg", "advImg")
 Btn(CX + 20, y + 156, 220, 34, TT("btn_open_dbg"), (*) => (DirCreate(A_ScriptDir "\debug"), Run(A_ScriptDir "\debug")))
 
+
+; ---------------- Página: Dono (só existe se houver owner.key ao lado do app) ----------------
+if IS_OWNER {
+    BeginPage("Dono", TT("nav_owner"), TT("pg_owner_sub"))
+    y := 92
+    Card(CX, y, CW, 60)
+    Lbl(CX + 20, y + 10, CW - 180, TT("pg_owner_sub"), "s9", C_MUTED)
+    Btn(CX + CW - 150, y + 13, 130, 34, TT("btn_owner_refresh"), (*) => OwnerRefresh(), "primary")
+    y += 76
+    Card(CX, y, CW, 60)
+    lblOwnerSum := Lbl(CX + 20, y + 18, CW - 40, "—", "s10 w600")
+    y += 76
+    Card(CX, y, CW, 420)
+    FontUI(g, "s9")
+    lvOwner := P(g.Add("ListView", Format("x{} y{} w{} h{} -E0x200 -Multi +LV0x10000 Background{} c{}"
+        , CX + 16, y + 14, CW - 32, 390, C_CARD, C_TEXT), ["Status", "Usuário", "Versão", "SO", "País", "IP", "Visto"]))
+    lvOwner.ModifyCol(1, 60), lvOwner.ModifyCol(2, 110), lvOwner.ModifyCol(3, 70), lvOwner.ModifyCol(4, 90), lvOwner.ModifyCol(5, 55), lvOwner.ModifyCol(6, 100), lvOwner.ModifyCol(7, 120)
+    DllCall("uxtheme\SetWindowTheme", "Ptr", lvOwner.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
+}
 
 ; ---------------- Página: Leitura (onde o programa lê na tela) ----------------
 BeginPage("Leitura", TT("nav_readarea"), TT("pg_readarea_sub"))
@@ -6657,7 +6732,7 @@ else if (Trim(edKey.Value) != "") {
 
 ; abre o programa de verdade (depois da licença ok)
 StartApp() {
-    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME, donateThenTour
+    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME, donateThenTour, savedTelemetry
     FadeHide(gk)
     if appStarted {
         FadeShow(g)
@@ -6708,6 +6783,8 @@ StartApp() {
     SetTimer(ScheduleTick, 30000)
     SetTimer(BotTick, 6000)
     SetTimer(PanelTick, 5000)
+    if (savedTelemetry = "1")
+        SetTimer(TelemetryPing, 90000), SetTimer(() => TelemetryPing(), -1000)
     SetTimer(StuckTick, 60000)
     SetTimer(ReactTick, 9000)
     upd := IniRead(iniFile, "cfg", "justUpdated", "")
@@ -12292,6 +12369,56 @@ HookCb(feedback := false, okMsg := "hook_sent") {
 HttpPost(url, body, contentType, auth := "", cb := 0) {
     AsyncReq("POST", url, body, contentType, auth, cb ? cb : HookCb())
     return "…"
+}
+
+; ---- telemetria opt-in: liga/desliga e manda um ping (ID anônimo, usuário, versão, SO) ----
+SetTelemetry(on) {
+    global iniFile, savedTelemetry
+    savedTelemetry := on ? "1" : "0"
+    IniWrite(savedTelemetry, iniFile, "cfg", "telemetry")
+    if on
+        SetTimer(TelemetryPing, 90000), TelemetryPing()
+    else
+        SetTimer(TelemetryPing, 0)
+}
+
+TelemetryPing() {
+    global BOT_API, ANON_ID, VERSION
+    body := '{"id":"' JsonEsc(ANON_ID) '","user":"' JsonEsc(A_UserName) '","ver":"' JsonEsc(VERSION) '","os":"' JsonEsc("Windows " A_OSVersion) '"}'
+    HttpPost(BOT_API "/ping", body, "application/json")
+}
+
+; ---- painel do dono: busca a lista de quem está usando (só existe com owner.key) ----
+OwnerRefresh() {
+    global BOT_API, OWNER_KEY, lvOwner, lblOwnerSum
+    lblOwnerSum.Value := "Buscando…"
+    AsyncReq("GET", BOT_API "/admin/users?key=" OWNER_KEY, "", "", "", OwnerGot)
+}
+OwnerGot(h) {
+    global lvOwner, lblOwnerSum
+    if (HttpStatus(h) != 200) {
+        lblOwnerSum.Value := "Erro HTTP " HttpStatus(h) " — confira o owner.key / ADMIN_KEY no Worker."
+        return
+    }
+    txt := h.ResponseText
+    lvOwner.Opt("-Redraw")
+    lvOwner.Delete()
+    total := 0, online := 0
+    for line in StrSplit(Trim(txt, "`n"), "`n") {
+        if (line = "")
+            continue
+        p := StrSplit(line, "`t")
+        if (p.Length < 8)
+            continue
+        total++
+        isOn := p[8] = "1"
+        if isOn
+            online++
+        seen := p[7] != "" ? FormatTime(DateAdd("19700101000000", Integer(p[7]), "Seconds"), "dd/MM HH:mm") : "—"
+        lvOwner.Add(, isOn ? "🟢 Online" : "⚪ Offline", p[2] = "" ? "—" : p[2], p[3], p[4], p[5], p[6], seen)
+    }
+    lvOwner.Opt("+Redraw")
+    lblOwnerSum.Value := total " pessoa(s) · " online " online agora"
 }
 
 ; [[nome, valor, inline], ...] -> "fields":[...],

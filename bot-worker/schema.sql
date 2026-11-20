@@ -19,3 +19,14 @@ CREATE TABLE IF NOT EXISTS daily (
   code TEXT PRIMARY KEY,
   ts INTEGER
 );
+CREATE TABLE IF NOT EXISTS telemetry (
+  id TEXT PRIMARY KEY,
+  user TEXT,
+  ver TEXT,
+  os TEXT,
+  country TEXT,
+  ip TEXT,
+  first_seen INTEGER,
+  last_seen INTEGER,
+  hits INTEGER DEFAULT 0
+);
