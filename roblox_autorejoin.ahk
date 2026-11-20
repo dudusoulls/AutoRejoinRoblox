@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.22"
+VERSION     := "1.5.23"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -220,7 +220,11 @@ savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
-savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "1")
+if (IniRead(iniFile, "cfg", "updFastV", "") != "2") {   ; checagem a cada 30 s passa a vir desligada
+    IniWrite("0", iniFile, "cfg", "updFast")
+    IniWrite("2", iniFile, "cfg", "updFastV")
+}
+savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "0")
 savedWhatsNew := IniRead(iniFile, "cfg", "whatsNew", "1")
 savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1")
 savedAreaScale := IniRead(iniFile, "cfg", "areaScale", "1"), savedRemSize := IniRead(iniFile, "cfg", "remSize", "1")

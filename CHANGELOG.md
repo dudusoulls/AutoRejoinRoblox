@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.23
+- A busca de atualização a cada 30 s agora vem **desligada** por padrão (Sobre → atualização rápida). O app continua procurando ao abrir e a cada 6 horas.
+
 ## v1.5.22
 - Corrige o layout da aba Bot: as páginas Bot oficial e Bot e comandos usavam a largura estreita da lista lateral e ficavam deslocadas, com textos sobrepostos. Agora ocupam a largura toda; o título da aba é só "Bot".
 
