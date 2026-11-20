@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.25
+- O botão "Convidar o bot" agora abre o convite do bot oficial.
+
 ## v1.5.24
 - Leitura e Avançado foram para Configurações (subabas ao lado de Configurações). Aparência ficou só com temas e HUD.
 
