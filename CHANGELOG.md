@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.30
+- Roblox que "fecha" indo pra bandeja do Windows agora conta como fechado: o app percebe a janela escondida, fecha o processo e abre o jogo de novo (~8 s).
+
 ## v1.5.29
 - Som de abertura ao abrir o app (dá pra desligar em Configurações → Avançado).
 
