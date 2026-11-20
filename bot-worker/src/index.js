@@ -4,6 +4,31 @@
 
 const API = "https://discord.com/api/v10";
 const CMDS = ["status", "print", "iniciar", "parar", "reiniciar", "moedas", "resumo", "pc", "historico", "logs", "painel", "grafico", "ajuda"];
+const QR_URL = "https://raw.githubusercontent.com/dudusoulls/AutoRejoinRoblox/main/donate_qr.png";
+const REPO = "https://github.com/dudusoulls/AutoRejoinRoblox/releases/latest";
+
+// Mensagem de boas-vindas (ao adicionar o bot) e lembrete diário (no canal vinculado)
+function welcomeEmbed(full) {
+  const how =
+    "### 🚀 Como usar\n" +
+    "**1.** No app: **EXTRAS → Bot → Bot oficial**, ligue a chave e **copie o código**.\n" +
+    "**2.** Neste canal: `/vincular codigo:SEU_CODIGO`\n" +
+    "**3.** Controle o **seu** Roblox com `/roblox comando:...`\n\n" +
+    "### 🎮 Comandos\n" +
+    "```\nstatus  print  iniciar  parar  reiniciar\nmoedas  resumo  pc  historico  logs\npainel  grafico  ajuda\n```\n";
+  const thanks =
+    "### 💜 Obrigado por usar o Auto Reconnect!\n" +
+    "O app é **grátis** e feito por uma pessoa só. Se ele está te ajudando a farmar, qualquer **Pix** ajuda a manter o projeto vivo — é só escanear o QR abaixo. 🙏\n";
+  return {
+    author: { name: "Auto Reconnect Roblox" },
+    title: full ? "👋  Bem-vindo!" : "☀️  Bom dia!",
+    description: (full ? how + "\n" : "-# Seu lembrete diário. Comandos: `/roblox`, `/vincular`, `/desvincular`\n\n") + thanks + "\n[⬇ Baixar a versão mais recente](" + REPO + ")",
+    color: 0x6ea8ff,
+    image: { url: QR_URL },
+    footer: { text: "Pix · escaneie o QR  •  obrigado pelo apoio" },
+  };
+}
+
 const enc = new TextEncoder();
 const hex = (h) => Uint8Array.from(h.match(/.{2}/g).map((b) => parseInt(b, 16)));
 const CODE_RE = /^[a-f0-9]{32}$/i;
@@ -64,6 +89,36 @@ async function interaction(i, env) {
   return reply("?");
 }
 
+// primeira mensagem ao instalar o bot: canal de sistema (ou o primeiro canal de texto onde der pra escrever)
+async function welcomeGuild(guildId, env) {
+  const H = { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`, "Content-Type": "application/json" };
+  const body = JSON.stringify({ embeds: [welcomeEmbed(true)] });
+  const g = await (await fetch(`${API}/guilds/${guildId}`, { headers: H })).json().catch(() => ({}));
+  const tried = [];
+  if (g.system_channel_id) tried.push(g.system_channel_id);
+  const chs = await (await fetch(`${API}/guilds/${guildId}/channels`, { headers: H })).json().catch(() => []);
+  if (Array.isArray(chs)) for (const c of chs) if (c.type === 0 && !tried.includes(c.id)) tried.push(c.id);
+  for (const id of tried.slice(0, 6)) {
+    const r = await fetch(`${API}/channels/${id}/messages`, { method: "POST", headers: H, body });
+    if (r.ok) return;
+  }
+}
+
+// lembrete diário: só pra quem usou o app nos últimos 3 dias, no canal vinculado (webhook)
+async function dailyReminders(env) {
+  const now = Math.floor(Date.now() / 1000);
+  const { results } = await env.DB.prepare(
+    "SELECT l.code, l.webhook FROM links l LEFT JOIN daily d ON d.code=l.code " +
+    "WHERE l.last_seen > ? AND l.created < ? AND (d.ts IS NULL OR d.ts < ?) LIMIT 100"
+  ).bind(now - 3 * 86400, now - 20 * 3600, now - 20 * 3600).all();
+  const body = JSON.stringify({ username: "Auto Reconnect", embeds: [welcomeEmbed(false)] });
+  for (const r of results) {
+    const res = await fetch(r.webhook, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+    if (res.ok || res.status === 404 || res.status === 401)
+      await env.DB.prepare("INSERT OR REPLACE INTO daily(code,ts) VALUES(?,?)").bind(r.code, now).run();
+  }
+}
+
 async function poll(url, env) {
   const code = (url.searchParams.get("code") || "").toLowerCase();
   if (!CODE_RE.test(code)) return new Response("BAD", { status: 400 });
@@ -82,9 +137,20 @@ async function poll(url, env) {
 }
 
 export default {
-  async fetch(req, env) {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(dailyReminders(env));
+  },
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (req.method === "GET" && url.pathname === "/poll") return poll(url, env);
+    if (req.method === "POST" && url.pathname === "/events") {          // Webhook Events do Discord (bot adicionado a um servidor)
+      const body = await req.text();
+      if (!(await verify(req, body, env))) return new Response("bad signature", { status: 401 });
+      const j = JSON.parse(body);
+      if (j.type === 1 && j.event?.type === "APPLICATION_AUTHORIZED" && j.event.data?.guild?.id)
+        ctx.waitUntil(welcomeGuild(j.event.data.guild.id, env));
+      return new Response(null, { status: 204 });
+    }
     if (req.method === "POST") {
       const body = await req.text();
       if (!(await verify(req, body, env))) return new Response("bad signature", { status: 401 });
