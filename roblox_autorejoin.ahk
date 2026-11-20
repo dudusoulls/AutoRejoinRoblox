@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.26"
+VERSION     := "1.5.27"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -847,6 +847,8 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "nav_show", "Exibir",
+    "pg_show_sub", "Escolha o que aparece no painel (HUD e Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Bot oficial",
     "pg_offbot_sub", "Use o bot no seu servidor e controle só o seu Roblox",
@@ -1502,6 +1504,8 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -2157,6 +2161,8 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "nav_show", "Mostrar",
+    "pg_show_sub", "Elige qué aparece en el panel (HUD y Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Bot oficial",
     "pg_offbot_sub", "Usa el bot en tu servidor y controla solo tu Roblox",
@@ -2812,6 +2818,8 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -3467,6 +3475,8 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -4122,6 +4132,8 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -4777,6 +4789,8 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -5432,6 +5446,8 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_show", "Display",
+    "pg_show_sub", "Choose what the panel shows (HUD and Discord)",
     "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
@@ -5540,7 +5556,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5697,7 +5713,7 @@ GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Aut
     , "Bots", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD"] : ["Aparência"]
-    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
+    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "Exibir", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
 for gk, subs in GROUPS
@@ -6222,7 +6238,9 @@ chkFrame := ToggleSwitch(CX + 20, y + 14, CW - 40, TT("sw_frame"), savedFrame, T
 chkFrame.onChange := (*) => HudApply()
 chkHudComp := ToggleSwitch(CX + 20, y + 54, CW - 40, TT("sw_hudcompact"), savedHudComp)
 Lbl(CX + 20, y + 90, CW - 40, TT("hud_hint"), "s8", C_MUTED)
-y += 140
+; ---------------- Página: Exibir (o que mostrar no painel, em Configurações) ----------------
+BeginPage("Exibir", TT("nav_show"), TT("pg_show_sub"))
+y := 92
 Card(CX, y, CW, 122)
 Lbl(CX + 20, y + 12, 400, TT("sec_hud_show"), "s7 w700", C_DIM)
 hw2 := (CW - 40 - 16) // 2
@@ -6233,6 +6251,7 @@ chkHudLg := ToggleSwitch(CX + 20 + hw2 + 16, y + 58, hw2, TT("nav_logs"), savedH
 chkHudGd := ToggleSwitch(CX + 20, y + 86, hw2, TT("f_guild"), savedHudGd)
 for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd]
     ck.onChange := (*) => HudRelayout()
+
 
 ; ---------------- Página: Leitura (onde o programa lê na tela) ----------------
 BeginPage("Leitura", TT("nav_readarea"), TT("pg_readarea_sub"))
@@ -9245,15 +9264,16 @@ OcrLoop() {
     t0 := A_TickCount
     try FarmModeTick()
     busy := false
+    global farmMiss
     sec := Max(2, Integer(IniRead(iniFile, "cfg", "ocrSec", "15")))
+    if (farmMiss > 0 && farmMiss < 6)               ; ainda não achou: tenta de novo logo
+        sec := Min(sec, 4)
     nextAt := A_TickCount + Max(sec * 1000, (A_TickCount - t0) * 4)
 }
 
 FarmModeTick(test := false) {
     global aaMode, farmLast, farmMode, farmWave, farmMiss, hudMode, chkPanel, farmPearls, farmPrev, farmModeCol, farmPearlCol, farmBest, farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
     if !aaMode
-        return
-    if (!test && !(hudMode = 4 || chkPanel.Value || chkGuildStat.Value || chkGuildNotify.Value))
         return
     farmLast := {mode: "", wave: "", pearls: "", seen: ""}
     hw := FindGameWindow()
@@ -9271,7 +9291,7 @@ FarmModeTick(test := false) {
         for line in r.res.Lines {
             t := Trim(RegExReplace(line.Text, "\s+", " "))
             if (RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}") && !RegExMatch(t, "i)^wave\b")) {
-                mode := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
+                mode := ModeClean(t)
                 mRect := LineRect(line)
                 break
             }
@@ -9335,6 +9355,43 @@ FarmModeTick(test := false) {
         }
     }
     farmWave := wave != "" ? wave : farmWave, farmMiss := 0
+}
+
+; limpa o texto do nome do modo: tira acento/bolinhas/lixo e corrige pelo nome mais parecido já visto (ini [modes])
+ModeClean(t) {
+    t := RegExReplace(t, "\)(?=[A-Za-z])", ") ")
+    for a, b in Map("á","a","à","a","â","a","ã","a","é","e","ê","e","í","i","ó","o","ô","o","õ","o","ú","u","ç","c")
+        t := StrReplace(t, a, b)
+    t := Trim(RegExReplace(RegExReplace(t, "[•·|_~\[\]{}<>=]", " "), "\s+", " "))
+    t := RegExReplace(t, "(?<=[a-z])(?=[A-Z][a-z])", " ")          ; "RainVillage" -> "Rain Village"
+    t := RegExReplace(t, "(?<=[A-Za-z])\d+(?=[A-Za-z])", "")        ; dígito no meio de palavra é ruído
+    best := "", bs := 0.72, lc := StrLower(RegExReplace(t, "[^A-Za-z]"))
+    known := IniRead(iniFile, "modes", "list", "Rain Village Infinite Mode|Infinite Mode")
+    for nm in StrSplit(known, "|") {
+        nl := StrLower(RegExReplace(nm, "[^A-Za-z]"))
+        if (nl = "" || lc = "")
+            continue
+        sc := 1 - EditDist(lc, nl) / Max(StrLen(lc), StrLen(nl))
+        if (sc > bs)
+            bs := sc, best := nm
+    }
+    return best != "" ? best : t
+}
+
+EditDist(a, b) {
+    la := StrLen(a), lb := StrLen(b)
+    prev := [], cur := []
+    Loop lb + 1
+        prev.Push(A_Index - 1)
+    Loop la {
+        i := A_Index, cur := [i]
+        Loop lb {
+            j := A_Index
+            cur.Push(Min(prev[j + 1] + 1, cur[j] + 1, prev[j] + (SubStr(a, i, 1) = SubStr(b, j, 1) ? 0 : 1)))
+        }
+        prev := cur
+    }
+    return prev[lb + 1]
 }
 
 PanelTick() {

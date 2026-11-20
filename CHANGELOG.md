@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.27
+- "O que mostrar no painel" foi para Configurações (nova subaba Exibir).
+- OCR: com o Modo AA ligado ele lê sempre (antes só lia se algum painel estivesse ligado) e tenta de novo mais rápido enquanto não achar nada.
+- Nome do modo: limpa símbolos e letras trocadas e corrige pelo nome mais parecido (ex.: "Rain Village Infinite Mode").
+
 ## v1.5.26
 - Bot oficial conectado: o app já aponta para o servidor do bot (aba Bot → Bot oficial).
 
