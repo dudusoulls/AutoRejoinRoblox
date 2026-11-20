@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.43"
+VERSION     := "1.5.44"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,11 +160,11 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
-    , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
+    , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040], "guildshot", [0.28, 0.07, 0.30, 0.36])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
-areaKey := Map("mode", "area_mode", "wave", "area_wave", "pearls", "area_pearls", "coins", "area_coins", "guild", "f_guild")
+areaKey := Map("mode", "area_mode", "wave", "area_wave", "pearls", "area_pearls", "coins", "area_coins", "guild", "f_guild", "guildshot", "area_guildshot")
 tourIdx := 0
 tourWins := []
 tourPos := ""
@@ -944,6 +944,13 @@ I18N["pt"].Set(
     "guild_changed", "🛡 Rank da guilda mudou: #{1} → #{2}",
     "lbl_guildhook", "Webhook do canal do rank (opcional — vazio usa o webhook principal)",
     "btn_guild_test", "Enviar aviso de teste",
+    "nav_guildav", "Aviso do rank",
+    "pg_guildav_sub", "Canal, teste e recorte do print enviado quando o rank muda",
+    "area_guildshot", "Recorte do print do rank",
+    "sec_shot", "RECORTE DO PRINT",
+    "shot_help", "Escolha o pedaço da tela que vai no aviso (boneco + rank). Sem ajustar, ele usa um recorte automático em volta do rank.",
+    "sw_shotfollow", "Recorte acompanha o rank",
+    "sw_shotfollow_sub", "O recorte se move junto com o boneco",
     "nav_adv", "Avançado",
     "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
     "sec_adv", "ACOMPANHAR A JANELA",
@@ -1608,6 +1615,13 @@ I18N["en"].Set(
     "guild_changed", "🛡 Guild rank changed: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Advanced",
     "pg_adv_sub", "Settings for any monitor or resolution",
     "sec_adv", "FOLLOW THE WINDOW",
@@ -2272,6 +2286,13 @@ I18N["es"].Set(
     "guild_changed", "🛡 Cambió el rango del gremio: #{1} → #{2}",
     "lbl_guildhook", "Webhook del canal del rango (opcional — vacío usa el principal)",
     "btn_guild_test", "Enviar aviso de prueba",
+    "nav_guildav", "Rank alert",
+    "pg_guildav_sub", "Channel, test and screenshot crop sent when the rank changes",
+    "area_guildshot", "Rank screenshot crop",
+    "sec_shot", "SCREENSHOT CROP",
+    "shot_help", "Choose the part of the screen sent in the alert (character + rank). If unset, an automatic crop around the rank is used.",
+    "sw_shotfollow", "Crop follows the rank",
+    "sw_shotfollow_sub", "The crop moves with the character",
     "nav_adv", "Avanzado",
     "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
     "sec_adv", "SEGUIR LA VENTANA",
@@ -2936,6 +2957,13 @@ I18N["fr"].Set(
     "guild_changed", "🛡 Le rang de guilde a changé : #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Avancé",
     "pg_adv_sub", "Réglages pour tout écran ou résolution",
     "sec_adv", "SUIVRE LA FENÊTRE",
@@ -3600,6 +3628,13 @@ I18N["de"].Set(
     "guild_changed", "🛡 Gilden-Rang geändert: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Erweitert",
     "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
     "sec_adv", "FENSTER FOLGEN",
@@ -4264,6 +4299,13 @@ I18N["ru"].Set(
     "guild_changed", "🛡 Ранг гильдии изменился: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Дополнительно",
     "pg_adv_sub", "Настройки для любого монитора и разрешения",
     "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
@@ -4928,6 +4970,13 @@ I18N["tr"].Set(
     "guild_changed", "🛡 Lonca sırası değişti: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Gelişmiş",
     "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
     "sec_adv", "PENCEREYİ TAKİP ET",
@@ -5592,6 +5641,13 @@ I18N["id"].Set(
     "guild_changed", "🛡 Peringkat guild berubah: #{1} → #{2}",
     "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "btn_guild_test", "Send test alert",
+    "nav_guildav", "Aviso del rango",
+    "pg_guildav_sub", "Canal, prueba y recorte de la captura enviada al cambiar el rango",
+    "area_guildshot", "Recorte de la captura del rango",
+    "sec_shot", "RECORTE DE LA CAPTURA",
+    "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
+    "sw_shotfollow", "El recorte sigue el rango",
+    "sw_shotfollow_sub", "El recorte se mueve con el personaje",
     "nav_adv", "Lanjutan",
     "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
     "sec_adv", "IKUTI JENDELA",
@@ -5612,7 +5668,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "GuildaAv", "nav_guildav", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5767,7 +5823,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
-    , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Relat", "Guilda"] : ["Webhook", "Notif", "Painel", "Relat"]
+    , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Relat", "Guilda", "GuildaAv"] : ["Webhook", "Notif", "Painel", "Relat"]
     , "Bots", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD"] : ["Aparência"]
@@ -6040,17 +6096,28 @@ guildBig := Lbl(CX + 20, y + 36, CW - 40, "#—", "s26 w700")
 guildSub := Lbl(CX + 20, y + 88, CW - 40, TT("guild_last", "—"), "s9", C_MUTED)
 Btn(CX + 20, y + 116, 150, 32, TT("btn_guild_read"), (*) => GuildReadNow())
 Btn(CX + 180, y + 116, 150, 32, TT("btn_area_adj"), (*) => AreaEdit("guild"))
-Btn(CX + 340, y + 116, 150, 32, TT("btn_guild_test"), GuildTest)
 y += 176
 Card(CX, y, CW, 216)
 chkGuildSend := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_guildsend"), savedGuildSend, TT("sw_guildsend_sub"))
 chkGuildNotify := ToggleSwitch(CX + 20, y + 82, CW - 40, TT("sw_guildnotify"), savedGuildNotify, TT("sw_guildnotify_sub"))
 chkGuildStat := ToggleSwitch(CX + 20, y + 148, CW - 40, TT("sw_guildstat"), savedGuildStat, TT("sw_guildstat_sub"))
 chkGuildStat.onChange := (*) => HomeExtraVis()
-y += 228
-Card(CX, y, CW, 84)
-Lbl(CX + 20, y + 12, CW - 40, TT("lbl_guildhook"), "s9", C_MUTED)
-edGuildHook := Input(CX + 20, y + 36, CW - 40, IniRead(iniFile, "cfg", "guildHook", ""))
+
+; ---------------- Discord: Aviso do rank (canal, teste e recorte do print) ----------------
+BeginPage("GuildaAv", TT("nav_guildav"), TT("pg_guildav_sub"))
+y := 92
+Card(CX, y, CW, 148)
+Lbl(CX + 20, y + 14, CW - 40, TT("lbl_guildhook"), "s9", C_MUTED)
+edGuildHook := Input(CX + 20, y + 38, CW - 40, IniRead(iniFile, "cfg", "guildHook", ""))
+Btn(CX + 20, y + 92, 190, 34, TT("btn_guild_test"), GuildTest, "primary")
+y += 160
+Card(CX, y, CW, 196)
+Lbl(CX + 20, y + 14, CW - 40, TT("sec_shot"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 36, CW - 40, TT("shot_help"), "s9", C_MUTED)
+Btn(CX + 20, y + 84, 160, 34, TT("btn_area_adj"), (*) => AreaEdit("guildshot"))
+Btn(CX + 190, y + 84, 110, 34, TT("btn_area_def"), (*) => AreaReset("guildshot"))
+chkShotFollow := ToggleSwitch(CX + 20, y + 132, CW - 40, TT("sw_shotfollow"), IniRead(iniFile, "cfg", "shotFollow", "1"), TT("sw_shotfollow_sub"))
+chkShotFollow.onChange := (*) => IniWrite(chkShotFollow.Value, iniFile, "cfg", "shotFollow")
 
 ; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
@@ -9062,7 +9129,7 @@ GuildChanged(old, new, notify := true) {
 
 ; posta no canal (webhook do rank, ou o webhook principal) a mensagem do novo rank com data/hora e print do boneco
 GuildPost(old, new, test := false) {
-    global edGuildHook, edHook, guildTrk, USER_NAME, APP_NAME, LOGO_URL, VERSION
+    global edGuildHook, edHook, guildTrk, chkShotFollow, USER_NAME, APP_NAME, LOGO_URL, VERSION
     url := Trim(edGuildHook.Value), auth := "", head := '"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
     if (InStr(url, "https://discord.com/api/webhooks/") != 1) {
         url := ""
@@ -9085,15 +9152,24 @@ GuildPost(old, new, test := false) {
             rc := Buffer(16, 0)
             DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
             cw := NumGet(rc, 8, "Int"), chh := NumGet(rc, 12, "Int")
-            if IsObject(guildTrk) {
+            ga := AreaGet("guild", cw, chh)
+            gcx := (ga[1] + ga[3] / 2) * cw, gcy := (ga[2] + ga[4] / 2) * chh      ; onde a área do rank está configurada
+            if IsObject(guildTrk)
                 px := guildTrk[1] + guildTrk[3] / 2, py := guildTrk[2] + guildTrk[4] / 2
+            else
+                px := gcx, py := gcy
+            if AreaIsSet("guildshot") {                                         ; recorte escolhido pelo usuário
+                sa := AreaGet("guildshot", cw, chh)
+                cxr := sa[1] * cw, cyr := sa[2] * chh, bw := Round(sa[3] * cw), bh := Round(sa[4] * chh)
+                if (IsObject(guildTrk) && IsObject(chkShotFollow) && chkShotFollow.Value)
+                    cxr += px - gcx, cyr += py - gcy                            ; o recorte acompanha o rank (boneco se move)
+                cropX := Round(cxr), cropY := Round(cyr)
             } else {
-                ar := AreaGet("guild", cw, chh)
-                px := (ar[1] + ar[3] / 2) * cw, py := (ar[2] + ar[4] / 2) * chh
+                bw := Round(cw * 0.30), bh := Round(chh * 0.36)
+                cropX := Round(px - bw / 2), cropY := Round(py - bh * 0.66)
             }
-            bw := Round(cw * 0.30), bh := Round(chh * 0.36)
             f := A_Temp "\guild_rank.png"
-            if CaptureWindowPng(hw, f, Round(px - bw / 2), Round(py - bh * 0.66), bw, bh)
+            if CaptureWindowPng(hw, f, cropX, cropY, bw, bh)
                 shot := f
         }
     }

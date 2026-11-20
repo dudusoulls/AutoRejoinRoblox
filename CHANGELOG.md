@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.44
+- Nova subaba Discord → Aviso do rank: webhook do canal, botão de teste e **recorte do print** (você desenha o pedaço da tela; ele pode acompanhar o boneco). Sem ajustar, usa o recorte automático.
+
 ## v1.5.43
 - Corrige o rank da guilda lendo "#5"/"#7": o rastreio por cor confundia o gorro vermelho do boneco com o ícone laranja. Cores mais estritas, tamanho de ícone plausível, sem "#" só aceita 3+ dígitos e números com muito menos dígitos que o rank atual são ignorados.
 
