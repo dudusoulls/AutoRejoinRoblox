@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.52
+- Corrige a aba "Dono" que não aparecia mesmo com o `owner.key` no lugar certo: faltava o botão dela na barra lateral.
+
 ## v1.5.51
 - Nova opção em Configurações: "Enviar dados de uso" (desligada por padrão). Com ela ligada o app manda um ping com ID anônimo, nome de usuário do Windows, versão e SO — ajuda a identificar quem pede suporte.
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.51"
+VERSION     := "1.5.52"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5797,6 +5797,8 @@ winH := Integer(IniRead(iniFile, "cfg", "winH", "630"))
 ;  GUI principal
 ; ==========================================================
 W := 760, H := 600, SIDE := 184, SUBW := 140
+if IS_OWNER
+    H += 34   ; uma linha a mais na barra lateral (aba "Dono")
 CX := SIDE + 28          ; x do conteúdo
 CW := W - CX - 28        ; largura do conteúdo
 
@@ -5966,6 +5968,8 @@ AddNav("Sobre",       Chr(0xE713), 384)
 AddNav("Aparência",   Chr(0xE790), 418)
 AddNav("Suporte",     Chr(0xE897), 452)
 AddNav("Logs",        Chr(0xE81C), 486)
+if IS_OWNER
+    AddNav("Dono",    Chr(0xE77B), 520)
 navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 90, C_ACC))
 
 FontUI(g, "s10")
