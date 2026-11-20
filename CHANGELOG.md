@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.49
+- Prints do Discord (rank/status) não saem mais embaralhados: com o Roblox à vista o app copia direto da tela (o PrintWindow do Roblox às vezes devolve listras). O print do rank também não leva mais os contornos de "Mostrar áreas".
+
 ## v1.5.48
 - Corrige a leitura automática (OCR) que rodava só uma vez ao abrir o app e depois parava: agora lê sempre, no intervalo configurado.
 

@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.48"
+VERSION     := "1.5.49"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, edGuildEvery := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, shotBusy := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, edGuildEvery := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040], "guildshot", [0.28, 0.07, 0.30, 0.36])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -9063,7 +9063,7 @@ AreaTestOneRun(an) {
 
 ; ---------- mostra na tela onde ele está lendo (contornos coloridos sobre o Roblox) + tamanho da janela ----------
 AreaShowTick() {
-    global chkAreaShow, areaOn, chkHudGd, areaKey, advSize
+    global chkAreaShow, areaOn, chkHudGd, areaKey, advSize, shotBusy
     static wins := Map(), shown := false, sizeTxt := ""
     hw := FindGameWindow()
     ok := hw && !DllCall("IsIconic", "Ptr", hw) && DllCall("IsWindowVisible", "Ptr", hw)
@@ -9078,7 +9078,7 @@ AreaShowTick() {
             advSize.Value := txt
         }
     }
-    if !(chkAreaShow.Value && !areaOn && ok) {
+    if (shotBusy || !(chkAreaShow.Value && !areaOn && ok)) {
         if shown {
             for n, o in wins
                 try o.frm.Hide(), o.lab.Hide(), o.vis := false
@@ -9169,7 +9169,11 @@ GuildPost(old, new, test := false, periodic := false) {
     }
     shot := ""
     hw := FindGameWindow()
+    global shotBusy
     if (hw && WinGetMinMax(hw) != -1) {
+        shotBusy := true                        ; esconde os contornos de "Mostrar áreas" pra não saírem no print
+        try AreaShowTick()
+        Sleep(150)
         try {
             rc := Buffer(16, 0)
             DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
@@ -9194,6 +9198,7 @@ GuildPost(old, new, test := false, periodic := false) {
             if CaptureWindowPng(hw, f, cropX, cropY, bw, bh)
                 shot := f
         }
+        shotBusy := false
     }
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
@@ -12404,13 +12409,28 @@ CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
     hBM := DllCall("CreateCompatibleBitmap", "Ptr", hDC, "Int", w, "Int", h, "Ptr")
     obm := DllCall("SelectObject", "Ptr", mDC, "Ptr", hBM, "Ptr")
 
-    ok := DllCall("PrintWindow", "Ptr", hwnd, "Ptr", mDC, "UInt", 3)   ; PW_CLIENTONLY | PW_RENDERFULLCONTENT
-    if (!ok || IsBlackDC(mDC, w, h)) {
-        pt := Buffer(8, 0)
-        DllCall("ClientToScreen", "Ptr", hwnd, "Ptr", pt)
-        DllCall("BitBlt", "Ptr", mDC, "Int", 0, "Int", 0, "Int", w, "Int", h
-            , "Ptr", hDC, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
+    ; janela do jogo à vista (nada por cima): copia direto da tela, que sempre sai certo.
+    ; PrintWindow no Roblox às vezes devolve imagem embaralhada (listras) sem ser preta, então só é usado quando há algo por cima.
+    pt := Buffer(8, 0)
+    DllCall("ClientToScreen", "Ptr", hwnd, "Ptr", pt)
+    sx0 := NumGet(pt, 0, "Int"), sy0 := NumGet(pt, 4, "Int")
+    clear := !DllCall("IsIconic", "Ptr", hwnd)
+    if clear {
+        for fp in [[0.5, 0.5], [0.1, 0.1], [0.9, 0.1], [0.1, 0.9], [0.9, 0.9]] {
+            px0 := sx0 + Round(w * fp[1]), py0 := sy0 + Round(h * fp[2])
+            hh := DllCall("WindowFromPoint", "Int64", (px0 & 0xFFFFFFFF) | (py0 << 32), "Ptr")
+            if (!hh || DllCall("GetAncestor", "Ptr", hh, "UInt", 2, "Ptr") != hwnd) {
+                clear := false
+                break
+            }
+        }
     }
+    ok := false
+    if !clear
+        ok := DllCall("PrintWindow", "Ptr", hwnd, "Ptr", mDC, "UInt", 3)   ; PW_CLIENTONLY | PW_RENDERFULLCONTENT
+    if (clear || !ok || IsBlackDC(mDC, w, h))
+        DllCall("BitBlt", "Ptr", mDC, "Int", 0, "Int", 0, "Int", w, "Int", h
+            , "Ptr", hDC, "Int", sx0, "Int", sy0, "UInt", 0x00CC0020)
 
     DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
     DllCall("DeleteDC", "Ptr", mDC)
