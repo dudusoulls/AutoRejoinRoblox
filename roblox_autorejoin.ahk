@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.17"
+VERSION     := "1.5.18"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5681,7 +5681,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
-    , "Discord", aaMode ? ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Vínculo", "Notif", "Bot", "Relat"]
+    , "Discord", aaMode ? ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
     , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
@@ -8090,6 +8090,15 @@ SessionFields() {
         , [TT("f_link"), lk = "" ? "—" : "``" SubStr(lk, 1, 60) (StrLen(lk) > 60 ? "…" : "") "``", false]]
 }
 
+; barra de progresso fina (▰▱)
+PBar(v, n := 10) {
+    f := Round(Min(100, Max(0, v)) / 100 * n)
+    out := ""
+    Loop n
+        out .= A_Index <= f ? "▰" : "▱"
+    return out
+}
+
 Bar(v, mx, n := 10) {
     f := mx > 0 ? Round(v / mx * n) : 0
     out := ""
@@ -9321,7 +9330,7 @@ PanelTick() {
 PanelUpdate(force := false) {
     global chkPanel, chkBot, edToken, edChan, panelMsg, panelLast, iniFile, running, monStart, launches, discCount
     global lastDiscUnix, discTick, dayOnline, chkOcr, APP_NAME, USER_NAME, LOGO_URL, VERSION, curState, prevCur
-    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev, farmGuild
+    global botBad, edHook, panelVia, farmMode, farmWave, farmPearls, farmPrev, farmGuild, edLink
     if !chkPanel.Value {
         if force
             Log("Painel · ligue o toggle 'Painel fixo no canal'")
@@ -9376,22 +9385,29 @@ PanelUpdate(force := false) {
     fence := "``````"
     desc := "# " title "`n-# ⏱ " AfkStr() "  ·  🔄 " TT("d_updated") " <t:" now ":R>`n"
     if (farmMode != "") {
-        desc .= "`n> 🗺 **" farmMode "**" (farmWave != "" ? "  ·  Wave **" farmWave "**" : "")
+        desc .= "`n### 🗺  Farm`n> **" farmMode "**" (farmWave != "" ? "  ·  Wave **" farmWave "**" : "")
         if (farmPearls != "")
             desc .= "`n> 🫧 **+" farmPearls "**"
         desc .= "`n"
     }
     if (coinsBlk != "")
-        desc .= "`n" fence "ansi`n" coinsBlk fence "`n"
+        desc .= "`n### 💰  " TT("nav_coins") "`n" fence "ansi`n" coinsBlk fence "`n"
+    cpuC := cpu >= 85 ? "31" : cpu >= 60 ? "33" : "32"
+    ramC := ramPct >= 90 ? "31" : ramPct >= 75 ? "33" : "32"
+    sysBlk := esc "[1;37mCPU" esc "[0m  " esc "[" cpuC "m" PBar(cpu) esc "[0m " SubStr("  " cpu, -2) "%`n"
+        . esc "[1;37mRAM" esc "[0m  " esc "[" ramC "m" PBar(ramPct) esc "[0m " SubStr("  " ramPct, -2) "%`n"
+    desc .= "`n### 🖥  PC`n" fence "ansi`n" sysBlk fence
+    lk := Trim(edLink.Value)
+    if (SubStr(lk, 1, 4) = "http" && !InStr(lk, " "))
+        desc .= "`n[🎮 " TT("f_link") "](" lk ")"
     fields := []
     if (farmGuild != "" && chkGuildSend.Value)
         fields.Push(["🛡 " TT("f_guild"), "#" farmGuild, true])
     if (farmPrev != "")
         fields.Push(["⏮ " TT("f_prevround"), "+" farmPrev, true])
-    for f in [["📅 " TT("f_online_today"), DurStr(dayOnline * 1000), true]
-        , ["♻ " TT("f_reopens"), launches, true], ["⚠ " TT("f_drops"), discCount, true]
-        , ["🕓 " TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : TT("none"), true]
-        , ["🖥 " TT("f_cpu") " / " TT("f_ram"), cpu "%  /  " ramPct "%", true]]
+    for f in [["📅 " TT("f_online_today"), "**" DurStr(dayOnline * 1000) "**", true]
+        , ["♻ " TT("f_reopens"), "**" launches "**", true], ["⚠ " TT("f_drops"), "**" discCount "**", true]
+        , ["🕓 " TT("f_lastdrop"), lastDiscUnix ? "<t:" lastDiscUnix ":R>" : "*" TT("none") "*", true]]
         fields.Push(f)
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     pbody := '"embeds":[{'

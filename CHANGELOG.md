@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.18
+- Painel fixo (1 embed que se atualiza sozinho) redesenhado com mais recursos do Discord: títulos, seções (Farm, Moedas, PC), blocos coloridos com barras de CPU/RAM, link do jogo clicável e valores em negrito.
+- A aba Painel agora aparece também com o Modo AA desligado.
+
 ## v1.5.17
 - **Bot oficial v2** (pasta `bot-worker/`, Cloudflare Worker, sem PC ligado): aba Discord → Bot oficial com código de vínculo. O usuário usa `/vincular` e depois `/roblox comando:...` no próprio servidor, controlando só o próprio Roblox; o webhook é criado e preenchido sozinho. Substitui o bot Python simples.
 
