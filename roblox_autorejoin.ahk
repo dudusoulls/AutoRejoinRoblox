@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.42"
+VERSION     := "1.5.43"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9232,7 +9232,7 @@ GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
                 rr := (v >> 16) & 255, gg := (v >> 8) & 255, bb := v & 255
                 if (rr < 70 && gg > 150 && bb > 110 && gg - rr > 100 && bb <= gg + 8 && gg - bb < 80)
                     xs[1].Push(A_Index - 1), ys[1].Push(y)
-                else if (rr > 200 && gg > 40 && gg < 200 && bb < 90 && rr - bb > 150 && gg < rr - 40)
+                else if (rr > 200 && gg > 55 && gg < 200 && bb < 70 && gg - bb > 30 && rr - bb > 150 && gg < rr - 40)
                     xs[2].Push(A_Index - 1), ys[2].Push(y)
                 off += 4
             }
@@ -9256,7 +9256,7 @@ GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
                 }
             }
             iw := x1 - x0 + 1, ih := y1 - y0 + 1
-            if (n < 20 || iw > cw * 0.10 || ih > chh * 0.10)
+            if (n < 20 || iw < cw * 0.008 || iw > cw * 0.035 || ih < chh * 0.012 || ih > chh * 0.06)
                 continue
             cx := sx + (x0 + x1) / 2, cy := sy + (y0 + y1) / 2
             nw := Max(28, Round(iw * 1.9)), nh := Max(12, Round(ih * 0.85))
@@ -9323,7 +9323,7 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
             wt := 2
             if RegExMatch(t, "[#＃]\s*([0-9OoIl|SsBZzgq]{1,6})", &m)
                 n := FixDigits(m[1]), wt := 3
-            else if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m)
+            else if (RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{3,6})\W{0,2}$", &m))
                 n := m[1]
             if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$"))
                 votes[n] := (votes.Has(n) ? votes[n] : 0) + wt
@@ -9483,7 +9483,7 @@ ReadGuildRank(hw) {
                 hasHash := false
                 if RegExMatch(t, "[#＃]\s*([0-9OoIl|SsBZzgq]{1,6})", &m) {
                     n := FixDigits(m[1]), hasHash := true
-                } else if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m)
+                } else if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{3,6})\W{0,2}$", &m)
                     n := m[1]
                 if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$")) {
                     votes[n] := (votes.Has(n) ? votes[n] : 0) + (hasHash ? 2 : 1)
@@ -9520,6 +9520,10 @@ GuildTick(hw) {
         return
     }
     if (gr = farmGuild) {                 ; já confirmado
+        pend := "", cnt := 0
+        return
+    }
+    if (farmGuild != "" && StrLen(gr) < StrLen(farmGuild) - 1) {   ; ex.: #9897 -> "#5": é ruído do OCR
         pend := "", cnt := 0
         return
     }

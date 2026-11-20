@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.43
+- Corrige o rank da guilda lendo "#5"/"#7": o rastreio por cor confundia o gorro vermelho do boneco com o ícone laranja. Cores mais estritas, tamanho de ícone plausível, sem "#" só aceita 3+ dígitos e números com muito menos dígitos que o rank atual são ignorados.
+
 ## v1.5.42
 - Rank da guilda: a confirmação agora exige leituras iguais SEGUIDAS; se uma leitura falhar (ou vier outro número) a contagem volta a zero.
 - Aba Guilda: botão "Enviar aviso de teste" manda o aviso do rank (com print) pro canal configurado.
