@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.35
+- Leitura: cada área (modo, wave, pearls, moedas, rank) ganhou seu botão "Testar", que lê só aquela área e mostra o resultado e o texto bruto do OCR.
+
 ## v1.5.34
 - Rank da guilda: confirma quando o mesmo número aparece 3 vezes nas últimas 8 leituras (não precisam ser seguidas).
 

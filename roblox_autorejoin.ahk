@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.34"
+VERSION     := "1.5.35"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -725,6 +725,7 @@ I18N["pt"] := Map(
     "area_mode", "Modo (nome do mapa)",
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Padrão",
+    "btn_area_t1", "Testar",
     "btn_area_test", "Testar leitura agora",
     "area_need_roblox", "Abra o Roblox primeiro.",
     "area_testing", "Lendo…",
@@ -1384,6 +1385,7 @@ I18N["en"] := Map(
     "area_mode", "Mode (map name)",
     "btn_area_adj", "Adjust area",
     "btn_area_def", "Default",
+    "btn_area_t1", "Test",
     "btn_area_test", "Test reading now",
     "area_need_roblox", "Open Roblox first.",
     "area_testing", "Reading…",
@@ -2043,6 +2045,7 @@ I18N["es"] := Map(
     "area_mode", "Modo (nombre del mapa)",
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Predeterm.",
+    "btn_area_t1", "Probar",
     "btn_area_test", "Probar lectura ahora",
     "area_need_roblox", "Abre Roblox primero.",
     "area_testing", "Leyendo…",
@@ -2702,6 +2705,7 @@ I18N["fr"] := Map(
     "area_mode", "Mode (nom de la carte)",
     "btn_area_adj", "Ajuster",
     "btn_area_def", "Défaut",
+    "btn_area_t1", "Test",
     "btn_area_test", "Tester la lecture",
     "area_need_roblox", "Ouvre Roblox d'abord.",
     "area_testing", "Lecture…",
@@ -3361,6 +3365,7 @@ I18N["de"] := Map(
     "area_mode", "Modus (Kartenname)",
     "btn_area_adj", "Anpassen",
     "btn_area_def", "Standard",
+    "btn_area_t1", "Test",
     "btn_area_test", "Lesen jetzt testen",
     "area_need_roblox", "Öffne zuerst Roblox.",
     "area_testing", "Lese…",
@@ -4020,6 +4025,7 @@ I18N["ru"] := Map(
     "area_mode", "Режим (название карты)",
     "btn_area_adj", "Настроить",
     "btn_area_def", "По умолч.",
+    "btn_area_t1", "Test",
     "btn_area_test", "Проверить чтение",
     "area_need_roblox", "Сначала откройте Roblox.",
     "area_testing", "Чтение…",
@@ -4679,6 +4685,7 @@ I18N["tr"] := Map(
     "area_mode", "Mod (harita adı)",
     "btn_area_adj", "Ayarla",
     "btn_area_def", "Varsayılan",
+    "btn_area_t1", "Test",
     "btn_area_test", "Okumayı test et",
     "area_need_roblox", "Önce Roblox'u aç.",
     "area_testing", "Okunuyor…",
@@ -5338,6 +5345,7 @@ I18N["id"] := Map(
     "area_mode", "Mode (nama peta)",
     "btn_area_adj", "Atur",
     "btn_area_def", "Default",
+    "btn_area_t1", "Test",
     "btn_area_test", "Tes baca sekarang",
     "area_need_roblox", "Buka Roblox dulu.",
     "area_testing", "Membaca…",
@@ -6286,9 +6294,10 @@ Lbl(CX + 20, y + 14, 400, TT("sec_readarea"), "s7 w700", C_DIM)
 Lbl(CX + 20, y + 34, CW - 40, TT("area_help"), "s9", C_MUTED)
 for ai, an in ["mode", "wave", "pearls", "coins", "guild"] {
     ry := y + 104 + (ai - 1) * 42
-    Lbl(CX + 20, ry + 5, CW - 250, TT(areaKey[an]), "s10")
-    Btn(CX + CW - 20 - 220, ry, 120, 32, TT("btn_area_adj"), AreaEdit.Bind(an))
-    Btn(CX + CW - 20 - 90, ry, 90, 32, TT("btn_area_def"), AreaReset.Bind(an))
+    Lbl(CX + 20, ry + 5, CW - 340, TT(areaKey[an]), "s10")
+    Btn(CX + CW - 20 - 262, ry, 70, 32, TT("btn_area_t1"), AreaTestOne.Bind(an))
+    Btn(CX + CW - 20 - 184, ry, 104, 32, TT("btn_area_adj"), AreaEdit.Bind(an))
+    Btn(CX + CW - 20 - 72, ry, 72, 32, TT("btn_area_def"), AreaReset.Bind(an))
 }
 Divider(CX + 20, y + 318, CW - 40)
 Btn(CX + 20, y + 330, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
@@ -8862,6 +8871,62 @@ AreaTestRun() {
         msg .= "`n" TT("area_saw") " [" lr.seen "]"
     if IsObject(areaRes)
         areaRes.Value := msg
+}
+
+; teste de UMA área só (botão "Testar" de cada linha em Leitura)
+AreaTestOne(an, *) {
+    ReadUncovered(AreaTestOneRun.Bind(an))
+}
+
+AreaTestOneRun(an) {
+    global areaRes, areaKey
+    hw := FindGameWindow()
+    if !IsObject(areaRes)
+        return
+    if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
+        areaRes.Value := TT("area_need_roblox")
+        return
+    }
+    areaRes.Value := TT("area_testing")
+    name := TT(areaKey[an]), val := "", raw := ""
+    try {
+        switch an {
+            case "mode":
+                r := OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}"))
+                raw := r.text
+                if r.ok
+                    for line in r.res.Lines {
+                        t := Trim(RegExReplace(line.Text, "\s+", " "))
+                        if (RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "i)^wave\b")) {
+                            val := ModeClean(t)
+                            break
+                        }
+                    }
+            case "wave":
+                r := OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d"))
+                raw := r.text
+                if RegExMatch(raw, "i)wave\s*([0-9OolI]{1,4})", &m)
+                    val := m[1]
+                else if RegExMatch(raw, "([0-9OolI]{1,4})\s*$", &m)
+                    val := m[1]
+                val := StrReplace(StrReplace(StrReplace(StrReplace(val, "O", "0"), "o", "0"), "l", "1"), "I", "1")
+            case "pearls":
+                r := OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d"))
+                raw := r.text
+                if RegExMatch(raw, "\+?\s*(\d[\d.,]*[kKmMbB]?)", &m)
+                    val := "+" m[1]
+            case "coins":
+                cur := ReadCurrencies(hw)[2]
+                for k, v in cur
+                    val .= (val = "" ? "" : "  ·  ") k " " v
+            case "guild":
+                gr := ReadGuildRank(hw)
+                val := gr != "" ? "#" gr : ""
+        }
+    } catch as e {
+        raw := e.Message
+    }
+    areaRes.Value := (val != "" ? "✔ " : "✖ ") name ": " (val != "" ? val : "—") (raw != "" ? "`n" TT("area_saw") " [" SubStr(raw, 1, 120) "]" : "")
 }
 
 ; ---------- mostra na tela onde ele está lendo (contornos coloridos sobre o Roblox) + tamanho da janela ----------
