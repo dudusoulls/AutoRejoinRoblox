@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.16"
+VERSION     := "1.5.17"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6634,7 +6634,7 @@ BotInvite(*) {
         Notify(TT("bot_noclient"), "Auto Reconnect", "Icon!")
         return
     }
-    Run("https://discord.com/oauth2/authorize?client_id=" BOT_CLIENT_ID "&scope=bot%20applications.commands&permissions=117760")
+    Run("https://discord.com/oauth2/authorize?client_id=" BOT_CLIENT_ID "&scope=bot%20applications.commands&permissions=150528")
 }
 
 CopyAppId(*) {

@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.17
+- Bot oficial (pasta `bot/`): `/vincular` cria o webhook do canal e entrega o link só pra quem usou. Convite com as permissões certas.
+
 ## v1.5.16
 - Temas refeitos: 15 paletas bem diferentes entre si (Aero Glass, Obsidian, Aurora, Ember, Nebula, Crimson, Lagoon, Mocha, Lime, Neon, Void, Gold, Pearl, Sakura, Mint). Quem usava um tema removido volta pro Aero Glass.
 - Texto mais nítido (ClearType) em toda a interface.
