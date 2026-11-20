@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.28
+- Configurações reorganizada: versão com botões à direita (sem sobrepor), licença menor, as 3 opções de atualização juntas num cartão e novidades embaixo.
+
 ## v1.5.27
 - "O que mostrar no painel" foi para Configurações (nova subaba Exibir).
 - OCR: com o Modo AA ligado ele lê sempre (antes só lia se algum painel estivesse ligado) e tenta de novo mais rápido enquanto não achar nada.

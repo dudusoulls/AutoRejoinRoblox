@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.27"
+VERSION     := "1.5.28"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6155,36 +6155,42 @@ Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(
 
 ; ---------------- Página: Sobre ----------------
 BeginPage("Sobre", TT("nav_about"), TT("pg_about_sub"))
+; --- versão: texto à esquerda, botões empilhados à direita (nada se sobrepõe) ---
 y := 92
-Card(CX, y, CW, 104)
-Lbl(CX + 20, y + 16, 300, TT("sec_version"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 36, 280, "v" VERSION "  BETA", "s20 w700")
-Btn(CX + CW - 340, y + 34, 150, 38, TT("btn_tour"), (*) => StartTour())
-updStatus := Lbl(CX + 20, y + 76, CW - 210, TT("upd_never"), "s9", C_MUTED)
-btnUpd := Btn(CX + CW - 180, y + 34, 160, 38, TT("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)))
+Card(CX, y, CW, 108)
+Lbl(CX + 20, y + 14, 300, TT("sec_version"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 32, 240, "v" VERSION "  BETA", "s20 w700")
+updStatus := Lbl(CX + 20, y + 78, CW - 250, TT("upd_never"), "s9", C_MUTED)
+btnUpd := Btn(CX + CW - 190, y + 16, 170, 34, TT("btn_checkupd"), (*) => (pendingUpd != "" ? ApplyUpdate() : CheckUpdate(true)), "primary")
+Btn(CX + CW - 190, y + 58, 170, 34, TT("btn_tour"), (*) => StartTour())
 
-y := 208
-Card(CX, y, CW, 80)
-Lbl(CX + 20, y + 16, 300, TT("sec_license"), "s7 w700", C_DIM)
-licInfo := Lbl(CX + 20, y + 38, CW - 200, "—", "s10 w600")
-licSub  := Lbl(CX + 20, y + 58, CW - 200, "", "s8", C_MUTED)
+; --- licença ---
+y := 212
+Card(CX, y, CW, 60)
+Lbl(CX + 20, y + 10, 300, TT("sec_license"), "s7 w700", C_DIM)
+licInfo := Lbl(CX + 20, y + 28, CW - 200, "—", "s10 w600")
+licSub  := Lbl(CX + 20, y + 44, CW - 200, "", "s8", C_MUTED)
 if KaEnabled()
-    Btn(CX + CW - 150, y + 24, 130, 32, TT("btn_changekey"), (*) => ShowKeyScreen(TT("paste_new_key")))
+    Btn(CX + CW - 150, y + 14, 130, 32, TT("btn_changekey"), (*) => ShowKeyScreen(TT("paste_new_key")))
 
-y := 300
-Card(CX, y, CW, 172)
-chkAutoUpd := ToggleSwitch(CX + 20, y + 14, CW - 40, TT("sw_autoupd"), savedAutoUpd)
-Lbl(CX + 20, y + 52, 300, TT("sec_news"), "s7 w700", C_DIM)
+; --- atualizações (as três opções juntas) ---
+y := 284
+Card(CX, y, CW, 150)
+chkAutoUpd := ToggleSwitch(CX + 20, y + 10, CW - 40, TT("sw_autoupd"), savedAutoUpd)
+Divider(CX + 20, y + 48, CW - 40)
+chkFastUpd := ToggleSwitch(CX + 20, y + 54, CW - 40, TT("sw_fastupd"), savedFastUpd, TT("sw_fastupd_sub"))
+Divider(CX + 20, y + 104, CW - 40)
+chkWhatsNew := ToggleSwitch(CX + 20, y + 112, CW - 40 - 136, TT("sw_whatsnew"), savedWhatsNew)
+Btn(CX + CW - 20 - 120, y + 108, 120, 30, TT("btn_wn_now"), (*) => ShowWhatsNew(true))
+
+; --- novidades ---
+y := 446
+Card(CX, y, CW, 128)
+Lbl(CX + 20, y + 10, 300, TT("sec_news"), "s7 w700", C_DIM)
 FontUI(g, "s9")
 changeBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly +Multi +VScroll -E0x200 c{} Background{}"
-    , CX + 20, y + 72, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
+    , CX + 20, y + 30, CW - 40, 88, C_TEXT, C_CARD), TT("news_ph")))
 DllCall("uxtheme\SetWindowTheme", "Ptr", changeBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
-
-y := 480
-Card(CX, y, CW, 84)
-chkFastUpd := ToggleSwitch(CX + 20, y + 8, CW - 40, TT("sw_fastupd"), savedFastUpd, TT("sw_fastupd_sub"))
-chkWhatsNew := ToggleSwitch(CX + 20, y + 52, CW - 40 - 136, TT("sw_whatsnew"), savedWhatsNew)
-Btn(CX + CW - 20 - 120, y + 52, 120, 28, TT("btn_wn_now"), (*) => ShowWhatsNew(true))
 
 
 ; ---------------- Página: Apoie + Suporte ----------------
