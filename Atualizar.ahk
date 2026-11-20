@@ -9,7 +9,7 @@
 
 REPO     := "dudusoulls/AutoRejoinRoblox"
 EXE_NAME := "AutoReconnectRoblox.exe"
-URL      := "https://github.com/" REPO "/releases/latest/download/" EXE_NAME
+URL      := "https://github.com/" REPO "/releases/latest/download/" EXE_NAME "?t=" A_Now
 
 pasta    := A_ScriptDir
 alvo     := pasta "\" EXE_NAME

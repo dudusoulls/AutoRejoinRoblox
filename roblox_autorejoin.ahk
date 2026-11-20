@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.36"
+VERSION     := "1.5.37"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -11592,6 +11592,7 @@ CheckUpdate(manual := false) {
         return
     }
     if (v[1] = VERSION) {                      ; mesma versão do GitHub = nada a fazer (serve pra frente E pra trás)
+        try IniDelete(iniFile, "cfg", "updTry")
         updStatus.Value := TT("upd_latest")
         pendingUpd := ""
         updBadge.Visible := false
@@ -11605,6 +11606,11 @@ CheckUpdate(manual := false) {
     updBadge.Text := Chr(0x2B06) "  " TT("badge_new", v[1])
     updBadge.Visible := true
     Log(TT("log_upd_avail", v[1]))
+    tr := StrSplit(IniRead(iniFile, "cfg", "updTry", ""), "|")
+    if (tr.Length = 2 && tr[1] = v[1] && Integer(tr[2]) >= 2) {    ; já tentou 2x e continua na versão velha: não entra em loop
+        Log("Atualização para " v[1] " não pegou (o exe baixado era antigo). Parei o automático; baixe o exe novo no GitHub ou rode o Atualizar.ahk.")
+        return
+    }
     if chkAutoUpd.Value
         ApplyUpdate()
 }
@@ -11723,7 +11729,8 @@ KaCheckUpdate(manual) {
 
 ApplyExeUpdate() {
     global pendingVer, running, iniFile, EXE_NAME, GITHUB_REPO
-    url := "https://github.com/" GITHUB_REPO "/releases/latest/download/" EXE_NAME
+    ; "?t=" evita pegar o exe velho do cache do Windows (era isso que fazia o app "atualizar" sempre pra mesma versão)
+    url := "https://github.com/" GITHUB_REPO "/releases/latest/download/" EXE_NAME "?t=" A_Now
     tmp := A_Temp "\arr_update.exe"
     try FileDelete(tmp)
     try {
@@ -11740,6 +11747,8 @@ ApplyExeUpdate() {
     if running
         IniWrite(1, iniFile, "cfg", "resume")
     IniWrite(pendingVer, iniFile, "cfg", "justUpdated")
+    tr := StrSplit(IniRead(iniFile, "cfg", "updTry", ""), "|")
+    IniWrite(pendingVer "|" ((tr.Length = 2 && tr[1] = pendingVer ? Integer(tr[2]) : 0) + 1), iniFile, "cfg", "updTry")
     Log(TT("log_updated", pendingVer))
     cur := A_ScriptFullPath
     bat := A_Temp "\arr_swap.bat"
