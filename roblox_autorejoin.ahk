@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.3"
+VERSION     := "1.5.4"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -8071,6 +8071,92 @@ GuildReadRun() {
         guildSub.Value := TT("guild_last", guildWhen != "" ? guildWhen : "—")
 }
 
+; texto branco com contorno escuro (o rank da guilda) → imagem grande, preto no branco, que o OCR lê bem.
+; Tenta alguns limiares de "branco" e vota; devolve o que o OCR leu (pro log).
+GuildPre(hw, ox, oy, ow, oh, votes) {
+    seen := ""
+    hBM := 0, srcDC := 0, dc := 0, dib := 0
+    try {
+        rc := Buffer(16, 0)
+        DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
+        cw := NumGet(rc, 8, "Int"), chh := NumGet(rc, 12, "Int")
+        if (cw < 50 || chh < 50)
+            return ""
+        ox := Max(0, Min(ox, cw - 8)), oy := Max(0, Min(oy, chh - 8))
+        ow := Min(ow, cw - ox), oh := Min(oh, chh - oy)
+        hS := DllCall("GetDC", "Ptr", 0, "Ptr")
+        srcDC := DllCall("CreateCompatibleDC", "Ptr", hS, "Ptr")
+        hBM := DllCall("CreateCompatibleBitmap", "Ptr", hS, "Int", cw, "Int", chh, "Ptr")
+        oldS := DllCall("SelectObject", "Ptr", srcDC, "Ptr", hBM, "Ptr")
+        ok := DllCall("PrintWindow", "Ptr", hw, "Ptr", srcDC, "UInt", 3)
+        if (!ok || IsBlackDC(srcDC, cw, chh)) {
+            pt := Buffer(8, 0)
+            DllCall("ClientToScreen", "Ptr", hw, "Ptr", pt)
+            DllCall("BitBlt", "Ptr", srcDC, "Int", 0, "Int", 0, "Int", cw, "Int", chh
+                , "Ptr", hS, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
+        }
+        DllCall("ReleaseDC", "Ptr", 0, "Ptr", hS)
+        ; escala: o texto fica com ~60 px de altura (limite de pixels pra não ficar lento)
+        S := 8
+        while (S > 2 && (ow * S) * (oh * S) > 260000)
+            S -= 1
+        P := 24
+        W := ow * S, H := oh * S, Wp := W + 2 * P, Hp := H + 2 * P
+        bmi := Buffer(40, 0)
+        NumPut("UInt", 40, "Int", Wp, "Int", -Hp, "UShort", 1, "UShort", 32, bmi)
+        dib := DllCall("CreateDIBSection", "Ptr", 0, "Ptr", bmi, "UInt", 0, "Ptr*", &bits := 0, "Ptr", 0, "UInt", 0, "Ptr")
+        dc := DllCall("CreateCompatibleDC", "Ptr", 0, "Ptr")
+        oldD := DllCall("SelectObject", "Ptr", dc, "Ptr", dib, "Ptr")
+        r2 := Buffer(16, 0), NumPut("Int", Wp, "Int", Hp, r2, 8)
+        DllCall("FillRect", "Ptr", dc, "Ptr", r2, "Ptr", DllCall("GetStockObject", "Int", 0, "Ptr"))
+        DllCall("SetStretchBltMode", "Ptr", dc, "Int", 4)
+        DllCall("StretchBlt", "Ptr", dc, "Int", P, "Int", P, "Int", W, "Int", H
+            , "Ptr", srcDC, "Int", ox, "Int", oy, "Int", ow, "Int", oh, "UInt", 0x00CC0020)
+        DllCall("GdiFlush")
+        orig := Buffer(Wp * Hp * 4)
+        DllCall("RtlMoveMemory", "Ptr", orig, "Ptr", bits, "UPtr", Wp * Hp * 4)
+        for th in [190, 160, 215] {
+            y := 0
+            while (y < H) {
+                off := ((P + y) * Wp + P) * 4
+                Loop W {
+                    v := NumGet(orig, off, "UInt")
+                    NumPut("UInt", (((v >> 16) & 255) > th && ((v >> 8) & 255) > th && (v & 255) > th) ? 0xFF000000 : 0xFFFFFFFF, bits, off)
+                    off += 4
+                }
+                y += 1
+            }
+            DllCall("GdiFlush")
+            res := ""
+            try res := OCR.FromBitmap(dib)
+            catch
+                continue
+            t := SubStr(RegExReplace(res.Text, "\s+", " "), 1, 60)
+            if (t != "")
+                seen .= (seen = "" ? "" : " | ") "T" th ":" t
+            n := ""
+            wt := 2
+            if RegExMatch(t, "[#＃]\s*([0-9OoIl|SsBZzgq]{1,6})", &m)
+                n := FixDigits(m[1]), wt := 3
+            else if RegExMatch(t, "^\W{0,2}[A-Za-z]?\s?(\d{1,6})\W{0,2}$", &m)
+                n := m[1]
+            if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$"))
+                votes[n] := (votes.Has(n) ? votes[n] : 0) + wt
+        }
+    }
+    try {
+        if dc
+            DllCall("DeleteDC", "Ptr", dc)
+        if dib
+            DllCall("DeleteObject", "Ptr", dib)
+        if srcDC
+            DllCall("DeleteDC", "Ptr", srcDC)
+        if hBM
+            DllCall("DeleteObject", "Ptr", hBM)
+    }
+    return seen
+}
+
 ; área em pixels, com tamanho mínimo (o OCR do Windows erra em texto muito baixo/estreito): cresce pros dois lados
 AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh) {
     ox := Round(cw * ar[1]), oy := Round(chh * ar[2]), ow := Round(cw * ar[3]), oh := Round(chh * ar[4])
@@ -8101,6 +8187,11 @@ ReadGuildRank(hw) {
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
         sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         seen := "", votes := Map(), hashV := Map()
+        ; 1) leitura "limpa": amplia a área e isola só o branco do texto (preto no branco) antes do OCR — é o que resolve texto minúsculo
+        seen := GuildPre(hw, ox, oy, ow, oh, votes)
+        for n0, c0 in votes
+            if (c0 >= 5)
+                return n0
         ; várias escalas x formas de captura; o número que mais se repete ganha (tira o erro de leitura isolada)
         for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6)] {
             Loop 4 {

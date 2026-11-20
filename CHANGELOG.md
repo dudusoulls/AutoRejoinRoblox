@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.4
+- Rank da guilda lê texto minúsculo (sem zoom): a área é ampliada até ~8x e só o branco do texto é isolado (preto no branco) antes do OCR, com votação entre 3 limiares
+
 ## v1.5.3
 - Se existir um Roblox mais novo que o instalado, o app não abre mais a versão antiga direto: abre pelo launcher oficial, que atualiza antes
 - O card de versão mostra o código da build (6 letras) em uso e o da mais recente, e só marca "atualizado" se a mais nova instalada for a atual
