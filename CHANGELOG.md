@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.45
+- Aviso do rank: opção "Enviar o rank também a cada (minutos)" — manda o rank atual com print no canal de tempos em tempos (0 = só quando mudar).
+
 ## v1.5.44
 - Nova subaba Discord → Aviso do rank: webhook do canal, botão de teste e **recorte do print** (você desenha o pedaço da tela; ele pode acompanhar o boneco). Sem ajustar, usa o recorte automático.
 

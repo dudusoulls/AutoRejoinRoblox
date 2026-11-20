@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.44"
+VERSION     := "1.5.45"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, edGuildEvery := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040], "guildshot", [0.28, 0.07, 0.30, 0.36])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -951,6 +951,8 @@ I18N["pt"].Set(
     "shot_help", "Escolha o pedaço da tela que vai no aviso (boneco + rank). Sem ajustar, ele usa um recorte automático em volta do rank.",
     "sw_shotfollow", "Recorte acompanha o rank",
     "sw_shotfollow_sub", "O recorte se move junto com o boneco",
+    "lbl_guildevery", "Enviar o rank também a cada (minutos)",
+    "guildevery_sub", "0 = só quando mudar",
     "nav_adv", "Avançado",
     "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
     "sec_adv", "ACOMPANHAR A JANELA",
@@ -1622,6 +1624,8 @@ I18N["en"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Advanced",
     "pg_adv_sub", "Settings for any monitor or resolution",
     "sec_adv", "FOLLOW THE WINDOW",
@@ -2293,6 +2297,8 @@ I18N["es"].Set(
     "shot_help", "Choose the part of the screen sent in the alert (character + rank). If unset, an automatic crop around the rank is used.",
     "sw_shotfollow", "Crop follows the rank",
     "sw_shotfollow_sub", "The crop moves with the character",
+    "lbl_guildevery", "Enviar el rango también cada (minutos)",
+    "guildevery_sub", "0 = solo cuando cambie",
     "nav_adv", "Avanzado",
     "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
     "sec_adv", "SEGUIR LA VENTANA",
@@ -2964,6 +2970,8 @@ I18N["fr"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Avancé",
     "pg_adv_sub", "Réglages pour tout écran ou résolution",
     "sec_adv", "SUIVRE LA FENÊTRE",
@@ -3635,6 +3643,8 @@ I18N["de"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Erweitert",
     "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
     "sec_adv", "FENSTER FOLGEN",
@@ -4306,6 +4316,8 @@ I18N["ru"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Дополнительно",
     "pg_adv_sub", "Настройки для любого монитора и разрешения",
     "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
@@ -4977,6 +4989,8 @@ I18N["tr"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Gelişmiş",
     "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
     "sec_adv", "PENCEREYİ TAKİP ET",
@@ -5648,6 +5662,8 @@ I18N["id"].Set(
     "shot_help", "Elige la parte de la pantalla que va en el aviso (personaje + rango). Sin ajustar, usa un recorte automático alrededor del rango.",
     "sw_shotfollow", "El recorte sigue el rango",
     "sw_shotfollow_sub", "El recorte se mueve con el personaje",
+    "lbl_guildevery", "Also send the rank every (minutes)",
+    "guildevery_sub", "0 = only when it changes",
     "nav_adv", "Lanjutan",
     "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
     "sec_adv", "IKUTI JENDELA",
@@ -6118,6 +6134,12 @@ Btn(CX + 20, y + 84, 160, 34, TT("btn_area_adj"), (*) => AreaEdit("guildshot"))
 Btn(CX + 190, y + 84, 110, 34, TT("btn_area_def"), (*) => AreaReset("guildshot"))
 chkShotFollow := ToggleSwitch(CX + 20, y + 132, CW - 40, TT("sw_shotfollow"), IniRead(iniFile, "cfg", "shotFollow", "1"), TT("sw_shotfollow_sub"))
 chkShotFollow.onChange := (*) => IniWrite(chkShotFollow.Value, iniFile, "cfg", "shotFollow")
+y += 208
+Card(CX, y, CW, 92)
+Lbl(CX + 20, y + 14, CW - 40, TT("lbl_guildevery"), "s9", C_MUTED)
+edGuildEvery := Input(CX + 20, y + 40, 84, IniRead(iniFile, "cfg", "guildEvery", "0"), "Number")
+edGuildEvery.OnEvent("Change", (*) => IniWrite(Max(0, Min(1440, Integer(edGuildEvery.Value || 0))), iniFile, "cfg", "guildEvery"))
+Lbl(CX + 116, y + 46, CW - 136, TT("guildevery_sub"), "s8", C_DIM)
 
 ; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
@@ -6607,6 +6629,7 @@ StartApp() {
     SetTimer(() => CheckUpdate(false), 6 * 3600000)  ; e a cada 6 horas
     SetTimer(WhatsNewCheck, -12000)
     SetTimer(AreaShowTick, 500)
+    SetTimer(GuildEveryTick, 30000)
     SetTimer(OcrLoop, 1000)
     SetTimer(OcrLoop, -6000)
     SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
@@ -9128,7 +9151,7 @@ GuildChanged(old, new, notify := true) {
 }
 
 ; posta no canal (webhook do rank, ou o webhook principal) a mensagem do novo rank com data/hora e print do boneco
-GuildPost(old, new, test := false) {
+GuildPost(old, new, test := false, periodic := false) {
     global edGuildHook, edHook, guildTrk, chkShotFollow, USER_NAME, APP_NAME, LOGO_URL, VERSION
     url := Trim(edGuildHook.Value), auth := "", head := '"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
     if (InStr(url, "https://discord.com/api/webhooks/") != 1) {
@@ -9176,9 +9199,10 @@ GuildPost(old, new, test := false) {
     now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
     ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
     desc := "# #" fmt(new) "`n-# 🕒 <t:" now ":F>  ·  <t:" now ":R>`n"
-    desc .= "> " "Antes: **#" fmt(old) "**" (delta != "" ? "  ·  " delta : "") "`n"
+    if (!periodic && old != "")
+        desc .= "> " "Antes: **#" fmt(old) "**" (delta != "" ? "  ·  " delta : "") "`n"
     e := '{' head '"allowed_mentions":{"parse":[]},'
-        . '"content":"' (test ? "🧪 **Teste** — " : "") '``' JsonEsc(FormatTime(, "dd/MM/yyyy, HH:mm:ss")) '``",'
+        . '"content":"' (test ? "🧪 **Teste** — " : (periodic ? "⏱ " : "")) '``' JsonEsc(FormatTime(, "dd/MM/yyyy, HH:mm:ss")) '``",'
         . '"embeds":[{'
         . '"author":{"name":"' JsonEsc(APP_NAME "  ·  🛡 " TT("f_guild")) '","icon_url":"' LOGO_URL '"},'
         . '"color":' 0x6EA8FF ','
@@ -9191,6 +9215,28 @@ GuildPost(old, new, test := false) {
         SendWebhookImage(url, e, shot, auth, 0, "rank.png")
     else
         HttpPost(url, e, "application/json", auth, 0)
+}
+
+; envia o rank atual a cada X minutos (ini [cfg] guildEvery; 0 = desligado)
+GuildEveryTick() {
+    global aaMode, farmGuild
+    static last := 0
+    if !aaMode
+        return
+    every := 0
+    try every := Integer(IniRead(iniFile, "cfg", "guildEvery", "0"))
+    if (every <= 0 || farmGuild = "") {
+        last := 0
+        return
+    }
+    if !last {
+        last := A_TickCount
+        return
+    }
+    if (A_TickCount - last >= every * 60000) {
+        last := A_TickCount
+        try GuildPost("", farmGuild, false, true)
+    }
 }
 
 ; botão "Enviar aviso de teste" da aba Guilda: manda o aviso do rank agora (com print) pro canal configurado
