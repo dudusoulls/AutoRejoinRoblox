@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.12"
+VERSION     := "1.5.13"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5908,6 +5908,7 @@ StartApp() {
     IntroShow(g, Trim(Format("w{} h{} ", W, H) GuiPosOpt()))
     SetTimer(PulseTick, 110)
     SetTimer(GuiPosTick, 2000)
+    SetTimer(GdiWatch, 60000)
     SetTimer(CpuSample, 2000)
     HudApply()
     SetTimer(Cleanup, 2000)
@@ -9662,6 +9663,21 @@ GuiPosSave() {
             IniWrite(x, iniFile, "cfg", "gx")
             IniWrite(y, iniFile, "cfg", "gy")
         }
+    }
+}
+
+; vigia vazamento de objetos GDI (quando acaba, os controles ficam pretos/sumidos): reinicia o app antes disso
+GdiWatch() {
+    static n := 0
+    gdi := DllCall("GetGuiResources", "Ptr", DllCall("GetCurrentProcess", "Ptr"), "UInt", 0, "UInt")
+    n += 1
+    if (gdi > 2500 && Mod(n, 10) = 1)
+        try Log("GDI: " gdi " objetos")
+    if (gdi > 7000) {
+        try Log("GDI: " gdi " objetos, reiniciando o app para liberar")
+        try SaveConfig()
+        Sleep(200)
+        Reload()
     }
 }
 

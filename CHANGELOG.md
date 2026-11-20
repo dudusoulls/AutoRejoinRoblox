@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.13
+- Vigia de recursos gráficos: registra nos Logs quando o uso de objetos GDI está alto e reinicia o app antes de os controles ficarem pretos.
+
 ## v1.5.12
 - Posição da janela: agora é usada já na abertura e salva a cada 2 s (não se perde se o app fechar de repente).
 - Barra de baixo sem status duplicado (fica só o da lateral esquerda).
