@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.34
+- Rank da guilda: confirma quando o mesmo número aparece 3 vezes nas últimas 8 leituras (não precisam ser seguidas).
+
 ## v1.5.33
 - Rank da guilda: só aparece/muda depois de ler o mesmo número 3 vezes seguidas (menos erro de OCR).
 

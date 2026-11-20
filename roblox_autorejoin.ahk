@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.33"
+VERSION     := "1.5.34"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9228,24 +9228,27 @@ ReadGuildRank(hw) {
 ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
 GuildTick(hw) {
     global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
-    static pendG := "", pendN := 0
+    static hist := []
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
     gr := ReadGuildRank(hw)
     if (gr = "")
         return
-    if (gr = farmGuild) {                 ; já confirmado: nada a fazer
-        pendG := "", pendN := 0
+    if (gr = farmGuild) {                 ; já confirmado: zera o histórico
+        hist := []
         return
     }
-    ; só mostra um rank novo depois de ler o MESMO número 3 vezes seguidas (evita erro de OCR)
-    if (gr = pendG)
-        pendN++
-    else
-        pendG := gr, pendN := 1
-    if (pendN >= 3) {
+    ; só mostra um rank novo quando o MESMO número aparece 3 vezes nas últimas 8 leituras (tolera erro de OCR no meio)
+    hist.Push(gr)
+    if (hist.Length > 8)
+        hist.RemoveAt(1)
+    cnt := 0
+    for v in hist
+        if (v = gr)
+            cnt++
+    if (cnt >= 3) {
         old := farmGuild
-        farmGuild := gr, pendG := "", pendN := 0
+        farmGuild := gr, hist := []
         GuildChanged(old, gr)
     }
 }
