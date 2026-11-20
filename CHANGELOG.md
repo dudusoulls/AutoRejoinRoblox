@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.50
+- Logs avançados (Configurações → Exibir): mostra no log cada ciclo de leitura (janela, área de cada OCR, texto lido, resultado, rank/contagem, ação do monitor). Opção de salvar uma imagem com as áreas desenhadas (onde ele procura) em `debug\ocr_last.png`, com botão pra abrir a pasta.
+
 ## v1.5.49
 - Prints do Discord (rank/status) não saem mais embaralhados: com o Roblox à vista o app copia direto da tela (o PrintWindow do Roblox às vezes devolve listras). O print do rank também não leva mais os contornos de "Mostrar áreas".
 

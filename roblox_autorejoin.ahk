@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.49"
+VERSION     := "1.5.50"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, shotBusy := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, edGuildEvery := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, shotBusy := false, chkAdvLog := 0, chkAdvImg := 0, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, chkShotFollow := 0, edGuildEvery := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040], "guildshot", [0.28, 0.07, 0.30, 0.36])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -744,6 +744,12 @@ I18N["pt"] := Map(
     "wn_none", "Sem informações de novidades para esta versão.",
     "f_guild", "Rank da guilda",
     "sec_hud_show", "O QUE MOSTRAR NO PAINEL",
+    "sec_advlog", "LOGS AVANÇADOS",
+    "sw_advlog", "Logs avançados",
+    "sw_advlog_sub", "Mostra no log cada leitura: área, texto lido, resultado e a ação do monitor",
+    "sw_advimg", "Salvar imagem do que ele vê",
+    "sw_advimg_sub", "Um print com as áreas marcadas (onde ele procura) na pasta debug, ao lado do app",
+    "btn_open_dbg", "Abrir pasta das imagens",
     "f_reading", "Lendo o modo…",
     "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
@@ -1417,6 +1423,12 @@ I18N["en"] := Map(
     "wn_none", "No release notes for this version.",
     "f_guild", "Guild rank",
     "sec_hud_show", "WHAT TO SHOW IN THE PANEL",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Reading the mode…",
     "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
@@ -2090,6 +2102,12 @@ I18N["es"] := Map(
     "wn_none", "Sin notas de versión para esta versión.",
     "f_guild", "Rango del gremio",
     "sec_hud_show", "QUÉ MOSTRAR EN EL PANEL",
+    "sec_advlog", "ADVANCED LOGS",
+    "sw_advlog", "Advanced logs",
+    "sw_advlog_sub", "Shows each read in the log: area, text read, result and the monitor action",
+    "sw_advimg", "Save image of what it sees",
+    "sw_advimg_sub", "A screenshot with the areas marked (where it looks) in the debug folder next to the app",
+    "btn_open_dbg", "Open images folder",
     "f_reading", "Leyendo el modo…",
     "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
@@ -2763,6 +2781,12 @@ I18N["fr"] := Map(
     "wn_none", "Pas de notes pour cette version.",
     "f_guild", "Rang de guilde",
     "sec_hud_show", "CE QUE LE PANNEAU AFFICHE",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Lecture du mode…",
     "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
@@ -3436,6 +3460,12 @@ I18N["de"] := Map(
     "wn_none", "Keine Hinweise zu dieser Version.",
     "f_guild", "Gilden-Rang",
     "sec_hud_show", "WAS DAS PANEL ZEIGT",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Modus wird gelesen…",
     "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
@@ -4109,6 +4139,12 @@ I18N["ru"] := Map(
     "wn_none", "Нет описания для этой версии.",
     "f_guild", "Ранг гильдии",
     "sec_hud_show", "ЧТО ПОКАЗЫВАТЬ В ПАНЕЛИ",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Чтение режима…",
     "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
@@ -4782,6 +4818,12 @@ I18N["tr"] := Map(
     "wn_none", "Bu sürüm için not yok.",
     "f_guild", "Lonca sırası",
     "sec_hud_show", "PANELDE NELER GÖSTERİLSİN",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Mod okunuyor…",
     "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
@@ -5455,6 +5497,12 @@ I18N["id"] := Map(
     "wn_none", "Tidak ada catatan untuk versi ini.",
     "f_guild", "Peringkat guild",
     "sec_hud_show", "YANG DITAMPILKAN DI PANEL",
+    "sec_advlog", "LOGS AVANZADOS",
+    "sw_advlog", "Logs avanzados",
+    "sw_advlog_sub", "Muestra en el log cada lectura: área, texto leído, resultado y la acción del monitor",
+    "sw_advimg", "Guardar imagen de lo que ve",
+    "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
+    "btn_open_dbg", "Abrir carpeta de imágenes",
     "f_reading", "Membaca mode…",
     "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
@@ -6410,6 +6458,14 @@ chkHudGd := ToggleSwitch(CX + 20, y + 86, hw2, TT("f_guild"), savedHudGd)
 chkHudWv := ToggleSwitch(CX + 20 + hw2 + 16, y + 86, hw2, TT("area_wave"), savedHudWv)
 for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd, chkHudWv]
     ck.onChange := (*) => HudRelayout()
+y += 134
+Card(CX, y, CW, 206)
+Lbl(CX + 20, y + 14, CW - 40, TT("sec_advlog"), "s7 w700", C_DIM)
+chkAdvLog := ToggleSwitch(CX + 20, y + 36, CW - 40, TT("sw_advlog"), IniRead(iniFile, "cfg", "advLog", "0"), TT("sw_advlog_sub"))
+chkAdvLog.onChange := (*) => IniWrite(chkAdvLog.Value, iniFile, "cfg", "advLog")
+chkAdvImg := ToggleSwitch(CX + 20, y + 94, CW - 40, TT("sw_advimg"), IniRead(iniFile, "cfg", "advImg", "0"), TT("sw_advimg_sub"))
+chkAdvImg.onChange := (*) => IniWrite(chkAdvImg.Value, iniFile, "cfg", "advImg")
+Btn(CX + 20, y + 156, 220, 34, TT("btn_open_dbg"), (*) => (DirCreate(A_ScriptDir "\debug"), Run(A_ScriptDir "\debug")))
 
 
 ; ---------------- Página: Leitura (onde o programa lê na tela) ----------------
@@ -9641,6 +9697,10 @@ GuildTick(hw) {
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
     gr := ReadGuildRank(hw)
+    if AdvOn() {
+        global guildSeen
+        LogA("Rank · " (gr != "" ? "leu #" gr : "não achou o número") " (contagem " cnt "/" IniRead(iniFile, "cfg", "guildN", "3") ") · " SubStr(guildSeen, 1, 110))
+    }
     if (gr = "") {                        ; não achou: zera a contagem (as leituras precisam ser SEGUIDAS)
         pend := "", cnt := 0
         return
@@ -9724,6 +9784,7 @@ OcrLoop() {
     else if (chkHudGd.Value && farmGuild = "")      ; rank da guilda ainda sem as 3 leituras iguais
         sec := Min(sec, 5)
     nextAt := A_TickCount + Max(sec * 1000, (A_TickCount - t0) * 4)
+    LogA("OCR · próxima leitura em " Round((nextAt - A_TickCount) / 1000) " s")
 }
 
 FarmModeTick(test := false) {
@@ -9731,6 +9792,7 @@ FarmModeTick(test := false) {
     if !aaMode
         return
     farmLast := {mode: "", wave: "", pearls: "", seen: ""}
+    tA := A_TickCount
     hw := FindGameWindow()
     if !(hw && WinGetMinMax(hw) != -1 && DllCall("IsWindowVisible", "Ptr", hw)) {
         farmMode := "", farmWave := ""
@@ -9782,6 +9844,8 @@ FarmModeTick(test := false) {
         }
     }
     farmLast := {mode: mode, wave: wave, pearls: pearls, seen: SubStr(seen, 1, 140)}
+    if AdvOn()
+        AdvReport(hw, mode, wave, pearls, seen, A_TickCount - tA)
     if (mode = "" && wave = "" && pearls = "") {
         FarmDbg("não achei nada nas áreas de leitura. Leu: [" SubStr(seen, 1, 110) "]")
         if (++farmMiss >= 3)
@@ -11256,9 +11320,11 @@ OnQuit(*) {
 Log(msg) {
     global logBox, hudLogs
     line := FormatTime(, "HH:mm:ss") "  " msg "`r`n"
-    hudLogs.Push(FormatTime(, "HH:mm") "  " SubStr(RegExReplace(msg, "\s+", " "), 1, 38))
-    if (hudLogs.Length > 60)
-        hudLogs.RemoveAt(1)
+    if (SubStr(msg, 1, 1) != "⋯") {            ; as linhas dos Logs avançados não vão pro painel do HUD
+        hudLogs.Push(FormatTime(, "HH:mm") "  " SubStr(RegExReplace(msg, "\s+", " "), 1, 38))
+        if (hudLogs.Length > 60)
+            hudLogs.RemoveAt(1)
+    }
     n := DllCall("GetWindowTextLength", "Ptr", logBox.Hwnd)
     if (n > 60000) {                          ; guarda só a parte mais recente
         logBox.Value := SubStr(logBox.Value, -30000)
@@ -12397,18 +12463,17 @@ SendWebhookImage(url, payload, pngPath, auth := "", cb := 0, fname := "roblox.pn
 ; ---------------- Print só da janela do Roblox ----------------
 ; PrintWindow pega o conteúdo da janela mesmo se tiver outra coisa por cima.
 ; Se vier preto (alguns drivers), cai pro método de copiar da tela.
-CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
+; captura a janela do jogo num HBITMAP (copia da tela se estiver à vista; PrintWindow só se algo cobrir). 0 se falhar
+GrabWindowBM(hwnd, &w, &h) {
     rc := Buffer(16, 0)
     DllCall("GetClientRect", "Ptr", hwnd, "Ptr", rc)
     w := NumGet(rc, 8, "Int"), h := NumGet(rc, 12, "Int")
     if (w < 10 || h < 10)
-        return false
-
+        return 0
     hDC := DllCall("GetDC", "Ptr", 0, "Ptr")
     mDC := DllCall("CreateCompatibleDC", "Ptr", hDC, "Ptr")
     hBM := DllCall("CreateCompatibleBitmap", "Ptr", hDC, "Int", w, "Int", h, "Ptr")
     obm := DllCall("SelectObject", "Ptr", mDC, "Ptr", hBM, "Ptr")
-
     ; janela do jogo à vista (nada por cima): copia direto da tela, que sempre sai certo.
     ; PrintWindow no Roblox às vezes devolve imagem embaralhada (listras) sem ser preta, então só é usado quando há algo por cima.
     pt := Buffer(8, 0)
@@ -12431,16 +12496,102 @@ CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
     if (clear || !ok || IsBlackDC(mDC, w, h))
         DllCall("BitBlt", "Ptr", mDC, "Int", 0, "Int", 0, "Int", w, "Int", h
             , "Ptr", hDC, "Int", sx0, "Int", sy0, "UInt", 0x00CC0020)
-
     DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
     DllCall("DeleteDC", "Ptr", mDC)
     DllCall("ReleaseDC", "Ptr", 0, "Ptr", hDC)
+    return hBM
+}
+
+CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
+    hBM := GrabWindowBM(hwnd, &w, &h)
+    if !hBM
+        return false
     crop := (cwid > 8 && chei > 8) ? [Max(0, Min(w - 8, cx)), Max(0, Min(h - 8, cy)), cwid, chei] : 0
     if IsObject(crop)
         crop[3] := Min(crop[3], w - crop[1]), crop[4] := Min(crop[4], h - crop[2])
     r := SaveHBitmapPng(hBM, file, crop)
     DllCall("DeleteObject", "Ptr", hBM)
     return r
+}
+
+; ---- Logs avançados ----
+AdvOn() {
+    global chkAdvLog
+    return IsObject(chkAdvLog) && chkAdvLog.Value
+}
+
+LogA(msg) {
+    if AdvOn()
+        Log("⋯ " msg)
+}
+
+; "WxH @x,y" da área (em pixels da janela), pro log
+AreaStr(name, cw, chh) {
+    ar := AreaGet(name, cw, chh)
+    AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
+    return ow "x" oh " @" ox "," oy
+}
+
+; salva um print da janela com as áreas de leitura desenhadas (onde ele está procurando): <pasta do app>\debug\ocr_last.png
+DebugShot(hw, rects) {
+    try {
+        hBM := GrabWindowBM(hw, &w, &h)
+        if !hBM
+            return
+        mDC := DllCall("CreateCompatibleDC", "Ptr", 0, "Ptr")
+        obm := DllCall("SelectObject", "Ptr", mDC, "Ptr", hBM, "Ptr")
+        DllCall("SetBkMode", "Ptr", mDC, "Int", 1)
+        for r in rects {
+            c := r.col
+            bgr := Integer("0x" SubStr(c, 1, 2)) | (Integer("0x" SubStr(c, 3, 2)) << 8) | (Integer("0x" SubStr(c, 5, 2)) << 16)
+            br := DllCall("CreateSolidBrush", "UInt", bgr, "Ptr")
+            Loop 2 {
+                rc2 := Buffer(16, 0)
+                NumPut("Int", r.x - A_Index + 1, "Int", r.y - A_Index + 1, "Int", r.x + r.w + A_Index - 1, "Int", r.y + r.h + A_Index - 1, rc2)
+                DllCall("FrameRect", "Ptr", mDC, "Ptr", rc2, "Ptr", br)
+            }
+            DllCall("DeleteObject", "Ptr", br)
+            DllCall("SetTextColor", "Ptr", mDC, "UInt", bgr)
+            DllCall("TextOutW", "Ptr", mDC, "Int", r.x + 3, "Int", Max(0, r.y - 16), "WStr", r.name, "Int", StrLen(r.name))
+        }
+        DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
+        DllCall("DeleteDC", "Ptr", mDC)
+        dir := A_ScriptDir "\debug"
+        DirCreate(dir)
+        SaveHBitmapPng(hBM, dir "\ocr_last.png")
+        DllCall("DeleteObject", "Ptr", hBM)
+    }
+}
+
+; resumo de um ciclo de leitura (só com "Logs avançados" ligado)
+AdvReport(hw, mode, wave, pearls, seen, dt) {
+    global chkAdvImg, guildTrk
+    static lastShot := 0
+    WinGetClientPos(, , &cw, &chh, hw)
+    LogA("Leitura · janela " cw "x" chh " · ciclo " dt " ms")
+    LogA("  Modo   · área " AreaStr("mode", cw, chh) " → " (mode != "" ? mode : "não achou"))
+    LogA("  Wave   · área " AreaStr("wave", cw, chh) " → " (wave != "" ? wave : "não achou"))
+    LogA("  Pearls · área " AreaStr("pearls", cw, chh) " → " (pearls != "" ? "+" pearls : "não achou"))
+    if (seen != "")
+        LogA("  OCR leu: [" SubStr(seen, 1, 120) "]")
+    if (IsObject(chkAdvImg) && chkAdvImg.Value && A_TickCount - lastShot > 9000) {
+        lastShot := A_TickCount
+        rects := []
+        for n, col in Map("mode", "5BE37D", "wave", "FFD84D", "pearls", "FF7AC8", "guild", "4DD2FF") {
+            ar := AreaGet(n, cw, chh)
+            AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
+            rects.Push({name: n, x: ox, y: oy, w: ow, h: oh, col: col})
+        }
+        if AreaIsSet("coins") {
+            ar := AreaGet("coins", cw, chh)
+            AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
+            rects.Push({name: "coins", x: ox, y: oy, w: ow, h: oh, col: "FFA23D"})
+        }
+        if IsObject(guildTrk)
+            rects.Push({name: "icone", x: guildTrk[1], y: guildTrk[2], w: guildTrk[3], h: guildTrk[4], col: "FFFFFF"})
+        DebugShot(hw, rects)
+        LogA("  Imagem salva: " A_ScriptDir "\debug\ocr_last.png")
+    }
 }
 
 IsBlackDC(dc, w, h) {
@@ -13635,6 +13786,8 @@ Check() {
         return
     }
     open := IsRobloxOpen()
+    if AdvOn()
+        LogA("Monitor · Roblox " (open ? "aberto" : "fechado") " · janela " (FindGameWindow() ? "visível" : "não") " · intervalo " Integer(edInterval.Value || 15) " s")
 
     if open {
         if (!wasOpen && downTick) {
