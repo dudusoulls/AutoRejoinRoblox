@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.46
+- Painel ao vivo: agora atualiza em segundos (padrão 15 s, de 5 a 300 s) em vez de minutos.
+
 ## v1.5.45
 - Aviso do rank: opção "Enviar o rank também a cada (minutos)" — manda o rank atual com print no canal de tempos em tempos (0 = só quando mudar).
 

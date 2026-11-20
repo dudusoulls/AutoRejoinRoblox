@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.45"
+VERSION     := "1.5.46"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -268,7 +268,7 @@ savedLowPrio  := IniRead(iniFile, "cfg", "lowPrio", "1")
 savedBot      := IniRead(iniFile, "cfg", "bot", "0")
 savedBotChan  := IniRead(iniFile, "cfg", "botChan", "")
 savedPanel    := IniRead(iniFile, "cfg", "panel", "1")
-savedPanelMin := IniRead(iniFile, "cfg", "panelMin", "2")
+savedPanelMin := IniRead(iniFile, "cfg", "panelSec", "15")      ; segundos (antes era em minutos)
 panelMsg      := IniRead(iniFile, "cfg", "panelMsg", "")
 panelVia      := IniRead(iniFile, "cfg", "panelVia", "bot")
 afkAccum      := Integer(IniRead(iniFile, "afk", "ms", "0"))   ; tempo AFK guardado (só zera quando cai)
@@ -695,7 +695,7 @@ I18N["pt"] := Map(
     "sec_panel", "PAINEL AO VIVO",
     "sw_panel", "Painel fixo no canal",
     "sw_panel_sub", "Uma mensagem só, com status e print, que se atualiza sozinha",
-    "lbl_panel_min", "Atualizar a cada (min)",
+    "lbl_panel_min", "Atualizar a cada (s)",
     "ev_panel", "Painel ao vivo",
     "d_updated", "Atualizado",
     "bot_hint_help", "Mande !ajuda no canal pra ver todos os comandos.",
@@ -1368,7 +1368,7 @@ I18N["en"] := Map(
     "sec_panel", "LIVE PANEL",
     "sw_panel", "Pinned panel in the channel",
     "sw_panel_sub", "A single message with status and screenshot that updates itself",
-    "lbl_panel_min", "Update every (min)",
+    "lbl_panel_min", "Update every (s)",
     "ev_panel", "Live panel",
     "d_updated", "Updated",
     "bot_hint_help", "Send !help in the channel to see every command.",
@@ -2041,7 +2041,7 @@ I18N["es"] := Map(
     "sec_panel", "PANEL EN VIVO",
     "sw_panel", "Panel fijo en el canal",
     "sw_panel_sub", "Un solo mensaje con estado y captura que se actualiza solo",
-    "lbl_panel_min", "Actualizar cada (min)",
+    "lbl_panel_min", "Actualizar cada (s)",
     "ev_panel", "Panel en vivo",
     "d_updated", "Actualizado",
     "bot_hint_help", "Manda !ajuda en el canal para ver todos los comandos.",
@@ -2714,7 +2714,7 @@ I18N["fr"] := Map(
     "sec_panel", "PANNEAU EN DIRECT",
     "sw_panel", "Panneau fixe dans le salon",
     "sw_panel_sub", "Un seul message avec statut et capture, mis à jour tout seul",
-    "lbl_panel_min", "Mettre à jour toutes les (min)",
+    "lbl_panel_min", "Mettre à jour toutes les (s)",
     "ev_panel", "Panneau en direct",
     "d_updated", "Mis à jour",
     "bot_hint_help", "Envoyez !help dans le salon pour voir toutes les commandes.",
@@ -3387,7 +3387,7 @@ I18N["de"] := Map(
     "sec_panel", "LIVE-PANEL",
     "sw_panel", "Festes Panel im Kanal",
     "sw_panel_sub", "Eine einzige Nachricht mit Status und Screenshot, die sich selbst aktualisiert",
-    "lbl_panel_min", "Aktualisieren alle (Min.)",
+    "lbl_panel_min", "Aktualisieren alle (s)",
     "ev_panel", "Live-Panel",
     "d_updated", "Aktualisiert",
     "bot_hint_help", "Sende !help im Kanal, um alle Befehle zu sehen.",
@@ -4060,7 +4060,7 @@ I18N["ru"] := Map(
     "sec_panel", "ЖИВАЯ ПАНЕЛЬ",
     "sw_panel", "Закреплённая панель в канале",
     "sw_panel_sub", "Одно сообщение со статусом и скриншотом, обновляется само",
-    "lbl_panel_min", "Обновлять каждые (мин)",
+    "lbl_panel_min", "Обновлять каждые (с)",
     "ev_panel", "Живая панель",
     "d_updated", "Обновлено",
     "bot_hint_help", "Отправьте !help в канал, чтобы увидеть все команды.",
@@ -4733,7 +4733,7 @@ I18N["tr"] := Map(
     "sec_panel", "CANLI PANEL",
     "sw_panel", "Kanalda sabit panel",
     "sw_panel_sub", "Durum ve görüntü içeren, kendini güncelleyen tek mesaj",
-    "lbl_panel_min", "Güncelleme aralığı (dk)",
+    "lbl_panel_min", "Güncelleme aralığı (sn)",
     "ev_panel", "Canlı panel",
     "d_updated", "Güncellendi",
     "bot_hint_help", "Tüm komutları görmek için kanala !help yaz.",
@@ -5406,7 +5406,7 @@ I18N["id"] := Map(
     "sec_panel", "PANEL LANGSUNG",
     "sw_panel", "Panel tetap di channel",
     "sw_panel_sub", "Satu pesan berisi status dan tangkapan layar yang memperbarui sendiri",
-    "lbl_panel_min", "Perbarui setiap (menit)",
+    "lbl_panel_min", "Perbarui setiap (detik)",
     "ev_panel", "Panel langsung",
     "d_updated", "Diperbarui",
     "bot_hint_help", "Kirim !help di channel untuk melihat semua perintah.",
@@ -6067,7 +6067,7 @@ chkPanel.onChange := (*) => SetTimer(() => PanelUpdate(true), -500)
 Divider(CX + 20, y + 106, CW - 40)
 Lbl(CX + 20, y + 120, CW - 40, TT("lbl_panel_min"), "s9", C_MUTED)
 edPanelMin := Input(CX + CW - 20 - 64, y + 142, 64, savedPanelMin, "Number")
-SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edPanelMin, 1, 30)
+SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edPanelMin, 5, 300)
 Btn(CX + 20, y + 188, 150, 32, TT("btn_send_now"), (*) => PanelUpdate(true))
 
 ; ---------------- Webhook: Bot e comandos ----------------
@@ -6652,7 +6652,7 @@ StartApp() {
     SetTimer(DailyTick, 30000)
     SetTimer(ScheduleTick, 30000)
     SetTimer(BotTick, 6000)
-    SetTimer(PanelTick, 30000)
+    SetTimer(PanelTick, 5000)
     SetTimer(StuckTick, 60000)
     SetTimer(ReactTick, 9000)
     upd := IniRead(iniFile, "cfg", "justUpdated", "")
@@ -9849,8 +9849,8 @@ PanelTick() {
     global chkPanel, edPanelMin, panelLast
     if !chkPanel.Value
         return
-    mins := Max(1, Integer(Trim(edPanelMin.Value) || 2))
-    if (A_TickCount - panelLast >= mins * 60000 - 5000)
+    secs := Max(5, Integer(Trim(edPanelMin.Value) || 15))
+    if (A_TickCount - panelLast >= secs * 1000 - 1000)
         PanelUpdate()
 }
 
@@ -9875,7 +9875,7 @@ PanelUpdate(force := false) {
         panelMsg := "", panelVia := via
         IniWrite(via, iniFile, "cfg", "panelVia")
     }
-    if (!force && A_TickCount - panelLast < 20000)
+    if (!force && A_TickCount - panelLast < 4000)
         return
     if force
         Log("Painel · montando embed…")
@@ -11402,7 +11402,7 @@ SaveConfig() {
     IniWrite(Trim(edToken.Value) = "" ? "" : DpapiProtect(Trim(edToken.Value)), iniFile, "cfg", "botToken")
     IniWrite(Trim(edChan.Value), iniFile, "cfg", "botChan")
     IniWrite(chkPanel.Value, iniFile, "cfg", "panel")
-    IniWrite(Trim(edPanelMin.Value), iniFile, "cfg", "panelMin")
+    IniWrite(Trim(edPanelMin.Value), iniFile, "cfg", "panelSec")
     IniWrite(chkStuck.Value, iniFile, "cfg", "stuck")
     IniWrite(Trim(edStuckMin.Value), iniFile, "cfg", "stuckMin")
     IniWrite(stuckAct, iniFile, "cfg", "stuckAct")
