@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.2"
+VERSION     := "1.5.3"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9510,15 +9510,29 @@ RbxLatestCb(h) {
     rbxLatestT := A_TickCount - 540000   ; falhou: tenta de novo em ~1 min
 }
 
+; true quando a versão mais nova INSTALADA não é a que o Roblox publicou como atual (e não há versão fixada)
+RbxIsOutdated() {
+    global rbxLatestUp, edRbxVer
+    RbxLatestFetch()
+    if (rbxLatestUp = "" || Trim(edRbxVer.Value) != "")
+        return false
+    exe := NewestRobloxExe(true)
+    if (exe = "")
+        return false
+    SplitPath(exe, , &dir)
+    SplitPath(dir, &folder)
+    return folder != rbxLatestUp
+}
+
 RbxVerUpdate() {
     global rbxLatest, rbxLatestUp, stRbxCur, stRbxNew, stRbxTag, C_MUTED
     RbxLatestFetch()
     cur := RbxInstalled()
-    SetIf(stRbxCur, TT("rbx_ver_cur") ": " (cur.ver != "" ? cur.ver : "—"))
-    SetIf(stRbxNew, TT("rbx_ver_new") ": " (rbxLatest != "" ? rbxLatest : "…"))
+    SetIf(stRbxCur, TT("rbx_ver_cur") ": " (cur.ver != "" ? cur.ver : "—") (cur.up != "" ? "  (" SubStr(cur.up, 9, 6) ")" : ""))
+    SetIf(stRbxNew, TT("rbx_ver_new") ": " (rbxLatest != "" ? rbxLatest : "…") (rbxLatestUp != "" ? "  (" SubStr(rbxLatestUp, 9, 6) ")" : ""))
     tag := "", col := "8A8F98"
     if (cur.up != "" && rbxLatestUp != "") {
-        if (cur.up = rbxLatestUp)
+        if (cur.up = rbxLatestUp && !RbxIsOutdated())
             tag := TT("rbx_ver_ok"), col := "4ADE80"
         else
             tag := TT("rbx_ver_old"), col := "FBBF24"
@@ -11131,8 +11145,17 @@ LaunchMethods(link) {
         web := link
 
     list := []
-    for d in deep
-        list.Push({kind: "newest", target: d})   ; SEMPRE tenta a versão MAIS NOVA instalada primeiro
+    ; tenta direto o exe da versão mais nova INSTALADA; mas se já saiu uma versão mais nova que a instalada,
+    ; pula isso e abre pelo launcher oficial do Roblox (ele baixa e instala a atualização antes de abrir)
+    if RbxIsOutdated() {
+        static warned := 0
+        if (A_TickCount - warned > 60000) {
+            warned := A_TickCount
+            Log("Roblox desatualizado (instalado ≠ mais recente) — abrindo pelo launcher oficial pra atualizar")
+        }
+    } else
+        for d in deep
+            list.Push({kind: "newest", target: d})
     for d in deep
         list.Push({kind: "exe", target: d})
     for d in deep

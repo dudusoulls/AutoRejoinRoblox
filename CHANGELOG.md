@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.3
+- Se existir um Roblox mais novo que o instalado, o app não abre mais a versão antiga direto: abre pelo launcher oficial, que atualiza antes
+- O card de versão mostra o código da build (6 letras) em uso e o da mais recente, e só marca "atualizado" se a mais nova instalada for a atual
+
 ## v1.5.2
 - Corrige a GUI quebrada (cards cinza cobrindo os textos): o contorno dos cards ficava por cima
 - Logo animado reescrito para usar um controle de imagem de verdade
