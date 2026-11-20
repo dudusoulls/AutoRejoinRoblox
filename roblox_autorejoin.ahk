@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.46"
+VERSION     := "1.5.47"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -12413,27 +12413,13 @@ CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
             , "Ptr", hDC, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
     }
 
-    if (cx >= 0 && cwid > 8 && chei > 8) {            ; recorte (ex.: só o boneco + rank)
-        cx := Max(0, Min(w - 8, cx)), cy := Max(0, Min(h - 8, cy))
-        cwid := Min(cwid, w - cx), chei := Min(chei, h - cy)
-        c2 := DllCall("CreateCompatibleDC", "Ptr", hDC, "Ptr")
-        b2 := DllCall("CreateCompatibleBitmap", "Ptr", hDC, "Int", cwid, "Int", chei, "Ptr")
-        o2 := DllCall("SelectObject", "Ptr", c2, "Ptr", b2, "Ptr")
-        DllCall("BitBlt", "Ptr", c2, "Int", 0, "Int", 0, "Int", cwid, "Int", chei, "Ptr", mDC, "Int", cx, "Int", cy, "UInt", 0x00CC0020)
-        DllCall("SelectObject", "Ptr", c2, "Ptr", o2)
-        DllCall("DeleteDC", "Ptr", c2)
-        DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
-        DllCall("DeleteDC", "Ptr", mDC)
-        DllCall("ReleaseDC", "Ptr", 0, "Ptr", hDC)
-        DllCall("DeleteObject", "Ptr", hBM)
-        r := SaveHBitmapPng(b2, file)
-        DllCall("DeleteObject", "Ptr", b2)
-        return r
-    }
     DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
     DllCall("DeleteDC", "Ptr", mDC)
     DllCall("ReleaseDC", "Ptr", 0, "Ptr", hDC)
-    r := SaveHBitmapPng(hBM, file)
+    crop := (cwid > 8 && chei > 8) ? [Max(0, Min(w - 8, cx)), Max(0, Min(h - 8, cy)), cwid, chei] : 0
+    if IsObject(crop)
+        crop[3] := Min(crop[3], w - crop[1]), crop[4] := Min(crop[4], h - crop[2])
+    r := SaveHBitmapPng(hBM, file, crop)
     DllCall("DeleteObject", "Ptr", hBM)
     return r
 }
@@ -12448,11 +12434,20 @@ IsBlackDC(dc, w, h) {
     return true
 }
 
-SaveHBitmapPng(hBM, file) {
+SaveHBitmapPng(hBM, file, crop := 0) {
     si := Buffer(24, 0)
     NumPut("UInt", 1, si, 0)
     DllCall("gdiplus\GdiplusStartup", "Ptr*", &token := 0, "Ptr", si, "Ptr", 0)
     DllCall("gdiplus\GdipCreateBitmapFromHBITMAP", "Ptr", hBM, "Ptr", 0, "Ptr*", &pBmp := 0)
+    if IsObject(crop) {                 ; recorte feito pelo GDI+ (mais seguro que copiar DDB com largura qualquer)
+        pCrop := 0
+        DllCall("gdiplus\GdipCloneBitmapAreaI", "Int", crop[1], "Int", crop[2], "Int", crop[3], "Int", crop[4]
+            , "Int", 0x26200A, "Ptr", pBmp, "Ptr*", &pCrop)
+        if pCrop {
+            DllCall("gdiplus\GdipDisposeImage", "Ptr", pBmp)
+            pBmp := pCrop
+        }
+    }
     clsid := Buffer(16)
     DllCall("ole32\CLSIDFromString", "Str", "{557CF406-1A04-11D3-9A73-0000F81EF32E}", "Ptr", clsid)
     r := DllCall("gdiplus\GdipSaveImageToFile", "Ptr", pBmp, "WStr", file, "Ptr", clsid, "Ptr", 0)

@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.47
+- Corrige o recorte do print do rank que saía embaralhado (listras): agora o recorte é feito pelo GDI+.
+
 ## v1.5.46
 - Painel ao vivo: agora atualiza em segundos (padrão 15 s, de 5 a 300 s) em vez de minutos.
 
