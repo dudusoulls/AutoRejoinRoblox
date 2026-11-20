@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.14
+- Nova aba **Rotina** (Automação): pausar o monitoramento por 15 min / 30 min / 1 h / 2 h, reinício preventivo do Roblox a cada X horas e aviso quando a internet cair.
+- Áreas de leitura: âncora automática (esquerda/centro/direita e topo/meio/baixo) ao mudar o tamanho da janela, então a barra de moedas embaixo acompanha.
+- Lembrete: guilda, moedas e leitura só funcionam com o **Modo AA** ligado (Automação → Opções).
+
 ## v1.5.13
 - Vigia de recursos gráficos: registra nos Logs quando o uso de objetos GDI está alto e reinicia o app antes de os controles ficarem pretos.
 

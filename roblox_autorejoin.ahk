@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.13"
+VERSION     := "1.5.14"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -246,6 +246,8 @@ savedSched    := IniRead(iniFile, "cfg", "sched", "0")
 savedFrom     := IniRead(iniFile, "cfg", "schedFrom", "08:00")
 savedTo       := IniRead(iniFile, "cfg", "schedTo", "23:00")
 savedMaxH     := IniRead(iniFile, "cfg", "maxHours", "0")
+savedPreOn := IniRead(iniFile, "cfg", "preOn", "0"), savedPreH := IniRead(iniFile, "cfg", "preH", "6"), savedNetWatch := IniRead(iniFile, "cfg", "netWatch", "0")
+pauseUntil := 0, lblPause := 0, chkPre := 0, edPreH := 0, chkNet := 0, netWasDown := false
 endAct        := Integer(IniRead(iniFile, "cfg", "endAct", "0"))
 savedEco      := IniRead(iniFile, "cfg", "eco", "0")
 savedWhReopen := IniRead(iniFile, "cfg", "whReopen", "0")
@@ -836,6 +838,25 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "nav_routine", "Rotina",
+    "pg_routine_sub", "Pausa, reinício preventivo e rede",
+    "sec_pause", "PAUSAR MONITORAMENTO",
+    "pause_off", "Monitoramento ativo",
+    "btn_resume", "Retomar",
+    "pause_on", "Pausado · volta em {1}",
+    "pause_state", "Pausado",
+    "log_paused", "Monitoramento pausado por {1} min",
+    "log_resumed", "Monitoramento retomado",
+    "sec_prerestart", "REINÍCIO PREVENTIVO",
+    "sw_prerestart", "Reiniciar o Roblox de tempos em tempos",
+    "sw_prerestart_sub", "Evita travamentos de longas sessões",
+    "lbl_prehours", "Reiniciar a cada (horas)",
+    "r_prerestart", "reinício preventivo ({1} h)",
+    "sec_net", "REDE",
+    "sw_netwatch", "Avisar quando a internet cair",
+    "sw_netwatch_sub", "Testa a conexão a cada 30 s e avisa no Windows",
+    "log_net_down", "Internet caiu",
+    "log_net_up", "Internet voltou",
     "tools", "FERRAMENTAS",
     "btn_backup", "Backup das configurações",
     "btn_datafolder", "Pasta de dados",
@@ -1433,6 +1454,25 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -2030,6 +2070,25 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "nav_routine", "Rutina",
+    "pg_routine_sub", "Pausa, reinicio preventivo y red",
+    "sec_pause", "PAUSAR MONITOREO",
+    "pause_off", "Monitoreo activo",
+    "btn_resume", "Reanudar",
+    "pause_on", "Pausado · vuelve en {1}",
+    "pause_state", "Pausado",
+    "log_paused", "Monitoreo pausado {1} min",
+    "log_resumed", "Monitoreo reanudado",
+    "sec_prerestart", "REINICIO PREVENTIVO",
+    "sw_prerestart", "Reiniciar Roblox cada cierto tiempo",
+    "sw_prerestart_sub", "Evita bloqueos en sesiones largas",
+    "lbl_prehours", "Reiniciar cada (horas)",
+    "r_prerestart", "reinicio preventivo ({1} h)",
+    "sec_net", "RED",
+    "sw_netwatch", "Avisar cuando caiga internet",
+    "sw_netwatch_sub", "Prueba la conexión cada 30 s y avisa en Windows",
+    "log_net_down", "Se cayó internet",
+    "log_net_up", "Internet volvió",
     "tools", "HERRAMIENTAS",
     "btn_backup", "Copia de la configuración",
     "btn_datafolder", "Carpeta de datos",
@@ -2627,6 +2686,25 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -3224,6 +3302,25 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -3821,6 +3918,25 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -4418,6 +4534,25 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -5015,6 +5150,25 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_routine", "Routine",
+    "pg_routine_sub", "Pause, preventive restart and network",
+    "sec_pause", "PAUSE MONITORING",
+    "pause_off", "Monitoring active",
+    "btn_resume", "Resume",
+    "pause_on", "Paused · back in {1}",
+    "pause_state", "Paused",
+    "log_paused", "Monitoring paused for {1} min",
+    "log_resumed", "Monitoring resumed",
+    "sec_prerestart", "PREVENTIVE RESTART",
+    "sw_prerestart", "Restart Roblox every so often",
+    "sw_prerestart_sub", "Avoids freezes on long sessions",
+    "lbl_prehours", "Restart every (hours)",
+    "r_prerestart", "preventive restart ({1} h)",
+    "sec_net", "NETWORK",
+    "sw_netwatch", "Warn when the internet drops",
+    "sw_netwatch_sub", "Tests the connection every 30 s and notifies you",
+    "log_net_down", "Internet is down",
+    "log_net_up", "Internet is back",
     "tools", "TOOLS",
     "btn_backup", "Back up settings",
     "btn_datafolder", "Data folder",
@@ -5065,7 +5219,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5217,7 +5371,7 @@ FontUI(g, "s7 w700")
 g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
-GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Opções"]
+GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
     , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Notif", "Bot", "Relat"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
@@ -5588,6 +5742,30 @@ chkMute := ToggleSwitch(CX + 20, y + 122, CW - 40, TT("sw_mute"), savedMute)
 chkLowPrio := ToggleSwitch(CX + 20, y + 152, CW - 40, TT("sw_lowprio"), savedLowPrio)
 
 ; ---------------- Página: Bot do Discord ----------------
+; ---------------- Página: Rotina (pausa, reinício preventivo, rede) ----------------
+BeginPage("Rotina", TT("nav_routine"), TT("pg_routine_sub"))
+y := 92
+Card(CX, y, CW, 132)
+Accent(CX, y + 18, 40, "F5C542")
+Lbl(CX + 20, y + 14, 400, TT("sec_pause"), "s7 w700", C_DIM)
+lblPause := Lbl(CX + 20, y + 36, CW - 190, TT("pause_off"), "s12 w700")
+Btn(CX + CW - 150, y + 30, 130, 32, TT("btn_resume"), PauseResume)
+pbw := (CW - 40 - 36) // 4
+for i, mn in [15, 30, 60, 120]
+    Btn(CX + 20 + (i - 1) * (pbw + 12), y + 78, pbw, 38, (mn < 60 ? mn " min" : (mn // 60) " h"), PauseFor.Bind(mn))
+y := 236
+Card(CX, y, CW, 120)
+Accent(CX, y + 18, 40, "4DA3FF")
+Lbl(CX + 20, y + 14, 400, TT("sec_prerestart"), "s7 w700", C_DIM)
+chkPre := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_prerestart"), savedPreOn, TT("sw_prerestart_sub"))
+Lbl(CX + 20, y + 90, 280, TT("lbl_prehours"), "s9", C_MUTED)
+edPreH := Input(CX + 300, y + 83, 70, savedPreH, "Number")
+y := 368
+Card(CX, y, CW, 96)
+Accent(CX, y + 18, 40, "3DDC84")
+Lbl(CX + 20, y + 14, 400, TT("sec_net"), "s7 w700", C_DIM)
+chkNet := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_netwatch"), savedNetWatch, TT("sw_netwatch_sub"))
+
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
 y := 92
@@ -5908,6 +6086,9 @@ StartApp() {
     IntroShow(g, Trim(Format("w{} h{} ", W, H) GuiPosOpt()))
     SetTimer(PulseTick, 110)
     SetTimer(GuiPosTick, 2000)
+    SetTimer(PauseTick, 1000)
+    SetTimer(NetTick, 30000)
+    SetTimer(PreRestartCheck, 60000)
     SetTimer(GdiWatch, 60000)
     SetTimer(CpuSample, 2000)
     HudApply()
@@ -6234,6 +6415,77 @@ AaToggle() {
     IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
     Sleep(150)
     Reload()
+}
+
+PauseFor(mn, *) {
+    global pauseUntil
+    pauseUntil := A_TickCount + mn * 60000
+    Log(TT("log_paused", mn))
+    PauseTick()
+}
+
+PauseResume(*) {
+    global pauseUntil
+    pauseUntil := 0
+    PauseTick()
+}
+
+PauseTick() {
+    global pauseUntil, lblPause
+    if !IsObject(lblPause)
+        return
+    if (pauseUntil && A_TickCount >= pauseUntil) {
+        pauseUntil := 0
+        try Log(TT("log_resumed"))
+    }
+    if pauseUntil {
+        left := (pauseUntil - A_TickCount) // 1000
+        txt := TT("pause_on", Format("{:02}:{:02}", left // 60, Mod(left, 60)))
+    } else
+        txt := TT("pause_off")
+    if (lblPause.Value != txt)
+        lblPause.Value := txt
+}
+
+; aviso de internet: testa a cada 30s (só se ligado)
+NetTick() {
+    global chkNet, netWasDown, running
+    if !IsObject(chkNet) || !chkNet.Value
+        return
+    ok := true
+    try {
+        h := ComObject("WinHttp.WinHttpRequest.5.1")
+        h.SetTimeouts(3000, 3000, 3000, 3000)
+        h.Open("HEAD", "http://www.msftconnecttest.com/connecttest.txt", false)
+        h.Send()
+    } catch
+        ok := false
+    if (!ok && !netWasDown) {
+        netWasDown := true
+        Log(TT("log_net_down"))
+        try Notify(TT("log_net_down"), "Auto Reconnect", "Icon!")
+    } else if (ok && netWasDown) {
+        netWasDown := false
+        Log(TT("log_net_up"))
+        try Notify(TT("log_net_up"), "Auto Reconnect")
+    }
+}
+
+PreRestartCheck() {
+    global chkPre, edPreH, lastLaunch, running
+    static base := 0
+    if !running || !IsObject(chkPre) || !chkPre.Value
+        return
+    hrs := Integer(Trim(edPreH.Value) || 0)
+    if (hrs < 1)
+        return
+    if !base
+        base := A_TickCount
+    ref := Max(base, lastLaunch)
+    if (A_TickCount - ref >= hrs * 3600000) {
+        base := A_TickCount
+        RecoverRoblox(TT("r_prerestart", hrs))
+    }
 }
 
 BackupConfig() {
@@ -7817,9 +8069,13 @@ AreaGet(name, cw := 0, ch := 0) {
         rw := Integer(rw), rh := Integer(rh)
         ; UI de jogos do Roblox costuma escalar pelo MENOR lado (janela mais estreita que a original encolhe pela largura)
         sc := Min(ch / rh, cw / rw)
-        an := areaAnchor[name]
+        ; âncora automática: onde o centro da área estava (esquerda/centro/direita, topo/meio/baixo)
+        cxr := r[1] + r[3] / 2, cyr := r[2] + r[4] / 2
+        an := cxr < 0.33 ? 0 : (cxr > 0.67 ? 2 : 1)
+        anY := cyr < 0.33 ? 0 : (cyr > 0.67 ? 2 : 1)
         axRef := an * rw / 2, axCur := an * cw / 2
-        x := axCur + (r[1] * rw - axRef) * sc, y := r[2] * rh * sc
+        ayRef := anY * rh / 2, ayCur := anY * ch / 2
+        x := axCur + (r[1] * rw - axRef) * sc, y := ayCur + (r[2] * rh - ayRef) * sc
         w := r[3] * rw * sc, h := r[4] * rh * sc
         ; folga de 6% pra absorver diferença de proporção (só quando o tamanho mudou)
         x -= w * 0.03, y -= h * 0.03, w *= 1.06, h *= 1.06
@@ -10122,6 +10378,9 @@ SaveConfig() {
     IniWrite(Trim(edFrom.Value), iniFile, "cfg", "schedFrom")
     IniWrite(Trim(edTo.Value), iniFile, "cfg", "schedTo")
     IniWrite(Trim(edMaxH.Value), iniFile, "cfg", "maxHours")
+    IniWrite(chkPre.Value, iniFile, "cfg", "preOn")
+    IniWrite(Trim(edPreH.Value), iniFile, "cfg", "preH")
+    IniWrite(chkNet.Value, iniFile, "cfg", "netWatch")
     IniWrite(endAct, iniFile, "cfg", "endAct")
     IniWrite(chkEco.Value, iniFile, "cfg", "eco")
     IniWrite(chkWhReopen.Value, iniFile, "cfg", "whReopen")
@@ -12222,8 +12481,8 @@ FindDisconnectDialog(hw) {
 }
 
 WatchError() {
-    global running, chkErr, edErrSec, edWait, lastLaunch, discTick, hungSince, pendingJoin, dlgSeen, watchN, multiActive
-    if !running || !chkErr.Value || multiActive
+    global running, chkErr, edErrSec, edWait, lastLaunch, discTick, hungSince, pendingJoin, dlgSeen, watchN, multiActive, pauseUntil
+    if !running || !chkErr.Value || multiActive || (pauseUntil && A_TickCount < pauseUntil)
         return
     ReadNewLogLines()
 
@@ -12283,9 +12542,13 @@ WatchError() {
 }
 
 Check() {
-    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown, chkZombie, noWinSince
+    global running, lastLaunch, edWait, wasOpen, downTick, discTick, netDown, chkZombie, noWinSince, pauseUntil
     if !running
         return
+    if (pauseUntil && A_TickCount < pauseUntil) {
+        SetState("wait", TT("pause_state"), TT("pause_on", Format("{:02}:{:02}", ((pauseUntil - A_TickCount) // 1000) // 60, Mod((pauseUntil - A_TickCount) // 1000, 60))))
+        return
+    }
     open := IsRobloxOpen()
 
     if open {
