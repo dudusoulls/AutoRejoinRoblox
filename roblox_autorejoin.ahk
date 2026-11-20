@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.30"
+VERSION     := "1.5.31"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -807,6 +807,7 @@ I18N["pt"] := Map(
     "st_zombie", "Roblox travado",
     "st_zombie_sub", "Processo aberto sem janela — fechando e reabrindo",
     "r_zombie", "Roblox travado sem janela (processo fantasma)",
+    "r_tray", "Roblox foi para a bandeja do Windows (janela escondida)",
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baixa — travado",
     "r_zombie_ram", "Roblox com RAM muito baixa ({1} MB) — travado",
@@ -1465,6 +1466,7 @@ I18N["en"] := Map(
     "st_zombie", "Roblox stuck",
     "st_zombie_sub", "Process open with no window — closing and reopening",
     "r_zombie", "Roblox stuck with no window (ghost process)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Low RAM — stuck",
     "r_zombie_ram", "Roblox with very low RAM ({1} MB) — stuck",
@@ -2123,6 +2125,7 @@ I18N["es"] := Map(
     "st_zombie", "Roblox atascado",
     "st_zombie_sub", "Proceso abierto sin ventana — cerrando y reabriendo",
     "r_zombie", "Roblox atascado sin ventana (proceso fantasma)",
+    "r_tray", "Roblox se fue a la bandeja de Windows (ventana oculta)",
     "lbl_rammin", "RAM mín. (MB)",
     "st_zombie_ram", "RAM baja — atascado",
     "r_zombie_ram", "Roblox con RAM muy baja ({1} MB) — atascado",
@@ -2781,6 +2784,7 @@ I18N["fr"] := Map(
     "st_zombie", "Roblox bloqué",
     "st_zombie_sub", "Processus ouvert sans fenêtre — fermeture et réouverture",
     "r_zombie", "Roblox bloqué sans fenêtre (processus fantôme)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "RAM min (Mo)",
     "st_zombie_ram", "RAM basse — bloqué",
     "r_zombie_ram", "Roblox avec très peu de RAM ({1} Mo) — bloqué",
@@ -3439,6 +3443,7 @@ I18N["de"] := Map(
     "st_zombie", "Roblox hängt",
     "st_zombie_sub", "Prozess offen ohne Fenster — schließen und neu öffnen",
     "r_zombie", "Roblox hängt ohne Fenster (Geisterprozess)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "Min. RAM (MB)",
     "st_zombie_ram", "Wenig RAM — hängt",
     "r_zombie_ram", "Roblox mit sehr wenig RAM ({1} MB) — hängt",
@@ -4097,6 +4102,7 @@ I18N["ru"] := Map(
     "st_zombie", "Roblox завис",
     "st_zombie_sub", "Процесс без окна — закрываем и открываем",
     "r_zombie", "Roblox завис без окна (процесс-призрак)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "Мин. ОЗУ (МБ)",
     "st_zombie_ram", "Мало ОЗУ — завис",
     "r_zombie_ram", "Roblox с очень малым ОЗУ ({1} МБ) — завис",
@@ -4755,6 +4761,7 @@ I18N["tr"] := Map(
     "st_zombie", "Roblox takıldı",
     "st_zombie_sub", "Penceresiz işlem — kapatılıp yeniden açılıyor",
     "r_zombie", "Roblox penceresiz takıldı (hayalet işlem)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "Min RAM (MB)",
     "st_zombie_ram", "Düşük RAM — takıldı",
     "r_zombie_ram", "Roblox çok düşük RAM ({1} MB) — takıldı",
@@ -5413,6 +5420,7 @@ I18N["id"] := Map(
     "st_zombie", "Roblox macet",
     "st_zombie_sub", "Proses tanpa jendela — menutup dan membuka ulang",
     "r_zombie", "Roblox macet tanpa jendela (proses hantu)",
+    "r_tray", "Roblox went to the Windows tray (window hidden)",
     "lbl_rammin", "RAM min (MB)",
     "st_zombie_ram", "RAM rendah — macet",
     "r_zombie_ram", "Roblox dengan RAM sangat rendah ({1} MB) — macet",
@@ -12657,6 +12665,22 @@ FindGameWindow() {
     return h
 }
 
+; Roblox "fechado" que na verdade foi pra bandeja: o processo continua, mas a janela fica escondida
+HiddenRobloxWin() {
+    old := A_DetectHiddenWindows
+    DetectHiddenWindows(true)
+    try {
+        for h in WinGetList("ahk_exe RobloxPlayerBeta.exe") {
+            if (WinGetClass("ahk_id " h) = "WINDOWSCLIENT" && !DllCall("IsWindowVisible", "Ptr", h)) {
+                DetectHiddenWindows(old)
+                return h
+            }
+        }
+    }
+    DetectHiddenWindows(old)
+    return 0
+}
+
 ; Abre o jogo. Se um jeito falhar (erro ou o Roblox não aparecer em 25s), tenta o próximo.
 LaunchGame(manual := false, idx := 0, tries := 0) {
     global edLink, lastLaunch, launches, browserLaunch, launchToken, iniFile, joinedTick, openedTick, launchStart
@@ -13159,6 +13183,19 @@ Check() {
     }
     if open {
         gw := FindGameWindow()
+        static trayTick := 0
+        if (!gw && ProcessExist("RobloxPlayerBeta.exe") && HiddenRobloxWin()) {   ; foi pra bandeja (opção do Roblox): conta como fechado
+            if !trayTick
+                trayTick := A_TickCount
+            else if (A_TickCount - trayTick > 8000) {
+                trayTick := 0
+                RecoverRoblox(TT("r_tray"))
+                return
+            }
+            SetState("wait", TT("st_zombie"), TT("st_zombie_sub"))
+            return
+        }
+        trayTick := 0
         if (chkZombie.Value && !gw) {                      ; processo SEM janela = fantasma de verdade (RAM baixa com janela é só loading, não mata)
             if !noWinSince
                 noWinSince := A_TickCount

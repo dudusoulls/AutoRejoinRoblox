@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.31
+- Correção da bandeja de verdade: Roblox que "fecha" indo pra bandeja do Windows conta como fechado; o app percebe a janela escondida, fecha o processo e abre o jogo de novo (~8 s).
+
 ## v1.5.30
 - Roblox que "fecha" indo pra bandeja do Windows agora conta como fechado: o app percebe a janela escondida, fecha o processo e abre o jogo de novo (~8 s).
 
