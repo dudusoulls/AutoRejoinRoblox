@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.40"
+VERSION     := "1.5.41"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, edGuildHook := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -942,6 +942,7 @@ I18N["pt"].Set(
     "sw_guildnotify", "Avisar quando o rank mudar",
     "sw_guildnotify_sub", "Manda uma mensagem com o rank antigo e o novo",
     "guild_changed", "🛡 Rank da guilda mudou: #{1} → #{2}",
+    "lbl_guildhook", "Webhook do canal do rank (opcional — vazio usa o webhook principal)",
     "nav_adv", "Avançado",
     "pg_adv_sub", "Ajustes para qualquer monitor ou resolução",
     "sec_adv", "ACOMPANHAR A JANELA",
@@ -1604,6 +1605,7 @@ I18N["en"].Set(
     "sw_guildnotify", "Alert when the rank changes",
     "sw_guildnotify_sub", "Sends a message with the old and new rank",
     "guild_changed", "🛡 Guild rank changed: #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Advanced",
     "pg_adv_sub", "Settings for any monitor or resolution",
     "sec_adv", "FOLLOW THE WINDOW",
@@ -2266,6 +2268,7 @@ I18N["es"].Set(
     "sw_guildnotify", "Avisar cuando cambie el rango",
     "sw_guildnotify_sub", "Envía un mensaje con el rango anterior y el nuevo",
     "guild_changed", "🛡 Cambió el rango del gremio: #{1} → #{2}",
+    "lbl_guildhook", "Webhook del canal del rango (opcional — vacío usa el principal)",
     "nav_adv", "Avanzado",
     "pg_adv_sub", "Ajustes para cualquier monitor o resolución",
     "sec_adv", "SEGUIR LA VENTANA",
@@ -2928,6 +2931,7 @@ I18N["fr"].Set(
     "sw_guildnotify", "Alerter si le rang change",
     "sw_guildnotify_sub", "Envoie un message avec l'ancien et le nouveau rang",
     "guild_changed", "🛡 Le rang de guilde a changé : #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Avancé",
     "pg_adv_sub", "Réglages pour tout écran ou résolution",
     "sec_adv", "SUIVRE LA FENÊTRE",
@@ -3590,6 +3594,7 @@ I18N["de"].Set(
     "sw_guildnotify", "Hinweis bei Rangänderung",
     "sw_guildnotify_sub", "Sendet eine Nachricht mit altem und neuem Rang",
     "guild_changed", "🛡 Gilden-Rang geändert: #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Erweitert",
     "pg_adv_sub", "Einstellungen für jeden Monitor oder jede Auflösung",
     "sec_adv", "FENSTER FOLGEN",
@@ -4252,6 +4257,7 @@ I18N["ru"].Set(
     "sw_guildnotify", "Сообщать о смене ранга",
     "sw_guildnotify_sub", "Отправляет сообщение со старым и новым рангом",
     "guild_changed", "🛡 Ранг гильдии изменился: #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Дополнительно",
     "pg_adv_sub", "Настройки для любого монитора и разрешения",
     "sec_adv", "СЛЕДОВАТЬ ЗА ОКНОМ",
@@ -4914,6 +4920,7 @@ I18N["tr"].Set(
     "sw_guildnotify", "Sıra değişince bildir",
     "sw_guildnotify_sub", "Eski ve yeni sırayı mesaj olarak yollar",
     "guild_changed", "🛡 Lonca sırası değişti: #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Gelişmiş",
     "pg_adv_sub", "Her monitör ve çözünürlük için ayarlar",
     "sec_adv", "PENCEREYİ TAKİP ET",
@@ -5576,6 +5583,7 @@ I18N["id"].Set(
     "sw_guildnotify", "Beri tahu saat peringkat berubah",
     "sw_guildnotify_sub", "Kirim pesan dengan peringkat lama dan baru",
     "guild_changed", "🛡 Peringkat guild berubah: #{1} → #{2}",
+    "lbl_guildhook", "Rank channel webhook (optional — empty uses the main webhook)",
     "nav_adv", "Lanjutan",
     "pg_adv_sub", "Pengaturan untuk monitor atau resolusi apa pun",
     "sec_adv", "IKUTI JENDELA",
@@ -6030,6 +6038,10 @@ chkGuildSend := ToggleSwitch(CX + 20, y + 16, CW - 40, TT("sw_guildsend"), saved
 chkGuildNotify := ToggleSwitch(CX + 20, y + 82, CW - 40, TT("sw_guildnotify"), savedGuildNotify, TT("sw_guildnotify_sub"))
 chkGuildStat := ToggleSwitch(CX + 20, y + 148, CW - 40, TT("sw_guildstat"), savedGuildStat, TT("sw_guildstat_sub"))
 chkGuildStat.onChange := (*) => HomeExtraVis()
+y += 228
+Card(CX, y, CW, 84)
+Lbl(CX + 20, y + 12, CW - 40, TT("lbl_guildhook"), "s9", C_MUTED)
+edGuildHook := Input(CX + 20, y + 36, CW - 40, IniRead(iniFile, "cfg", "guildHook", ""))
 
 ; ---------------- QoL: Moedas ----------------
 BeginPage("Moedas", TT("nav_coins"), TT("pg_coins_sub"))
@@ -9035,8 +9047,65 @@ GuildChanged(old, new, notify := true) {
         if IsObject(guildSub)
             guildSub.Value := TT("guild_last", guildWhen)
         if (notify && old != "" && chkGuildNotify.Value)
-            SendWebhook(TT("guild_changed", old, new))
+            try GuildPost(old, new)
     }
+}
+
+; posta no canal (webhook do rank, ou o webhook principal) a mensagem do novo rank com data/hora e print do boneco
+GuildPost(old, new) {
+    global edGuildHook, edHook, guildTrk, USER_NAME, APP_NAME, LOGO_URL, VERSION
+    url := Trim(edGuildHook.Value), auth := "", head := '"username":"Auto Reconnect","avatar_url":"' LOGO_URL '",'
+    if (InStr(url, "https://discord.com/api/webhooks/") != 1) {
+        url := ""
+        if !DiscordDest(&url, &auth, &head)
+            return
+    }
+    fmt := (n) => StrReplace(FmtNum(Integer(n)), ",", " ")
+    delta := ""
+    if (IsInteger(old) && IsInteger(new)) {
+        d := Integer(old) - Integer(new)            ; número menor = rank melhor
+        if (d > 0)
+            delta := "▲ subiu " fmt(d)
+        else if (d < 0)
+            delta := "▼ caiu " fmt(-d)
+    }
+    shot := ""
+    hw := FindGameWindow()
+    if (hw && WinGetMinMax(hw) != -1) {
+        try {
+            rc := Buffer(16, 0)
+            DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
+            cw := NumGet(rc, 8, "Int"), chh := NumGet(rc, 12, "Int")
+            if IsObject(guildTrk) {
+                px := guildTrk[1] + guildTrk[3] / 2, py := guildTrk[2] + guildTrk[4] / 2
+            } else {
+                ar := AreaGet("guild", cw, chh)
+                px := (ar[1] + ar[3] / 2) * cw, py := (ar[2] + ar[4] / 2) * chh
+            }
+            bw := Round(cw * 0.30), bh := Round(chh * 0.36)
+            f := A_Temp "\guild_rank.png"
+            if CaptureWindowPng(hw, f, Round(px - bw / 2), Round(py - bh * 0.66), bw, bh)
+                shot := f
+        }
+    }
+    now := DateDiff(A_NowUTC, "19700101000000", "Seconds")
+    ts := FormatTime(A_NowUTC, "yyyy-MM-dd") "T" FormatTime(A_NowUTC, "HH:mm:ss") "Z"
+    desc := "# #" fmt(new) "`n-# 🕒 <t:" now ":F>  ·  <t:" now ":R>`n"
+    desc .= "> " "Antes: **#" fmt(old) "**" (delta != "" ? "  ·  " delta : "") "`n"
+    e := '{' head '"allowed_mentions":{"parse":[]},'
+        . '"content":"``' JsonEsc(FormatTime(, "dd/MM/yyyy, HH:mm:ss")) '``",'
+        . '"embeds":[{'
+        . '"author":{"name":"' JsonEsc(APP_NAME "  ·  🛡 " TT("f_guild")) '","icon_url":"' LOGO_URL '"},'
+        . '"color":' 0x6EA8FF ','
+        . '"description":"' JsonEsc(desc) '",'
+        . (shot != "" ? '"image":{"url":"attachment://rank.png"},' : '')
+        . '"footer":{"text":"' JsonEsc(USER_NAME "  •  " A_ComputerName "  •  v" VERSION) '","icon_url":"' LOGO_URL '"},'
+        . '"timestamp":"' ts '"'
+        . '}]}'
+    if (shot != "")
+        SendWebhookImage(url, e, shot, auth, 0, "rank.png")
+    else
+        HttpPost(url, e, "application/json", auth, 0)
 }
 
 GuildReadNow() {
@@ -9092,11 +9161,11 @@ GuildPre(hw, ox, oy, ow, oh, votes) {
         DllCall("ReleaseDC", "Ptr", 0, "Ptr", hS)
         ; o boneco se mexe e o rank vai junto: acha o ícone verde-água do rank perto da área e lê em cima dele
         rects := []
-        trk := GuildTrack(srcDC, cw, chh, ox, oy, ow, oh)
-        if IsObject(trk) {
-            guildTrk := trk
+        for trk in GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
+            if !IsObject(guildTrk)
+                guildTrk := trk
             rects.Push(trk)
-            seen := "[ícone " trk[3] "x" trk[4] " em " trk[1] "," trk[2] "] "
+            seen .= "[ícone " trk[3] "x" trk[4] " em " trk[1] "," trk[2] "] "
         }
         rects.Push([ox, oy, ow, oh])
         for r in rects {
@@ -9117,9 +9186,11 @@ GuildPre(hw, ox, oy, ow, oh, votes) {
     return seen
 }
 
-; procura o ícone verde-água (esmeralda) do rank numa região em volta da área e devolve o retângulo do número em cima dele
+; procura o ícone do rank (a cor muda com o nível da guilda: verde-água, laranja…) numa região em volta da área
+; e devolve uma lista de retângulos do número em cima de cada ícone achado (o mais cheio primeiro)
 GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
     dib := 0, dc := 0
+    out := []
     try {
         sw := Round(Min(cw, Max(ow * 5, cw * 0.25))), sh := Round(Min(chh, Max(oh * 8, chh * 0.25)))
         sx := Max(0, Min(cw - sw, Round(ox + ow / 2 - sw / 2))), sy := Max(0, Min(chh - sh, Round(oy + oh / 2 - sh / 2)))
@@ -9130,47 +9201,57 @@ GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
         DllCall("SelectObject", "Ptr", dc, "Ptr", dib)
         DllCall("BitBlt", "Ptr", dc, "Int", 0, "Int", 0, "Int", sw, "Int", sh, "Ptr", srcDC, "Int", sx, "Int", sy, "UInt", 0x00CC0020)
         DllCall("GdiFlush")
-        xs := [], ys := []
+        xs := [[], []], ys := [[], []]            ; 1 = verde-água, 2 = laranja
         y := 0
         while (y < sh) {
             off := y * sw * 4
             Loop sw {
                 v := NumGet(bits, off, "UInt")
-                r := (v >> 16) & 255, g := (v >> 8) & 255, b := v & 255
-                if (r < 70 && g > 150 && b > 110 && g - r > 100 && b <= g + 8 && g - b < 80)
-                    xs.Push(A_Index - 1), ys.Push(y)
+                rr := (v >> 16) & 255, gg := (v >> 8) & 255, bb := v & 255
+                if (rr < 70 && gg > 150 && bb > 110 && gg - rr > 100 && bb <= gg + 8 && gg - bb < 80)
+                    xs[1].Push(A_Index - 1), ys[1].Push(y)
+                else if (rr > 200 && gg > 40 && gg < 200 && bb < 90 && rr - bb > 150 && gg < rr - 40)
+                    xs[2].Push(A_Index - 1), ys[2].Push(y)
                 off += 4
             }
             y += 1
         }
-        if (xs.Length < 20)
-            return 0
-        mxm := 0, mym := 0
-        for i, xv in xs
-            mxm += xv, mym += ys[i]
-        mxm /= xs.Length, mym /= xs.Length
-        R := Max(20, cw * 0.03)
-        x0 := 99999, x1 := -1, y0 := 99999, y1 := -1, n := 0
-        for i, xv in xs {
-            if (Abs(xv - mxm) <= R && Abs(ys[i] - mym) <= R) {
-                n++
-                x0 := Min(x0, xv), x1 := Max(x1, xv), y0 := Min(y0, ys[i]), y1 := Max(y1, ys[i])
+        cand := []
+        Loop 2 {
+            k := A_Index
+            if (xs[k].Length < 20)
+                continue
+            mxm := 0, mym := 0
+            for i, xv in xs[k]
+                mxm += xv, mym += ys[k][i]
+            mxm /= xs[k].Length, mym /= xs[k].Length
+            rad := Max(20, cw * 0.03)
+            x0 := 99999, x1 := -1, y0 := 99999, y1 := -1, n := 0
+            for i, xv in xs[k] {
+                if (Abs(xv - mxm) <= rad && Abs(ys[k][i] - mym) <= rad) {
+                    n++
+                    x0 := Min(x0, xv), x1 := Max(x1, xv), y0 := Min(y0, ys[k][i]), y1 := Max(y1, ys[k][i])
+                }
             }
+            iw := x1 - x0 + 1, ih := y1 - y0 + 1
+            if (n < 20 || iw > cw * 0.10 || ih > chh * 0.10)
+                continue
+            cx := sx + (x0 + x1) / 2, cy := sy + (y0 + y1) / 2
+            nw := Max(28, Round(iw * 1.9)), nh := Max(12, Round(ih * 0.85))
+            nx := Max(0, Min(cw - nw, Round(cx - nw / 2))), ny := Max(0, Min(chh - nh, Round(cy - nh / 2)))
+            cand.Push({n: n, r: [nx, ny, nw, nh]})
         }
-        iw := x1 - x0 + 1, ih := y1 - y0 + 1
-        if (n < 20 || iw > cw * 0.10 || ih > chh * 0.10)
-            return 0
-        cx := sx + (x0 + x1) / 2, cy := sy + (y0 + y1) / 2
-        nw := Max(28, Round(iw * 1.9)), nh := Max(12, Round(ih * 0.85))
-        nx := Max(0, Min(cw - nw, Round(cx - nw / 2))), ny := Max(0, Min(chh - nh, Round(cy - nh / 2)))
-        return [nx, ny, nw, nh]
+        if (cand.Length = 2 && cand[2].n > cand[1].n)
+            cand := [cand[2], cand[1]]
+        for c in cand
+            out.Push(c.r)
     } finally {
         if dc
             DllCall("DeleteDC", "Ptr", dc)
         if dib
             DllCall("DeleteObject", "Ptr", dib)
     }
-    return 0
+    return out
 }
 
 ; lê um retângulo do rank: amplia, isola o branco do texto (preto no branco) e vota os números
@@ -11191,6 +11272,7 @@ SaveConfig() {
     IniWrite(chkAreaShow.Value, iniFile, "cfg", "areaShow")
     IniWrite(chkGuildSend.Value, iniFile, "cfg", "guildSend")
     IniWrite(chkGuildNotify.Value, iniFile, "cfg", "guildNotify")
+    IniWrite(Trim(edGuildHook.Value), iniFile, "cfg", "guildHook")
     IniWrite(chkGuildStat.Value, iniFile, "cfg", "guildStat")
     IniWrite(chkClickSnd.Value, iniFile, "cfg", "clickSnd")
     IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
@@ -12163,7 +12245,7 @@ SendWebhookImage(url, payload, pngPath, auth := "", cb := 0, fname := "roblox.pn
 ; ---------------- Print só da janela do Roblox ----------------
 ; PrintWindow pega o conteúdo da janela mesmo se tiver outra coisa por cima.
 ; Se vier preto (alguns drivers), cai pro método de copiar da tela.
-CaptureWindowPng(hwnd, file) {
+CaptureWindowPng(hwnd, file, cx := -1, cy := 0, cwid := 0, chei := 0) {
     rc := Buffer(16, 0)
     DllCall("GetClientRect", "Ptr", hwnd, "Ptr", rc)
     w := NumGet(rc, 8, "Int"), h := NumGet(rc, 12, "Int")
@@ -12183,6 +12265,23 @@ CaptureWindowPng(hwnd, file) {
             , "Ptr", hDC, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
     }
 
+    if (cx >= 0 && cwid > 8 && chei > 8) {            ; recorte (ex.: só o boneco + rank)
+        cx := Max(0, Min(w - 8, cx)), cy := Max(0, Min(h - 8, cy))
+        cwid := Min(cwid, w - cx), chei := Min(chei, h - cy)
+        c2 := DllCall("CreateCompatibleDC", "Ptr", hDC, "Ptr")
+        b2 := DllCall("CreateCompatibleBitmap", "Ptr", hDC, "Int", cwid, "Int", chei, "Ptr")
+        o2 := DllCall("SelectObject", "Ptr", c2, "Ptr", b2, "Ptr")
+        DllCall("BitBlt", "Ptr", c2, "Int", 0, "Int", 0, "Int", cwid, "Int", chei, "Ptr", mDC, "Int", cx, "Int", cy, "UInt", 0x00CC0020)
+        DllCall("SelectObject", "Ptr", c2, "Ptr", o2)
+        DllCall("DeleteDC", "Ptr", c2)
+        DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
+        DllCall("DeleteDC", "Ptr", mDC)
+        DllCall("ReleaseDC", "Ptr", 0, "Ptr", hDC)
+        DllCall("DeleteObject", "Ptr", hBM)
+        r := SaveHBitmapPng(b2, file)
+        DllCall("DeleteObject", "Ptr", b2)
+        return r
+    }
     DllCall("SelectObject", "Ptr", mDC, "Ptr", obm)
     DllCall("DeleteDC", "Ptr", mDC)
     DllCall("ReleaseDC", "Ptr", 0, "Ptr", hDC)

@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.41
+- Quando o rank da guilda muda, o app posta no Discord: data/hora, o novo rank (#98 363), quanto subiu/caiu e um print do boneco com o rank. Dá pra escolher outro canal (webhook do rank na aba Guilda); vazio usa o webhook principal.
+- O rastreio do rank agora reconhece também o ícone laranja (a cor muda com o nível da guilda), além do verde-água.
+
 ## v1.5.40
 - Rank da guilda segue o boneco: o app acha o ícone verde-água do rank perto da área (mesmo que ele se mova) e lê o número em cima dele. Se não achar o ícone, lê a área fixa como antes.
 
