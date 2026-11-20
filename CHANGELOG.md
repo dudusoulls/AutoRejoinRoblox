@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.33
+- Rank da guilda: só aparece/muda depois de ler o mesmo número 3 vezes seguidas (menos erro de OCR).
+
 ## v1.5.32
 - Painel do HUD: Wave e Rank da guilda agora têm caixas próprias (cada uma com sua chave em Configurações → Exibir).
 

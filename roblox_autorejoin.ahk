@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.32"
+VERSION     := "1.5.33"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9228,20 +9228,26 @@ ReadGuildRank(hw) {
 ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
 GuildTick(hw) {
     global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
-    static pendG := ""
+    static pendG := "", pendN := 0
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
     gr := ReadGuildRank(hw)
     if (gr = "")
         return
-    if (gr = farmGuild)
-        pendG := ""
-    else if (farmGuild = "" || gr = pendG) {
+    if (gr = farmGuild) {                 ; já confirmado: nada a fazer
+        pendG := "", pendN := 0
+        return
+    }
+    ; só mostra um rank novo depois de ler o MESMO número 3 vezes seguidas (evita erro de OCR)
+    if (gr = pendG)
+        pendN++
+    else
+        pendG := gr, pendN := 1
+    if (pendN >= 3) {
         old := farmGuild
-        farmGuild := gr, pendG := ""
+        farmGuild := gr, pendG := "", pendN := 0
         GuildChanged(old, gr)
-    } else
-        pendG := gr
+    }
 }
 
 ; OCR de uma área escolhida pelo usuário; tenta jeitos de captura até o teste "ok" passar
@@ -9294,8 +9300,11 @@ OcrLoop() {
     busy := false
     global farmMiss
     sec := Max(2, Integer(IniRead(iniFile, "cfg", "ocrSec", "15")))
+    global farmGuild, chkHudGd
     if (farmMiss > 0 && farmMiss < 6)               ; ainda não achou: tenta de novo logo
         sec := Min(sec, 4)
+    else if (chkHudGd.Value && farmGuild = "")      ; rank da guilda ainda sem as 3 leituras iguais
+        sec := Min(sec, 5)
     nextAt := A_TickCount + Max(sec * 1000, (A_TickCount - t0) * 4)
 }
 
