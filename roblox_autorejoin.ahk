@@ -244,6 +244,11 @@ savedSched    := IniRead(iniFile, "cfg", "sched", "0")
 savedFrom     := IniRead(iniFile, "cfg", "schedFrom", "08:00")
 savedTo       := IniRead(iniFile, "cfg", "schedTo", "23:00")
 savedMaxH     := IniRead(iniFile, "cfg", "maxHours", "0")
+savedOff := IniRead(iniFile, "cfg", "offBot", "0"), savedBotCode := IniRead(iniFile, "cfg", "botCode", ""), offBusy := 0, chkOff := 0, edBotCode := 0, botLinkStatus := 0
+if (savedBotCode = "") {
+    savedBotCode := StrLower(RegExReplace(ComObject("Scriptlet.TypeLib").GUID, "[^0-9A-Fa-f]"))
+    IniWrite(savedBotCode, iniFile, "cfg", "botCode")
+}
 savedPreOn := IniRead(iniFile, "cfg", "preOn", "0"), savedPreH := IniRead(iniFile, "cfg", "preH", "6"), savedNetWatch := IniRead(iniFile, "cfg", "netWatch", "0")
 pauseUntil := 0, lblPause := 0, chkPre := 0, edPreH := 0, chkNet := 0, netWasDown := false
 endAct        := Integer(IniRead(iniFile, "cfg", "endAct", "0"))
@@ -273,6 +278,7 @@ savedHudSt := IniRead(iniFile, "cfg", "hudShowSt", "1"), savedHudMd := IniRead(i
 savedHudCo := IniRead(iniFile, "cfg", "hudShowCo", "1"), savedHudLg := IniRead(iniFile, "cfg", "hudShowLg", "1")
 hudPnlKey := ""
 ANON_ID := IniRead(iniFile, "cfg", "anonId", "")
+BOT_API := ""   ; URL do Worker do bot oficial (ver bot-worker/README.md)
 BOT_CLIENT_ID := ""   ; ID do aplicativo do bot oficial (Discord Developer Portal) — preencha quando o bot existir
 if (ANON_ID = "") {
     Loop 8
@@ -837,6 +843,18 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "nav_offbot", "Bot oficial",
+    "pg_offbot_sub", "Use o bot no seu servidor e controle só o seu Roblox",
+    "sec_offbot", "BOT OFICIAL",
+    "sw_offbot", "Ligar o bot oficial",
+    "sw_offbot_sub", "O app busca seus comandos a cada ~8 s (consumo mínimo)",
+    "lbl_botcode", "SEU CÓDIGO DE VÍNCULO (não compartilhe)",
+    "btn_copy_code", "Copiar código",
+    "offbot_wait", "Aguardando você usar /vincular no seu servidor",
+    "offbot_ok", "Conectado ao bot oficial",
+    "offbot_noapi", "O bot oficial ainda não foi configurado nesta versão",
+    "offbot_steps", "1) Convide o bot (Ferramentas)  2) Use /vincular e cole o código  3) Controle com /roblox",
+    "code_copied", "Código copiado",
     "tool_invite", "Convidar o bot",
     "tool_invite_s", "Adiciona o bot oficial ao seu servidor do Discord",
     "tool_appid", "ID do app",
@@ -1479,6 +1497,18 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -2121,6 +2151,18 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "nav_offbot", "Bot oficial",
+    "pg_offbot_sub", "Usa el bot en tu servidor y controla solo tu Roblox",
+    "sec_offbot", "BOT OFICIAL",
+    "sw_offbot", "Activar el bot oficial",
+    "sw_offbot_sub", "La app busca tus comandos cada ~8 s (consumo mínimo)",
+    "lbl_botcode", "TU CÓDIGO DE VÍNCULO (no lo compartas)",
+    "btn_copy_code", "Copiar código",
+    "offbot_wait", "Esperando que uses /vincular en tu servidor",
+    "offbot_ok", "Conectado al bot oficial",
+    "offbot_noapi", "El bot oficial aún no está configurado en esta versión",
+    "offbot_steps", "1) Invita al bot (Herramientas)  2) Usa /vincular y pega el código  3) Controla con /roblox",
+    "code_copied", "Código copiado",
     "tool_invite", "Invitar al bot",
     "tool_invite_s", "Añade el bot oficial a tu servidor de Discord",
     "tool_appid", "ID de la app",
@@ -2763,6 +2805,18 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -3405,6 +3459,18 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -4047,6 +4113,18 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -4689,6 +4767,18 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -5331,6 +5421,18 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_offbot", "Official bot",
+    "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
+    "sec_offbot", "OFFICIAL BOT",
+    "sw_offbot", "Turn on the official bot",
+    "sw_offbot_sub", "The app fetches your commands every ~8 s (minimal usage)",
+    "lbl_botcode", "YOUR LINK CODE (do not share)",
+    "btn_copy_code", "Copy code",
+    "offbot_wait", "Waiting for you to use /vincular in your server",
+    "offbot_ok", "Connected to the official bot",
+    "offbot_noapi", "The official bot is not configured in this version yet",
+    "offbot_steps", "1) Invite the bot (Tools)  2) Use /vincular and paste the code  3) Control with /roblox",
+    "code_copied", "Code copied",
     "tool_invite", "Invite the bot",
     "tool_invite_s", "Adds the official bot to your Discord server",
     "tool_appid", "App ID",
@@ -5426,7 +5528,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5579,7 +5681,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
-    , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Notif", "Bot", "Relat"]
+    , "Discord", aaMode ? ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Vínculo", "Notif", "Bot", "Relat"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
     , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
@@ -5768,6 +5870,18 @@ edDiscId := Input(CX + 20, y + 136, CW - 40 - 118, savedDiscId, "Number")
 Btn(CX + CW - 128, y + 136, 108, 32, TT("btn_how"), (*) => (ToolTip(TT("hint_discord_id")), SetTimer(() => ToolTip(), -9000)))
 
 ; ---------------- Webhook: O que enviar ----------------
+BeginPage("Vínculo", TT("nav_offbot"), TT("pg_offbot_sub"))
+y := 92
+Card(CX, y, CW, 262)
+Accent(CX, y + 18, 40, "B084FF")
+Lbl(CX + 20, y + 14, 400, TT("sec_offbot"), "s7 w700", C_DIM)
+chkOff := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_offbot"), savedOff, TT("sw_offbot_sub"))
+Lbl(CX + 20, y + 104, 300, TT("lbl_botcode"), "s9", C_MUTED)
+edBotCode := Input(CX + 20, y + 126, CW - 190, savedBotCode, "+ReadOnly")
+Btn(CX + CW - 160, y + 126, 140, 32, TT("btn_copy_code"), CopyBotCode)
+botLinkStatus := Lbl(CX + 20, y + 172, CW - 40, TT("offbot_wait"), "s10 w600")
+Lbl(CX + 20, y + 202, CW - 40, TT("offbot_steps"), "s8", C_MUTED)
+
 BeginPage("Notif", TT("nav_notif"), TT("pg_notif_sub"))
 y := 92
 Card(CX, y, CW, 300)
@@ -6297,6 +6411,7 @@ StartApp() {
     SetTimer(PulseTick, 110)
     SetTimer(GuiPosTick, 2000)
     SetTimer(PauseTick, 1000)
+    SetTimer(OffBotTick, 8000)
     SetTimer(NetTick, 30000)
     SetTimer(PreRestartCheck, 60000)
     SetTimer(GdiWatch, 60000)
@@ -6628,13 +6743,83 @@ AaToggle() {
 }
 
 ; cartão grande clicável (ícone + título + descrição)
+CopyBotCode(*) {
+    global edBotCode
+    A_Clipboard := edBotCode.Value
+    Notify(TT("code_copied"), "Auto Reconnect")
+}
+
+OffBotApi() {
+    global BOT_API, iniFile
+    a := Trim(IniRead(iniFile, "cfg", "botApi", ""))
+    return RTrim(a != "" ? a : BOT_API, "/")
+}
+
+; bot oficial: busca a fila de comandos (leve: 1 GET pequeno a cada ~8 s, só se estiver ligado)
+OffBotTick() {
+    global chkOff, edBotCode, offBusy, botLinkStatus
+    if !IsObject(chkOff) || !chkOff.Value
+        return
+    api := OffBotApi()
+    if (api = "") {
+        SetIf(botLinkStatus, TT("offbot_noapi"))
+        return
+    }
+    if (offBusy && A_TickCount - offBusy < 20000)
+        return
+    offBusy := A_TickCount
+    try AsyncReq("GET", api "/poll?code=" Trim(edBotCode.Value), "", "", "", OffBotGot)
+    catch
+        offBusy := 0
+}
+
+OffBotGot(http) {
+    global offBusy, edHook, botLinkStatus
+    offBusy := 0
+    txt := ""
+    try {
+        st := HttpStatus(http)
+        if (st = 404) {
+            SetIf(botLinkStatus, TT("offbot_wait"))
+            return
+        }
+        if (st != 200)
+            throw Error("HTTP " st)
+        txt := http.ResponseText
+    } catch as e {
+        SetIf(botLinkStatus, TT("bot_err", e.Message))
+        return
+    }
+    SetIf(botLinkStatus, TT("offbot_ok"))
+    for ln in StrSplit(txt, "`n", "`r") {
+        if (SubStr(ln, 1, 2) = "W|") {
+            wh := Trim(SubStr(ln, 3))
+            if (wh != "" && InStr(wh, "https://discord.com/api/webhooks/") = 1 && Trim(edHook.Value) != wh) {
+                edHook.Value := wh
+                SaveConfig()
+            }
+        } else if (SubStr(ln, 1, 2) = "C|")
+            OffBotRun(SubStr(ln, 3))
+    }
+}
+
+OffBotRun(cmd) {
+    cmd := Trim(cmd)
+    ok := false
+    for c in ["!status", "!print", "!iniciar", "!parar", "!reiniciar", "!moedas", "!resumo", "!pc", "!historico", "!logs", "!painel", "!grafico", "!ajuda"]
+        if (cmd = c)
+            ok := true
+    if ok
+        BotCommand(cmd, "", "0", "")
+}
+
 BotInvite(*) {
     global BOT_CLIENT_ID
     if (BOT_CLIENT_ID = "") {
         Notify(TT("bot_noclient"), "Auto Reconnect", "Icon!")
         return
     }
-    Run("https://discord.com/oauth2/authorize?client_id=" BOT_CLIENT_ID "&scope=bot%20applications.commands&permissions=150528")
+    Run("https://discord.com/oauth2/authorize?client_id=" BOT_CLIENT_ID "&scope=bot%20applications.commands&permissions=536922112")
 }
 
 CopyAppId(*) {
@@ -7806,7 +7991,7 @@ BotCommand(cmd, ch, mid, tok) {
     c := StrLower(parts[1]), arg := parts.Length > 1 ? Trim(parts[2]) : ""
     if (SubStr(c, 1, 1) != "!")
         return
-    botCtx := {ch: ch, mid: mid, tok: tok}        ; respostas vão como resposta à mensagem do comando
+    botCtx := (ch != "") ? {ch: ch, mid: mid, tok: tok} : 0        ; respostas vão como resposta à mensagem do comando (ou pelo webhook, no bot oficial)
     known := true
     try {
         switch c {
@@ -7826,7 +8011,8 @@ BotCommand(cmd, ch, mid, tok) {
                     SendEvent("notrunning", [], false, "", SessionFields(), true)
             case "!reiniciar", "!restart":
                 SendEvent("restart", [TT("d_restart_how")], false, "", SessionFields(), true)
-                restartReply := {ch: ch, mid: mid, tok: tok, t0: A_TickCount}
+                if (ch != "")
+                    restartReply := {ch: ch, mid: mid, tok: tok, t0: A_TickCount}
                 botCtx := 0
                 BotRestart()
             case "!resumo", "!summary":
@@ -7889,7 +8075,8 @@ BotCommand(cmd, ch, mid, tok) {
         botCtx := 0
     if known {
         Log(TT("log_bot_cmd", c))
-        try AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", "", "", "Bot " tok)
+        if (ch != "")
+            try AsyncReq("PUT", "https://discord.com/api/v10/channels/" ch "/messages/" mid "/reactions/%E2%9C%85/@me", "", "", "Bot " tok)
     }
 }
 
@@ -10647,6 +10834,7 @@ SaveConfig() {
     IniWrite(Trim(edFrom.Value), iniFile, "cfg", "schedFrom")
     IniWrite(Trim(edTo.Value), iniFile, "cfg", "schedTo")
     IniWrite(Trim(edMaxH.Value), iniFile, "cfg", "maxHours")
+    IniWrite(chkOff.Value, iniFile, "cfg", "offBot")
     IniWrite(chkPre.Value, iniFile, "cfg", "preOn")
     IniWrite(Trim(edPreH.Value), iniFile, "cfg", "preH")
     IniWrite(chkNet.Value, iniFile, "cfg", "netWatch")
