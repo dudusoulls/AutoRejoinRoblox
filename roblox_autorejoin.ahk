@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.14"
+VERSION     := "1.5.15"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -838,6 +838,26 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "nav_tools", "Ferramentas",
+    "pg_tools_sub", "Atalhos de manutenção e suporte",
+    "tool_backup", "Backup das configurações",
+    "tool_backup_s", "Salva uma cópia do config.ini na Área de Trabalho",
+    "tool_restore", "Restaurar configurações",
+    "tool_restore_s", "Escolha um backup e o app reinicia com ele",
+    "tool_folder", "Pasta de dados",
+    "tool_folder_s", "Abre a pasta onde ficam config e logs",
+    "tool_log", "Log de erros",
+    "tool_log_s", "Abre o erros.log no Bloco de Notas",
+    "tool_diag", "Copiar diagnóstico",
+    "tool_diag_s", "Versão, Windows e erros recentes, prontos pra colar",
+    "tool_clear", "Limpar logs e cache",
+    "tool_clear_s", "Apaga o log de erros e arquivos temporários",
+    "tool_kill", "Fechar todos os Roblox",
+    "tool_kill_s", "Encerra todas as janelas e processos do Roblox",
+    "tool_restart", "Reiniciar o app",
+    "tool_restart_s", "Recarrega o programa e as configurações",
+    "diag_ok", "Diagnóstico copiado",
+    "clear_ok", "Logs e cache limpos",
     "nav_routine", "Rotina",
     "pg_routine_sub", "Pausa, reinício preventivo e rede",
     "sec_pause", "PAUSAR MONITORAMENTO",
@@ -1454,6 +1474,26 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -2070,6 +2110,26 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "nav_tools", "Herramientas",
+    "pg_tools_sub", "Atajos de mantenimiento y soporte",
+    "tool_backup", "Copia de configuración",
+    "tool_backup_s", "Guarda una copia de config.ini en el Escritorio",
+    "tool_restore", "Restaurar configuración",
+    "tool_restore_s", "Elige una copia y la app se reinicia con ella",
+    "tool_folder", "Carpeta de datos",
+    "tool_folder_s", "Abre la carpeta de config y registros",
+    "tool_log", "Registro de errores",
+    "tool_log_s", "Abre erros.log en el Bloc de notas",
+    "tool_diag", "Copiar diagnóstico",
+    "tool_diag_s", "Versión, Windows y errores recientes para pegar",
+    "tool_clear", "Limpiar registros y caché",
+    "tool_clear_s", "Borra el registro de errores y temporales",
+    "tool_kill", "Cerrar todos los Roblox",
+    "tool_kill_s", "Cierra todas las ventanas y procesos de Roblox",
+    "tool_restart", "Reiniciar la app",
+    "tool_restart_s", "Recarga el programa y la configuración",
+    "diag_ok", "Diagnóstico copiado",
+    "clear_ok", "Registros y caché limpiados",
     "nav_routine", "Rutina",
     "pg_routine_sub", "Pausa, reinicio preventivo y red",
     "sec_pause", "PAUSAR MONITOREO",
@@ -2686,6 +2746,26 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -3302,6 +3382,26 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -3918,6 +4018,26 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -4534,6 +4654,26 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -5150,6 +5290,26 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_tools", "Tools",
+    "pg_tools_sub", "Maintenance and support shortcuts",
+    "tool_backup", "Back up settings",
+    "tool_backup_s", "Saves a copy of config.ini to your Desktop",
+    "tool_restore", "Restore settings",
+    "tool_restore_s", "Pick a backup and the app restarts with it",
+    "tool_folder", "Data folder",
+    "tool_folder_s", "Opens the folder with config and logs",
+    "tool_log", "Error log",
+    "tool_log_s", "Opens erros.log in Notepad",
+    "tool_diag", "Copy diagnostics",
+    "tool_diag_s", "Version, Windows and recent errors, ready to paste",
+    "tool_clear", "Clear logs and cache",
+    "tool_clear_s", "Deletes the error log and temp files",
+    "tool_kill", "Close all Roblox",
+    "tool_kill_s", "Ends every Roblox window and process",
+    "tool_restart", "Restart the app",
+    "tool_restart_s", "Reloads the program and settings",
+    "diag_ok", "Diagnostics copied",
+    "clear_ok", "Logs and cache cleared",
     "nav_routine", "Routine",
     "pg_routine_sub", "Pause, preventive restart and network",
     "sec_pause", "PAUSE MONITORING",
@@ -5219,7 +5379,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5375,7 +5535,7 @@ GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Aut
     , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Notif", "Bot", "Relat"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
-    , "Logs", ["Logs"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
+    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
 GROUP_OF := Map()
 for gk, subs in GROUPS
@@ -5386,19 +5546,20 @@ NavHead(name, y) {
     FontUI(g, "s7 w700")
     g.Add("Text", Format("x20 y{} w{} h14 Background{} c{}", y, SIDE - 40, C_SIDE, C_DIM), name)
 }
-AddNav("Início",    Chr(0xE80F), 84)
-NavHead("ROBLOX", 134)
-AddNav("Jogo",      Chr(0xE7FC), 150)
-AddNav("Automação", Chr(0xE916), 188)
-NavHead("INTEGRAÇÕES", 236)
-AddNav("Discord",   Chr(0xE8F2), 252)
-AddNav("QoL",       Chr(0xE8C7), 290)
-NavHead("APP", 338)
-AddNav("Aparência", Chr(0xE790), 354)
-AddNav("Logs",      Chr(0xE81C), 392)
-AddNav("Sobre",     Chr(0xE713), 430)
-AddNav("Suporte",   Chr(0xE897), 468)
-navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 94, C_ACC))
+AddNav("Início",      Chr(0xE80F), 80)
+NavHead("ROBLOX", 124)
+AddNav("Automação",   Chr(0xE916), 140)
+AddNav("Jogo",        Chr(0xE7FC), 176)
+NavHead("EXTRAS", 220)
+AddNav("Ferramentas", Chr(0xE90F), 236)
+AddNav("Discord",     Chr(0xE8F2), 272)
+AddNav("QoL",         Chr(0xE8C7), 308)
+NavHead("APP", 352)
+AddNav("Sobre",       Chr(0xE713), 368)
+AddNav("Aparência",   Chr(0xE790), 404)
+AddNav("Suporte",     Chr(0xE897), 440)
+AddNav("Logs",        Chr(0xE81C), 476)
+navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 90, C_ACC))
 
 FontUI(g, "s10")
 sideDot := g.Add("Text", Format("x24 y{} w14 c{} Background{}", H - 62, C_DIM, C_SIDE), "●")
@@ -5487,14 +5648,6 @@ Accent(CX + hw3 + 12, y + 14, 14, "B084FF")
 Lbl(CX + hw3 + 12 + 16, y + 12, hw3 - 30, TT("st_farm"), "s7 w700", C_DIM)
 stMode := Lbl(CX + hw3 + 12 + 16, y + 38, hw3 - 26, "—", "s11 w600")
 homeExtra := pages["_homex"]
-BeginPage("_homey", "", "")
-y := 458
-Card(CX, y, CW, 92)
-Lbl(CX + 20, y + 12, 300, TT("tools"), "s7 w700", C_DIM)
-Btn(CX + 20,                 y + 38, bw, 38, TT("btn_backup"), (*) => BackupConfig())
-Btn(CX + 20 + (bw + 12),     y + 38, bw, 38, TT("btn_datafolder"), (*) => Run(A_ScriptDir))
-Btn(CX + 20 + (bw + 12) * 2, y + 38, bw, 38, TT("btn_openlog"), (*) => OpenLogFile())
-homeTools := pages["_homey"]
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
 
 ; ---------------- Página: Jogo ----------------
@@ -5765,6 +5918,15 @@ Card(CX, y, CW, 96)
 Accent(CX, y + 18, 40, "3DDC84")
 Lbl(CX + 20, y + 14, 400, TT("sec_net"), "s7 w700", C_DIM)
 chkNet := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_netwatch"), savedNetWatch, TT("sw_netwatch_sub"))
+
+; ---------------- Página: Ferramentas ----------------
+BeginPage("Ferramentas", TT("nav_tools"), TT("pg_tools_sub"))
+tw2 := (CW - 12) // 2
+for i, tl in [[0xE74E, "tool_backup", BackupConfig, "F5C542"], [0xE777, "tool_restore", RestoreConfig, "4DA3FF"]
+    , [0xE8B7, "tool_folder", (*) => Run(A_ScriptDir), "B084FF"], [0xE8A5, "tool_log", OpenLogFile, "3DDC84"]
+    , [0xE8C8, "tool_diag", CopyDiag, "4DA3FF"], [0xE74D, "tool_clear", ClearCache, "FF5C5C"]
+    , [0xE711, "tool_kill", KillRobloxManual, "FF5C5C"], [0xE72C, "tool_restart", (*) => Reload(), "F5C542"]]
+    ToolTile(CX + Mod(i - 1, 2) * (tw2 + 12), 92 + ((i - 1) // 2) * 98, tw2, 88, tl[1], tl[2], tl[3], tl[4])
 
 ; ---------------- Página: Opções ----------------
 BeginPage("Opções", TT("nav_opts"), TT("pg_opts_sub"))
@@ -6323,9 +6485,9 @@ SetBtnStyle(b, style) {
 AddNav(name, icon, y) {
     global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK, GROUPS
     FontIcon(g, "s11")
-    ic := g.Add("Text", Format("x14 y{} w42 h38 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
+    ic := g.Add("Text", Format("x14 y{} w42 h36 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h38 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
+    lb := g.Add("Text", Format("x56 y{} w{} h36 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, y: y}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o
@@ -6415,6 +6577,50 @@ AaToggle() {
     IniWrite(chkAA.Value, iniFile, "cfg", "aaMode")
     Sleep(150)
     Reload()
+}
+
+; cartão grande clicável (ícone + título + descrição)
+ToolTile(x, y, w, h, icon, key, fn, col) {
+    global g, C_DIM
+    Card(x, y, w, h)
+    Accent(x, y + 20, h - 40, col)
+    FontIcon(g, "s18")
+    ic := P(g.Add("Text", Format("x{} y{} w44 h44 +0x200 Center c{} Background{}", x + 18, y + 22, col, C_CARD), Chr(icon)))
+    FontUI(g, "s11 w700")
+    t1 := P(g.Add("Text", Format("x{} y{} w{} c{} Background{}", x + 72, y + 22, w - 88, C_TEXT, C_CARD), TT(key)))
+    FontUI(g, "s8")
+    t2 := P(g.Add("Text", Format("x{} y{} w{} h34 c{} Background{}", x + 72, y + 46, w - 88, C_MUTED, C_CARD), TT(key "_s")))
+    for c in [ic, t1, t2]
+        c.OnEvent("Click", BtnClick.Bind(fn))
+}
+
+RestoreConfig(*) {
+    global iniFile
+    f := FileSelect(1, A_Desktop, TT("tool_restore"), "INI (*.ini)")
+    if (f = "")
+        return
+    try {
+        FileCopy(f, iniFile, 1)
+        Reload()
+    } catch as e
+        MsgBox(e.Message)
+}
+
+CopyDiag(*) {
+    global VERSION, aaMode, iniFile
+    gdi := DllCall("GetGuiResources", "Ptr", DllCall("GetCurrentProcess", "Ptr"), "UInt", 0, "UInt")
+    t := "Auto Reconnect v" VERSION "`nWindows " A_OSVersion " · " A_ScreenWidth "x" A_ScreenHeight " · DPI " A_ScreenDPI "`nModo AA: " (aaMode ? "on" : "off") " · GDI: " gdi "`nRoblox aberto: " (IsRobloxOpen() ? "sim" : "não") "`n"
+    try t .= Redact(FileRead(A_ScriptDir "\erros.log"))
+    A_Clipboard := t
+    Notify(TT("diag_ok"), "Auto Reconnect")
+}
+
+ClearCache(*) {
+    global logBox
+    for f in [A_ScriptDir "\erros.log", A_Temp "\roblox_status.png"]
+        try FileDelete(f)
+    try logBox.Value := ""
+    Notify(TT("clear_ok"), "Auto Reconnect")
 }
 
 PauseFor(mn, *) {

@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.15
+- Nova aba **Ferramentas** (EXTRAS): backup e restauração das configurações, pasta de dados, log de erros, copiar diagnóstico, limpar logs/cache, fechar todos os Roblox e reiniciar o app, em cartões grandes.
+- Barra lateral em degraus: nomes maiores primeiro em cada seção (ROBLOX, EXTRAS, APP). A linha de ferramentas saiu do Início.
+
 ## v1.5.14
 - Nova aba **Rotina** (Automação): pausar o monitoramento por 15 min / 30 min / 1 h / 2 h, reinício preventivo do Roblox a cada X horas e aviso quando a internet cair.
 - Áreas de leitura: âncora automática (esquerda/centro/direita e topo/meio/baixo) ao mudar o tamanho da janela, então a barra de moedas embaixo acompanha.
