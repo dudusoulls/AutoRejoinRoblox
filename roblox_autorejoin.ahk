@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.31"
+VERSION     := "1.5.32"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -226,7 +226,7 @@ if (IniRead(iniFile, "cfg", "updFastV", "") != "2") {   ; checagem a cada 30 s p
 }
 savedFastUpd  := IniRead(iniFile, "cfg", "updFast", "0")
 savedWhatsNew := IniRead(iniFile, "cfg", "whatsNew", "1")
-savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1")
+savedHudGd    := IniRead(iniFile, "cfg", "hudShowGd", "1"), savedHudWv := IniRead(iniFile, "cfg", "hudShowWv", "1")
 savedAreaScale := IniRead(iniFile, "cfg", "areaScale", "1"), savedRemSize := IniRead(iniFile, "cfg", "remSize", "1")
 savedAreaShow := IniRead(iniFile, "cfg", "areaShow", "0")
 savedGuildStat := IniRead(iniFile, "cfg", "guildStat", "1")
@@ -6273,7 +6273,8 @@ chkHudMd := ToggleSwitch(CX + 20 + hw2 + 16, y + 30, hw2, TT("f_mode"), savedHud
 chkHudCo := ToggleSwitch(CX + 20, y + 58, hw2, TT("nav_coins"), savedHudCo)
 chkHudLg := ToggleSwitch(CX + 20 + hw2 + 16, y + 58, hw2, TT("nav_logs"), savedHudLg)
 chkHudGd := ToggleSwitch(CX + 20, y + 86, hw2, TT("f_guild"), savedHudGd)
-for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd]
+chkHudWv := ToggleSwitch(CX + 20 + hw2 + 16, y + 86, hw2, TT("area_wave"), savedHudWv)
+for ck in [chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudGd, chkHudWv]
     ck.onChange := (*) => HudRelayout()
 
 
@@ -9690,19 +9691,20 @@ HudBuildPanel() {
     AddT("title", "s10 w700", C_TEXT, C_BG, "+0x200", "Auto Reconnect")
     AddT("dot", "s10", C_DIM, C_BG, "+0x200 Right", "●")
     AddT("hello", "s8", C_MUTED, C_BG, "+0x200")
-    for n in ["st", "md", "co", "lg"] {
+    for n in ["st", "md", "wv", "gd", "co", "lg"] {
         hudPnlW[n "F"] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 Background" C_NAVA)
         hudPnlW[n "I"] := hudPnl.Add("Text", "x0 y0 w10 h10 +0x100 Background" C_CARD)
     }
     AddT("stT", "s9 w700", C_TEXT, C_CARD, "+0x200")
     AddT("stS", "s8", C_MUTED, C_CARD, "+0x200")
     AddT("mdN", "s10 w700", C_TEXT, C_CARD, "")
-    AddT("mdW", "s8", C_MUTED, C_CARD, "+0x200")
+    AddT("wvT", "s14 w700", C_TEXT, C_CARD, "+0x200")
+    AddT("gdT", "s14 w700", C_TEXT, C_CARD, "+0x200")
     AddT("mdP", "s14 w700", C_TEXT, C_CARD, "+0x200")
     AddT("mdA", "s8", C_DIM, C_CARD, "+0x200")
     AddT("coT", "s8", C_TEXT, C_CARD, "")
     AddT("lgT", "s8", C_MUTED, C_CARD, "")
-    for n, ky in Map("st", "hud_box_status", "md", "f_mode", "co", "nav_coins", "lg", "nav_logs")
+    for n, ky in Map("st", "hud_box_status", "md", "f_mode", "wv", "area_wave", "gd", "f_guild", "co", "nav_coins", "lg", "nav_logs")
         AddT(n "H", "s7 w700", C_ACC, C_BG, "+0x200 Center", StrUpper(TT(ky)))
     AddT("role", "s8", C_DIM, C_BG, "+0x200", "BETA  ·  v" VERSION)
     AddT("upd", "s8 w700", C_BG, C_ACC, "+0x200 Center", TT("hud_newupd"))
@@ -9722,12 +9724,12 @@ HudBox(n, x, y, w, h, k) {
 }
 
 HudPanelLayout(pw, ph, k) {
-    global hudPnlW, hudPnlLogN, chkHudSt, chkHudMd, chkHudCo, chkHudLg
+    global hudPnlW, hudPnlLogN, chkHudSt, chkHudMd, chkHudCo, chkHudLg, chkHudWv, chkHudGd
     m := Round(10 * k), bw := pw - 2 * m, pad := Round(12 * k), tw := bw - 2 * pad
     hudPnlW["title"].Move(Round(14 * k), Round(11 * k), pw - Round(60 * k), Round(20 * k))
     hudPnlW["dot"].Move(pw - Round(40 * k), Round(11 * k), Round(26 * k), Round(20 * k))
     hudPnlW["hello"].Move(Round(14 * k), Round(31 * k), pw - Round(28 * k), Round(16 * k))
-    cards := Map("st", [chkHudSt.Value, ["stT", "stS"]], "md", [chkHudMd.Value, ["mdN", "mdW", "mdP", "mdA"]]
+    cards := Map("st", [chkHudSt.Value, ["stT", "stS"]], "md", [chkHudMd.Value, ["mdN", "mdP", "mdA"]], "wv", [chkHudWv.Value, ["wvT"]], "gd", [chkHudGd.Value, ["gdT"]]
         , "co", [chkHudCo.Value, ["coT"]], "lg", [chkHudLg.Value, ["lgT"]])
     for n, cd in cards {                       ; some tudo de quem está desligado
         for sfx in ["F", "I", "H"]
@@ -9744,13 +9746,20 @@ HudPanelLayout(pw, ph, k) {
         y += h + Round(18 * k)
     }
     if chkHudMd.Value {
-        h := Round(116 * k)
+        h := Round(98 * k)
         HudBox("md", m, y, bw, h, k)
         hudPnlW["mdN"].Move(m + pad, y + Round(14 * k), tw, Round(36 * k))
-        hudPnlW["mdW"].Move(m + pad, y + Round(52 * k), tw, Round(16 * k))
-        hudPnlW["mdP"].Move(m + pad, y + Round(68 * k), tw, Round(28 * k))
-        hudPnlW["mdA"].Move(m + pad, y + Round(96 * k), tw, Round(16 * k))
+        hudPnlW["mdP"].Move(m + pad, y + Round(52 * k), tw, Round(28 * k))
+        hudPnlW["mdA"].Move(m + pad, y + Round(80 * k), tw, Round(16 * k))
         y += h + Round(18 * k)
+    }
+    for bx in [["wv", chkHudWv, "wvT"], ["gd", chkHudGd, "gdT"]] {
+        if bx[2].Value {
+            h := Round(52 * k)
+            HudBox(bx[1], m, y, bw, h, k)
+            hudPnlW[bx[3]].Move(m + pad, y + Round(14 * k), tw, Round(28 * k))
+            y += h + Round(18 * k)
+        }
     }
     if chkHudCo.Value {
         h := Round(70 * k)
@@ -9790,17 +9799,17 @@ HudPanelText() {
     if (farmMode != "") {
         SetIf(hudPnlW["mdN"], farmMode)
         HudCol("mdN", farmModeCol != "" ? farmModeCol : C_TEXT)
-        SetIf(hudPnlW["mdW"], (farmWave != "" ? "Wave " farmWave : "") (farmGuild != "" && chkHudGd.Value ? (farmWave != "" ? "   ·   " : "") "🛡 " TT("f_guild") " #" farmGuild : ""))
         SetIf(hudPnlW["mdP"], farmPearls != "" ? "🦪 +" farmPearls : "")
         HudCol("mdP", farmPearlCol != "" ? farmPearlCol : C_TEXT)
         SetIf(hudPnlW["mdA"], farmPrev != "" ? TT("f_prevround") ": +" farmPrev : "")
     } else {
         SetIf(hudPnlW["mdN"], TT("f_reading"))
         HudCol("mdN", C_MUTED)
-        SetIf(hudPnlW["mdW"], farmGuild != "" && chkHudGd.Value ? "🛡 " TT("f_guild") " #" farmGuild : "")
         SetIf(hudPnlW["mdP"], "")
         SetIf(hudPnlW["mdA"], "")
     }
+    SetIf(hudPnlW["wvT"], farmWave != "" ? farmWave : "—")
+    SetIf(hudPnlW["gdT"], farmGuild != "" ? "#" farmGuild : "—")
     co := ""
     for c in CurrencySpec()
         if (prevCur.Has(c.name) && prevCur[c.name] != "")
@@ -10982,6 +10991,7 @@ SaveConfig() {
     IniWrite(chkHudCo.Value, iniFile, "cfg", "hudShowCo")
     IniWrite(chkHudLg.Value, iniFile, "cfg", "hudShowLg")
     IniWrite(chkHudGd.Value, iniFile, "cfg", "hudShowGd")
+    IniWrite(chkHudWv.Value, iniFile, "cfg", "hudShowWv")
     IniWrite(chkAreaScale.Value, iniFile, "cfg", "areaScale")
     IniWrite(chkRemSize.Value, iniFile, "cfg", "remSize")
     IniWrite(chkAreaShow.Value, iniFile, "cfg", "areaShow")

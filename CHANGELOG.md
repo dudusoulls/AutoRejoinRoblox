@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.32
+- Painel do HUD: Wave e Rank da guilda agora têm caixas próprias (cada uma com sua chave em Configurações → Exibir).
+
 ## v1.5.31
 - Roblox que "fecha" indo pra bandeja do Windows conta como fechado; o app percebe a janela escondida, fecha o processo e abre o jogo de novo (~8 s).
 
