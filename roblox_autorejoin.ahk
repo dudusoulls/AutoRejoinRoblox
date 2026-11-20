@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.19"
+VERSION     := "1.5.20"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5681,7 +5681,8 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
-    , "Discord", aaMode ? ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat", "Guilda"] : ["Webhook", "Vínculo", "Notif", "Painel", "Bot", "Relat"]
+    , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Relat", "Guilda"] : ["Webhook", "Notif", "Painel", "Relat"]
+    , "Bot", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
     , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
@@ -5696,18 +5697,19 @@ NavHead(name, y) {
     g.Add("Text", Format("x20 y{} w{} h14 Background{} c{}", y, SIDE - 40, C_SIDE, C_DIM), name)
 }
 AddNav("Início",      Chr(0xE80F), 80)
-NavHead("ROBLOX", 124)
-AddNav("Automação",   Chr(0xE916), 140)
-AddNav("Jogo",        Chr(0xE7FC), 176)
-NavHead("EXTRAS", 220)
-AddNav("Ferramentas", Chr(0xE90F), 236)
-AddNav("Discord",     Chr(0xE8F2), 272)
-AddNav("QoL",         Chr(0xE8C7), 308)
-NavHead("APP", 352)
-AddNav("Sobre",       Chr(0xE713), 368)
-AddNav("Aparência",   Chr(0xE790), 404)
-AddNav("Suporte",     Chr(0xE897), 440)
-AddNav("Logs",        Chr(0xE81C), 476)
+NavHead("ROBLOX", 120)
+AddNav("Automação",   Chr(0xE916), 136)
+AddNav("Jogo",        Chr(0xE7FC), 170)
+NavHead("EXTRAS", 210)
+AddNav("Ferramentas", Chr(0xE90F), 226)
+AddNav("Discord",     Chr(0xE8F2), 260)
+AddNav("Bot",         Chr(0xE99A), 294)
+AddNav("QoL",         Chr(0xE8C7), 328)
+NavHead("APP", 368)
+AddNav("Sobre",       Chr(0xE713), 384)
+AddNav("Aparência",   Chr(0xE790), 418)
+AddNav("Suporte",     Chr(0xE897), 452)
+AddNav("Logs",        Chr(0xE81C), 486)
 navBar := g.Add("Text", Format("x8 y{} w3 h18 Background{}", 90, C_ACC))
 
 FontUI(g, "s10")
@@ -6648,9 +6650,9 @@ SetBtnStyle(b, style) {
 AddNav(name, icon, y) {
     global g, navs, hoverMap, SIDE, C_SIDE, C_MUTED, C_NAVH, C_ACC, NAVK, GROUPS
     FontIcon(g, "s11")
-    ic := g.Add("Text", Format("x14 y{} w42 h36 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
+    ic := g.Add("Text", Format("x14 y{} w42 h34 Center +0x200 Background{} c{}", y, C_SIDE, C_MUTED), icon)
     FontUI(g, "s10 w600")
-    lb := g.Add("Text", Format("x56 y{} w{} h36 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
+    lb := g.Add("Text", Format("x56 y{} w{} h34 +0x200 Background{} c{}", y, SIDE - 70, C_SIDE, C_MUTED), TT(NAVK[name]))
     o := {ctrls: [ic, lb], bg: C_SIDE, hov: C_NAVH, y: y}
     for c in o.ctrls {
         hoverMap[c.Hwnd] := o

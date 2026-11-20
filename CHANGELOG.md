@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.20
+- O Bot ganhou uma aba própria em EXTRAS, com "Bot oficial" (vínculo) e "Bot" (seu próprio bot). Sai de dentro de Discord.
+
 ## v1.5.19
 - Com o Modo AA desligado, nada do jogo vai pro Discord: moedas, guilda, farm e leitura saem do painel, do status, do resumo diário e dos comandos.
 
