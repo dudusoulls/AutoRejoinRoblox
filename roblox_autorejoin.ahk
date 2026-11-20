@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.39"
+VERSION     := "1.5.40"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", edGuildN := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", guildTrk := 0, edGuildN := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -9066,8 +9066,10 @@ GuildReadRun() {
 ; texto branco com contorno escuro (o rank da guilda) → imagem grande, preto no branco, que o OCR lê bem.
 ; Tenta alguns limiares de "branco" e vota; devolve o que o OCR leu (pro log).
 GuildPre(hw, ox, oy, ow, oh, votes) {
+    global guildTrk
     seen := ""
-    hBM := 0, srcDC := 0, dc := 0, dib := 0
+    guildTrk := 0
+    hBM := 0, srcDC := 0
     try {
         rc := Buffer(16, 0)
         DllCall("GetClientRect", "Ptr", hw, "Ptr", rc)
@@ -9088,8 +9090,96 @@ GuildPre(hw, ox, oy, ow, oh, votes) {
                 , "Ptr", hS, "Int", NumGet(pt, 0, "Int"), "Int", NumGet(pt, 4, "Int"), "UInt", 0x00CC0020)
         }
         DllCall("ReleaseDC", "Ptr", 0, "Ptr", hS)
+        ; o boneco se mexe e o rank vai junto: acha o ícone verde-água do rank perto da área e lê em cima dele
+        rects := []
+        trk := GuildTrack(srcDC, cw, chh, ox, oy, ow, oh)
+        if IsObject(trk) {
+            guildTrk := trk
+            rects.Push(trk)
+            seen := "[ícone " trk[3] "x" trk[4] " em " trk[1] "," trk[2] "] "
+        }
+        rects.Push([ox, oy, ow, oh])
+        for r in rects {
+            seen .= GuildPreRect(srcDC, r[1], r[2], r[3], r[4], votes)
+            mx := 0
+            for n0, c0 in votes
+                mx := Max(mx, c0)
+            if (mx >= 5)
+                break
+        }
+    }
+    try {
+        if srcDC
+            DllCall("DeleteDC", "Ptr", srcDC)
+        if hBM
+            DllCall("DeleteObject", "Ptr", hBM)
+    }
+    return seen
+}
+
+; procura o ícone verde-água (esmeralda) do rank numa região em volta da área e devolve o retângulo do número em cima dele
+GuildTrack(srcDC, cw, chh, ox, oy, ow, oh) {
+    dib := 0, dc := 0
+    try {
+        sw := Round(Min(cw, Max(ow * 5, cw * 0.25))), sh := Round(Min(chh, Max(oh * 8, chh * 0.25)))
+        sx := Max(0, Min(cw - sw, Round(ox + ow / 2 - sw / 2))), sy := Max(0, Min(chh - sh, Round(oy + oh / 2 - sh / 2)))
+        bmi := Buffer(40, 0)
+        NumPut("UInt", 40, "Int", sw, "Int", -sh, "UShort", 1, "UShort", 32, bmi)
+        dib := DllCall("CreateDIBSection", "Ptr", 0, "Ptr", bmi, "UInt", 0, "Ptr*", &bits := 0, "Ptr", 0, "UInt", 0, "Ptr")
+        dc := DllCall("CreateCompatibleDC", "Ptr", 0, "Ptr")
+        DllCall("SelectObject", "Ptr", dc, "Ptr", dib)
+        DllCall("BitBlt", "Ptr", dc, "Int", 0, "Int", 0, "Int", sw, "Int", sh, "Ptr", srcDC, "Int", sx, "Int", sy, "UInt", 0x00CC0020)
+        DllCall("GdiFlush")
+        xs := [], ys := []
+        y := 0
+        while (y < sh) {
+            off := y * sw * 4
+            Loop sw {
+                v := NumGet(bits, off, "UInt")
+                r := (v >> 16) & 255, g := (v >> 8) & 255, b := v & 255
+                if (r < 70 && g > 150 && b > 110 && g - r > 100 && b <= g + 8 && g - b < 80)
+                    xs.Push(A_Index - 1), ys.Push(y)
+                off += 4
+            }
+            y += 1
+        }
+        if (xs.Length < 20)
+            return 0
+        mxm := 0, mym := 0
+        for i, xv in xs
+            mxm += xv, mym += ys[i]
+        mxm /= xs.Length, mym /= xs.Length
+        R := Max(20, cw * 0.03)
+        x0 := 99999, x1 := -1, y0 := 99999, y1 := -1, n := 0
+        for i, xv in xs {
+            if (Abs(xv - mxm) <= R && Abs(ys[i] - mym) <= R) {
+                n++
+                x0 := Min(x0, xv), x1 := Max(x1, xv), y0 := Min(y0, ys[i]), y1 := Max(y1, ys[i])
+            }
+        }
+        iw := x1 - x0 + 1, ih := y1 - y0 + 1
+        if (n < 20 || iw > cw * 0.10 || ih > chh * 0.10)
+            return 0
+        cx := sx + (x0 + x1) / 2, cy := sy + (y0 + y1) / 2
+        nw := Max(28, Round(iw * 1.9)), nh := Max(12, Round(ih * 0.85))
+        nx := Max(0, Min(cw - nw, Round(cx - nw / 2))), ny := Max(0, Min(chh - nh, Round(cy - nh / 2)))
+        return [nx, ny, nw, nh]
+    } finally {
+        if dc
+            DllCall("DeleteDC", "Ptr", dc)
+        if dib
+            DllCall("DeleteObject", "Ptr", dib)
+    }
+    return 0
+}
+
+; lê um retângulo do rank: amplia, isola o branco do texto (preto no branco) e vota os números
+GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
+    seen := ""
+    dc := 0, dib := 0
+    try {
         ; escala: o texto fica com ~60 px de altura (limite de pixels pra não ficar lento)
-        S := 8
+        S := 12
         while (S > 2 && (ow * S) * (oh * S) > 260000)
             S -= 1
         P := 24
@@ -9141,10 +9231,6 @@ GuildPre(hw, ox, oy, ow, oh, votes) {
             DllCall("DeleteDC", "Ptr", dc)
         if dib
             DllCall("DeleteObject", "Ptr", dib)
-        if srcDC
-            DllCall("DeleteDC", "Ptr", srcDC)
-        if hBM
-            DllCall("DeleteObject", "Ptr", hBM)
     }
     return seen
 }
@@ -9272,6 +9358,10 @@ ReadGuildRank(hw) {
         for n0, c0 in votes
             if (c0 >= 5)
                 return n0
+        global guildTrk
+        if IsObject(guildTrk)
+            ox := guildTrk[1], oy := guildTrk[2], ow := guildTrk[3], oh := guildTrk[4]
+        sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         ; várias escalas x formas de captura; o número que mais se repete ganha (tira o erro de leitura isolada)
         for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6)] {
             Loop 4 {

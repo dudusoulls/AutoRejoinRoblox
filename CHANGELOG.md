@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.40
+- Rank da guilda segue o boneco: o app acha o ícone verde-água do rank perto da área (mesmo que ele se mova) e lê o número em cima dele. Se não achar o ícone, lê a área fixa como antes.
+
 ## v1.5.39
 - Leitura: nova opção "Rank: leituras iguais para confirmar" (1 a 10, padrão 3) — quantas vezes o mesmo número precisa aparecer antes de mostrar o rank da guilda.
 
