@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.11"
+VERSION     := "1.5.12"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -162,7 +162,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, stGuild := 0, stMode := 0, homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.38, 0.25, 0.24, 0.17])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -836,6 +836,11 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "tools", "FERRAMENTAS",
+    "btn_backup", "Backup das configurações",
+    "btn_datafolder", "Pasta de dados",
+    "btn_openlog", "Abrir log de erros",
+    "backup_ok", "Backup salvo na Área de Trabalho: {1}",
     "err_title", "Auto Reconnect — erro",
     "err_msg", "Aconteceu um erro no app, mas ele continua rodando. Quer enviar o relatório pro desenvolvedor? (abre o GitHub já preenchido, é só clicar em Enviar)",
     "err_send", "Enviar relatório (1 clique)",
@@ -1428,6 +1433,11 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — error",
     "err_msg", "The app hit an error but keeps running. Send a report to the developer? (opens GitHub pre-filled, just click Submit)",
     "err_send", "Send report (1 click)",
@@ -2020,6 +2030,11 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "tools", "HERRAMIENTAS",
+    "btn_backup", "Copia de la configuración",
+    "btn_datafolder", "Carpeta de datos",
+    "btn_openlog", "Abrir registro de errores",
+    "backup_ok", "Copia guardada en el Escritorio: {1}",
     "err_title", "Auto Reconnect — error",
     "err_msg", "La app tuvo un error pero sigue funcionando. ¿Enviar un reporte al desarrollador? (abre GitHub ya rellenado, solo pulsa Enviar)",
     "err_send", "Enviar reporte (1 clic)",
@@ -2612,6 +2627,11 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — erreur",
     "err_msg", "L’app a rencontré une erreur mais continue. Envoyer un rapport au développeur ? (ouvre GitHub pré-rempli, clique sur Envoyer)",
     "err_send", "Envoyer le rapport (1 clic)",
@@ -3204,6 +3224,11 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — Fehler",
     "err_msg", "Die App hatte einen Fehler, läuft aber weiter. Bericht an den Entwickler senden? (öffnet GitHub vorausgefüllt, nur auf Senden klicken)",
     "err_send", "Bericht senden (1 Klick)",
@@ -3796,6 +3821,11 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — ошибка",
     "err_msg", "В приложении произошла ошибка, но оно продолжает работать. Отправить отчёт разработчику? (откроется GitHub с готовым текстом, нажмите Отправить)",
     "err_send", "Отправить отчёт (1 клик)",
@@ -4388,6 +4418,11 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — hata",
     "err_msg", "Uygulamada hata oluştu ama çalışmaya devam ediyor. Geliştiriciye rapor gönderilsin mi? (GitHub dolu açılır, Gönder’e tıkla)",
     "err_send", "Raporu gönder (1 tık)",
@@ -4980,6 +5015,11 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "tools", "TOOLS",
+    "btn_backup", "Back up settings",
+    "btn_datafolder", "Data folder",
+    "btn_openlog", "Open error log",
+    "backup_ok", "Backup saved to Desktop: {1}",
     "err_title", "Auto Reconnect — kesalahan",
     "err_msg", "Aplikasi mengalami kesalahan tetapi tetap berjalan. Kirim laporan ke pengembang? (membuka GitHub terisi, tinggal klik Kirim)",
     "err_send", "Kirim laporan (1 klik)",
@@ -5240,9 +5280,9 @@ sbBg := g.Add("Text", Format("x{} y{} w{} h28 +0x4000000 Background{}", SIDE, H 
 Bg(sbBg)
 sbLine := g.Add("Text", Format("x{} y{} w{} h1 Background{}", SIDE, H - 28, W - SIDE, C_NAVA))
 FontUI(g, "s9")
-sbDot := g.Add("Text", Format("x{} y{} w16 h28 +0x200 c{} Background{}", CX, H - 28, C_DIM, C_SIDE), "●")
+sbDot := g.Add("Text", Format("x{} y{} w1 h28 +0x200 c{} Background{}", CX, H - 28, C_DIM, C_SIDE), "")
 FontUI(g, "s8")
-sbTxt := g.Add("Text", Format("x{} y{} w{} h28 +0x200 c{} Background{}", CX + 20, H - 28, 460, C_MUTED, C_SIDE), TT("idle") "  ·  v" VERSION "  ·  BETA")
+sbTxt := g.Add("Text", Format("x{} y{} w{} h28 +0x200 c{} Background{}", CX, H - 28, 460, C_MUTED, C_SIDE), "v" VERSION "  ·  BETA")
 
 ; ---------------- Página: Início ----------------
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
@@ -5293,6 +5333,14 @@ Accent(CX + hw3 + 12, y + 14, 14, "B084FF")
 Lbl(CX + hw3 + 12 + 16, y + 12, hw3 - 30, TT("st_farm"), "s7 w700", C_DIM)
 stMode := Lbl(CX + hw3 + 12 + 16, y + 38, hw3 - 26, "—", "s11 w600")
 homeExtra := pages["_homex"]
+BeginPage("_homey", "", "")
+y := 458
+Card(CX, y, CW, 92)
+Lbl(CX + 20, y + 12, 300, TT("tools"), "s7 w700", C_DIM)
+Btn(CX + 20,                 y + 38, bw, 38, TT("btn_backup"), (*) => BackupConfig())
+Btn(CX + 20 + (bw + 12),     y + 38, bw, 38, TT("btn_datafolder"), (*) => Run(A_ScriptDir))
+Btn(CX + 20 + (bw + 12) * 2, y + 38, bw, 38, TT("btn_openlog"), (*) => OpenLogFile())
+homeTools := pages["_homey"]
 BeginPage("Início", TT("nav_home"), TT("pg_home_sub", USER_FIRST))
 
 ; ---------------- Página: Jogo ----------------
@@ -5683,7 +5731,7 @@ areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 
 ; ---------------- Página: Avançado (qualquer monitor ou resolução) ----------------
 BeginPage("Avançado", TT("nav_adv"), TT("pg_adv_sub"))
-y := 92
+y := aaMode ? 92 : 1200      ; leitura de áreas é do Modo AA: fora da janela quando desligado
 Card(CX, y, CW, 300)
 Lbl(CX + 20, y + 14, 400, TT("sec_adv"), "s7 w700", C_DIM)
 chkAreaScale := ToggleSwitch(CX + 20, y + 38, CW - 40, TT("sw_areascale"), savedAreaScale, TT("sw_areascale_sub"))
@@ -5693,7 +5741,7 @@ chkAreaShow.onChange := (*) => AreaShowTick()
 Divider(CX + 20, y + 246, CW - 40)
 advSize := Lbl(CX + 20, y + 260, CW - 40, TT("adv_nowin"), "s10", C_MUTED)
 
-y := 404
+y := aaMode ? 404 : 92
 Card(CX, y, CW, 136)
 Lbl(CX + 20, y + 14, 400, TT("sec_fx"), "s7 w700", C_DIM)
 chkClickSnd := ToggleSwitch(CX + 20, y + 36, CW - 40, TT("sw_clicksnd"), savedClickSnd, TT("sw_clicksnd_sub"))
@@ -5857,8 +5905,9 @@ StartApp() {
     firstRun := IniRead(iniFile, "cfg", "tourDone", "0") != "1" && IniRead(iniFile, "cfg", "resume", "0") != "1"
     IniWrite(0, iniFile, "cfg", "compact")          ; sempre abre no modo completo
     SplashRun()
-    IntroShow(g, Format("w{} h{}", W, H))
+    IntroShow(g, Trim(Format("w{} h{} ", W, H) GuiPosOpt()))
     SetTimer(PulseTick, 110)
+    SetTimer(GuiPosTick, 2000)
     SetTimer(CpuSample, 2000)
     HudApply()
     SetTimer(Cleanup, 2000)
@@ -6186,8 +6235,29 @@ AaToggle() {
     Reload()
 }
 
+BackupConfig() {
+    global iniFile
+    dst := A_Desktop "\AutoReconnect-config-" FormatTime(, "yyyyMMdd-HHmm") ".ini"
+    try {
+        FileCopy(iniFile, dst, 1)
+        Notify(TT("backup_ok", dst), "Auto Reconnect")
+    } catch as e
+        MsgBox(e.Message)
+}
+
+OpenLogFile() {
+    f := A_ScriptDir "\erros.log"
+    if FileExist(f)
+        Run("notepad.exe " Chr(34) f Chr(34))
+    else
+        Run(A_ScriptDir)
+}
+
 HomeExtraVis() {
-    global homeExtra, curPage, chkGuildStat, aaMode
+    global homeExtra, homeTools, curPage, chkGuildStat, aaMode
+    tv := !aaMode && (curPage = "Início")
+    for c in homeTools
+        c.Visible := tv
     vis := aaMode && (curPage = "Início") && IsObject(chkGuildStat) && chkGuildStat.Value
     for c in homeExtra
         c.Visible := vis
@@ -9595,6 +9665,20 @@ GuiPosSave() {
     }
 }
 
+GuiPosTick() {
+    static lx := "", ly := ""
+    global g
+    try {
+        if (WinGetMinMax(g.Hwnd) != 0 || !DllCall("IsWindowVisible", "Ptr", g.Hwnd))
+            return
+        WinGetPos(&x, &y, , , g.Hwnd)
+        if (x != lx || y != ly) && x > -5000 {
+            lx := x, ly := y
+            GuiPosSave()
+        }
+    }
+}
+
 GuiPosOpt() {
     global iniFile, W, H
     x := IniRead(iniFile, "cfg", "gx", ""), y := IniRead(iniFile, "cfg", "gy", "")
@@ -9753,8 +9837,7 @@ SetState(state, title, sub) {
     SetIf(dashSub, sub)
     SetIf(sideStat, title)
     SetIf(mStat, title)
-    try sbDot.SetFont("c" col)
-    SetIf(sbTxt, title "  ·  v" VERSION "  ·  BETA")
+    SetIf(sbTxt, "v" VERSION "  ·  BETA")
 }
 
 ; ---- versão do Roblox ----

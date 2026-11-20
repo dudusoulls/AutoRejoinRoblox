@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.12
+- Posição da janela: agora é usada já na abertura e salva a cada 2 s (não se perde se o app fechar de repente).
+- Barra de baixo sem status duplicado (fica só o da lateral esquerda).
+- Modo normal: Avançado mostra só Efeitos; Início ganha Ferramentas (backup das configurações, pasta de dados, log de erros).
+
 ## v1.5.11
 - O interruptor do Modo AA agora fica no topo de Automação → Opções (antes estava no fim da página, escondido).
 
