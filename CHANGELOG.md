@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.22
+- Corrige o layout da aba Bot: as páginas Bot oficial e Bot e comandos usavam a largura estreita da lista lateral e ficavam deslocadas, com textos sobrepostos. Agora ocupam a largura toda; o título da aba é só "Bot".
+
 ## v1.5.21
 - Botão "Convidar o bot" também na aba Bot → Bot oficial.
 

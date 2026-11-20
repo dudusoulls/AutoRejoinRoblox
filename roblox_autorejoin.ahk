@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.21"
+VERSION     := "1.5.22"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -843,6 +843,7 @@ I18N["pt"].Set(
     "sw_logoanim_sub", "Anel de tinta animado no canto da barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Mostra guilda, moedas, leitura e HUD do jogo. O app reinicia ao mudar",
+    "nav_bots", "Bot",
     "nav_offbot", "Bot oficial",
     "pg_offbot_sub", "Use o bot no seu servidor e controle só o seu Roblox",
     "sec_offbot", "BOT OFICIAL",
@@ -1497,6 +1498,7 @@ I18N["en"].Set(
     "sw_logoanim_sub", "Animated ink ring at the top of the sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -2151,6 +2153,7 @@ I18N["es"].Set(
     "sw_logoanim_sub", "Anillo de tinta animado en la barra lateral",
     "sw_aa", "Modo AA (Anime Adventures)",
     "sw_aa_sub", "Muestra guild, monedas, lectura y HUD del juego. Reinicia la app al cambiar",
+    "nav_bots", "Bot",
     "nav_offbot", "Bot oficial",
     "pg_offbot_sub", "Usa el bot en tu servidor y controla solo tu Roblox",
     "sec_offbot", "BOT OFICIAL",
@@ -2805,6 +2808,7 @@ I18N["fr"].Set(
     "sw_logoanim_sub", "Anneau d’encre animé dans la barre latérale",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -3459,6 +3463,7 @@ I18N["de"].Set(
     "sw_logoanim_sub", "Animierter Tintenring in der Seitenleiste",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -4113,6 +4118,7 @@ I18N["ru"].Set(
     "sw_logoanim_sub", "Анимированное чернильное кольцо в боковой панели",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -4767,6 +4773,7 @@ I18N["tr"].Set(
     "sw_logoanim_sub", "Kenar çubuğunda hareketli mürekkep halkası",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -5421,6 +5428,7 @@ I18N["id"].Set(
     "sw_logoanim_sub", "Cincin tinta animasi di sidebar",
     "sw_aa", "AA mode (Anime Adventures)",
     "sw_aa_sub", "Shows guild, coins, reading areas and game HUD. App restarts when toggled",
+    "nav_bots", "Bot",
     "nav_offbot", "Official bot",
     "pg_offbot_sub", "Use the bot in your server and control only your Roblox",
     "sec_offbot", "OFFICIAL BOT",
@@ -5528,7 +5536,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Guilda", "nav_guild", "Avançado", "nav_adv")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5682,7 +5690,7 @@ g.Add("Text", Format("x69 y+1 w100 c{} Background{}", C_DIM, C_SIDE), "ROBLOX")
 ; abas agrupadas: cada item da barra lateral pode ter sub-abas no topo
 GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Automação", ["Automação", "Rotina", "Opções"]
     , "Discord", aaMode ? ["Webhook", "Notif", "Painel", "Relat", "Guilda"] : ["Webhook", "Notif", "Painel", "Relat"]
-    , "Bot", ["Vínculo", "Bot"]
+    , "Bots", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD", "Leitura", "Avançado"] : ["Aparência", "Avançado"]
     , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", ["Sobre"], "Suporte", ["Suporte"])
@@ -5703,7 +5711,7 @@ AddNav("Jogo",        Chr(0xE7FC), 170)
 NavHead("EXTRAS", 210)
 AddNav("Ferramentas", Chr(0xE90F), 226)
 AddNav("Discord",     Chr(0xE8F2), 260)
-AddNav("Bot",         Chr(0xE99A), 294)
+AddNav("Bots",        Chr(0xE99A), 294)
 AddNav("QoL",         Chr(0xE8C7), 328)
 NavHead("APP", 368)
 AddNav("Sobre",       Chr(0xE713), 384)
@@ -5872,6 +5880,7 @@ edDiscId := Input(CX + 20, y + 136, CW - 40 - 118, savedDiscId, "Number")
 Btn(CX + CW - 128, y + 136, 108, 32, TT("btn_how"), (*) => (ToolTip(TT("hint_discord_id")), SetTimer(() => ToolTip(), -9000)))
 
 ; ---------------- Webhook: O que enviar ----------------
+CXs := CX, CWs := CW, CX := CX0, CW := CW0      ; esta aba usa a largura toda (sem lista lateral)
 BeginPage("Vínculo", TT("nav_offbot"), TT("pg_offbot_sub"))
 y := 92
 Card(CX, y, CW, 262)
@@ -5885,6 +5894,7 @@ botLinkStatus := Lbl(CX + 20, y + 172, CW - 40, TT("offbot_wait"), "s10 w600")
 Lbl(CX + 20, y + 202, CW - 40, TT("offbot_steps"), "s8", C_MUTED)
 Btn(CX + 20, y + 222, 190, 30, TT("tool_invite"), BotInvite, "primary")
 
+CX := CXs, CW := CWs
 BeginPage("Notif", TT("nav_notif"), TT("pg_notif_sub"))
 y := 92
 Card(CX, y, CW, 300)
@@ -5911,6 +5921,7 @@ SliderBar(CX + 20, y + 147, CW - 40 - 64 - 16, edPanelMin, 1, 30)
 Btn(CX + 20, y + 188, 150, 32, TT("btn_send_now"), (*) => PanelUpdate(true))
 
 ; ---------------- Webhook: Bot e comandos ----------------
+CX := CX0, CW := CW0
 BeginPage("Bot", TT("nav_bot"), TT("pg_bot_sub"))
 y := 92
 Card(CX, y, CW, 336)
@@ -5929,6 +5940,7 @@ Card(CX, y, CW, 84)
 Lbl(CX + 20, y + 14, CW - 40, TT("bot_hint_help"), "s9", C_MUTED)
 
 ; ---------------- Webhook: Relatório ----------------
+CX := CXs, CW := CWs
 BeginPage("Relat", TT("nav_statusrep"), TT("pg_statusrep_sub"))
 y := 92
 Card(CX, y, CW, 236)
