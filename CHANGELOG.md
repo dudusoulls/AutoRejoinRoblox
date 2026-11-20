@@ -2,7 +2,6 @@
 
 ## v1.5.17
 - **Bot oficial v2** (pasta `bot-worker/`, Cloudflare Worker, sem PC ligado): aba Discord → Bot oficial com código de vínculo. O usuário usa `/vincular` e depois `/roblox comando:...` no próprio servidor, controlando só o próprio Roblox; o webhook é criado e preenchido sozinho. Substitui o bot Python simples.
-- Bot oficial (pasta `bot/`): `/vincular` cria o webhook do canal e entrega o link só pra quem usou. Convite com as permissões certas.
 
 ## v1.5.16
 - Temas refeitos: 15 paletas bem diferentes entre si (Aero Glass, Obsidian, Aurora, Ember, Nebula, Crimson, Lagoon, Mocha, Lime, Neon, Void, Gold, Pearl, Sakura, Mint). Quem usava um tema removido volta pro Aero Glass.
