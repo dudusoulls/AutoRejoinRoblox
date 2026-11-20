@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.20"
+VERSION     := "1.5.21"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -5883,6 +5883,7 @@ edBotCode := Input(CX + 20, y + 126, CW - 190, savedBotCode, "+ReadOnly")
 Btn(CX + CW - 160, y + 126, 140, 32, TT("btn_copy_code"), CopyBotCode)
 botLinkStatus := Lbl(CX + 20, y + 172, CW - 40, TT("offbot_wait"), "s10 w600")
 Lbl(CX + 20, y + 202, CW - 40, TT("offbot_steps"), "s8", C_MUTED)
+Btn(CX + 20, y + 222, 190, 30, TT("tool_invite"), BotInvite, "primary")
 
 BeginPage("Notif", TT("nav_notif"), TT("pg_notif_sub"))
 y := 92

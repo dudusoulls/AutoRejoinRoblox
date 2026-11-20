@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.21
+- Botão "Convidar o bot" também na aba Bot → Bot oficial.
+
 ## v1.5.20
 - O Bot ganhou uma aba própria em EXTRAS, com "Bot oficial" (vínculo) e "Bot" (seu próprio bot). Sai de dentro de Discord.
 
