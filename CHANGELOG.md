@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.39
+- Leitura: nova opção "Rank: leituras iguais para confirmar" (1 a 10, padrão 3) — quantas vezes o mesmo número precisa aparecer antes de mostrar o rank da guilda.
+
 ## v1.5.38
 - Leitura → Testar (Rank da guilda): quando não acha o número, mostra o texto bruto que o OCR leu, pra ajudar a ajustar.
 

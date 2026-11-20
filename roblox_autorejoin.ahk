@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.38"
+VERSION     := "1.5.39"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -160,7 +160,7 @@ animSet := Map()
 slideFrom := 0, slideTo := 0, slideT0 := 0
 curState := "idle", curStateCol := "55555D", pulseLast := ""
 tourOn := false
-placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
+placedHw := 0, clickBuf := 0, ringFr := [], ringCtl := 0, ringIdx := 0, chkClickSnd := 0, chkLogoAnim := 0, chkIntroSnd := 0, stGuild := 0, stMode := 0, homeTools := [], homeExtra := [], rbxLatest := "", rbxLatestUp := "", rbxLatestT := 0, stRbxCur := 0, stRbxNew := 0, stRbxTag := 0, advSize := 0, guildBig := 0, guildSub := 0, guildWhen := "", areaOn := false, guildSeen := "", edGuildN := 0, areaUi := 0, areaRes := 0, farmLast := 0, farmGdbgT := 0
 areaDef := Map("mode", [0.20, 0.03, 0.60, 0.07], "wave", [0.10, 0.09, 0.30, 0.06], "pearls", [0.10, 0.14, 0.30, 0.07]
     , "coins", [0.0, 0.0, 0.40, 0.50], "guild", [0.419, 0.304, 0.080, 0.040])
 areaAnchor := Map("mode", 1, "wave", 0, "pearls", 0, "coins", 0, "guild", 1)   ; 0 esquerda, 1 centro
@@ -726,6 +726,8 @@ I18N["pt"] := Map(
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Padrão",
     "btn_area_t1", "Testar",
+    "lbl_guildn", "Rank: leituras iguais para confirmar",
+    "lbl_guildn_sub", "Quantas vezes o mesmo número precisa aparecer (1–10)",
     "btn_area_test", "Testar leitura agora",
     "area_need_roblox", "Abra o Roblox primeiro.",
     "area_testing", "Lendo…",
@@ -1386,6 +1388,8 @@ I18N["en"] := Map(
     "btn_area_adj", "Adjust area",
     "btn_area_def", "Default",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Test reading now",
     "area_need_roblox", "Open Roblox first.",
     "area_testing", "Reading…",
@@ -2046,6 +2050,8 @@ I18N["es"] := Map(
     "btn_area_adj", "Ajustar área",
     "btn_area_def", "Predeterm.",
     "btn_area_t1", "Probar",
+    "lbl_guildn", "Rango: lecturas iguales para confirmar",
+    "lbl_guildn_sub", "Cuántas veces debe salir el mismo número (1–10)",
     "btn_area_test", "Probar lectura ahora",
     "area_need_roblox", "Abre Roblox primero.",
     "area_testing", "Leyendo…",
@@ -2706,6 +2712,8 @@ I18N["fr"] := Map(
     "btn_area_adj", "Ajuster",
     "btn_area_def", "Défaut",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Tester la lecture",
     "area_need_roblox", "Ouvre Roblox d'abord.",
     "area_testing", "Lecture…",
@@ -3366,6 +3374,8 @@ I18N["de"] := Map(
     "btn_area_adj", "Anpassen",
     "btn_area_def", "Standard",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Lesen jetzt testen",
     "area_need_roblox", "Öffne zuerst Roblox.",
     "area_testing", "Lese…",
@@ -4026,6 +4036,8 @@ I18N["ru"] := Map(
     "btn_area_adj", "Настроить",
     "btn_area_def", "По умолч.",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Проверить чтение",
     "area_need_roblox", "Сначала откройте Roblox.",
     "area_testing", "Чтение…",
@@ -4686,6 +4698,8 @@ I18N["tr"] := Map(
     "btn_area_adj", "Ayarla",
     "btn_area_def", "Varsayılan",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Okumayı test et",
     "area_need_roblox", "Önce Roblox'u aç.",
     "area_testing", "Okunuyor…",
@@ -5346,6 +5360,8 @@ I18N["id"] := Map(
     "btn_area_adj", "Atur",
     "btn_area_def", "Default",
     "btn_area_t1", "Test",
+    "lbl_guildn", "Rank: matching reads to confirm",
+    "lbl_guildn_sub", "How many times the same number must appear (1–10)",
     "btn_area_test", "Tes baca sekarang",
     "area_need_roblox", "Buka Roblox dulu.",
     "area_testing", "Membaca…",
@@ -6301,6 +6317,10 @@ for ai, an in ["mode", "wave", "pearls", "coins", "guild"] {
 }
 Divider(CX + 20, y + 318, CW - 40)
 Btn(CX + 20, y + 330, 220, 34, TT("btn_area_test"), (*) => AreaTest(), "primary")
+Lbl(CX + 256, y + 328, CW - 256 - 20 - 64 - 10, TT("lbl_guildn"), "s9", C_MUTED)
+Lbl(CX + 256, y + 346, CW - 256 - 20 - 64 - 10, TT("lbl_guildn_sub"), "s8", C_DIM)
+edGuildN := Input(CX + CW - 20 - 64, y + 332, 64, IniRead(iniFile, "cfg", "guildN", "3"), "Number")
+edGuildN.OnEvent("Change", (*) => IniWrite(Max(1, Min(10, Integer(edGuildN.Value || 3))), iniFile, "cfg", "guildN"))
 areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 
 ; ---------------- Página: Avançado (qualquer monitor ou resolução) ----------------
@@ -9308,15 +9328,17 @@ GuildTick(hw) {
         hist := []
         return
     }
-    ; só mostra um rank novo quando o MESMO número aparece 3 vezes nas últimas 8 leituras (tolera erro de OCR no meio)
+    ; só mostra um rank novo quando o MESMO número aparece N vezes nas últimas leituras (N = ini [cfg] guildN, padrão 3)
+    need := 3
+    try need := Max(1, Min(10, Integer(IniRead(iniFile, "cfg", "guildN", "3"))))
     hist.Push(gr)
-    if (hist.Length > 8)
+    while (hist.Length > need * 2 + 2)
         hist.RemoveAt(1)
     cnt := 0
     for v in hist
         if (v = gr)
             cnt++
-    if (cnt >= 3) {
+    if (cnt >= need) {
         old := farmGuild
         farmGuild := gr, hist := []
         GuildChanged(old, gr)
