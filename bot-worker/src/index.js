@@ -14,7 +14,11 @@ function welcomeEmbed(full) {
     "Este canal agora recebe os avisos do **seu** app e você controla o **seu** Roblox por aqui com `/roblox comando:...`\n\n" +
     "### 🎮 Comandos\n" +
     "```\nstatus  print  iniciar  parar  reiniciar\nmoedas  resumo  pc  historico  logs\npainel  grafico  ajuda\n```\n" +
-    "-# Deixe o app aberto com **Bot oficial** ligado (EXTRAS → Bot).\n";
+    "### 📌 Webhook no app\n" +
+    "**1.** Abra o app → **EXTRAS → Webhook**\n" +
+    "**2.** Cole o link do webhook (o bot te mandou numa mensagem só sua, no momento do `/vincular`)\n" +
+    "**3.** Ative os avisos que quiser\n" +
+    "-# Com **Bot oficial** ligado (EXTRAS → Bot) o app já pega o webhook sozinho.\n";
   const thanks =
     "### 💜 Obrigado por usar o Auto Reconnect!\n" +
     "O app é **grátis** e feito por uma pessoa só. Se ele está te ajudando a farmar, qualquer **Pix** ajuda a manter o projeto vivo — é só escanear o QR abaixo. 🙏\n";
