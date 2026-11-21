@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.57"
+VERSION     := "1.5.58"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -12307,6 +12307,40 @@ KaCheckUpdate(manual) {
         ApplyUpdate()
 }
 
+; hash MD5 de um arquivo (via CryptoAPI do Windows) — usado pra saber se dois exes são REALMENTE iguais, não só do mesmo tamanho
+FileHashMD5(path) {
+    hProv := 0, hHash := 0, out := ""
+    try {
+        if !DllCall("advapi32\CryptAcquireContextW", "Ptr*", &hProv, "Ptr", 0, "Ptr", 0, "UInt", 1, "UInt", 0xF0000000)  ; PROV_RSA_FULL, CRYPT_VERIFYCONTEXT
+            return ""
+        if !DllCall("advapi32\CryptCreateHash", "Ptr", hProv, "UInt", 0x8003, "Ptr", 0, "UInt", 0, "Ptr*", &hHash) {    ; CALG_MD5
+            DllCall("advapi32\CryptReleaseContext", "Ptr", hProv, "UInt", 0)
+            return ""
+        }
+        f := FileOpen(path, "r")
+        if !f {
+            DllCall("advapi32\CryptDestroyHash", "Ptr", hHash)
+            DllCall("advapi32\CryptReleaseContext", "Ptr", hProv, "UInt", 0)
+            return ""
+        }
+        buf := Buffer(1048576)
+        while (n := f.RawRead(buf, buf.Size))
+            DllCall("advapi32\CryptHashData", "Ptr", hHash, "Ptr", buf, "UInt", n, "UInt", 0)
+        f.Close()
+        sz := Buffer(4), NumPut("UInt", 16, sz)
+        hv := Buffer(16)
+        szLen := Buffer(4), NumPut("UInt", 4, szLen)
+        DllCall("advapi32\CryptGetHashParam", "Ptr", hHash, "UInt", 2, "Ptr", hv, "Ptr", sz, "UInt", 0)  ; HP_HASHVAL
+        Loop 16
+            out .= Format("{:02X}", NumGet(hv, A_Index - 1, "UChar"))
+    } catch {
+        out := ""
+    }
+    try DllCall("advapi32\CryptDestroyHash", "Ptr", hHash)
+    try DllCall("advapi32\CryptReleaseContext", "Ptr", hProv, "UInt", 0)
+    return out
+}
+
 ApplyExeUpdate() {
     global pendingVer, running, iniFile, EXE_NAME, GITHUB_REPO, updStatus, pendingUpd, updBadge
     ; "?t=" evita pegar o exe velho do cache do Windows (era isso que fazia o app "atualizar" sempre pra mesma versão)
@@ -12324,8 +12358,10 @@ ApplyExeUpdate() {
         return
     }
     ; o exe "latest" no GitHub ainda não foi recompilado com a versão nova (ex: a CI falhou ou ainda tá rodando):
-    ; baixar e trocar pra um exe idêntico ao que já tá rodando só faz reabrir sem mudar nada -> parece um loop. Então checa antes.
-    if (FileGetSize(tmp) = FileGetSize(A_ScriptFullPath)) {
+    ; baixar e trocar pra um exe idêntico ao que já tá rodando só faz reabrir sem mudar nada -> parece um loop. Então checa o
+    ; CONTEÚDO (hash), não só o tamanho — dois exes diferentes podem dar exatamente o mesmo tamanho por coincidência.
+    h1 := FileHashMD5(tmp), h2 := FileHashMD5(A_ScriptFullPath)
+    if (h1 != "" && h1 = h2) {
         try FileDelete(tmp)
         Log(TT("log_upd_samebuild", pendingVer))
         updStatus.Value := TT("log_upd_samebuild", pendingVer)

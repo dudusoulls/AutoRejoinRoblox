@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.58
+- Corrige a checagem "é o mesmo build?" da v1.5.55: ela comparava só o tamanho do exe, e por coincidência a v1.5.56 e a v1.5.57 deram exatamente o mesmo tamanho — isso travava a atualização achando que era a mesma versão. Agora compara o conteúdo de verdade (hash), não o tamanho.
+
 ## v1.5.57
 - Modo "mostrar na tela onde ele está lendo" agora respeita os toggles da aba Intervalos: área desligada lá não aparece mais como contorno na tela.
 
