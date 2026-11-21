@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.54"
+VERSION     := "1.5.55"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -388,6 +388,7 @@ I18N["pt"] := Map(
     "badge_new", "Nova versão v{1}",
     "log_upd_avail", "Atualização disponível: v{1}.",
     "log_upd_dlfail", "Falha ao baixar atualização: {1}",
+    "log_upd_samebuild", "Atualização para v{1} baixou o mesmo exe que você já tem (ainda não compilaram a versão nova). Vou tentar de novo mais tarde.",
     "log_upd_fail", "Falha ao atualizar: {1}",
     "log_updated", "Atualizado para v{1}! Reiniciando...",
     "lang_menu", "Idioma",
@@ -1072,6 +1073,7 @@ I18N["en"] := Map(
     "badge_new", "New version v{1}",
     "log_upd_avail", "Update available: v{1}.",
     "log_upd_dlfail", "Failed to download update: {1}",
+    "log_upd_samebuild", "The update for v{1} downloaded the exact same exe you already have (the new build isn't ready yet). I'll try again later.",
     "log_upd_fail", "Update failed: {1}",
     "log_updated", "Updated to v{1}! Restarting...",
     "lang_menu", "Language",
@@ -1756,6 +1758,7 @@ I18N["es"] := Map(
     "badge_new", "Nueva versión v{1}",
     "log_upd_avail", "Actualización disponible: v{1}.",
     "log_upd_dlfail", "Error al descargar la actualización: {1}",
+    "log_upd_samebuild", "La actualización a v{1} descargó el mismo exe que ya tienes (la build nueva aún no está lista). Lo intentaré de nuevo más tarde.",
     "log_upd_fail", "Error al actualizar: {1}",
     "log_updated", "¡Actualizado a v{1}! Reiniciando...",
     "lang_menu", "Idioma",
@@ -2440,6 +2443,7 @@ I18N["fr"] := Map(
     "badge_new", "Nouvelle version v{1}",
     "log_upd_avail", "Mise à jour disponible : v{1}.",
     "log_upd_dlfail", "Échec du téléchargement de la mise à jour : {1}",
+    "log_upd_samebuild", "La mise à jour vers v{1} a téléchargé exactement le même exe que vous avez déjà (la nouvelle build n'est pas encore prête). Je réessaierai plus tard.",
     "log_upd_fail", "Échec de la mise à jour : {1}",
     "log_updated", "Mis à jour en v{1} ! Redémarrage...",
     "lang_menu", "Langue",
@@ -3124,6 +3128,7 @@ I18N["de"] := Map(
     "badge_new", "Neue Version v{1}",
     "log_upd_avail", "Update verfügbar: v{1}.",
     "log_upd_dlfail", "Update-Download fehlgeschlagen: {1}",
+    "log_upd_samebuild", "Das Update auf v{1} hat genau die exe heruntergeladen, die du schon hast (der neue Build ist noch nicht fertig). Ich versuche es später erneut.",
     "log_upd_fail", "Aktualisierung fehlgeschlagen: {1}",
     "log_updated", "Auf v{1} aktualisiert! Neustart...",
     "lang_menu", "Sprache",
@@ -3808,6 +3813,7 @@ I18N["ru"] := Map(
     "badge_new", "Новая версия v{1}",
     "log_upd_avail", "Доступно обновление: v{1}.",
     "log_upd_dlfail", "Не удалось скачать обновление: {1}",
+    "log_upd_samebuild", "Обновление до v{1} загрузило точно тот же exe, что у вас уже есть (новая сборка ещё не готова). Попробую позже снова.",
     "log_upd_fail", "Ошибка обновления: {1}",
     "log_updated", "Обновлено до v{1}! Перезапуск...",
     "lang_menu", "Язык",
@@ -4492,6 +4498,7 @@ I18N["tr"] := Map(
     "badge_new", "Yeni sürüm v{1}",
     "log_upd_avail", "Güncelleme mevcut: v{1}.",
     "log_upd_dlfail", "Güncelleme indirilemedi: {1}",
+    "log_upd_samebuild", "v{1} güncellemesi tam olarak sahip olduğun exe'yi indirdi (yeni derleme henüz hazır değil). Daha sonra tekrar denenecek.",
     "log_upd_fail", "Güncelleme başarısız: {1}",
     "log_updated", "v{1} sürümüne güncellendi! Yeniden başlatılıyor...",
     "lang_menu", "Dil",
@@ -5176,6 +5183,7 @@ I18N["id"] := Map(
     "badge_new", "Versi baru v{1}",
     "log_upd_avail", "Pembaruan tersedia: v{1}.",
     "log_upd_dlfail", "Gagal mengunduh pembaruan: {1}",
+    "log_upd_samebuild", "Pembaruan ke v{1} mengunduh exe yang sama persis dengan yang sudah kamu punya (build baru belum siap). Akan dicoba lagi nanti.",
     "log_upd_fail", "Pembaruan gagal: {1}",
     "log_updated", "Diperbarui ke v{1}! Memulai ulang...",
     "lang_menu", "Bahasa",
@@ -12282,7 +12290,7 @@ KaCheckUpdate(manual) {
 }
 
 ApplyExeUpdate() {
-    global pendingVer, running, iniFile, EXE_NAME, GITHUB_REPO
+    global pendingVer, running, iniFile, EXE_NAME, GITHUB_REPO, updStatus, pendingUpd, updBadge
     ; "?t=" evita pegar o exe velho do cache do Windows (era isso que fazia o app "atualizar" sempre pra mesma versão)
     url := "https://github.com/" GITHUB_REPO "/releases/latest/download/" EXE_NAME "?t=" A_Now
     tmp := A_Temp "\arr_update.exe"
@@ -12295,6 +12303,18 @@ ApplyExeUpdate() {
     }
     if (!FileExist(tmp) || FileGetSize(tmp) < 200000) {   ; exe real tem MB; menos que isso = erro/página
         Log(TT("log_upd_dlfail", "exe invalido"))
+        return
+    }
+    ; o exe "latest" no GitHub ainda não foi recompilado com a versão nova (ex: a CI falhou ou ainda tá rodando):
+    ; baixar e trocar pra um exe idêntico ao que já tá rodando só faz reabrir sem mudar nada -> parece um loop. Então checa antes.
+    if (FileGetSize(tmp) = FileGetSize(A_ScriptFullPath)) {
+        try FileDelete(tmp)
+        Log(TT("log_upd_samebuild", pendingVer))
+        updStatus.Value := TT("log_upd_samebuild", pendingVer)
+        pendingUpd := ""
+        try updBadge.Visible := false
+        tr := StrSplit(IniRead(iniFile, "cfg", "updTry", ""), "|")
+        IniWrite(pendingVer "|" ((tr.Length = 2 && tr[1] = pendingVer ? Integer(tr[2]) : 0) + 1), iniFile, "cfg", "updTry")
         return
     }
     SaveConfig()

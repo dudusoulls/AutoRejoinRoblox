@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.55
+- Achei o motivo do "fica dando update e reabrindo sempre na mesma versão": o app baixava o exe "mais novo" do GitHub mesmo quando ele era exatamente igual ao que já tava rodando (porque a build ainda não tinha terminado no GitHub) — trocava, reabria, e nada mudava, de novo e de novo. Agora ele compara o exe baixado com o que já está rodando antes de trocar; se forem iguais, não reabre, só avisa no log e no status que a build nova ainda não chegou e tenta de novo depois.
+
 ## v1.5.54
 - O log da aba Logs agora também é salvo no erros.log — dá pra ver o que aconteceu abrindo o arquivo (Ferramentas > abrir pasta), sem precisar abrir o app.
 - A checagem rápida de atualização passou de 30 segundos para 5 minutos (era pesada demais rodando o tempo todo).
