@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.53"
+VERSION     := "1.5.54"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -762,7 +762,7 @@ I18N["pt"] := Map(
     "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
     "f_mode", "Modo de farm",
-    "sw_fastupd", "Procurar atualização a cada 30 segundos",
+    "sw_fastupd", "Procurar atualização a cada 5 minutos",
     "sw_fastupd_sub", "Checagem leve: só lê o começo do arquivo",
     "ph_search", "Buscar",
     "hud_panel", "Painel de farm (Status, Moedas e Logs)",
@@ -1446,7 +1446,7 @@ I18N["en"] := Map(
     "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
     "f_mode", "Farm mode",
-    "sw_fastupd", "Check for updates every 30 seconds",
+    "sw_fastupd", "Check for updates every 5 minutes",
     "sw_fastupd_sub", "Lightweight check: reads only the start of the file",
     "ph_search", "Search",
     "hud_panel", "Farm panel (Status, Coins and Logs)",
@@ -2130,7 +2130,7 @@ I18N["es"] := Map(
     "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
     "f_mode", "Modo de farmeo",
-    "sw_fastupd", "Buscar actualizaciones cada 30 segundos",
+    "sw_fastupd", "Buscar actualizaciones cada 5 minutos",
     "sw_fastupd_sub", "Chequeo ligero: solo lee el inicio del archivo",
     "ph_search", "Buscar",
     "hud_panel", "Panel de farmeo (Estado, Monedas y Logs)",
@@ -2814,7 +2814,7 @@ I18N["fr"] := Map(
     "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
     "f_mode", "Mode de farm",
-    "sw_fastupd", "Chercher une mise à jour toutes les 30 secondes",
+    "sw_fastupd", "Chercher une mise à jour toutes les 5 minutes",
     "sw_fastupd_sub", "Vérification légère : lit seulement le début du fichier",
     "ph_search", "Rechercher",
     "hud_panel", "Panneau de farm (Statut, Pièces et Logs)",
@@ -3498,7 +3498,7 @@ I18N["de"] := Map(
     "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
     "f_mode", "Farm-Modus",
-    "sw_fastupd", "Alle 30 Sekunden nach Updates suchen",
+    "sw_fastupd", "Alle 5 Minuten nach Updates suchen",
     "sw_fastupd_sub", "Leichte Prüfung: liest nur den Dateianfang",
     "ph_search", "Suchen",
     "hud_panel", "Farm-Panel (Status, Münzen und Logs)",
@@ -4182,7 +4182,7 @@ I18N["ru"] := Map(
     "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
     "f_mode", "Режим фарма",
-    "sw_fastupd", "Проверять обновления каждые 30 секунд",
+    "sw_fastupd", "Проверять обновления каждые 5 минут",
     "sw_fastupd_sub", "Лёгкая проверка: читает только начало файла",
     "ph_search", "Поиск",
     "hud_panel", "Панель фарма (статус, монеты, логи)",
@@ -4866,7 +4866,7 @@ I18N["tr"] := Map(
     "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
     "f_mode", "Farm modu",
-    "sw_fastupd", "30 saniyede bir güncelleme ara",
+    "sw_fastupd", "5 dakikada bir güncelleme ara",
     "sw_fastupd_sub", "Hafif kontrol: dosyanın sadece başını okur",
     "ph_search", "Ara",
     "hud_panel", "Farm paneli (Durum, Paralar, Loglar)",
@@ -5550,7 +5550,7 @@ I18N["id"] := Map(
     "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
     "f_mode", "Mode farm",
-    "sw_fastupd", "Cek pembaruan setiap 30 detik",
+    "sw_fastupd", "Cek pembaruan setiap 5 menit",
     "sw_fastupd_sub", "Cek ringan: hanya membaca awal file",
     "ph_search", "Cari",
     "hud_panel", "Panel farm (Status, Koin, Log)",
@@ -6784,7 +6784,7 @@ StartApp() {
     SetTimer(AreaShowTick, 500)
     SetTimer(GuildEveryTick, 30000)
     SetTimer(OcrLoop, 1000)          ; (o atraso da 1ª leitura é feito dentro do OcrLoop; um 2º SetTimer negativo cancelava o repetido)
-    SetTimer(UpdPoll, 30000)                         ; e uma checagem leve a cada 30s (se ligada)
+    SetTimer(UpdPoll, 300000)                        ; e uma checagem leve a cada 5 min (se ligada) — era 30s, pesado demais
     if KaEnabled()
         SetTimer(LicenseRecheck, 30 * 60000)         ; confere a licença a cada 30 min
     ; voltou de uma atualização automática com o monitoramento ligado -> liga de novo
@@ -11463,6 +11463,12 @@ Log(msg) {
     }
     SendMessage(0xB1, n, n, logBox.Hwnd)                  ; EM_SETSEL no fim
     SendMessage(0xC2, 0, StrPtr(line), logBox.Hwnd)       ; EM_REPLACESEL
+    try {                                                  ; mesmo log também no erros.log — dá pra ver sem abrir o app
+        f := A_ScriptDir "\erros.log"
+        if (FileExist(f) && FileGetSize(f) > 3000000)
+            FileDelete(f)
+        FileAppend(Redact(FormatTime(, "yyyy-MM-dd HH:mm:ss") "  " msg) "`n", f, "UTF-8")
+    }
 }
 
 ; ---------------- relatório de erro (abre uma Issue do GitHub já preenchida, 1 clique) ----------------

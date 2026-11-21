@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.54
+- O log da aba Logs agora também é salvo no erros.log — dá pra ver o que aconteceu abrindo o arquivo (Ferramentas > abrir pasta), sem precisar abrir o app.
+- A checagem rápida de atualização passou de 30 segundos para 5 minutos (era pesada demais rodando o tempo todo).
+
 ## v1.5.53
 - Aba "Dono" com visual exclusivo (faixa dourada "ACESSO EXCLUSIVO") e tabela ajustada pra não cortar texto; corrige botão "Atualizar" que aparecia sem tradução.
 - Melhora a leitura do rank da guilda (mais nítida, com mais variações de contraste) pra reduzir a confusão entre 4 e 9.
