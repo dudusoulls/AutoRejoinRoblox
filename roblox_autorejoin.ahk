@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.58"
+VERSION     := "1.5.59"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6599,11 +6599,11 @@ areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 ; ---------------- Página: LeituraCfg (o que procurar e a cada quantos segundos) ----------------
 BeginPage("LeituraCfg", TT("nav_ocrsched"), TT("pg_ocrsched_sub"))
 y := 92
-Card(CX, y, CW, 254)
+Card(CX, y, CW, 300)
 Lbl(CX + 20, y + 14, 400, "O QUE PROCURAR (E A CADA QUANTOS SEGUNDOS)", "s7 w700", C_DIM)
 Lbl(CX + 20, y + 34, CW - 40, "Desligar o que você não usa deixa a leitura mais rápida e evita erro.", "s9", C_MUTED)
 swW := CW - 40 - 150
-for ai, an in ["mode", "wave", "pearls", "guild"] {
+for ai, an in ["mode", "wave", "pearls", "coins", "guild"] {
     ry := y + 66 + (ai - 1) * 46
     chk := ToggleSwitch(CX + 20, ry, swW, TT(areaKey[an]), OcrAreaOn(an))
     chk.onChange := SetOcrAreaOn.Bind(an, chk)
@@ -8769,7 +8769,7 @@ StuckTick() {
     hw := FindGameWindow()
     if !(hw && WinGetMinMax(hw) != -1)
         return
-    if (A_TickCount - lastCoinRead > 50000) {
+    if (OcrAreaOn("coins") && A_TickCount - lastCoinRead > 50000) {
         try CoinsObserved(ReadCurrencies(hw)[2])
     }
     if (lastCoinSig = "")
@@ -9271,7 +9271,7 @@ AreaShowTick() {
     cols := Map("mode", "5BE37D", "wave", "FFD84D", "pearls", "FF7AC8", "coins", "FFA23D", "guild", "4DD2FF")
     k := A_ScreenDPI / 96
     for n in ["mode", "wave", "pearls", "coins", "guild"] {
-        vis := (n = "coins" || OcrAreaOn(n)) && (n != "coins" || AreaIsSet("coins")) && (n != "guild" || chkHudGd.Value)
+        vis := OcrAreaOn(n) && (n != "coins" || AreaIsSet("coins")) && (n != "guild" || chkHudGd.Value)
         if !wins.Has(n) {
             o := {key: "", vis: false, hw: 0}
             o.frm := Gui("-Caption +ToolWindow -DPIScale +E0x20 +E0x08000000")
@@ -9601,7 +9601,10 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
         oldD := DllCall("SelectObject", "Ptr", dc, "Ptr", dib, "Ptr")
         r2 := Buffer(16, 0), NumPut("Int", Wp, "Int", Hp, r2, 8)
         DllCall("FillRect", "Ptr", dc, "Ptr", r2, "Ptr", DllCall("GetStockObject", "Int", 0, "Ptr"))
-        DllCall("SetStretchBltMode", "Ptr", dc, "Int", 4)
+        ; COLORONCOLOR (3) em vez de HALFTONE (4): o rank da guilda é bem pequeno no jogo, e o HALFTONE
+        ; borra/mistura pixels ao ampliar — isso fecha a aberturinha do "4" e ele vira "9". COLORONCOLOR amplia
+        ; sem misturar (mantém os pixels "duros"), preservando essa abertura.
+        DllCall("SetStretchBltMode", "Ptr", dc, "Int", 3)
         DllCall("StretchBlt", "Ptr", dc, "Int", P, "Int", P, "Int", W, "Int", H
             , "Ptr", srcDC, "Int", ox, "Int", oy, "Int", ow, "Int", oh, "UInt", 0x00CC0020)
         DllCall("GdiFlush")

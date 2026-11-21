@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.59
+- Tentativa de corrigir o "4" lido como "9" no rank da guilda: a ampliação da imagem (que é bem pequena no jogo) usava um modo que borra os pixels, o que pode fechar a aberturinha do "4" e deixar ele parecido com "9". Troquei pra um modo que amplia sem borrar. Não tenho como testar aqui — me avisa se continuar errando.
+- "Moedas" agora também tem o ON/OFF e intervalo na aba Intervalos (tinha ficado de fora) e some do "mostrar na tela onde ele está lendo" quando desligado, igual as outras áreas.
+
 ## v1.5.58
 - Corrige a checagem "é o mesmo build?" da v1.5.55: ela comparava só o tamanho do exe, e por coincidência a v1.5.56 e a v1.5.57 deram exatamente o mesmo tamanho — isso travava a atualização achando que era a mesma versão. Agora compara o conteúdo de verdade (hash), não o tamanho.
 
