@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.52"
+VERSION     := "1.5.53"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6530,20 +6530,24 @@ Btn(CX + 20, y + 156, 220, 34, TT("btn_open_dbg"), (*) => (DirCreate(A_ScriptDir
 
 ; ---------------- Página: Dono (só existe se houver owner.key ao lado do app) ----------------
 if IS_OWNER {
-    BeginPage("Dono", TT("nav_owner"), TT("pg_owner_sub"))
+    BeginPage("Dono", TT("nav_owner"), "")
     y := 92
-    Card(CX, y, CW, 60)
-    Lbl(CX + 20, y + 10, CW - 180, TT("pg_owner_sub"), "s9", C_MUTED)
-    Btn(CX + CW - 150, y + 13, 130, 34, TT("btn_owner_refresh"), (*) => OwnerRefresh(), "primary")
-    y += 76
-    Card(CX, y, CW, 60)
-    lblOwnerSum := Lbl(CX + 20, y + 18, CW - 40, "—", "s10 w600")
-    y += 76
-    Card(CX, y, CW, 420)
+    Card(CX, y, CW, 70)
+    Accent(CX, y + 15, 40, "F5C542")
+    Lbl(CX + 20, y + 12, CW - 180, "ACESSO EXCLUSIVO", "s8 w700", "F5C542")
+    Lbl(CX + 20, y + 32, CW - 180, TT("pg_owner_sub"), "s9", C_MUTED)
+    Btn(CX + CW - 150, y + 18, 130, 34, "Atualizar", (*) => OwnerRefresh(), "primary")
+    y += 86
+    Card(CX, y, CW, 64)
+    Accent(CX, y + 15, 34, "4DA3FF")
+    lblOwnerSum := Lbl(CX + 20, y + 20, CW - 40, "—", "s13 w700")
+    y += 80
+    Card(CX, y, CW, 410)
+    Lbl(CX + 20, y + 14, 300, "QUEM ATIVOU", "s7 w700", C_DIM)
     FontUI(g, "s9")
     lvOwner := P(g.Add("ListView", Format("x{} y{} w{} h{} -E0x200 -Multi +LV0x10000 Background{} c{}"
-        , CX + 16, y + 14, CW - 32, 390, C_CARD, C_TEXT), ["Status", "Usuário", "Versão", "SO", "País", "IP", "Visto"]))
-    lvOwner.ModifyCol(1, 60), lvOwner.ModifyCol(2, 110), lvOwner.ModifyCol(3, 70), lvOwner.ModifyCol(4, 90), lvOwner.ModifyCol(5, 55), lvOwner.ModifyCol(6, 100), lvOwner.ModifyCol(7, 120)
+        , CX + 16, y + 38, CW - 32, 356, C_CARD, C_TEXT), ["Status", "Usuário", "Versão", "SO", "País", "IP", "Visto"]))
+    lvOwner.ModifyCol(1, 46), lvOwner.ModifyCol(2, 92), lvOwner.ModifyCol(3, 54), lvOwner.ModifyCol(4, 66), lvOwner.ModifyCol(5, 40), lvOwner.ModifyCol(6, 92), lvOwner.ModifyCol(7, 96)
     DllCall("uxtheme\SetWindowTheme", "Ptr", lvOwner.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 }
 
@@ -6567,6 +6571,20 @@ Lbl(CX + 256, y + 346, CW - 256 - 20 - 64 - 10, TT("lbl_guildn_sub"), "s8", C_DI
 edGuildN := Input(CX + CW - 20 - 64, y + 332, 64, IniRead(iniFile, "cfg", "guildN", "3"), "Number")
 edGuildN.OnEvent("Change", (*) => IniWrite(Max(1, Min(10, Integer(edGuildN.Value || 3))), iniFile, "cfg", "guildN"))
 areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
+
+y += 448
+Card(CX, y, CW, 254)
+Lbl(CX + 20, y + 14, 400, "O QUE PROCURAR (E A CADA QUANTOS SEGUNDOS)", "s7 w700", C_DIM)
+Lbl(CX + 20, y + 34, CW - 40, "Desligar o que você não usa deixa a leitura mais rápida e evita erro.", "s9", C_MUTED)
+swW := CW - 40 - 150
+for ai, an in ["mode", "wave", "pearls", "guild"] {
+    ry := y + 66 + (ai - 1) * 46
+    chk := ToggleSwitch(CX + 20, ry, swW, TT(areaKey[an]), AreaOn(an))
+    chk.onChange := SetAreaOn.Bind(an, chk)
+    ed := Input(CX + 20 + swW + 16, ry + 1, 56, AreaEvery(an), "Number")
+    ed.OnEvent("Change", SetAreaEvery.Bind(an, ed))
+    Lbl(CX + 20 + swW + 16 + 60, ry + 8, 50, "seg", "s9", C_MUTED)
+}
 
 ; ---------------- Página: Avançado (qualquer monitor ou resolução) ----------------
 BeginPage("Avançado", TT("nav_adv"), TT("pg_adv_sub"))
@@ -9545,8 +9563,8 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
     dc := 0, dib := 0
     try {
         ; escala: o texto fica com ~60 px de altura (limite de pixels pra não ficar lento)
-        S := 12
-        while (S > 2 && (ow * S) * (oh * S) > 260000)
+        S := 16
+        while (S > 2 && (ow * S) * (oh * S) > 480000)
             S -= 1
         P := 24
         W := ow * S, H := oh * S, Wp := W + 2 * P, Hp := H + 2 * P
@@ -9563,7 +9581,7 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
         DllCall("GdiFlush")
         orig := Buffer(Wp * Hp * 4)
         DllCall("RtlMoveMemory", "Ptr", orig, "Ptr", bits, "UPtr", Wp * Hp * 4)
-        for th in [190, 160, 215] {
+        for th in [190, 160, 215, 140, 175, 105] {
             y := 0
             while (y < H) {
                 off := ((P + y) * Wp + P) * 4
@@ -9706,6 +9724,34 @@ FixDigits(t) {
     return t
 }
 
+; ---- liga/desliga e intervalo (seg) de cada leitura, configurável em Leitura > "O que procurar" ----
+AreaOn(name) {
+    global iniFile
+    return IniRead(iniFile, "cfg", "ocrOn_" name, "1") = "1"
+}
+SetAreaOn(name, chk, *) {
+    global iniFile
+    IniWrite(chk.Value ? "1" : "0", iniFile, "cfg", "ocrOn_" name)
+}
+AreaEvery(name) {
+    global iniFile
+    return Max(2, Integer(IniRead(iniFile, "cfg", "ocrEvery_" name, "15")))
+}
+SetAreaEvery(name, ed, *) {
+    global iniFile
+    IniWrite(Max(2, Min(600, Integer(ed.Value || 15))), iniFile, "cfg", "ocrEvery_" name)
+}
+AreaDue(name) {
+    global areaLastRun
+    if !IsObject(areaLastRun)
+        areaLastRun := Map()
+    last := areaLastRun.Has(name) ? areaLastRun[name] : 0
+    due := (A_TickCount - last) >= AreaEvery(name) * 1000
+    if due
+        areaLastRun[name] := A_TickCount
+    return due
+}
+
 ; rank da guilda: o número (#123) que fica logo abaixo da foto da guilda, no topo do meio da tela
 ReadGuildRank(hw) {
     global farmBest, farmGdbgT, guildSeen
@@ -9716,7 +9762,7 @@ ReadGuildRank(hw) {
         ar := AreaGet("guild", cw, chh)
         AreaPx(ar, cw, chh, &ox, &oy, &ow, &oh)
         lim := OCR.MaxImageDimension ? OCR.MaxImageDimension : 2600
-        sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        sc := Max(0.5, Min(8, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         seen := "", votes := Map(), hashV := Map()
         ; 1) leitura "limpa": amplia a área e isola só o branco do texto (preto no branco) antes do OCR — é o que resolve texto minúsculo
         seen := GuildPre(hw, ox, oy, ow, oh, votes)
@@ -9727,9 +9773,9 @@ ReadGuildRank(hw) {
         global guildTrk
         if IsObject(guildTrk)
             ox := guildTrk[1], oy := guildTrk[2], ow := guildTrk[3], oh := guildTrk[4]
-        sc := Max(0.5, Min(6, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
+        sc := Max(0.5, Min(8, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         ; várias escalas x formas de captura; o número que mais se repete ganha (tira o erro de leitura isolada)
-        for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6)] {
+        for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6), Min(sc, 8)] {
             Loop 4 {
                 v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
                 o := {x: ox, y: oy, w: ow, h: oh, scale: sc2, mode: v.mode}
@@ -9776,6 +9822,10 @@ GuildTick(hw) {
     global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
     static pend := "", cnt := 0
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
+        return
+    if !AreaOn("guild")
+        return
+    if !AreaDue("guild")
         return
     gr := ReadGuildRank(hw)
     if AdvOn() {
@@ -9882,7 +9932,7 @@ FarmModeTick(test := false) {
     GuildTick(hw)
     mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := ""
     ; --- modo (nome do mapa) ---
-    r := OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}"))
+    r := (AreaOn("mode") && AreaDue("mode")) ? OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) : {ok: false, text: ""}
     seen := r.text
     if (r.ok) {
         farmBest := r.vi
@@ -9896,7 +9946,7 @@ FarmModeTick(test := false) {
         }
     }
     ; --- wave ---
-    r := OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d"))
+    r := (AreaOn("wave") && AreaDue("wave")) ? OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
     if (r.text != "")
         seen .= " | " r.text
     if r.ok {
@@ -9907,7 +9957,7 @@ FarmModeTick(test := false) {
         wave := StrReplace(StrReplace(StrReplace(StrReplace(wave, "O", "0"), "o", "0"), "l", "1"), "I", "1")
     }
     ; --- pearls ---
-    r := OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d"))
+    r := (AreaOn("pearls") && AreaDue("pearls")) ? OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
     if (r.text != "")
         seen .= " | " r.text
     if r.ok {

@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.53
+- Aba "Dono" com visual exclusivo (faixa dourada "ACESSO EXCLUSIVO") e tabela ajustada pra não cortar texto; corrige botão "Atualizar" que aparecia sem tradução.
+- Melhora a leitura do rank da guilda (mais nítida, com mais variações de contraste) pra reduzir a confusão entre 4 e 9.
+- Nova seção em Leitura: "O que procurar" — liga/desliga e escolhe o intervalo (em segundos) de cada leitura (mapa, wave, pérolas, guilda) separadamente.
+
 ## v1.5.52
 - Corrige a aba "Dono" que não aparecia mesmo com o `owner.key` no lugar certo: faltava o botão dela na barra lateral.
 
