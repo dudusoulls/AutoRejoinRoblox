@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.56"
+VERSION     := "1.5.57"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9271,7 +9271,7 @@ AreaShowTick() {
     cols := Map("mode", "5BE37D", "wave", "FFD84D", "pearls", "FF7AC8", "coins", "FFA23D", "guild", "4DD2FF")
     k := A_ScreenDPI / 96
     for n in ["mode", "wave", "pearls", "coins", "guild"] {
-        vis := (n != "coins" || AreaIsSet("coins")) && (n != "guild" || chkHudGd.Value)
+        vis := (n = "coins" || OcrAreaOn(n)) && (n != "coins" || AreaIsSet("coins")) && (n != "guild" || chkHudGd.Value)
         if !wins.Has(n) {
             o := {key: "", vis: false, hw: 0}
             o.frm := Gui("-Caption +ToolWindow -DPIScale +E0x20 +E0x08000000")

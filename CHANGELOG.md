@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.57
+- Modo "mostrar na tela onde ele está lendo" agora respeita os toggles da aba Intervalos: área desligada lá não aparece mais como contorno na tela.
+
 ## v1.5.56
 - Corrige a página Leitura cortada embaixo (sem scroll): o bloco "O que procurar" virou uma aba própria ("Intervalos"), já que essa tela não tem como rolar.
 
