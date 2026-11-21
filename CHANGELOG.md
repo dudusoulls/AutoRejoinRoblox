@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.60
+- A linha "Rank · leu #X (contagem N/M)" dos Logs avançados agora também aparece no card de LOGS da tela compacta/inicial, não só na aba Logs. Ative em Aparência > HUD > "Logs avançados" pra acompanhar o que o OCR tá lendo antes de confirmar.
+
 ## v1.5.59
 - Tentativa de corrigir o "4" lido como "9" no rank da guilda: a ampliação da imagem (que é bem pequena no jogo) usava um modo que borra os pixels, o que pode fechar a aberturinha do "4" e deixar ele parecido com "9". Troquei pra um modo que amplia sem borrar. Não tenho como testar aqui — me avisa se continuar errando.
 - "Moedas" agora também tem o ON/OFF e intervalo na aba Intervalos (tinha ficado de fora) e some do "mostrar na tela onde ele está lendo" quando desligado, igual as outras áreas.

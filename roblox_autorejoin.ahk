@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.59"
+VERSION     := "1.5.60"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9859,7 +9859,7 @@ GuildTick(hw) {
     gr := ReadGuildRank(hw)
     if AdvOn() {
         global guildSeen
-        LogA("Rank · " (gr != "" ? "leu #" gr : "não achou o número") " (contagem " cnt "/" IniRead(iniFile, "cfg", "guildN", "3") ") · " SubStr(guildSeen, 1, 110))
+        LogA("Rank · " (gr != "" ? "leu #" gr : "não achou o número") " (contagem " cnt "/" IniRead(iniFile, "cfg", "guildN", "3") ") · " SubStr(guildSeen, 1, 110), true)
     }
     if (gr = "") {                        ; não achou: zera a contagem (as leituras precisam ser SEGUIDAS)
         pend := "", cnt := 0
@@ -11477,10 +11477,10 @@ OnQuit(*) {
 ; ==========================================================
 ;  Funções gerais
 ; ==========================================================
-Log(msg) {
+Log(msg, forceHud := false) {
     global logBox, hudLogs
     line := FormatTime(, "HH:mm:ss") "  " msg "`r`n"
-    if (SubStr(msg, 1, 1) != "⋯") {            ; as linhas dos Logs avançados não vão pro painel do HUD
+    if (forceHud || SubStr(msg, 1, 1) != "⋯") {   ; as linhas dos Logs avançados não vão pro painel do HUD, exceto as marcadas
         hudLogs.Push(FormatTime(, "HH:mm") "  " SubStr(RegExReplace(msg, "\s+", " "), 1, 38))
         if (hudLogs.Length > 60)
             hudLogs.RemoveAt(1)
@@ -12784,9 +12784,9 @@ AdvOn() {
     return IsObject(chkAdvLog) && chkAdvLog.Value
 }
 
-LogA(msg) {
+LogA(msg, hud := false) {
     if AdvOn()
-        Log("⋯ " msg)
+        Log("⋯ " msg, hud)
 }
 
 ; "WxH @x,y" da área (em pixels da janela), pro log
