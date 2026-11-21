@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.65
+- Leitura do rank da guilda agora tira 3 fotos (com um intervalinho entre elas) em vez de 1 só, e soma os votos das 3. Como o boneco fica se mexendo um pouco parado (animação de "respirar"), uma foto só podia pegar o número borrado/cortado bem na hora errada — com 3 fotos, se uma pegar mal as outras cobrem.
+
 ## v1.5.64
 - Corrige a tela de apoio (Pix): ao trocar a logo do app na v1.5.61, acabei substituindo por engano a imagem `donate.png` (que é o QR code real do Pix, não um logo) pela logo nova. Restaurei o QR code original do Pix na tela de apoio.
 

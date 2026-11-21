@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.64"
+VERSION     := "1.5.65"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9794,11 +9794,17 @@ ReadGuildRank(hw) {
         sc := Max(0.5, Min(8, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         seen := "", votes := Map(), hashV := Map()
         ; 1) leitura "limpa": amplia a área e isola só o branco do texto (preto no branco) antes do OCR — é o que resolve texto minúsculo
-        seen := GuildPre(hw, ox, oy, ow, oh, votes)
-        guildSeen := seen
-        for n0, c0 in votes
-            if (c0 >= 5)
-                return n0
+        ; o boneco fica se mexendo um pouco parado (animação de "respirar"), o que pode borrar/cortar o número
+        ; numa foto só — por isso tira 3 fotos com um intervalinho entre elas e soma os votos das 3
+        Loop 3 {
+            if (A_Index > 1)
+                Sleep(90)
+            seen := GuildPre(hw, ox, oy, ow, oh, votes)
+            guildSeen := seen
+            for n0, c0 in votes
+                if (c0 >= 5)
+                    return n0
+        }
         global guildTrk
         if IsObject(guildTrk)
             ox := guildTrk[1], oy := guildTrk[2], ow := guildTrk[3], oh := guildTrk[4]
