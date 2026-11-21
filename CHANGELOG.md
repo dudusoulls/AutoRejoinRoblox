@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.56
+- Corrige a página Leitura cortada embaixo (sem scroll): o bloco "O que procurar" virou uma aba própria ("Intervalos"), já que essa tela não tem como rolar.
+
 ## v1.5.55
 - Achei o motivo do "fica dando update e reabrindo sempre na mesma versão": o app baixava o exe "mais novo" do GitHub mesmo quando ele era exatamente igual ao que já tava rodando (porque a build ainda não tinha terminado no GitHub) — trocava, reabria, e nada mudava, de novo e de novo. Agora ele compara o exe baixado com o que já está rodando antes de trocar; se forem iguais, não reabre, só avisa no log e no status que a build nova ainda não chegou e tenta de novo depois.
 

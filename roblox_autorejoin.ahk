@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.55"
+VERSION     := "1.5.56"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -728,7 +728,9 @@ I18N["pt"] := Map(
     "area_pearls", "Pearls do evento (Summer)",
     "area_coins", "Moedas",
     "nav_readarea", "Leitura",
+    "nav_ocrsched", "Intervalos",
     "pg_readarea_sub", "Escolha onde o programa lê as informações na tela",
+    "pg_ocrsched_sub", "Ligue só o que você usa e ajuste o intervalo de cada leitura",
     "sec_readarea", "ÁREAS DE LEITURA",
     "area_help", "Clique em Ajustar: arraste na tela para desenhar a área (do canto de lá pro de cá), arraste dentro dela para mover e puxe as bordas ou cantos para redimensionar. Enter salva, Esc cancela. Quanto menor e mais justa a área, menos erro.",
     "area_mode", "Modo (nome do mapa)",
@@ -1413,7 +1415,9 @@ I18N["en"] := Map(
     "area_pearls", "Event pearls (Summer)",
     "area_coins", "Coins",
     "nav_readarea", "Reading",
+    "nav_ocrsched", "Intervals",
     "pg_readarea_sub", "Choose where the app reads info on screen",
+    "pg_ocrsched_sub", "Turn on only what you use and adjust each reading interval",
     "sec_readarea", "READING AREAS",
     "area_help", "Click Adjust: drag on screen to draw the area, drag inside it to move it and pull the edges or corners to resize. Enter saves, Esc cancels. The smaller and tighter the area, the fewer errors.",
     "area_mode", "Mode (map name)",
@@ -2098,7 +2102,9 @@ I18N["es"] := Map(
     "area_pearls", "Pearls del evento (Summer)",
     "area_coins", "Monedas",
     "nav_readarea", "Lectura",
+    "nav_ocrsched", "Intervalos",
     "pg_readarea_sub", "Elige dónde lee la app la información en pantalla",
+    "pg_ocrsched_sub", "Activa solo lo que usas y ajusta el intervalo de cada lectura",
     "sec_readarea", "ÁREAS DE LECTURA",
     "area_help", "Pulsa Ajustar: arrastra en pantalla para dibujar el área, arrastra dentro para moverla y tira de los bordes o esquinas para cambiar el tamaño. Enter guarda, Esc cancela. Cuanto más pequeña y ajustada, menos errores.",
     "area_mode", "Modo (nombre del mapa)",
@@ -2783,7 +2789,9 @@ I18N["fr"] := Map(
     "area_pearls", "Pearls de l'événement (Summer)",
     "area_coins", "Pièces",
     "nav_readarea", "Lecture",
+    "nav_ocrsched", "Intervalles",
     "pg_readarea_sub", "Choisis où l'appli lit les infos à l'écran",
+    "pg_ocrsched_sub", "Active seulement ce que tu utilises et ajuste l'intervalle de chaque lecture",
     "sec_readarea", "ZONES DE LECTURE",
     "area_help", "Clique sur Ajuster : glisse à l'écran pour tracer la zone, glisse dedans pour la déplacer et tire sur les bords ou coins pour la redimensionner. Entrée enregistre, Échap annule. Plus la zone est petite et précise, moins d'erreurs.",
     "area_mode", "Mode (nom de la carte)",
@@ -3468,7 +3476,9 @@ I18N["de"] := Map(
     "area_pearls", "Event-Pearls (Summer)",
     "area_coins", "Münzen",
     "nav_readarea", "Lesen",
+    "nav_ocrsched", "Intervalle",
     "pg_readarea_sub", "Wähle, wo die App Infos vom Bildschirm liest",
+    "pg_ocrsched_sub", "Schalte nur ein, was du nutzt, und passe das Intervall jeder Lesung an",
     "sec_readarea", "LESEBEREICHE",
     "area_help", "Auf Anpassen klicken: Bereich auf dem Bildschirm aufziehen, darin ziehen zum Verschieben, an Rändern oder Ecken ziehen zum Ändern der Größe. Enter speichert, Esc bricht ab. Je kleiner und enger der Bereich, desto weniger Fehler.",
     "area_mode", "Modus (Kartenname)",
@@ -4153,7 +4163,9 @@ I18N["ru"] := Map(
     "area_pearls", "Pearls события (Summer)",
     "area_coins", "Монеты",
     "nav_readarea", "Чтение",
+    "nav_ocrsched", "Интервалы",
     "pg_readarea_sub", "Выберите, где программа считывает данные с экрана",
+    "pg_ocrsched_sub", "Включите только то, что используете, и настройте интервал каждого чтения",
     "sec_readarea", "ОБЛАСТИ ЧТЕНИЯ",
     "area_help", "Нажмите «Настроить»: протяните область на экране, перетаскивайте внутри для перемещения, тяните края или углы для изменения размера. Enter сохраняет, Esc отменяет. Чем меньше и точнее область, тем меньше ошибок.",
     "area_mode", "Режим (название карты)",
@@ -4838,7 +4850,9 @@ I18N["tr"] := Map(
     "area_pearls", "Etkinlik pearls (Summer)",
     "area_coins", "Paralar",
     "nav_readarea", "Okuma",
+    "nav_ocrsched", "Aralıklar",
     "pg_readarea_sub", "Uygulamanın ekranda nereyi okuyacağını seç",
+    "pg_ocrsched_sub", "Sadece kullandığını aç ve her okumanın aralığını ayarla",
     "sec_readarea", "OKUMA ALANLARI",
     "area_help", "Ayarla'ya tıkla: alanı ekranda sürükleyerek çiz, içinden sürükleyip taşı, kenar veya köşelerden çekip boyutlandır. Enter kaydeder, Esc iptal eder. Alan ne kadar küçük ve dar olursa hata o kadar azalır.",
     "area_mode", "Mod (harita adı)",
@@ -5523,7 +5537,9 @@ I18N["id"] := Map(
     "area_pearls", "Pearls event (Summer)",
     "area_coins", "Koin",
     "nav_readarea", "Baca",
+    "nav_ocrsched", "Interval",
     "pg_readarea_sub", "Pilih di mana app membaca info di layar",
+    "pg_ocrsched_sub", "Nyalakan hanya yang kamu pakai dan atur interval tiap pembacaan",
     "sec_readarea", "AREA BACA",
     "area_help", "Klik Atur: seret di layar untuk menggambar area, seret di dalamnya untuk memindah dan tarik tepi atau sudut untuk ubah ukuran. Enter simpan, Esc batal. Makin kecil dan pas areanya, makin sedikit salah.",
     "area_mode", "Mode (nama peta)",
@@ -5788,7 +5804,7 @@ for c in LANG_CODES
 USER_NAME  := UserDisplayName()
 USER_FIRST := StrSplit(Trim(USER_NAME), " ")[1]
 NAVK := Map("Início", "nav_home", "Jogo", "nav_game", "Janela", "nav_window", "Webhook", "nav_hook", "Notif", "nav_notif"
-    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "Exibir", "nav_show", "GuildaAv", "nav_guildav", "Guilda", "nav_guild", "Avançado", "nav_adv", "Dono", "nav_owner")
+    , "Moedas", "nav_coins", "Logs", "nav_logs", "Sobre", "nav_about", "Contas", "nav_accounts", "Opções", "nav_opts", "Automação", "nav_auto", "Rotina", "nav_routine", "Bots", "nav_bots", "Vínculo", "nav_offbot", "Ferramentas", "nav_tools", "Bot", "nav_bot", "Histórico", "nav_hist", "Discord", "nav_discord", "Painel", "nav_livepanel", "Relat", "nav_statusrep", "Travou", "nav_stuck", "QoL", "nav_qol", "Aparência", "nav_look", "Suporte", "nav_report", "HUD", "nav_hud", "Leitura", "nav_readarea", "LeituraCfg", "nav_ocrsched", "Exibir", "nav_show", "GuildaAv", "nav_guildav", "Guilda", "nav_guild", "Avançado", "nav_adv", "Dono", "nav_owner")
 updBase       := (GITHUB_REPO = "") ? "" : "https://raw.githubusercontent.com/" GITHUB_REPO "/" GITHUB_BRANCH "/"
 savedOcr      := IniRead(iniFile, "cfg", "ocr", "1")
 defaultCur    := "Gems=<:gem:1571984310137913505>|Gold=<:gold:1571984476525957120>|Summer Pearls=<:pearl:1571984541059387432>|Legacy Gems"
@@ -5949,7 +5965,7 @@ GROUPS := Map("Início", ["Início"], "Jogo", ["Jogo", "Janela", "Contas"], "Aut
     , "Bots", ["Vínculo", "Bot"]
     , "QoL", aaMode ? ["Moedas", "Travou", "Histórico"] : ["Travou", "Histórico"]
     , "Aparência", aaMode ? ["Aparência", "HUD"] : ["Aparência"]
-    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "Exibir", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
+    , "Logs", ["Logs"], "Ferramentas", ["Ferramentas"], "Sobre", aaMode ? ["Sobre", "Leitura", "LeituraCfg", "Exibir", "Avançado"] : ["Sobre", "Avançado"], "Suporte", ["Suporte"])
 if IS_OWNER
     GROUPS["Dono"] := ["Dono"]
 VGROUPS := Map("Discord", 1, "QoL", 1)   ; grupos com lista lateral em vez de sub-abas no topo
@@ -6580,7 +6596,9 @@ edGuildN := Input(CX + CW - 20 - 64, y + 332, 64, IniRead(iniFile, "cfg", "guild
 edGuildN.OnEvent("Change", (*) => IniWrite(Max(1, Min(10, Integer(edGuildN.Value || 3))), iniFile, "cfg", "guildN"))
 areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 
-y += 448
+; ---------------- Página: LeituraCfg (o que procurar e a cada quantos segundos) ----------------
+BeginPage("LeituraCfg", TT("nav_ocrsched"), TT("pg_ocrsched_sub"))
+y := 92
 Card(CX, y, CW, 254)
 Lbl(CX + 20, y + 14, 400, "O QUE PROCURAR (E A CADA QUANTOS SEGUNDOS)", "s7 w700", C_DIM)
 Lbl(CX + 20, y + 34, CW - 40, "Desligar o que você não usa deixa a leitura mais rápida e evita erro.", "s9", C_MUTED)
