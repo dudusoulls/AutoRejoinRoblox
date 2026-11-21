@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.61
+- Trocado o logo do app (barra lateral, ícone, tela de apoio) e a imagem usada nos embeds do webhook do Discord pelo novo anel branco.
+
 ## v1.5.60
 - A linha "Rank · leu #X (contagem N/M)" dos Logs avançados agora também aparece no card de LOGS da tela compacta/inicial, não só na aba Logs. Ative em Aparência > HUD > "Logs avançados" pra acompanhar o que o OCR tá lendo antes de confirmar.
 
