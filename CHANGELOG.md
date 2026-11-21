@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.66
+- Rank da guilda: pelos seus prints, a caixinha que ele recorta pra OCR tá certinha em cima do "#4476", então o problema não é a área — é o OCR mesmo lendo tudo errado (4475, 9975, 41417, 4141...) numa fonte pequena e estilizada. Pra não aceitar mais esses saltos malucos, agora quando a nova leitura é MUITO diferente do rank atual (ex.: ia de #4476 pra #9975), ele exige o dobro ou triplo de leituras iguais seguidas antes de aceitar. Mudanças pequenas (o normal, rank subindo/descendo aos poucos) continuam confirmando rápido.
+
 ## v1.5.65
 - Leitura do rank da guilda agora tira 3 fotos (com um intervalinho entre elas) em vez de 1 só, e soma os votos das 3. Como o boneco fica se mexendo um pouco parado (animação de "respirar"), uma foto só podia pegar o número borrado/cortado bem na hora errada — com 3 fotos, se uma pegar mal as outras cobrem.
 

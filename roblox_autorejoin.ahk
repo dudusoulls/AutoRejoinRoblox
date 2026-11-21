@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.65"
+VERSION     := "1.5.66"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9883,6 +9883,16 @@ GuildTick(hw) {
     ; se uma leitura falhar ou vier um número diferente, recomeça do zero
     need := 3
     try need := Max(1, Min(10, Integer(IniRead(iniFile, "cfg", "guildN", "3"))))
+    ; o rank muda aos poucos (normalmente poucas posições por vez); um salto bem grande de uma vez
+    ; é quase sempre erro de OCR (ex.: trocou o "4" por "9"). Nesse caso exige o dobro/triplo de
+    ; leituras iguais seguidas antes de aceitar — um salto de verdade ainda passa, só demora mais
+    if (farmGuild != "" && gr != "" && farmGuild ~= "^\d+$" && gr ~= "^\d+$") {
+        diff := Abs(Integer(gr) - Integer(farmGuild))
+        if (diff > 300)
+            need := Min(10, need * 3)
+        else if (diff > 50)
+            need := Min(10, need * 2)
+    }
     if (gr = pend)
         cnt++
     else
