@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.62
+- Corrige erro "This global variable has not been assigned a value" na linha do OcrAreaDue: a variável `areaLastRun` (usada pelos intervalos por área) nunca tinha sido inicializada antes de usar, só dava certo às vezes por sorte da ordem de execução. Obrigado pelo relatório de erro automático, chegou certinho.
+
 ## v1.5.61
 - Trocado o logo do app (barra lateral, ícone, tela de apoio) e a imagem usada nos embeds do webhook do Discord pelo novo anel branco.
 
