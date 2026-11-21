@@ -6579,10 +6579,10 @@ Lbl(CX + 20, y + 34, CW - 40, "Desligar o que você não usa deixa a leitura mai
 swW := CW - 40 - 150
 for ai, an in ["mode", "wave", "pearls", "guild"] {
     ry := y + 66 + (ai - 1) * 46
-    chk := ToggleSwitch(CX + 20, ry, swW, TT(areaKey[an]), AreaOn(an))
-    chk.onChange := SetAreaOn.Bind(an, chk)
-    ed := Input(CX + 20 + swW + 16, ry + 1, 56, AreaEvery(an), "Number")
-    ed.OnEvent("Change", SetAreaEvery.Bind(an, ed))
+    chk := ToggleSwitch(CX + 20, ry, swW, TT(areaKey[an]), OcrAreaOn(an))
+    chk.onChange := SetOcrAreaOn.Bind(an, chk)
+    ed := Input(CX + 20 + swW + 16, ry + 1, 56, OcrAreaEvery(an), "Number")
+    ed.OnEvent("Change", SetOcrAreaEvery.Bind(an, ed))
     Lbl(CX + 20 + swW + 16 + 60, ry + 8, 50, "seg", "s9", C_MUTED)
 }
 
@@ -9725,28 +9725,28 @@ FixDigits(t) {
 }
 
 ; ---- liga/desliga e intervalo (seg) de cada leitura, configurável em Leitura > "O que procurar" ----
-AreaOn(name) {
+OcrAreaOn(name) {
     global iniFile
     return IniRead(iniFile, "cfg", "ocrOn_" name, "1") = "1"
 }
-SetAreaOn(name, chk, *) {
+SetOcrAreaOn(name, chk, *) {
     global iniFile
     IniWrite(chk.Value ? "1" : "0", iniFile, "cfg", "ocrOn_" name)
 }
-AreaEvery(name) {
+OcrAreaEvery(name) {
     global iniFile
     return Max(2, Integer(IniRead(iniFile, "cfg", "ocrEvery_" name, "15")))
 }
-SetAreaEvery(name, ed, *) {
+SetOcrAreaEvery(name, ed, *) {
     global iniFile
     IniWrite(Max(2, Min(600, Integer(ed.Value || 15))), iniFile, "cfg", "ocrEvery_" name)
 }
-AreaDue(name) {
+OcrAreaDue(name) {
     global areaLastRun
     if !IsObject(areaLastRun)
         areaLastRun := Map()
     last := areaLastRun.Has(name) ? areaLastRun[name] : 0
-    due := (A_TickCount - last) >= AreaEvery(name) * 1000
+    due := (A_TickCount - last) >= OcrAreaEvery(name) * 1000
     if due
         areaLastRun[name] := A_TickCount
     return due
@@ -9823,9 +9823,9 @@ GuildTick(hw) {
     static pend := "", cnt := 0
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
-    if !AreaOn("guild")
+    if !OcrAreaOn("guild")
         return
-    if !AreaDue("guild")
+    if !OcrAreaDue("guild")
         return
     gr := ReadGuildRank(hw)
     if AdvOn() {
@@ -9932,7 +9932,7 @@ FarmModeTick(test := false) {
     GuildTick(hw)
     mode := "", wave := "", pearls := "", mRect := 0, pRect := 0, seen := ""
     ; --- modo (nome do mapa) ---
-    r := (AreaOn("mode") && AreaDue("mode")) ? OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) : {ok: false, text: ""}
+    r := (OcrAreaOn("mode") && OcrAreaDue("mode")) ? OcrAreaRead(hw, "mode", (t) => RegExMatch(t, "[A-Za-z]{4}") && !RegExMatch(t, "\d{3,}\s*/\s*\d{3,}")) : {ok: false, text: ""}
     seen := r.text
     if (r.ok) {
         farmBest := r.vi
@@ -9946,7 +9946,7 @@ FarmModeTick(test := false) {
         }
     }
     ; --- wave ---
-    r := (AreaOn("wave") && AreaDue("wave")) ? OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
+    r := (OcrAreaOn("wave") && OcrAreaDue("wave")) ? OcrAreaRead(hw, "wave", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
     if (r.text != "")
         seen .= " | " r.text
     if r.ok {
@@ -9957,7 +9957,7 @@ FarmModeTick(test := false) {
         wave := StrReplace(StrReplace(StrReplace(StrReplace(wave, "O", "0"), "o", "0"), "l", "1"), "I", "1")
     }
     ; --- pearls ---
-    r := (AreaOn("pearls") && AreaDue("pearls")) ? OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
+    r := (OcrAreaOn("pearls") && OcrAreaDue("pearls")) ? OcrAreaRead(hw, "pearls", (t) => RegExMatch(t, "\d")) : {ok: false, text: ""}
     if (r.text != "")
         seen .= " | " r.text
     if r.ok {
