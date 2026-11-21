@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.64
+- Corrige a tela de apoio (Pix): ao trocar a logo do app na v1.5.61, acabei substituindo por engano a imagem `donate.png` (que é o QR code real do Pix, não um logo) pela logo nova. Restaurei o QR code original do Pix na tela de apoio.
+
 ## v1.5.63
 - Corrige o crash "Missing \"\"\"" / variável global não atribuída que travava a v1.5.62 ao abrir. Causa: o novo ícone (.ico) que troquei tinha 7 tamanhos embutidos e virou uma linha gigante de texto (passava de 81 mil caracteres), e o AutoHotkey tem limite de ~16 mil caracteres por linha — por isso quebrava. Reduzi o ícone pra 3 tamanhos e também deixei as outras 3 imagens do logo (barra lateral, card, tela de apoio) mais leves, que também estavam arriscadas no mesmo limite.
 
