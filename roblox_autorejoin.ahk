@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.68"
+VERSION     := "1.5.69"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9832,10 +9832,8 @@ SetGuildN(ed, *) {
 }
 ; recarrega a preview do OCR do rank na página Logs sempre que o arquivo mudar (nova leitura)
 UpdateGuildOcrPreview() {
-    global picGuildOcr
+    global picGuildOcr, hudPnlW
     static lastMod := ""
-    if !IsSet(picGuildOcr) || !IsObject(picGuildOcr)
-        return
     f := A_ScriptDir "\debug\guild_ocr_last.png"
     if !FileExist(f)
         return
@@ -9843,7 +9841,10 @@ UpdateGuildOcrPreview() {
     if (mt = lastMod)
         return
     lastMod := mt
-    try picGuildOcr.Value := f
+    if (IsSet(picGuildOcr) && IsObject(picGuildOcr))
+        try picGuildOcr.Value := f
+    if (IsSet(hudPnlW) && IsObject(hudPnlW) && hudPnlW.Has("gdImg"))
+        try hudPnlW["gdImg"].Value := f
 }
 OcrAreaDue(name) {
     global areaLastRun
@@ -10462,6 +10463,14 @@ HudBuildPanel() {
     AddT("role", "s8", C_DIM, C_BG, "+0x200", "BETA  ·  v" VERSION)
     AddT("upd", "s8 w700", C_BG, C_ACC, "+0x200 Center", TT("hud_newupd"))
     hudPnlW["upd"].Visible := false
+    ; miniatura (também na "aba lateral"/HUD) da imagem que o OCR do rank da guilda realmente usou —
+    ; atualizada pelo mesmo timer da preview da página Logs (UpdateGuildOcrPreview)
+    rankDbgFileHud := A_ScriptDir "\debug\guild_ocr_last.png"
+    if !FileExist(rankDbgFileHud) {
+        try DirCreate(A_ScriptDir "\debug")
+        try Base64ToFile("iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAFElEQVR42mOUkpJjgAEmBiSAmwMAEQQAWi/EzA4AAAAASUVORK5CYII=", rankDbgFileHud)
+    }
+    hudPnlW["gdImg"] := hudPnl.Add("Picture", "x0 y0 w10 h10 Background" C_CARD, rankDbgFileHud)
     for n, c in hudPnlW
         c.OnEvent("Click", (*) => ShowMain())
 }
@@ -10482,7 +10491,7 @@ HudPanelLayout(pw, ph, k) {
     hudPnlW["title"].Move(Round(14 * k), Round(11 * k), pw - Round(60 * k), Round(20 * k))
     hudPnlW["dot"].Move(pw - Round(40 * k), Round(11 * k), Round(26 * k), Round(20 * k))
     hudPnlW["hello"].Move(Round(14 * k), Round(31 * k), pw - Round(28 * k), Round(16 * k))
-    cards := Map("st", [chkHudSt.Value, ["stT", "stS"]], "md", [chkHudMd.Value, ["mdN", "mdP", "mdA"]], "wv", [chkHudWv.Value, ["wvT"]], "gd", [chkHudGd.Value, ["gdT"]]
+    cards := Map("st", [chkHudSt.Value, ["stT", "stS"]], "md", [chkHudMd.Value, ["mdN", "mdP", "mdA"]], "wv", [chkHudWv.Value, ["wvT"]], "gd", [chkHudGd.Value, ["gdT", "gdImg"]]
         , "co", [chkHudCo.Value, ["coT"]], "lg", [chkHudLg.Value, ["lgT"]])
     for n, cd in cards {                       ; some tudo de quem está desligado
         for sfx in ["F", "I", "H"]
@@ -10506,13 +10515,19 @@ HudPanelLayout(pw, ph, k) {
         hudPnlW["mdA"].Move(m + pad, y + Round(80 * k), tw, Round(16 * k))
         y += h + Round(18 * k)
     }
-    for bx in [["wv", chkHudWv, "wvT"], ["gd", chkHudGd, "gdT"]] {
-        if bx[2].Value {
-            h := Round(52 * k)
-            HudBox(bx[1], m, y, bw, h, k)
-            hudPnlW[bx[3]].Move(m + pad, y + Round(14 * k), tw, Round(28 * k))
-            y += h + Round(18 * k)
-        }
+    if chkHudWv.Value {
+        h := Round(52 * k)
+        HudBox("wv", m, y, bw, h, k)
+        hudPnlW["wvT"].Move(m + pad, y + Round(14 * k), tw, Round(28 * k))
+        y += h + Round(18 * k)
+    }
+    if chkHudGd.Value {
+        ; o "gd" (rank da guilda) ganha altura extra pra caber a miniatura do que o OCR tá vendo
+        h := Round(52 * k) + Round(66 * k)
+        HudBox("gd", m, y, bw, h, k)
+        hudPnlW["gdT"].Move(m + pad, y + Round(14 * k), tw, Round(28 * k))
+        hudPnlW["gdImg"].Move(m + pad, y + Round(46 * k), Round(110 * k), Round(56 * k))
+        y += h + Round(18 * k)
     }
     if chkHudCo.Value {
         h := Round(70 * k)

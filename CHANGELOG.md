@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.69
+- A miniatura ao vivo do OCR do rank da guilda (que já tinha na página Logs) agora também aparece no painel/HUD que fica do lado do jogo, dentro do próprio box "RANK DA GUILDA" — atualiza sozinha junto com o texto do rank.
+
 ## v1.5.68
 - Corrige o "OCR · próxima leitura em 157 s" (e afins): quando uma passada de leitura demorava muito (ex.: o OCR do rank tentando várias escalas), o app esperava até 4x esse tempo pra próxima passada — podendo passar de 2 minutos parado sem ler nada. Agora tem um teto de 40s, nunca mais que isso.
 - O OCR do rank da guilda também ficou mais rápido: reduzi de até 24 tentativas (6 escalas x 4 variantes) pra até 9 (3x3) quando a leitura "limpa" não bate de primeira — faz sentido agora que o GuildTick já junta leituras de várias passadas numa janela (v1.5.67), não precisa mais acertar tudo de uma vez.
