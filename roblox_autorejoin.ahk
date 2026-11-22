@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.66"
+VERSION     := "1.5.67"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -761,6 +761,8 @@ I18N["pt"] := Map(
     "sw_advimg", "Salvar imagem do que ele vê",
     "sw_advimg_sub", "Um print com as áreas marcadas (onde ele procura) na pasta debug, ao lado do app",
     "btn_open_dbg", "Abrir pasta das imagens",
+    "btn_open_rank_dbg", "Ver captura do OCR (rank)",
+    "msg_no_rank_dbg", "Ainda não tem nenhuma captura salva. Espera uma leitura do rank da guilda acontecer e tenta de novo.",
     "f_reading", "Lendo o modo…",
     "f_prevround", "Rodada anterior",
     "bot_401", "Token inválido (HTTP 401): gere de novo em Bot > Reset Token e cole aqui",
@@ -1448,6 +1450,8 @@ I18N["en"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Reading the mode…",
     "f_prevround", "Previous round",
     "bot_401", "Invalid token (HTTP 401): generate a new one in Bot > Reset Token and paste it here",
@@ -2135,6 +2139,8 @@ I18N["es"] := Map(
     "sw_advimg", "Save image of what it sees",
     "sw_advimg_sub", "A screenshot with the areas marked (where it looks) in the debug folder next to the app",
     "btn_open_dbg", "Open images folder",
+    "btn_open_rank_dbg", "View OCR capture (rank)",
+    "msg_no_rank_dbg", "No capture saved yet. Wait for a guild rank reading to happen and try again.",
     "f_reading", "Leyendo el modo…",
     "f_prevround", "Ronda anterior",
     "bot_401", "Token inválido (HTTP 401): genera otro en Bot > Reset Token y pégalo aquí",
@@ -2822,6 +2828,8 @@ I18N["fr"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Lecture du mode…",
     "f_prevround", "Manche précédente",
     "bot_401", "Token invalide (HTTP 401) : régénère-le dans Bot > Reset Token et colle-le ici",
@@ -3509,6 +3517,8 @@ I18N["de"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Modus wird gelesen…",
     "f_prevround", "Vorherige Runde",
     "bot_401", "Ungültiger Token (HTTP 401): in Bot > Reset Token neu erzeugen und hier einfügen",
@@ -4196,6 +4206,8 @@ I18N["ru"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Чтение режима…",
     "f_prevround", "Прошлый раунд",
     "bot_401", "Неверный токен (HTTP 401): создай новый в Bot > Reset Token и вставь сюда",
@@ -4883,6 +4895,8 @@ I18N["tr"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Mod okunuyor…",
     "f_prevround", "Önceki tur",
     "bot_401", "Geçersiz token (HTTP 401): Bot > Reset Token ile yenisini al ve buraya yapıştır",
@@ -5570,6 +5584,8 @@ I18N["id"] := Map(
     "sw_advimg", "Guardar imagen de lo que ve",
     "sw_advimg_sub", "Una captura con las áreas marcadas (dónde busca) en la carpeta debug, junto a la app",
     "btn_open_dbg", "Abrir carpeta de imágenes",
+    "btn_open_rank_dbg", "Ver captura del OCR (rango)",
+    "msg_no_rank_dbg", "Todavía no hay ninguna captura guardada. Espera a que ocurra una lectura del rango del gremio e intenta de nuevo.",
     "f_reading", "Membaca mode…",
     "f_prevround", "Ronde sebelumnya",
     "bot_401", "Token tidak valid (HTTP 401): buat ulang di Bot > Reset Token lalu tempel di sini",
@@ -6550,6 +6566,7 @@ chkAdvLog.onChange := (*) => IniWrite(chkAdvLog.Value, iniFile, "cfg", "advLog")
 chkAdvImg := ToggleSwitch(CX + 20, y + 94, CW - 40, TT("sw_advimg"), IniRead(iniFile, "cfg", "advImg", "0"), TT("sw_advimg_sub"))
 chkAdvImg.onChange := (*) => IniWrite(chkAdvImg.Value, iniFile, "cfg", "advImg")
 Btn(CX + 20, y + 156, 220, 34, TT("btn_open_dbg"), (*) => (DirCreate(A_ScriptDir "\debug"), Run(A_ScriptDir "\debug")))
+Btn(CX + 20 + 220 + 12, y + 156, CW - 40 - 220 - 12, 34, TT("btn_open_rank_dbg"), (*) => OpenRankOcrDebug())
 
 
 ; ---------------- Página: Dono (só existe se houver owner.key ao lado do app) ----------------
@@ -9638,6 +9655,12 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
             if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$"))
                 votes[n] := (votes.Has(n) ? votes[n] : 0) + wt
         }
+        ; salva a imagem já ampliada/tratada (preto no branco) que o OCR tá vendo de fato —
+        ; é o botão "Ver captura do OCR (rank)" em Configurações > Exibir que abre esse arquivo
+        try {
+            DirCreate(A_ScriptDir "\debug")
+            SaveHBitmapPng(dib, A_ScriptDir "\debug\guild_ocr_last.png")
+        }
     }
     try {
         if dc
@@ -9855,7 +9878,10 @@ ReadGuildRank(hw) {
 ; rank da guilda: só troca o valor quando a mesma leitura aparece 2 vezes seguidas (evita erro de OCR)
 GuildTick(hw) {
     global farmGuild, chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat
-    static pend := "", cnt := 0
+    ; janela com as últimas leituras (não precisam ser seguidas): o valor certo costuma ser
+    ; o mais comum entre as últimas tentativas, mesmo que de vez em quando o OCR erre um dígito
+    ; (ex.: ler "9" como "4") e "quebre" a sequência — por isso não exige mais acertos SEGUIDOS.
+    static hist := []
     if !(chkHudGd.Value || chkGuildSend.Value || chkGuildNotify.Value || chkGuildStat.Value)
         return
     if !OcrAreaOn("guild")
@@ -9863,44 +9889,47 @@ GuildTick(hw) {
     if !OcrAreaDue("guild")
         return
     gr := ReadGuildRank(hw)
-    if AdvOn() {
-        global guildSeen
-        LogA("Rank · " (gr != "" ? "leu #" gr : "não achou o número") " (contagem " cnt "/" IniRead(iniFile, "cfg", "guildN", "3") ") · " SubStr(guildSeen, 1, 110), true)
-    }
-    if (gr = "") {                        ; não achou: zera a contagem (as leituras precisam ser SEGUIDAS)
-        pend := "", cnt := 0
-        return
-    }
-    if (gr = farmGuild) {                 ; já confirmado
-        pend := "", cnt := 0
-        return
-    }
-    if (farmGuild != "" && StrLen(gr) < StrLen(farmGuild) - 1) {   ; ex.: #9897 -> "#5": é ruído do OCR
-        pend := "", cnt := 0
-        return
-    }
-    ; só mostra um rank novo depois de N leituras IGUAIS SEGUIDAS (N = ini [cfg] guildN, padrão 3);
-    ; se uma leitura falhar ou vier um número diferente, recomeça do zero
     need := 3
     try need := Max(1, Min(10, Integer(IniRead(iniFile, "cfg", "guildN", "3"))))
+    K := Max(need, Min(12, need * 3))     ; janela: quantas leituras recentes entram na votação
+    if AdvOn() {
+        global guildSeen
+        LogA("Rank · " (gr != "" ? "leu #" gr : "não achou o número") " (" hist.Length "/" K " na janela) · " SubStr(guildSeen, 1, 110), true)
+    }
+    if (gr = "")                           ; não achou: ignora essa tentativa (não conta a favor nem contra)
+        return
+    if (gr = farmGuild) {                  ; já confirmado
+        hist := []
+        return
+    }
+    if (farmGuild != "" && StrLen(gr) < StrLen(farmGuild) - 1)   ; ex.: #9897 -> "#5": é ruído do OCR
+        return
+    hist.Push(gr)
+    if (hist.Length > K)
+        hist.RemoveAt(1)
+    ; conta quantas vezes cada valor apareceu nas últimas K leituras
+    votes := Map()
+    for v in hist
+        votes[v] := (votes.Has(v) ? votes[v] : 0) + 1
+    best := "", bc := 0
+    for v, c in votes
+        if (c > bc)
+            best := v, bc := c
     ; o rank muda aos poucos (normalmente poucas posições por vez); um salto bem grande de uma vez
     ; é quase sempre erro de OCR (ex.: trocou o "4" por "9"). Nesse caso exige o dobro/triplo de
-    ; leituras iguais seguidas antes de aceitar — um salto de verdade ainda passa, só demora mais
-    if (farmGuild != "" && gr != "" && farmGuild ~= "^\d+$" && gr ~= "^\d+$") {
-        diff := Abs(Integer(gr) - Integer(farmGuild))
+    ; votos antes de aceitar — um salto de verdade ainda passa, só demora mais
+    needV := need
+    if (farmGuild != "" && best ~= "^\d+$" && farmGuild ~= "^\d+$") {
+        diff := Abs(Integer(best) - Integer(farmGuild))
         if (diff > 300)
-            need := Min(10, need * 3)
+            needV := Min(K, need * 3)
         else if (diff > 50)
-            need := Min(10, need * 2)
+            needV := Min(K, need * 2)
     }
-    if (gr = pend)
-        cnt++
-    else
-        pend := gr, cnt := 1
-    if (cnt >= need) {
+    if (bc >= needV) {
         old := farmGuild
-        farmGuild := gr, pend := "", cnt := 0
-        GuildChanged(old, gr)
+        farmGuild := best, hist := []
+        GuildChanged(old, best)
     }
 }
 
@@ -12882,6 +12911,15 @@ IsBlackDC(dc, w, h) {
                 return false
     }
     return true
+}
+
+; abre a última imagem (já ampliada/tratada em preto-no-branco) que o OCR do rank da guilda usou de fato
+OpenRankOcrDebug(*) {
+    f := A_ScriptDir "\debug\guild_ocr_last.png"
+    if FileExist(f)
+        Run(f)
+    else
+        MsgBox(TT("msg_no_rank_dbg"), APP_NAME, 0x40)
 }
 
 SaveHBitmapPng(hBM, file, crop := 0) {

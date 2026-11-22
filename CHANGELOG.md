@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.67
+- Rank da guilda, sistema novo de confirmação: antes, exigia N leituras IGUAIS SEGUIDAS — mas como o OCR às vezes erra um dígito isolado no meio (ex.: "9" virando "4"), isso quebrava a sequência e o rank certo nunca conseguia confirmar, mesmo sendo a leitura mais comum. Agora ele junta as últimas leituras numa "janela" (não precisam ser seguidas) e aceita o valor que mais aparecer nelas — resolve exatamente o caso dos seus logs (ex.: #4393 aparecendo várias vezes misturado com erros, mas nunca 3x seguidas).
+- Também adicionei um botão em Configurações > Exibir: "Ver captura do OCR (rank)", que abre a imagem exata (já ampliada e em preto-no-branco) que o OCR usou na última leitura do rank — assim dá pra ver com os próprios olhos o que ele tá enxergando.
+
 ## v1.5.66
 - Rank da guilda: pelos seus prints, a caixinha que ele recorta pra OCR tá certinha em cima do "#4476", então o problema não é a área — é o OCR mesmo lendo tudo errado (4475, 9975, 41417, 4141...) numa fonte pequena e estilizada. Pra não aceitar mais esses saltos malucos, agora quando a nova leitura é MUITO diferente do rank atual (ex.: ia de #4476 pra #9975), ele exige o dobro ou triplo de leituras iguais seguidas antes de aceitar. Mudanças pequenas (o normal, rank subindo/descendo aos poucos) continuam confirmando rápido.
 
