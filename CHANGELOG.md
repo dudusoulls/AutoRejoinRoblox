@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.70
+- Rank da guilda: além de ler o número inteiro de uma vez (ex.: "#4362"), agora o OCR também recorta cada dígito sozinho (separando pelas colunas em branco entre eles) e lê um por um. Isolado, sem o dígito vizinho do lado, ele confunde muito menos 4↔9 — esse resultado entra na votação com peso extra quando sai limpo (todos os caracteres reconhecidos como dígito).
+
 ## v1.5.69
 - A miniatura ao vivo do OCR do rank da guilda (que já tinha na página Logs) agora também aparece no painel/HUD que fica do lado do jogo, dentro do próprio box "RANK DA GUILDA" — atualiza sozinha junto com o texto do rank.
 

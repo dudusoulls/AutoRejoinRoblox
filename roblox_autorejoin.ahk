@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.69"
+VERSION     := "1.5.70"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -9680,6 +9680,15 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
                 n := m[1]
             if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$"))
                 votes[n] := (votes.Has(n) ? votes[n] : 0) + wt
+            ; além de ler a string inteira de uma vez (acima), recorta cada caractere sozinho e lê um por um —
+            ; isolado, sem os vizinhos ao lado, o OCR confunde bem menos 4↔9 (só no 1º limiar, pra não pesar)
+            if (th = 190) {
+                n2 := SegDigits(bits, P, W, H, Wp)
+                if (n2 != "" && RegExMatch(n2, "^[1-9]\d{2,5}$")) {
+                    votes[n2] := (votes.Has(n2) ? votes[n2] : 0) + 4
+                    seen .= " | SEG:" n2
+                }
+            }
         }
         ; salva a imagem já ampliada/tratada (preto no branco) que o OCR tá vendo de fato —
         ; é o botão "Ver captura do OCR (rank)" em Configurações > Exibir que abre esse arquivo
@@ -9695,6 +9704,103 @@ GuildPreRect(srcDC, ox, oy, ow, oh, votes) {
             DllCall("DeleteObject", "Ptr", dib)
     }
     return seen
+}
+
+; recorta cada caractere do número (já ampliado/binarizado, preto no branco) sozinho — achando as colunas em
+; branco que separam um dígito do outro — e lê um por um com o OCR. Devolve só os dígitos finais (ex.: "4362"),
+; ignorando o "#" do começo; se algum caractere não sair um dígito reconhecível, devolve "" (não arrisca votar errado).
+SegDigits(bits, P, W, H, Wp) {
+    out := ""
+    try {
+        colHas := []
+        x := 0
+        while (x < W) {
+            has := false
+            y := 0
+            while (y < H) {
+                if (NumGet(bits, ((P + y) * Wp + (P + x)) * 4, "UInt") = 0xFF000000) {
+                    has := true
+                    break
+                }
+                y += 1
+            }
+            colHas.Push(has)
+            x += 1
+        }
+        runs := [], inRun := false, s := 0
+        Loop W {
+            x := A_Index - 1
+            if (colHas[x + 1] && !inRun)
+                inRun := true, s := x
+            else if (!colHas[x + 1] && inRun)
+                inRun := false, runs.Push([s, x - 1])
+        }
+        if inRun
+            runs.Push([s, W - 1])
+        ; junta pedaços separados por um espacinho de 1px só (ruído de antialiasing cortando o mesmo caractere ao meio)
+        merged := []
+        for r in runs {
+            if (merged.Length && r[1] - merged[merged.Length][2] <= 1)
+                merged[merged.Length][2] := r[2]
+            else
+                merged.Push([r[1], r[2]])
+        }
+        if (merged.Length < 3 || merged.Length > 8)
+            return ""
+        ; o primeiro bloco costuma ser o "#" — descarta se for bem mais estreito que a média dos outros
+        widths := []
+        for r in merged
+            widths.Push(r[2] - r[1] + 1)
+        avgW := 0
+        for w2 in widths
+            avgW += w2
+        avgW /= widths.Length
+        start := 1
+        if (widths[1] < avgW * 0.6)
+            start := 2
+        if (merged.Length - start + 1 < 3)
+            return ""
+        pad2 := 16
+        Loop merged.Length - start + 1 {
+            i := start + A_Index - 1
+            r := merged[i]
+            cw := r[2] - r[1] + 1
+                if (cw < 1)
+                    return ""
+                cWp := cw + 2 * pad2, cHp := H + 2 * pad2
+                bmi2 := Buffer(40, 0)
+                NumPut("UInt", 40, "Int", cWp, "Int", -cHp, "UShort", 1, "UShort", 32, bmi2)
+                dib2 := DllCall("CreateDIBSection", "Ptr", 0, "Ptr", bmi2, "UInt", 0, "Ptr*", &bits2 := 0, "Ptr", 0, "UInt", 0, "Ptr")
+                dc2 := DllCall("CreateCompatibleDC", "Ptr", 0, "Ptr")
+                DllCall("SelectObject", "Ptr", dc2, "Ptr", dib2)
+                rct := Buffer(16, 0), NumPut("Int", cWp, "Int", cHp, rct, 8)
+                DllCall("FillRect", "Ptr", dc2, "Ptr", rct, "Ptr", DllCall("GetStockObject", "Int", 0, "Ptr"))
+                yy := 0
+                while (yy < H) {
+                    srcOff := ((P + yy) * Wp + (P + r[1])) * 4
+                    dstOff := ((pad2 + yy) * cWp + pad2) * 4
+                    DllCall("RtlMoveMemory", "Ptr", bits2 + dstOff, "Ptr", bits + srcOff, "UPtr", cw * 4)
+                    yy += 1
+                }
+                DllCall("GdiFlush")
+                ch := ""
+                try {
+                    res := OCR.FromBitmap(dib2)
+                    t2 := RegExReplace(res.Text, "[^0-9OoIl|SsBZzgq]", "")
+                    if (t2 != "")
+                        ch := FixDigits(SubStr(t2, 1, 1))
+                } catch {
+                }
+                DllCall("DeleteDC", "Ptr", dc2)
+                DllCall("DeleteObject", "Ptr", dib2)
+                if !RegExMatch(ch, "^\d$")
+                    return ""
+                out .= ch
+        }
+    } catch {
+        return ""
+    }
+    return out
 }
 
 ; Captura a área, amplia até ~8x e isola o texto claro (modo "white" = só branco; "bright" = claro mas não azul-ciano).
