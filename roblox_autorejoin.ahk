@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.67"
+VERSION     := "1.5.68"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6616,12 +6616,20 @@ areaRes := Lbl(CX + 20, y + 374, CW - 40, "", "s9", C_MUTED)
 ; ---------------- Página: LeituraCfg (o que procurar e a cada quantos segundos) ----------------
 BeginPage("LeituraCfg", TT("nav_ocrsched"), TT("pg_ocrsched_sub"))
 y := 92
-Card(CX, y, CW, 300)
+Card(CX, y, CW, 76)
+Lbl(CX + 20, y + 14, CW - 40, "CICLO GERAL", "s7 w700", C_DIM)
+Lbl(CX + 20, y + 34, CW - 40 - 100, "De quanto em quanto tempo ele passa olhando as áreas ligadas abaixo.", "s9", C_MUTED)
+edOcrSec := Input(CX + CW - 20 - 70, y + 24, 70, Max(2, Integer(IniRead(iniFile, "cfg", "ocrSec", "15"))), "Number")
+edOcrSec.OnEvent("Change", SetOcrSec.Bind(edOcrSec))
+y += 76 + 14
+Card(CX, y, CW, 310)
 Lbl(CX + 20, y + 14, 400, "O QUE PROCURAR (E A CADA QUANTOS SEGUNDOS)", "s7 w700", C_DIM)
 Lbl(CX + 20, y + 34, CW - 40, "Desligar o que você não usa deixa a leitura mais rápida e evita erro.", "s9", C_MUTED)
 swW := CW - 40 - 150
+Lbl(CX + 20, y + 56, swW, "ÁREA", "s8 w700", C_MUTED)
+Lbl(CX + 20 + swW + 16, y + 56, 90, "A CADA (SEG)", "s8 w700", C_MUTED)
 for ai, an in ["mode", "wave", "pearls", "coins", "guild"] {
-    ry := y + 66 + (ai - 1) * 46
+    ry := y + 76 + (ai - 1) * 46
     chk := ToggleSwitch(CX + 20, ry, swW, TT(areaKey[an]), OcrAreaOn(an))
     chk.onChange := SetOcrAreaOn.Bind(an, chk)
     ed := Input(CX + 20 + swW + 16, ry + 1, 56, OcrAreaEvery(an), "Number")
@@ -6659,6 +6667,24 @@ logBox := P(g.Add("Edit", Format("x{} y{} w{} h{} ReadOnly -Wrap +Multi +VScroll
 DllCall("uxtheme\SetWindowTheme", "Ptr", logBox.Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
 Btn(CX + CW - 110, y + 336, 110, 32, TT("btn_clear"), (*) => (logBox.Value := ""))
 Btn(CX + CW - 110 - 12 - 190, y + 336, 190, 32, TT("btn_report"), ReportManual)
+
+; ---- preview ao vivo do OCR do rank da guilda: mostra a imagem (ampliada/preto-no-branco) que o
+; OCR realmente usou na última leitura, atualizando sozinha, + o contador de confirmações exigidas ----
+y2 := y + 380
+Card(CX, y2, CW, 140)
+Lbl(CX + 20, y2 + 14, CW - 40, "OCR DO RANK DA GUILDA (AO VIVO)", "s7 w700", C_DIM)
+Lbl(CX + 20, y2 + 34, CW - 40, "Atualiza sozinha a cada leitura: é exatamente o que o OCR está enxergando.", "s9", C_MUTED)
+rankDbgFile := A_ScriptDir "\debug\guild_ocr_last.png"
+if !FileExist(rankDbgFile) {
+    try DirCreate(A_ScriptDir "\debug")
+    try Base64ToFile("iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAFElEQVR42mOUkpJjgAEmBiSAmwMAEQQAWi/EzA4AAAAASUVORK5CYII=", rankDbgFile)
+}
+picGuildOcr := P(g.Add("Picture", Format("x{} y{} w140 h70 Background{}", CX + 20, y2 + 58, C_CARD), rankDbgFile))
+Lbl(CX + 20 + 140 + 20, y2 + 58, CW - 40 - 140 - 20, "Confirmações pra aceitar um rank novo (entre as últimas leituras):", "s9", C_MUTED)
+edGuildN := Input(CX + 20 + 140 + 20, y2 + 92, 70, Max(1, Min(10, Integer(IniRead(iniFile, "cfg", "guildN", "3")))), "Number")
+edGuildN.OnEvent("Change", SetGuildN.Bind(edGuildN))
+Lbl(CX + 20 + 140 + 20 + 70 + 10, y2 + 98, 100, "leituras", "s9", C_MUTED)
+SetTimer(UpdateGuildOcrPreview, 1200)
 
 curBuild := ""
 
@@ -9793,6 +9819,32 @@ SetOcrAreaEvery(name, ed, *) {
     global iniFile
     IniWrite(Max(2, Min(600, Integer(ed.Value || 15))), iniFile, "cfg", "ocrEvery_" name)
 }
+; intervalo (seg) do ciclo geral de leitura — ver OcrLoop()
+SetOcrSec(ed, *) {
+    global iniFile
+    IniWrite(Max(2, Min(120, Integer(ed.Value || 15))), iniFile, "cfg", "ocrSec")
+}
+; quantas leituras (dentro da janela, não precisam ser seguidas) precisam bater no mesmo
+; número do rank da guilda antes de aceitar — ver GuildTick()
+SetGuildN(ed, *) {
+    global iniFile
+    IniWrite(Max(1, Min(10, Integer(ed.Value || 3))), iniFile, "cfg", "guildN")
+}
+; recarrega a preview do OCR do rank na página Logs sempre que o arquivo mudar (nova leitura)
+UpdateGuildOcrPreview() {
+    global picGuildOcr
+    static lastMod := ""
+    if !IsSet(picGuildOcr) || !IsObject(picGuildOcr)
+        return
+    f := A_ScriptDir "\debug\guild_ocr_last.png"
+    if !FileExist(f)
+        return
+    mt := FileGetTime(f, "M")
+    if (mt = lastMod)
+        return
+    lastMod := mt
+    try picGuildOcr.Value := f
+}
 OcrAreaDue(name) {
     global areaLastRun
     if !IsObject(areaLastRun)
@@ -9833,8 +9885,10 @@ ReadGuildRank(hw) {
             ox := guildTrk[1], oy := guildTrk[2], ow := guildTrk[3], oh := guildTrk[4]
         sc := Max(0.5, Min(8, Floor((lim - 20) / Max(ow, oh) * 10) / 10))
         ; várias escalas x formas de captura; o número que mais se repete ganha (tira o erro de leitura isolada)
-        for sc2 in [sc, Min(sc, 3), Min(sc, 4.5), Min(sc, 2), Min(sc, 6), Min(sc, 8)] {
-            Loop 4 {
+        ; (reduzido de 6x4 pra 3x3 tentativas: agora que o GuildTick junta leituras de várias passadas
+        ; numa janela, não precisa mais acertar tudo numa passada só — e cada passada fica bem mais rápida)
+        for sc2 in [sc, Min(sc, 3), Min(sc, 4.5)] {
+            Loop 3 {
                 v := variants[Mod(farmBest - 1 + A_Index - 1, variants.Length) + 1]
                 o := {x: ox, y: oy, w: ow, h: oh, scale: sc2, mode: v.mode}
                 if v.HasOwnProp("gray")
@@ -9854,7 +9908,7 @@ ReadGuildRank(hw) {
                     n := m[1]
                 if (n != "" && RegExMatch(n, "^[1-9]\d{0,5}$")) {
                     votes[n] := (votes.Has(n) ? votes[n] : 0) + (hasHash ? 2 : 1)
-                    if (votes[n] >= 4)
+                    if (votes[n] >= 3)
                         return n
                 }
             }
@@ -9988,7 +10042,10 @@ OcrLoop() {
         sec := Min(sec, 4)
     else if (chkHudGd.Value && farmGuild = "")      ; rank da guilda ainda sem as 3 leituras iguais
         sec := Min(sec, 5)
-    nextAt := A_TickCount + Max(sec * 1000, (A_TickCount - t0) * 4)
+    ; se essa passada demorou muito (ex.: OCR do rank precisou tentar várias escalas), espera ~4x o tempo
+    ; gasto antes da próxima — mas nunca mais que 40s, senão uma passada lenta isolada deixava o app
+    ; "travado" minutos sem ler nada (já vi passar de 150s)
+    nextAt := A_TickCount + Min(Max(sec * 1000, (A_TickCount - t0) * 4), 40000)
     LogA("OCR · próxima leitura em " Round((nextAt - A_TickCount) / 1000) " s")
 }
 
