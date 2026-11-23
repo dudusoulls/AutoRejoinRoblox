@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.71
+- Atualização automática não reinicia mais o app assim que vê qualquer versão nova no GitHub: agora espera uns 3 minutos vendo se continua sendo a versão mais recente antes de aplicar. Evita ficar reiniciando sozinho toda hora quando saem várias correções seguidas em pouco tempo (o botão de atualizar na mão continua instantâneo, sem esperar).
+
 ## v1.5.70
 - Rank da guilda: além de ler o número inteiro de uma vez (ex.: "#4362"), agora o OCR também recorta cada dígito sozinho (separando pelas colunas em branco entre eles) e lê um por um. Isolado, sem o dígito vizinho do lado, ele confunde muito menos 4↔9 — esse resultado entra na votação com peso extra quando sai limpo (todos os caracteres reconhecidos como dígito).
 

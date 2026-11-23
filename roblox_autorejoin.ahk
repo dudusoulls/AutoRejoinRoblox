@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.70"
+VERSION     := "1.5.71"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -12417,7 +12417,15 @@ CheckUpdate(manual := false) {
         Log("Atualização para " v[1] " não pegou (o exe baixado era antigo). Parei o automático; baixe o exe novo no GitHub ou rode o Atualizar.ahk.")
         return
     }
-    if chkAutoUpd.Value
+    ; só reinicia sozinho se essa MESMA versão nova continuar sendo a mais recente por uns minutos —
+    ; assim, se sair uma versão atrás da outra rapidinho (ex.: eu corrigindo algo ao vivo), ele não fica
+    ; reiniciando o app a cada vez, só quando realmente "parar" numa versão nova de verdade.
+    static seenVer := "", seenAt := 0
+    if (v[1] != seenVer) {
+        seenVer := v[1], seenAt := A_TickCount
+        return
+    }
+    if (chkAutoUpd.Value && (A_TickCount - seenAt) >= 180000)
         ApplyUpdate()
 }
 
