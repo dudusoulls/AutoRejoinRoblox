@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.71"
+VERSION     := "1.5.72"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -219,6 +219,7 @@ noWinSince    := 0
 savedRep      := IniRead(iniFile, "cfg", "report", "1")
 savedRepMin   := IniRead(iniFile, "cfg", "reportMin", "60")
 savedCompact  := IniRead(iniFile, "cfg", "compact", "0")
+ultraLite     := IniRead(iniFile, "cfg", "ultraLite", "0") = "1"
 savedAutoUpd  := IniRead(iniFile, "cfg", "autoUpdate", "0")
 if (IniRead(iniFile, "cfg", "updFastV", "") != "2") {   ; checagem a cada 30 s passa a vir desligada
     IniWrite("0", iniFile, "cfg", "updFast")
@@ -346,6 +347,10 @@ I18N["pt"] := Map(
     "sec_browser", "NAVEGADOR",
     "sw_tab", "Fechar a guia do navegador após entrar",
     "sw_tab_sub", "Fecha a guia com 'Roblox' no título e minimiza o navegador",
+    "sec_ultralite", "MODO ULTRA LITE",
+    "sw_ultralite", "Ativar modo ultra lite",
+    "sw_ultralite_sub", "Deixa só o essencial: barrinha minúscula, sem logo, HUD, OCR, bot ou animação — só o auto reconnect.",
+    "ultralite_hint", "Pra voltar ao programa completo: clique no ⟲ da barrinha ou desligue aqui.",
     "btn_test", "Testar",
     "hint_hook", "Avisos automáticos: queda, tentativa de reabrir, volta e erros (com horário).",
     "sec_status", "STATUS PERIÓDICO",
@@ -1035,6 +1040,10 @@ I18N["en"] := Map(
     "sec_browser", "BROWSER",
     "sw_tab", "Close the browser tab after joining",
     "sw_tab_sub", "Closes the tab with 'Roblox' in the title and minimizes the browser",
+    "sec_ultralite", "ULTRA LITE MODE",
+    "sw_ultralite", "Enable ultra lite mode",
+    "sw_ultralite_sub", "Keeps only the essentials: a tiny bar, no logo, HUD, OCR, bot or animation — just auto reconnect.",
+    "ultralite_hint", "To go back to the full app: click the ⟲ on the bar or turn it off here.",
     "btn_test", "Test",
     "hint_hook", "Automatic alerts: drop, reopen attempt, back online and errors (with time).",
     "sec_status", "PERIODIC STATUS",
@@ -1724,6 +1733,10 @@ I18N["es"] := Map(
     "sec_browser", "NAVEGADOR",
     "sw_tab", "Cerrar la pestaña del navegador al entrar",
     "sw_tab_sub", "Cierra la pestaña con 'Roblox' en el título y minimiza el navegador",
+    "sec_ultralite", "MODO ULTRA LITE",
+    "sw_ultralite", "Activar modo ultra lite",
+    "sw_ultralite_sub", "Deja solo lo esencial: una barra pequeñita, sin logo, HUD, OCR, bot ni animación — solo el auto reconnect.",
+    "ultralite_hint", "Para volver al programa completo: haz clic en el ⟲ de la barra o desactívalo aquí.",
     "btn_test", "Probar",
     "hint_hook", "Avisos automáticos: caída, intento de reabrir, regreso y errores (con hora).",
     "sec_status", "ESTADO PERIÓDICO",
@@ -2413,6 +2426,10 @@ I18N["fr"] := Map(
     "sec_browser", "NAVIGATEUR",
     "sw_tab", "Fermer l'onglet du navigateur après connexion",
     "sw_tab_sub", "Ferme l'onglet avec 'Roblox' dans le titre et réduit le navigateur",
+    "sec_ultralite", "MODE ULTRA LÉGER",
+    "sw_ultralite", "Activer le mode ultra léger",
+    "sw_ultralite_sub", "Ne garde que l'essentiel : une toute petite barre, sans logo, HUD, OCR, bot ni animation — juste l'auto reconnect.",
+    "ultralite_hint", "Pour revenir au programme complet : cliquez sur le ⟲ de la barre ou désactivez ici.",
     "btn_test", "Tester",
     "hint_hook", "Alertes automatiques : coupure, réouverture, retour et erreurs (avec l'heure).",
     "sec_status", "STATUT PÉRIODIQUE",
@@ -3102,6 +3119,10 @@ I18N["de"] := Map(
     "sec_browser", "BROWSER",
     "sw_tab", "Browser-Tab nach dem Beitreten schließen",
     "sw_tab_sub", "Schließt den Tab mit 'Roblox' im Titel und minimiert den Browser",
+    "sec_ultralite", "ULTRA-LITE-MODUS",
+    "sw_ultralite", "Ultra-Lite-Modus aktivieren",
+    "sw_ultralite_sub", "Nur das Wesentliche: eine winzige Leiste, ohne Logo, HUD, OCR, Bot oder Animation — nur Auto-Reconnect.",
+    "ultralite_hint", "Um zum vollständigen Programm zurückzukehren: auf das ⟲ in der Leiste klicken oder hier deaktivieren.",
     "btn_test", "Testen",
     "hint_hook", "Automatische Meldungen: Abbruch, Neustartversuch, wieder online und Fehler (mit Uhrzeit).",
     "sec_status", "REGELMÄSSIGER STATUS",
@@ -3791,6 +3812,10 @@ I18N["ru"] := Map(
     "sec_browser", "БРАУЗЕР",
     "sw_tab", "Закрывать вкладку браузера после входа",
     "sw_tab_sub", "Закрывает вкладку с 'Roblox' в заголовке и сворачивает браузер",
+    "sec_ultralite", "РЕЖИМ ULTRA LITE",
+    "sw_ultralite", "Включить режим ultra lite",
+    "sw_ultralite_sub", "Оставляет только самое необходимое: крошечная панель, без логотипа, HUD, OCR, бота и анимации — только автопереподключение.",
+    "ultralite_hint", "Чтобы вернуться к полной программе: нажмите ⟲ на панели или выключите здесь.",
     "btn_test", "Тест",
     "hint_hook", "Автоуведомления: вылет, попытка перезапуска, возвращение и ошибки (со временем).",
     "sec_status", "ПЕРИОДИЧЕСКИЙ СТАТУС",
@@ -4480,6 +4505,10 @@ I18N["tr"] := Map(
     "sec_browser", "TARAYICI",
     "sw_tab", "Girdikten sonra tarayıcı sekmesini kapat",
     "sw_tab_sub", "Başlığında 'Roblox' olan sekmeyi kapatır ve tarayıcıyı küçültür",
+    "sec_ultralite", "ULTRA LITE MODU",
+    "sw_ultralite", "Ultra lite modunu etkinleştir",
+    "sw_ultralite_sub", "Sadece gerekli olanı bırakır: küçücük bir çubuk, logo, HUD, OCR, bot veya animasyon olmadan — sadece auto reconnect.",
+    "ultralite_hint", "Tam programa dönmek için: çubuktaki ⟲'e tıklayın ya da buradan kapatın.",
     "btn_test", "Test et",
     "hint_hook", "Otomatik uyarılar: düşme, yeniden açma denemesi, geri dönüş ve hatalar (saatli).",
     "sec_status", "PERİYODİK DURUM",
@@ -5169,6 +5198,10 @@ I18N["id"] := Map(
     "sec_browser", "BROWSER",
     "sw_tab", "Tutup tab browser setelah masuk",
     "sw_tab_sub", "Menutup tab berjudul 'Roblox' dan meminimalkan browser",
+    "sec_ultralite", "MODE ULTRA LITE",
+    "sw_ultralite", "Aktifkan mode ultra lite",
+    "sw_ultralite_sub", "Hanya menyisakan yang penting: bar kecil, tanpa logo, HUD, OCR, bot, atau animasi — hanya auto reconnect.",
+    "ultralite_hint", "Untuk kembali ke aplikasi lengkap: klik ⟲ di bar atau matikan di sini.",
     "btn_test", "Tes",
     "hint_hook", "Notifikasi otomatis: putus, coba buka ulang, kembali online, dan error (dengan jam).",
     "sec_status", "STATUS BERKALA",
@@ -6148,6 +6181,15 @@ Card(CX, y, CW, 96)
 Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
 chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
 
+; ---- modo ultra lite: só a barrinha, só o auto reconnect, nada de HUD/OCR/bot/animação ----
+y := 374
+Card(CX, y, CW, 150)
+Lbl(CX + 20, y + 14, 400, TT("sec_ultralite"), "s7 w700", C_DIM)
+Lbl(CX + 20, y + 34, CW - 40, TT("sw_ultralite_sub"), "s9", C_MUTED)
+chkUltraLite := ToggleSwitch(CX + 20, y + 66, CW - 40, TT("sw_ultralite"), ultraLite ? 1 : 0)
+chkUltraLite.onChange := (*) => ApplyUltraLite(chkUltraLite.Value)
+Lbl(CX + 20, y + 120, CW - 40, TT("ultralite_hint"), "s8", C_MUTED)
+
 ; ---------------- Página: Webhook ----------------
 ; ---- grupos com lista lateral (Webhook e QoL): o conteúdo começa depois da lista ----
 CX0 := CX, CW0 := CW
@@ -6701,7 +6743,7 @@ mStat := gm.Add("Text", Format("x34 y9 w128 c{} Background{}", C_TEXT, C_CARD), 
 FontUI(gm, "s8")
 mSub := gm.Add("Text", Format("x34 y+0 w128 c{} Background{}", C_MUTED, C_CARD), TT("mini_sub", 0, 0))
 mBtn := MakeBtn(gm, 166, 11, 70, 30, TT("btn_start"), Toggle, "primary", false, "s9 w600", 10)
-MakeBtn(gm, 242, 11, 30, 30, Chr(0xE740), (*) => SetCompact(false), "sec", true, "s9", 10)
+MakeBtn(gm, 242, 11, 30, 30, Chr(0xE740), (*) => (ultraLite ? ApplyUltraLite(false) : SetCompact(false)), "sec", true, "s9", 10)
 
 ; ==========================================================
 ;  Tela de licença
@@ -6823,13 +6865,40 @@ else if (Trim(edKey.Value) != "") {
 
 ; abre o programa de verdade (depois da licença ok)
 StartApp() {
-    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME, donateThenTour, savedTelemetry
+    global g, gk, W, H, savedCompact, iniFile, running, appStarted, chkAutoMon, APP_NAME, donateThenTour, savedTelemetry, ultraLite
     FadeHide(gk)
     if appStarted {
         FadeShow(g)
         return
     }
     appStarted := true
+    upd0 := IniRead(iniFile, "cfg", "justUpdated", "")
+    if (upd0 != "") {
+        IniDelete(iniFile, "cfg", "justUpdated")
+        Notify(TT("ev_updated", upd0), APP_NAME)
+    }
+    if ultraLite {
+        ; modo ultra lite já estava ligado da última vez: abre direto na barrinha, sem intro/splash/tutorial/apoio
+        ; e só com os timers que realmente fazem o auto reconnect funcionar (nada de OCR, bot, painel, telemetria etc.)
+        SetTimer(GuiPosTick, 2000)
+        SetTimer(PauseTick, 1000)
+        SetTimer(NetTick, 30000)
+        SetTimer(Cleanup, 2000)
+        SetTimer(WatchError, 3000)
+        SetTimer(UpdateStats, 1000)
+        SetTimer(StuckTick, 60000)
+        SetTimer(() => CheckUpdate(false), -8000)
+        SetTimer(() => CheckUpdate(false), 6 * 3600000)
+        if KaEnabled()
+            SetTimer(LicenseRecheck, 30 * 60000)
+        if (IniRead(iniFile, "cfg", "resume", "0") = "1") {
+            IniDelete(iniFile, "cfg", "resume")
+            SetTimer(() => (running ? 0 : Toggle()), -1500)
+        } else if (chkAutoMon.Value && !running)
+            SetTimer(() => (running ? 0 : Toggle()), -1500)
+        ApplyUltraLite(true)
+        return
+    }
     firstRun := IniRead(iniFile, "cfg", "tourDone", "0") != "1" && IniRead(iniFile, "cfg", "resume", "0") != "1"
     IniWrite(0, iniFile, "cfg", "compact")          ; sempre abre no modo completo
     IntroSound()
@@ -6878,11 +6947,6 @@ StartApp() {
         SetTimer(TelemetryPing, 90000), SetTimer(() => TelemetryPing(), -1000)
     SetTimer(StuckTick, 60000)
     SetTimer(ReactTick, 9000)
-    upd := IniRead(iniFile, "cfg", "justUpdated", "")
-    if (upd != "") {
-        IniDelete(iniFile, "cfg", "justUpdated")
-        Notify(TT("ev_updated", upd), APP_NAME)
-    }
 }
 
 ; ==========================================================
@@ -11687,6 +11751,50 @@ SetCompact(on) {
     } else {
         FadeHide(gm)
         FadeShow(g, Format("w{} h{}", W, H))
+    }
+}
+
+; ==========================================================
+;  Modo Ultra Lite: só a função principal (auto reconnect) — desliga HUD, OCR/guilda, bot/webhook e
+;  telemetria, e mostra só a barrinha do modo compacto (sem fade/animação nenhuma pra entrar ou sair).
+; ==========================================================
+ApplyUltraLite(on, *) {
+    global ultraLite, g, gm, gk, miniShown, winW, W, H, iniFile
+    global chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat, chkPanel, chkBot, chkTelemetry, chkFrame, chkHudComp, chkUltraLite
+    ultraLite := !!on
+    try chkUltraLite.Value := ultraLite ? 1 : 0
+    IniWrite(ultraLite ? "1" : "0", iniFile, "cfg", "ultraLite")
+    if ultraLite {
+        ; desliga tudo que não é o auto reconnect em si (são todos switches normais — dá pra religar
+        ; manualmente depois, mas aí deixa de ser "ultra lite")
+        try chkHudGd.Value := 0
+        try chkGuildSend.Value := 0
+        try chkGuildNotify.Value := 0
+        try chkGuildStat.Value := 0
+        try chkPanel.Value := 0
+        try chkBot.Value := 0
+        try chkTelemetry.Value := 0
+        try SetTelemetry(0)
+        try chkFrame.Value := 0
+        try chkHudComp.Value := 0
+        try SetHudMode(0)
+        try HudHideAll()
+        try SaveConfig()
+        try Log("Modo Ultra Lite ativado — só a barrinha, só o auto reconnect.")
+        try g.Hide()
+        try gk.Hide()
+        if !miniShown {
+            miniShown := true
+            x := A_ScreenWidth - winW - 300
+            gm.Show("NoActivate w284 h52 x" (x > 0 ? x : 0) " y8")
+        } else
+            gm.Show("NoActivate")
+        IniWrite(1, iniFile, "cfg", "compact")
+    } else {
+        try Log("Modo Ultra Lite desativado — voltando pro programa completo.")
+        try gm.Hide()
+        g.Show(Format("w{} h{}", W, H))
+        IniWrite(0, iniFile, "cfg", "compact")
     }
 }
 
