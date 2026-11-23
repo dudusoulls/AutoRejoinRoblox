@@ -1,5 +1,10 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.75
+- Modo Ultra Lite refeito: agora funciona igual o Modo AA (mesma janela principal, sem janela separada). Ele só some do menu as abas pesadas (Leitura/OCR, Guilda, HUD, Bot, Painel, Relatório, Telemetria, Contas, Automação) e deixa só o essencial: Início, Jogo, Janela, Webhook/Notif, Opções, Logs, Ferramentas e Sobre.
+- Igual antes, os recursos escondidos ficam de verdade desligados por trás (os timers deles nem chegam a ser criados), não é só visual.
+- Igual o Modo AA, precisa reabrir o app pra aplicar a mudança (o app reinicia sozinho na hora de ligar/desligar).
+
 ## v1.5.74
 - Modo Ultra Lite: o botão mudou de lugar, agora fica em Configurações (perto de Telemetria), não mais em Jogo > Janela.
 
