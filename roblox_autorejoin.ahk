@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.73"
+VERSION     := "1.5.74"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -6183,15 +6183,6 @@ Card(CX, y, CW, 96)
 Lbl(CX + 20, y + 16, 300, TT("sec_browser"), "s7 w700", C_DIM)
 chkMin := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_tab"), savedMin, TT("sw_tab_sub"))
 
-; ---- modo ultra lite: só a barrinha, só o auto reconnect, nada de HUD/OCR/bot/animação ----
-y := 374
-Card(CX, y, CW, 150)
-Lbl(CX + 20, y + 14, 400, TT("sec_ultralite"), "s7 w700", C_DIM)
-Lbl(CX + 20, y + 34, CW - 40, TT("sw_ultralite_sub"), "s9", C_MUTED)
-chkUltraLite := ToggleSwitch(CX + 20, y + 66, CW - 40, TT("sw_ultralite"), ultraLite ? 1 : 0)
-chkUltraLite.onChange := (*) => ApplyUltraLite(chkUltraLite.Value)
-Lbl(CX + 20, y + 120, CW - 40, TT("ultralite_hint"), "s8", C_MUTED)
-
 ; ---------------- Página: Webhook ----------------
 ; ---- grupos com lista lateral (Webhook e QoL): o conteúdo começa depois da lista ----
 CX0 := CX, CW0 := CW
@@ -6491,7 +6482,15 @@ Lbl(CX + 20, y + 84, 140, TT("lbl_daily_time"), "s9", C_MUTED)
 edDailyAt := Input(CX + 170, y + 77, 90, savedDailyAt)
 Btn(CX + CW - 160, y + 77, 140, 32, TT("btn_send_now"), (*) => SendDailySummary(true))
 
+; ---- modo ultra lite: só o auto reconnect, nada de HUD/OCR/bot/animação (fica no lugar da telemetria
+; na tela — telemetria passa pra baixo, já que é opcional e menos usada do que isso) ----
 y := 564
+Card(CX, y, CW, 58)
+chkUltraLite := ToggleSwitch(CX + 20, y + 4, CW - 40, TT("sw_ultralite"), ultraLite ? 1 : 0, TT("sw_ultralite_sub"))
+chkUltraLite.onChange := (*) => ApplyUltraLite(chkUltraLite.Value)
+
+y := 564
+y := 640
 Card(CX, y, CW, 110)
 Lbl(CX + 20, y + 16, 300, TT("sec_telemetry"), "s7 w700", C_DIM)
 chkTelemetry := ToggleSwitch(CX + 20, y + 40, CW - 40, TT("sw_telemetry"), savedTelemetry, TT("sw_telemetry_sub"))

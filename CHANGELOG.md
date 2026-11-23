@@ -1,5 +1,8 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.74
+- Modo Ultra Lite: o botão mudou de lugar, agora fica em Configurações (perto de Telemetria), não mais em Jogo > Janela.
+
 ## v1.5.73
 - Modo Ultra Lite agora tem uma janela PRÓPRIA, bem diferente da janela normal e do modo compacto antigo: só o essencial (status, link do servidor e botão de iniciar/parar), fundo quase preto, sem logo, sem card, sem nada decorativo.
 - De verdade mais leve pra PC fraco: quando o app já abre nesse modo, os recursos de HUD/OCR/guilda/bot/webhook/telemetria nem chegam a ligar (não são só escondidos — os timers deles simplesmente não são criados).
