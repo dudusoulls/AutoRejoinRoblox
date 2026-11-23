@@ -1,5 +1,9 @@
 # Novidades do Auto Reconnect Roblox
 
+## v1.5.73
+- Modo Ultra Lite agora tem uma janela PRÓPRIA, bem diferente da janela normal e do modo compacto antigo: só o essencial (status, link do servidor e botão de iniciar/parar), fundo quase preto, sem logo, sem card, sem nada decorativo.
+- De verdade mais leve pra PC fraco: quando o app já abre nesse modo, os recursos de HUD/OCR/guilda/bot/webhook/telemetria nem chegam a ligar (não são só escondidos — os timers deles simplesmente não são criados).
+
 ## v1.5.72
 - Modo Ultra Lite: liga em Configurações > Janela. Desliga tudo que não é o auto reconnect em si (HUD, OCR/rank da guilda, bot, webhook, telemetria) e deixa só a barrinha pequena na tela — sem logo, sem splash, sem tutorial, sem nenhuma animação (nem fade nem pulso). Clica no ⟲ da barrinha pra voltar ao programa completo a qualquer hora. Se ligar e fechar o app, ele já abre direto nesse modo da próxima vez.
 

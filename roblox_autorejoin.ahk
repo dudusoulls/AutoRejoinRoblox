@@ -17,7 +17,7 @@
 ;   2) escreva o que mudou no topo do CHANGELOG.md
 ;   3) suba os dois arquivos no GitHub
 ; Quem usa o script vê o aviso "Nova versão" com as novidades e atualiza com 1 clique.
-VERSION     := "1.5.72"
+VERSION     := "1.5.73"
 GITHUB_REPO := "dudusoulls/AutoRejoinRoblox"
 GITHUB_BRANCH := "main"
 EXE_NAME := "AutoReconnectRoblox.exe"   ; nome do .exe que você sobe na Release (tem que ser EXATAMENTE esse)
@@ -129,6 +129,8 @@ fsTries     := 0
 placedLogged := false
 
 miniShown := false
+; janela do modo Ultra Lite (criada sob demanda, na hora que o modo é ligado pela 1ª vez — ver BuildLiteWin())
+liteWin := 0, liteDot := 0, liteStat := 0, liteSub := 0, liteLink := 0, liteBtn := 0
 hudBar := 0, hudPan := 0, hudFrame := 0, hudBarDot := 0, hudBarL := 0, hudBarR := 0, hudPanDot := 0, hudPanT := 0, hudPanL := 0
 hudLastPos := "", hudLastHw := 0, hudN := 0, hudUserHidden := false, hudShown := false, hudFrameCol := ""
 hudSide := 0, hudSideDot := 0, hudSideT := 0, hudSideL := 0
@@ -11546,7 +11548,7 @@ SlideTick() {
 
 ; bolinha de status "respirando" quando está online/carregando
 PulseTick() {
-    global curState, curStateCol, dashDot, sideDot, mDot, C_CARD, pulseLast, g, gm
+    global curState, curStateCol, dashDot, sideDot, mDot, C_CARD, pulseLast, g, gm, liteDot
     vis := (DllCall("IsWindowVisible", "Ptr", g.Hwnd) && !DllCall("IsIconic", "Ptr", g.Hwnd)) || DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
     if (!vis && pulseLast = curStateCol)
         return
@@ -11558,7 +11560,7 @@ PulseTick() {
     if (c = pulseLast)
         return
     pulseLast := c
-    for d in [dashDot, sideDot, mDot]
+    for d in [dashDot, sideDot, mDot, liteDot]
         try d.SetFont("c" c)
 }
 
@@ -11619,7 +11621,7 @@ SetIf(ctrl, v) {
 
 ; estado visual: on / off / wait / warn / idle
 SetState(state, title, sub) {
-    global dashDot, dashTitle, dashSub, sideDot, sideStat, mDot, mStat, sbDot, sbTxt, VERSION
+    global dashDot, dashTitle, dashSub, sideDot, sideStat, mDot, mStat, sbDot, sbTxt, VERSION, liteStat, liteSub
     global C_ON, C_OFF, C_WARN, C_DIM, C_ACC
     global curState, curStateCol
     col := Map("on", C_ON, "off", C_OFF, "wait", C_ACC, "warn", C_WARN, "idle", C_DIM)[state]
@@ -11632,6 +11634,8 @@ SetState(state, title, sub) {
     SetIf(sideStat, title)
     SetIf(mStat, title)
     SetIf(sbTxt, "v" VERSION "  ·  BETA")
+    try SetIf(liteStat, title)
+    try SetIf(liteSub, sub)
 }
 
 ; ---- versão do Roblox ----
@@ -11755,18 +11759,57 @@ SetCompact(on) {
 }
 
 ; ==========================================================
-;  Modo Ultra Lite: só a função principal (auto reconnect) — desliga HUD, OCR/guilda, bot/webhook e
-;  telemetria, e mostra só a barrinha do modo compacto (sem fade/animação nenhuma pra entrar ou sair).
+;  Modo Ultra Lite: pra PC fraco. Só o auto reconnect em si roda — nada de HUD, OCR/rank da guilda,
+;  bot/webhook ou telemetria (nem os timers desses recursos chegam a ligar, não é só "escondido").
+;  Usa uma janelinha PRÓPRIA (liteWin), bem diferente da janela normal e do modo compacto, criada só
+;  na hora que o modo é ligado pela 1ª vez — e sem fade/animação nenhuma pra entrar ou sair dela.
 ; ==========================================================
+BuildLiteWin() {
+    global liteWin, liteDot, liteStat, liteSub, liteLink, liteBtn, g, edLink
+    if IsObject(liteWin)
+        return
+    LW := 260
+    liteWin := Gui("-Caption +AlwaysOnTop +ToolWindow +E0x08000000", "Auto Reconnect — Lite")
+    liteWin.BackColor := "0A0A0C"
+    liteWin.MarginX := 0, liteWin.MarginY := 0
+
+    FontUI(liteWin, "s9 w700")
+    liteWin.Add("Text", "x16 y12 w160 h20 Background0A0A0C cF5C542", Chr(0x26A1) "  LITE")
+    MakeBtn(liteWin, LW - 32, 8, 24, 24, Chr(0xE8BB), (*) => (SaveConfig(), ExitApp()), "close", true, "s9", 6, "0A0A0C")
+    MakeBtn(liteWin, LW - 32 - 28, 8, 24, 24, Chr(0xE740), (*) => ApplyUltraLite(false), "sec", true, "s9", 6, "0A0A0C")
+
+    FontUI(liteWin, "s20")
+    liteDot := liteWin.Add("Text", "x16 y42 w26 h26 +0x200 Background0A0A0C c55555D", "●")
+    FontUI(liteWin, "s11 w700")
+    liteStat := liteWin.Add("Text", "x46 y44 w198 h22 +0x200 Background0A0A0C cEDEDF0", "—")
+    FontUI(liteWin, "s8")
+    liteSub := liteWin.Add("Text", "x46 y66 w198 h16 +0x200 Background0A0A0C c8B8B94", "")
+
+    FontUI(liteWin, "s8")
+    liteWin.Add("Text", "x16 y92 w220 h16 Background0A0A0C c55555D", "Link do servidor")
+    box := liteWin.Add("Text", "x16 y110 w228 h30 +0x4000000 Background16161A")
+    try RoundCtrl(box, 8)
+    FontUI(liteWin, "s9")
+    liteLink := liteWin.Add("Edit", "x24 y117 w212 h18 -E0x200 cEDEDF0 Background16161A -WantReturn", Trim(edLink.Value))
+    liteLink.OnEvent("Change", (*) => (edLink.Value := liteLink.Value))
+
+    liteBtn := MakeBtn(liteWin, 16, 150, 228, 32, TT("btn_start"), Toggle, "primary", false, "s10 w700", 8)
+
+    try DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", liteWin.Hwnd, "UInt", 33, "Int*", 2, "UInt", 4)
+    try DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", liteWin.Hwnd, "UInt", 34, "UInt*", 0x00332E2E, "UInt", 4)
+    liteWin.OnEvent("Close", (*) => ApplyUltraLite(false))
+}
+
 ApplyUltraLite(on, *) {
-    global ultraLite, g, gm, gk, miniShown, winW, W, H, iniFile
+    global ultraLite, g, gm, gk, liteWin, liteLink, edLink, iniFile, W, H
     global chkHudGd, chkGuildSend, chkGuildNotify, chkGuildStat, chkPanel, chkBot, chkTelemetry, chkFrame, chkHudComp, chkUltraLite
     ultraLite := !!on
     try chkUltraLite.Value := ultraLite ? 1 : 0
     IniWrite(ultraLite ? "1" : "0", iniFile, "cfg", "ultraLite")
     if ultraLite {
-        ; desliga tudo que não é o auto reconnect em si (são todos switches normais — dá pra religar
-        ; manualmente depois, mas aí deixa de ser "ultra lite")
+        ; desliga tudo que não é o auto reconnect em si (são switches normais — dá pra religar na mão
+        ; depois, mas aí deixa de ser "ultra lite"). Os timers desses recursos nem chegam a existir
+        ; quando o app já abre direto nesse modo (ver StartApp()) — isso é o que poupa CPU/RAM de verdade.
         try chkHudGd.Value := 0
         try chkGuildSend.Value := 0
         try chkGuildNotify.Value := 0
@@ -11780,19 +11823,18 @@ ApplyUltraLite(on, *) {
         try SetHudMode(0)
         try HudHideAll()
         try SaveConfig()
-        try Log("Modo Ultra Lite ativado — só a barrinha, só o auto reconnect.")
+        try Log("Modo Ultra Lite ativado — só a janelinha, só o auto reconnect.")
         try g.Hide()
         try gk.Hide()
-        if !miniShown {
-            miniShown := true
-            x := A_ScreenWidth - winW - 300
-            gm.Show("NoActivate w284 h52 x" (x > 0 ? x : 0) " y8")
-        } else
-            gm.Show("NoActivate")
-        IniWrite(1, iniFile, "cfg", "compact")
+        try gm.Hide()
+        BuildLiteWin()
+        try liteLink.Value := edLink.Value
+        x := A_ScreenWidth - 260 - 24
+        liteWin.Show("NoActivate w260 h190 x" (x > 0 ? x : 0) " y8")
+        IniWrite(0, iniFile, "cfg", "compact")
     } else {
         try Log("Modo Ultra Lite desativado — voltando pro programa completo.")
-        try gm.Hide()
+        try liteWin.Hide()
         g.Show(Format("w{} h{}", W, H))
         IniWrite(0, iniFile, "cfg", "compact")
     }
@@ -14459,7 +14501,7 @@ Check() {
 }
 
 Toggle(*) {
-    global afkAccum, running, btnStart, mBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed, chkMulti, ACCS, multiActive
+    global afkAccum, running, btnStart, mBtn, liteBtn, edInterval, edLink, wasOpen, downTick, monStart, gm, licensed, chkMulti, ACCS, multiActive, ultraLite
     if (!running && KaEnabled() && !licensed) {
         ShowKeyScreen(TT("activate_to_use"))
         return
@@ -14468,6 +14510,8 @@ Toggle(*) {
         if (Trim(edLink.Value) = "") {
             Log(TT("paste_link_first"))
             SetState("warn", TT("st_nolink"), TT("st_nolink_sub"))
+            if ultraLite
+                return   ; no modo lite fica na própria janelinha — o aviso já aparece ali (SetState acima)
             if WinExist("ahk_id " gm.Hwnd) && DllCall("IsWindowVisible", "Ptr", gm.Hwnd)
                 SetCompact(false)
             ShowPage("Jogo")
@@ -14495,7 +14539,9 @@ Toggle(*) {
         monStart := A_TickCount
         running := true
         SendEvent("start", ["**" TT("d_interval") ":** " iv "s"], false, "", SessionFields(), true)
-        for b in [btnStart, mBtn] {
+        for b in [btnStart, mBtn, liteBtn] {
+            if !IsObject(b)
+                continue
             b.Text := TT("btn_stop")
             SetBtnStyle(b, "sec")
         }
@@ -14522,7 +14568,9 @@ Toggle(*) {
             multiActive := false
         }
         ApplyReportTimer()
-        for b in [btnStart, mBtn] {
+        for b in [btnStart, mBtn, liteBtn] {
+            if !IsObject(b)
+                continue
             b.Text := TT("btn_start")
             SetBtnStyle(b, "primary")
         }
